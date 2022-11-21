@@ -35,10 +35,7 @@ static class TargetingMode
                 return Arbitrary.SelectTarget(candidates, context);
             }
 
-            return candidates.Select(c => (Candidate: c, AngleError: angleError(c, context)))
-                .OrderBy(tuple => tuple.AngleError.MagnitudeInRadians)
-                .Select(tuple => tuple.Candidate)
-                .FirstOrDefault();
+            return candidates.MinBy(c => angleError(c, context).MagnitudeInRadians);
         }
 
         private static Angle angleError(GameObject candidate, TargetingContext context)
@@ -57,11 +54,8 @@ static class TargetingMode
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
-            return candidates.Select(c => (Candidate: c, Health: c.GetComponents<IHealth>().FirstOrDefault()))
-                .OrderBy(tuple => tuple.Health is null ? 1 : 0)
-                .ThenByDescending(tuple => tuple.Health?.CurrentHealth ?? HitPoints.Zero)
-                .Select(tuple => tuple.Candidate)
-                .FirstOrDefault();
+            return candidates.MaxBy(
+                c => c.GetComponents<IHealth>().FirstOrDefault()?.CurrentHealth.NumericValue, nullsFirst<int?>());
         }
     }
 
@@ -74,11 +68,8 @@ static class TargetingMode
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
-            return candidates.Select(c => (Candidate: c, Health: c.GetComponents<IHealth>().FirstOrDefault()))
-                .OrderBy(tuple => tuple.Health is null ? 1 : 0)
-                .ThenBy(tuple => tuple.Health?.CurrentHealth ?? HitPoints.Zero)
-                .Select(tuple => tuple.Candidate)
-                .FirstOrDefault();
+            return candidates.MinBy(
+                c => c.GetComponents<IHealth>().FirstOrDefault()?.CurrentHealth.NumericValue, nullsLast<int?>());
         }
     }
 
@@ -86,4 +77,28 @@ static class TargetingMode
 
     public static readonly ImmutableArray<ITargetingMode> All =
         ImmutableArray.Create(LeastRotation, HighestHealth, LowestHealth);
+
+    private static IComparer<T> nullsFirst<T>(IComparer<T>? original = null)
+    {
+        original ??= System.Collections.Generic.Comparer<T>.Default;
+        return System.Collections.Generic.Comparer<T>.Create((obj1, obj2) => (obj1, obj2) switch
+        {
+            (null, null) => 0,
+            (null, _) => 1,
+            (_, null) => -1,
+            _ => original.Compare(obj1, obj2)
+        });
+    }
+
+    private static IComparer<T> nullsLast<T>(IComparer<T>? original = null)
+    {
+        original ??= System.Collections.Generic.Comparer<T>.Default;
+        return System.Collections.Generic.Comparer<T>.Create((obj1, obj2) => (obj1, obj2) switch
+        {
+            (null, null) => 0,
+            (null, _) => -1,
+            (_, null) => 1,
+            _ => original.Compare(obj1, obj2)
+        });
+    }
 }
