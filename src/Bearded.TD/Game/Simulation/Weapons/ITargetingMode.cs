@@ -6,5 +6,5 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 interface ITargetingMode
 {
     string Name { get; }
-    GameObject? SelectTarget(IEnumerable<GameObject> candidates);
+    GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context);
 }

@@ -52,7 +52,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
     public Direction2 NeutralDirection => Parameters.NeutralDirection + transform.LocalOrientationTransform;
     public Angle? MaximumTurningAngle => Parameters.MaximumTurningAngle;
     private IProperty<ITargetingMode>? targetingMode;
-    public ITargetingMode TargetingMode => targetingMode?.Value ?? Weapons.TargetingMode.Default;
+    public ITargetingMode TargetingMode => targetingMode?.Value ?? Weapons.TargetingMode.Arbitrary;
 
     public Turret(IParameters parameters) : base(parameters) { }
 

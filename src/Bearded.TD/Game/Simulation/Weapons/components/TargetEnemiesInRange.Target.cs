@@ -27,6 +27,8 @@ sealed partial class TargetEnemiesInRange
 
     private void tryFindTarget()
     {
-        target = weapon.TargetingMode.SelectTarget(tilesInRange.SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile));
+        target = weapon.TargetingMode.SelectTarget(
+            tilesInRange.SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile),
+            new TargetingContext(Owner.Position, weapon.Direction));
     }
 }
