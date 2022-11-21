@@ -34,8 +34,7 @@ static class FormFactories
     {
         private bool isDense;
         private bool isScrollable;
-        private readonly List<(string?, Action<Layouts.Layout>)> rows =
-            new List<(string, Action<Layouts.Layout>)>();
+        private readonly List<(string?, Action<Layouts.Layout>)> rows = new();
 
         private double rowHeight =>
             isDense ? Constants.UI.Form.DenseFormRowHeight : Constants.UI.Form.FormRowHeight;

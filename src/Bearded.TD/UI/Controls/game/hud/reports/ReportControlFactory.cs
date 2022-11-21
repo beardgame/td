@@ -1,6 +1,5 @@
 using System;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Damage;
@@ -9,6 +8,7 @@ using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -44,6 +44,7 @@ sealed class ReportControlFactory : IReportControlFactory
             IHealthReport healthReport => new HealthReportControl(healthReport),
             IManualControlReport manualControlReport => new ManualControlReportControl(game, manualControlReport),
             IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
+            ITargetingReport targetingReport => new TargetingReportControl(targetingReport),
             IUpgradeReport upgradeReport =>
                 new UpgradeReportControl(upgradeReport.CreateInstance(game), detailsContainer),
             IVeterancyReport veterancyReport => new VeterancyReportControl(veterancyReport),

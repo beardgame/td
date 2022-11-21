@@ -8,6 +8,7 @@ enum ReportType : byte
     EntityProgression,
     EntityActions,
     Effectivity,
+    EntityMode,
     ManualControl,
     Upgrades,
     Debug,
