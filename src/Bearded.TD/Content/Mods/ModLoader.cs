@@ -125,6 +125,7 @@ static class ModLoader
                 ModAwareIdConverter.WithinMod(meta),
                 new ExternalIdConverter<Faction>(),
                 new NodeTagConverter(),
+                new TargetingModeConverter(),
                 new UpgradeEffectConverter(),
                 new UpgradePrerequisitesConverter(),
                 GenericInterfaceConverter.From(typeof(IKeyFrameAnimation<>), typeof(KeyFrameAnimation<>))

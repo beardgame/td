@@ -7,8 +7,6 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 sealed partial class TargetEnemiesInRange
 {
-    private ITargetingMode targetingMode = TargetingMode.Default;
-
     private void ensureTargetValid()
     {
         if (target?.Deleted == true)
