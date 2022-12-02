@@ -1,0 +1,49 @@
+name: Deploy master server
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      # The version number can be extracted from the currently checked out tag,
+      # which has the format 'refs/tags/v*'.
+      - name: Extract version number
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - uses: robinraju/release-downloader@v1.6
+        with:
+          tag: ${{ RELEASE_VERSION }}
+          fileName: "Bearded.TD.MasterServer-${{ RELEASE_VERSION }}-linux-x64.zip"
+
+      - name: Copy binaries to server
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: "Bearded.TD.MasterServer-${{ RELEASE_VERSION }}-linux-x64.zip"
+          target: td/deploy.zip
+
+      - name: Deploy new binary on server
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd td
+            unzip deploy.zip -d deploy
+            rsync -avh --delete --exclude 'ref' deploy/ fake_prod/
+            rm deploy.zip
+            rm -r deploy
+            supervisorctl restart tdmaster
