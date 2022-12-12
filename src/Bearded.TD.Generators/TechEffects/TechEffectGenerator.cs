@@ -39,15 +39,10 @@ namespace Bearded.TD.Generators.TechEffects
                 var convertsAttribute = context.Compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ConvertsAttributeAttribute") ??
                     throw new InvalidOperationException("Could not find converts attribute attribute.");
-                var attributeConverterType = context.Compilation
-                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.AttributeConverter`1")?
-                        .ConstructUnboundGenericType() ??
-                    throw new InvalidOperationException("Could not find attribute converter class.");
-                var attributeConverters = findFieldsWithAnnotation(
-                        context.Compilation, receiver.AttributeConverterCandidates, convertsAttribute)
-                    .Select(a => (Attribute: a, Type: extractAttributeConverterType(a, attributeConverterType)))
-                    .Where(tuple => tuple.Type != null)
-                    .ToImmutableDictionary(tuple => tuple.Type!, tuple => tuple.Attribute);
+                var attributeConverters = attributeConverterDictionary(
+                    context,
+                    findFieldsWithAnnotation(
+                        context.Compilation, receiver.AttributeConverterCandidates, convertsAttribute));
 
                 var templateInterface = context.Compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
@@ -75,6 +70,27 @@ namespace Bearded.TD.Generators.TechEffects
             {
                 context.ReportDiagnostic(CreateDebugDiagnostic(e.ToString(), DiagnosticSeverity.Error));
             }
+        }
+
+        private ImmutableDictionary<ITypeSymbol, IFieldSymbol> attributeConverterDictionary(
+            GeneratorExecutionContext context, IEnumerable<IFieldSymbol> attributes)
+        {
+            var attributeConverterType = context.Compilation
+                    .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.AttributeConverter`1")?
+                    .ConstructUnboundGenericType() ??
+                throw new InvalidOperationException("Could not find attribute converter class.");
+            var dict = new Dictionary<ITypeSymbol, IFieldSymbol>(SymbolEqualityComparer.Default);
+
+            foreach (var a in attributes)
+            {
+                var converterType = extractAttributeConverterType(a, attributeConverterType);
+                if (converterType != null)
+                {
+                    dict.Add(converterType, a);
+                }
+            }
+
+            return dict.ToImmutableDictionary(SymbolEqualityComparer.Default);
         }
 
         private static IEnumerable<IFieldSymbol> findFieldsWithAnnotation(

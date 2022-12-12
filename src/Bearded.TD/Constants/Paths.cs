@@ -35,13 +35,13 @@ static partial class Constants
             {
 #if !DEBUG
                     return file;
-#endif
-
+#else
                 var newFile = file
                     .Replace("\\", "/")
                     .Replace("/bin/Bearded.TD/Debug/", "/src/Bearded.TD/");
 
                 return newFile;
+#endif
             }
         }
     }
