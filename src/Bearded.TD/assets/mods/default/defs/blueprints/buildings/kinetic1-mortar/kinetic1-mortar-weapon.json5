@@ -7,14 +7,14 @@
             parameters: {
                 range: 6,
                 minimumRange: 2.5,
-                coneOfFire: 5,
+                coneOfFire: 3,
             }
         },
         {
             id: "pidAim",
             parameters: {
-                proportionalCorrection: 50,
-                derivativeCorrection: 8,
+                proportionalCorrection: 10,
+                derivativeCorrection: 10
             }
         },
         {

@@ -12,8 +12,8 @@
         {
             id: "pidAim",
             parameters: {
-                proportionalCorrection: 50,
-                derivativeCorrection: 8
+                proportionalCorrection: 10,
+                derivativeCorrection: 10
             }
         },
         {

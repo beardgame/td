@@ -1,6 +1,5 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -22,6 +21,7 @@ sealed class PidAim : Component<PidAim.IParameters>, IAngularAccelerator
     private IWeaponState weapon = null!;
     private AngularVelocity angularVelocity;
     private IWeaponAimer? aimer;
+    private Angle lastError;
 
     public PidAim(IParameters parameters) : base(parameters)
     {
@@ -76,13 +76,15 @@ sealed class PidAim : Component<PidAim.IParameters>, IAngularAccelerator
     private void aimIn(Direction2 aimDirection, TimeSpan elapsedTime)
     {
         var error = Angle.Between(weapon.Direction, aimDirection);
-        var derivative = angularVelocity;
+        var derivative = (error - lastError) / (float)elapsedTime.NumericValue;
         var torque = new AngularAcceleration(
-            Parameters.ProportionalCorrection * error
-            - Parameters.DerivativeCorrection * derivative * 1.S()
+            error * Parameters.ProportionalCorrection
+            + derivative * Parameters.DerivativeCorrection
             );
 
         angularVelocity += torque * elapsedTime;
+
+        lastError = error;
     }
 
     private void applyVelocity(TimeSpan elapsedTime)

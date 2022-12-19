@@ -6,14 +6,14 @@
             id: "targetEnemiesInRange",
             parameters: {
                 range: 5,
-                coneOfFire: 5
+                coneOfFire: 1
             }
         },
         {
             id: "pidAim",
             parameters: {
-                proportionalCorrection: 50,
-                derivativeCorrection: 8
+                proportionalCorrection: 20,
+                derivativeCorrection: 20
             }
         },
         {

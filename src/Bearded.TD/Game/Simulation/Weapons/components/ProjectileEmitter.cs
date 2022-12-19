@@ -14,6 +14,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 interface IProjectileEmitter
 {
+    Position3 EmitPosition { get; }
     Speed MuzzleSpeed { get; }
 }
 
@@ -39,6 +40,18 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
     private IWeaponState weapon = null!;
     private ITargeter<IPositionable>? targeter;
     private UpgradableProjectileFactory factory = null!;
+
+    public Position3 EmitPosition
+    {
+        get
+        {
+            var weaponDirection = weapon.Direction.Vector;
+            return weapon.Position +
+                (weaponDirection * Parameters.MuzzleOffset.X
+                    + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
+                ).WithZ();
+        }
+    }
 
     public Speed MuzzleSpeed => Parameters.MuzzleSpeed;
 
@@ -68,12 +81,8 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     private void emitProjectile(UntypedDamage damage)
     {
-        var weaponDirection = weapon.Direction.Vector;
-        var position = weapon.Position +
-            (weaponDirection * Parameters.MuzzleOffset.X
-                + weaponDirection.PerpendicularLeft * Parameters.MuzzleOffset.Y
-            ).WithZ();
-        
+        var position = EmitPosition;
+
         var (direction, muzzleVelocity) = getMuzzleVelocity(position);
 
         Owner.Game.Add(factory.Create(position, direction, muzzleVelocity, damage,

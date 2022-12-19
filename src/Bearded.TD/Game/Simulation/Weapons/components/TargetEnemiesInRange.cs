@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -115,7 +116,7 @@ sealed partial class TargetEnemiesInRange
         }
 
         updateTargetPosition(target);
-        shootAt(targetPosition.Position);
+        shootAtTargetPosition();
     }
 
     private void goIdle()
@@ -138,16 +139,18 @@ sealed partial class TargetEnemiesInRange
             return;
         }
 
-        var distanceToTarget = (target.Position - Owner.Position).Length;
+        var distanceToTarget = (target.Position - emitter.EmitPosition).Length;
         var projectileFlightTime = new TimeSpan(distanceToTarget.NumericValue / emitter.MuzzleSpeed.NumericValue);
         var compensationOffset = moving.Velocity * projectileFlightTime;
 
         targetPosition.Position = target.Position + compensationOffset;
     }
 
-    private void shootAt(Position3 targetPos)
+    private void shootAtTargetPosition()
     {
-        AimDirection = (targetPos - Owner.Position).XY().Direction;
+        var emitPosition = emitter?.EmitPosition ?? Owner.Position;
+
+        AimDirection = (targetPosition.Position - emitPosition).XY().Direction;
 
         if (isAimDirectionInConeOfFire())
         {

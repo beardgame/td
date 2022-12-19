@@ -109,6 +109,7 @@ sealed partial class UserSettings
         public bool WireframeLevel = false;
         [SettingOptions(0.5, 1, 2, 10)]
         public float TerrainDetail = 1;
+        public bool TowerTargeting = false;
 
         // these don't show up in the game debug ui
         public string DiscordScreenshotWebhookToken = "";
