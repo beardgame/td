@@ -2,12 +2,13 @@ using System;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Shared.Events;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-abstract class BuildingWork : Component
+abstract class BuildingWork : Component, IListener<ObjectDeleting>
 {
     private readonly IIncompleteWork work;
 
@@ -40,6 +41,7 @@ abstract class BuildingWork : Component
             factionProvider = provider;
             faction = provider.Faction;
         });
+        Events.Subscribe(this);
     }
 
     public override void Activate()
@@ -116,5 +118,16 @@ abstract class BuildingWork : Component
         {
             work.CompleteWork();
         }
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
+        base.OnRemoved();
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        resourceConsumer?.Abort();
     }
 }
