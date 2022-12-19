@@ -1,4 +1,5 @@
-﻿using Bearded.Utilities.SpaceTime;
+﻿using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Utilities;
 
@@ -32,4 +33,7 @@ static class SpaceTimeExtensions
     public static Difference2 XY(this Difference3 xyz) => new(xyz.X, xyz.Y);
 
     public static Velocity2 XY(this Velocity3 xyz) => new(xyz.X, xyz.Y);
+
+    public static Difference3 NormalizedSafe(this Difference3 difference)
+        => new(difference.NumericValue.NormalizedSafe());
 }

@@ -1,11 +1,14 @@
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using OpenTK.Mathematics;
 using static Bearded.TD.Game.Simulation.Buildings.BuildingLayer.Occupation;
 using static Bearded.TD.Game.Simulation.World.TileType;
 
@@ -57,17 +60,22 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
 
                 if (collidedWithWall || collidedWithCrevice)
                 {
-                    updateMoveOnCollision(ref move, step, rayCaster);
+                    collide(ref move, step, rayCaster);
                     return;
                 }
             }
 
             if (Parameters.WithBuildings && buildings.GetOccupationFor(tile) == MaterializedBuilding)
             {
-                updateMoveOnCollision(ref move, step, rayCaster);
+                collide(ref move, step, rayCaster);
                 return;
             }
         }
+    }
+    private void collide(ref PreviewMove move, Difference3 step, in LevelRayCaster rayCaster)
+    {
+        HitLevel(Events, move.Start, move.Step, rayCaster.LastStep);
+        updateMoveOnCollision(ref move, step, rayCaster);
     }
 
     private void updateMoveOnCollision(ref PreviewMove move, Difference3 step, in LevelRayCaster rayCaster)
@@ -80,6 +88,13 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
     private Difference3 getRadiusVectorInDirection(Difference3 direction)
     {
         return direction.NumericValue.NormalizedSafe() * radius;
+    }
+
+    public static void HitLevel(ComponentEvents events, Position3 point, Difference3 step, Direction? withStep)
+    {
+        var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
+        var info = new HitInfo(point, normal, step.NormalizedSafe());
+        events.Send(new HitLevel(info));
     }
 
     public override void Update(TimeSpan elapsedTime)
