@@ -66,17 +66,12 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 
     private void hitEnemy(Position3 point, Difference3 step, GameObject enemy, Difference3 normal)
     {
-        var info = new HitInfo(point, normal, normalized(step));
+        var info = new HitInfo(point, normal, step.NormalizedSafe());
         Events.Send(new HitEnemy(enemy, info));
     }
 
     private void hitLevel(Position3 point, Difference3 step, Direction? withStep)
     {
-        var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
-        var info = new HitInfo(point, normal, normalized(step));
-        Events.Send(new HitLevel(info));
+        TileCollider.HitLevel(Events, point, step, withStep);
     }
-
-    private static Difference3 normalized(Difference3 moveDirection)
-        => new(moveDirection.NumericValue.NormalizedSafe());
 }
