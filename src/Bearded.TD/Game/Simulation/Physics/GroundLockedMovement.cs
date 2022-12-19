@@ -29,7 +29,7 @@ sealed class GroundLockedMovement
         Events.Preview(ref movement);
 
         var positionXY = (movement.Start + movement.Step).XY();
-        var positionZ = Owner.Game.GeometryLayer[Level.GetTile(positionXY)].DrawInfo.Height;
+        var positionZ = Owner.Game.GeometryLayer[Level.GetTile(positionXY)].DrawInfo.Height + 0.1.U();
 
         Owner.Position = positionXY.WithZ(positionZ);
         Owner.Direction = Direction2.Of(Velocity.NumericValue.Xy);
