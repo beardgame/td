@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -8,6 +7,7 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -58,7 +58,7 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
 
         var direction = (nextTilePosition - Owner.Position.XY()).NumericValue.NormalizedSafe();
         var acceleration = direction * Parameters.Acceleration;
-        
+
         acceleration *= IsMoving ? 1 : 0.1f;
 
         physics.ApplyVelocityImpulse((acceleration * elapsedTime).WithZ());
@@ -82,7 +82,6 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
         return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(tile);
     }
 
-    IEnumerable<Tile> ITileOccupation.OccupiedTiles => Enumerable.Empty<Tile>();
+    IEnumerable<Tile> ITileOccupation.OccupiedTiles => Level.GetTile(Owner.Position).Yield();
     void IEnemyMovement.Teleport(Position2 pos, Tile tile) { }
 }
-
