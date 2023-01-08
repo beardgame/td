@@ -8,7 +8,7 @@ namespace Bearded.TD;
 
 static class Config
 {
-    public const string BaseVersionString = "0.11";
+    public const string BaseVersionString = "0.12";
 
 #if DEBUG
     private const string versionSuffix = "-dev";
