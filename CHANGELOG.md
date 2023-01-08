@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.11
+
+* Added targeting mode selection for towers
+* Added pinging for multiplayer
+* Resources are now awarded on wave completion rather than throughout
+* The first wave now no longer automatically spawns
+* Bug fix: towers actually hit most of the time now
+* Bug fix: resources are correctly refunded when cancelling a building
+* Added quality of life improvements for development
+
 ## v0.10
 
 * Added sound effects to towers, wave start, and wave end
