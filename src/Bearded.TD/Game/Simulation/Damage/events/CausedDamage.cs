@@ -2,4 +2,4 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-readonly record struct CausedDamage(DamageResult Result) : IComponentEvent;
+readonly record struct CausedDamage(DamageResult Result, GameObject Target) : IComponentEvent;

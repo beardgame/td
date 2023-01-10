@@ -10,6 +10,7 @@
         { id: "gainXpOnDamage" },
         { id: "veterancy" },
         { id: "upgradePips" },
+        { id: "damageNumbers" },
         {
             id: "spawnObjectOnLevelGain",
             parameters: { object: "building-gained-level-effect" },

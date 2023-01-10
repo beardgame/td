@@ -1,4 +1,6 @@
 
+using Bearded.TD.Game.Simulation.GameObjects;
+
 namespace Bearded.TD.Game.Simulation.Damage;
 
 sealed class DivineIntervention : IDamageSource
@@ -7,6 +9,7 @@ sealed class DivineIntervention : IDamageSource
 
     private DivineIntervention() {}
 
-    public void AttributeDamage(DamageResult result) {}
+    public void AttributeDamage(DamageResult result, GameObject damagedObject) {}
+
     public void AttributeKill() {}
 }
