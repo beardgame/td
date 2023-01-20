@@ -38,7 +38,7 @@
             id: "grantResourcesOnStart",
             parameters: {
                 faction: "players",
-                amount: 150
+                amount: 245
             }
         },
         {

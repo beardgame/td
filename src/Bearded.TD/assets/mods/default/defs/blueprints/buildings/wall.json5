@@ -2,7 +2,7 @@
   id: "wall",
   components: [
     { id: "name", parameters: { name: "Wall" } },
-    { id: "cost", parameters: { resources: 10 } },
+    { id: "cost", parameters: { resources: 7 } },
     { id: "footprint", parameters: { group: "single" } },
     { id: "defaultTileOccupancy" },
     { id: "canBeBuiltOn" },
