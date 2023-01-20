@@ -184,6 +184,11 @@ sealed class GameState
             throw new Exception("Must finish loading before advancing game state.");
         }
 
+        if (elapsedTime <= TimeSpan.Zero)
+        {
+            throw new Exception("Must advance game state by positive time.");
+        }
+
         GameTime.Advance(ref elapsedTime);
 
         FluidLayer.Update();
