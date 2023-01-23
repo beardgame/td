@@ -247,6 +247,9 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
     public void HandleEvent(DrawComponents e)
     {
+        if (!initialized)
+            return;
+
         var now = Owner.Game.Time;
 
         var color = Sprite.GetColor(Owner, Parameters.ColorMode, Parameters.Color);
