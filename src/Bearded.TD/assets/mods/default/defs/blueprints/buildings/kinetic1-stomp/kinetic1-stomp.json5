@@ -9,6 +9,7 @@
     { id: "autoRepair", parameters: { } },
     { id: "gainXpOnDamage" },
     { id: "veterancy" },
+    { id: "passiveVeterancyBonus", parameters : { } },
     { id: "upgradePips" },
     { id: "damageNumbers" },
     {
