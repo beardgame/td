@@ -184,15 +184,15 @@ sealed class GameState
             throw new Exception("Must finish loading before advancing game state.");
         }
 
-        if (elapsedTime <= TimeSpan.Zero)
-        {
-            throw new Exception("Must advance game state by positive time.");
-        }
-
         GameTime.Advance(ref elapsedTime);
 
-        FluidLayer.Update();
         WaveDirector.Update();
+
+        // TODO: this currently needs to be here so the wave director can update the pause state
+        if (elapsedTime <= TimeSpan.Zero)
+            return;
+
+        FluidLayer.Update();
 
         foreach (var obj in gameObjects)
         {
