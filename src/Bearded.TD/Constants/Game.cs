@@ -45,6 +45,13 @@ static partial class Constants
             public static readonly Color TechPointsColor = Color.Turquoise;
             public static readonly Color VeterancyColor = new Color(3, 252, 215);
 
+            public static readonly Color DynamicsColor = Color.LightGray;
+            public static readonly Color CombustionColor = Color.OrangeRed;
+            public static readonly Color ConductivityColor = Color.Purple;
+            public static readonly Color AlchemyColor = Color.LimeGreen;
+            public static readonly Color HydrologyColor = Color.LightBlue;
+            public static readonly Color PhotonicsColor = Color.Yellow;
+
             public static readonly Color EnemyIndicatorColor = Color.Orange;
         }
 
