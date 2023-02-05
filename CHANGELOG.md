@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.12
+
+* Rebalanced the early game by providing 245 resources instead of 150
+* Reduced walls in cost from 10 resources to 7
+* Damage numbers are now shown as pop-up over enemies
+* Each veterancy level for buildings now increases a building's effectiveness by 15%
+
 ## v0.11
 
 * Added targeting mode selection for towers
