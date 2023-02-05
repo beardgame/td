@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -39,17 +41,7 @@ sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawC
         var amount = damage.Amount;
         var type = damage.Type;
 
-        var color = type switch
-        {
-            DamageType.DivineIntervention => Color.White,
-            DamageType.Kinetic => Color.LightGray,
-            DamageType.Fire => Color.Red,
-            DamageType.Electric => Color.Purple,
-            DamageType.Energy => Color.Yellow,
-            DamageType.Frost => Color.LightBlue,
-            DamageType.Alchemy => Color.Green,
-            _ => Color.Pink
-        };
+        var color = type.ToElement().GetColor();
 
         var number = new Number(
             amount.NumericValue.ToString(),
@@ -81,4 +73,3 @@ sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawC
         }
     }
 }
-
