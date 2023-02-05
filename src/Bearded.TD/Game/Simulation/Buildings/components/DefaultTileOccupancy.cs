@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.Linq;
 using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -72,10 +75,14 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
 
         return canBuild
             ? Result.Valid
-            : Result.InValid
                 with
                 {
-                    BadTiles = invalidTiles,
+                    AdditionalCost = -totalRefundsForReplacing(parameters.Game, parameters.Footprint.OccupiedTiles)
+                }
+            : Result.Invalid
+                with
+                {
+                    BadTiles = invalidTiles
                 };
     }
 
@@ -91,5 +98,17 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
     {
         return game.BuildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None
             || game.BuildingLayer[tile]!.GetComponents<CanBeBuiltOn>().Any();
+    }
+
+    private static ResourceAmount totalRefundsForReplacing(GameState game, IEnumerable<Tile> tiles)
+    {
+        var buildingsToReplace = tiles
+            .Select(t => game.BuildingLayer[t])
+            .NotNull()
+            .Distinct();
+        var a = buildingsToReplace.Any();
+        return buildingsToReplace
+            .Select(obj => obj.TotalResourcesInvested().GetValueOrDefault(ResourceAmount.Zero))
+            .Aggregate(ResourceAmount.Zero, (l, r) => l + r);
     }
 }

@@ -40,6 +40,8 @@ readonly struct ResourceAmount : IDiscreteMeasure1, IEquatable<ResourceAmount>
     public static bool operator >=(ResourceAmount left, ResourceAmount right) =>
         left.NumericValue >= right.NumericValue;
 
+    public static ResourceAmount operator -(ResourceAmount amount) => new(-amount.NumericValue);
+
     public static ResourceAmount operator +(ResourceAmount left, ResourceAmount right) =>
         new(left.NumericValue + right.NumericValue);
 
