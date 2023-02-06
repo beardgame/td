@@ -15,4 +15,22 @@ readonly struct TypedDamage
     }
 
     public TypedDamage WithAdjustedAmount(HitPoints newAmount) => new(newAmount, Type);
+
+    public static TypedDamage operator *(int scalar, TypedDamage damage) =>
+        damage.WithAdjustedAmount(scalar * damage.Amount);
+
+    public static TypedDamage operator *(float scalar, TypedDamage damage) =>
+        damage.WithAdjustedAmount(((int) (scalar * damage.Amount.NumericValue)).HitPoints());
+
+    public static TypedDamage operator *(TypedDamage damage, int scalar) =>
+        damage.WithAdjustedAmount(scalar * damage.Amount);
+
+    public static TypedDamage operator *(TypedDamage damage, float scalar) =>
+        damage.WithAdjustedAmount(((int) (scalar * damage.Amount.NumericValue)).HitPoints());
+
+    public static TypedDamage operator /(TypedDamage damage, int scalar) =>
+        damage.WithAdjustedAmount((damage.Amount.NumericValue / scalar).HitPoints());
+
+    public static TypedDamage operator /(TypedDamage damage, float scalar) =>
+        damage.WithAdjustedAmount(((int) (damage.Amount.NumericValue / scalar)).HitPoints());
 }
