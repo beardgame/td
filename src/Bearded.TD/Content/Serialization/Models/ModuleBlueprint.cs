@@ -16,7 +16,7 @@ sealed class ModuleBlueprint
 {
     public string? Id { get; set; }
     public Element? AffinityElement { get; set; }
-    public string? SocketShape { get; set; }
+    public SocketShape? SocketShape { get; set; }
     public List<IUpgradeEffect>? Effects { get; set; }
 
     public Content.Models.Module ToGameModel(ModMetadata modMetadata, Void resolvers)
@@ -28,7 +28,7 @@ sealed class ModuleBlueprint
         return new Content.Models.Module(
             ModAwareId.FromNameInMod(Id, modMetadata),
             AffinityElement.Value,
-            new SocketShape(SocketShape),
+            SocketShape.Value,
             Effects?.ToImmutableArray() ?? ImmutableArray<IUpgradeEffect>.Empty);
     }
 }
