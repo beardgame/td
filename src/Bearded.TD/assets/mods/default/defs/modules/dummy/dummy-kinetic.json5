@@ -1,0 +1,6 @@
+{
+    id: "dummy-kinetic",
+    affinityElement: "dynamics",
+    socketShape: "dummy",
+    effects: [],
+}

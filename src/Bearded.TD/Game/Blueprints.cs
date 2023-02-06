@@ -5,6 +5,7 @@ using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -22,6 +23,7 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
     public ReadonlyBlueprintCollection<IGameObjectBlueprint> GameObjects { get; }
     public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
+    public ReadonlyBlueprintCollection<IModule> Modules { get; }
     public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
     public ReadonlyBlueprintCollection<INodeBlueprint> LevelNodes { get; }
     public ReadonlyBlueprintCollection<IGameModeBlueprint> GameModes { get; }
@@ -33,6 +35,7 @@ sealed class Blueprints
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
         ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
+        ReadonlyBlueprintCollection<IModule> modules,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
         ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
         ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes)
@@ -44,6 +47,7 @@ sealed class Blueprints
         Footprints = footprints;
         GameObjects = gameObjects;
         Upgrades = upgrades;
+        Modules = modules;
         Technologies = technologies;
         LevelNodes = levelNodes;
         GameModes = gameModes;
@@ -60,6 +64,7 @@ sealed class Blueprints
             flatten(list, b => b.Footprints),
             flatten(list, b => b.GameObjects),
             flatten(list, b => b.Upgrades),
+            flatten(list, b => b.Modules),
             flatten(list, b => b.Technologies),
             flatten(list, b => b.LevelNodes),
             flatten(list, b => b.GameModes)
@@ -71,6 +76,6 @@ sealed class Blueprints
         Func<Blueprints, ReadonlyBlueprintCollection<T>> selector)
         where T : IBlueprint
     {
-        return new(blueprints.SelectMany(b => selector(b).All));
+        return new ReadonlyBlueprintCollection<T>(blueprints.SelectMany(b => selector(b).All));
     }
 }

@@ -1,0 +1,6 @@
+{
+    id: "dummy-lightning",
+    affinityElement: "conductivity",
+    socketShape: "dummy",
+    effects: [],
+}

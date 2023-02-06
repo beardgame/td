@@ -1,0 +1,6 @@
+{
+    id: "dummy-fire",
+    affinityElement: "combustion",
+    socketShape: "dummy",
+    effects: [],
+}

@@ -64,6 +64,7 @@ static class ModLoader
             var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
             var gameObjects = new GameObjectBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
+            var modules = new ModuleBlueprintLoader(loadingContext).LoadBlueprints();
             var technologies = new TechnologyBlueprintLoader(loadingContext, gameObjects, upgrades).LoadBlueprints();
             var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
             var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
@@ -82,6 +83,7 @@ static class ModLoader
                 footprints,
                 gameObjects,
                 upgrades,
+                modules,
                 technologies,
                 levelNodes,
                 gameModes,

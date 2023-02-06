@@ -3,6 +3,7 @@ using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -28,6 +29,7 @@ sealed class Mod
         ReadonlyBlueprintCollection<FootprintGroup> footprints,
         ReadonlyBlueprintCollection<IGameObjectBlueprint> weapons,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
+        ReadonlyBlueprintCollection<IModule> modules,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
         ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
         ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes,
@@ -43,6 +45,7 @@ sealed class Mod
             footprints,
             weapons,
             upgrades,
+            modules,
             technologies,
             levelNodes,
             gameModes);
