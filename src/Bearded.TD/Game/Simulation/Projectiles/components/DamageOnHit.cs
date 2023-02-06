@@ -14,8 +14,8 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
     {
         DamageType? DamageType { get; }
 
-        [Modifiable(defaultValue: 1.0)]
-        double FractionOfBaseDamage { get; }
+        [Modifiable(defaultValue: 1.0f)]
+        float FractionOfBaseDamage { get; }
     }
 
     public DamageOnHit(IParameters parameters) : base(parameters) { }
