@@ -43,6 +43,9 @@ static class DebugAssert
             if (!condition())
                 throw new ArgumentException(message);
         }
+
+        [Conditional("DEBUG")]
+        public static void IsFraction(float f) => Satisfies(f is >= 0 and <= 1);
     }
 
     public static class State
