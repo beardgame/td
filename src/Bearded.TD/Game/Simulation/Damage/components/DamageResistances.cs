@@ -11,9 +11,9 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 sealed class DamageResistances : Component, IPreviewListener<PreviewTakeDamage>, IListener<DrawComponents>
 {
-    private readonly ImmutableDictionary<DamageType, float> resistances;
+    private readonly ImmutableDictionary<DamageType, Resistance> resistances;
 
-    public DamageResistances(ImmutableDictionary<DamageType, float> resistances)
+    public DamageResistances(ImmutableDictionary<DamageType, Resistance> resistances)
     {
         this.resistances = resistances;
     }
@@ -59,7 +59,7 @@ sealed class DamageResistances : Component, IPreviewListener<PreviewTakeDamage>,
         var currentRadius = radius;
         foreach (var (damageType, amount) in resistances)
         {
-            var lineWidth = fullResistanceLineWidth * amount;
+            var lineWidth = fullResistanceLineWidth * amount.NumericValue;
             coreDrawers.Primitives.DrawCircle(
                 Owner.Position.NumericValue.Xy, currentRadius, lineWidth, damageType.GetColor());
             currentRadius -= lineWidth;
