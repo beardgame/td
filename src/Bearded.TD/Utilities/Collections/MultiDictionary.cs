@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Bearded.TD.Utilities.Collections;
 
-sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, IList<TValue>>>
+sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, List<TValue>>>
     where TKey : notnull
 {
-    private static readonly TValue[] empty = Array.Empty<TValue>();
-
-    private readonly Dictionary<TKey, IList<TValue>> inner = new();
+    private readonly Dictionary<TKey, List<TValue>> inner = new();
 
     public bool ContainsKey(TKey key) => inner.TryGetValue(key, out var list) && list.Count > 0;
 
@@ -31,7 +30,7 @@ sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ILis
 
     public bool Remove(TKey key, TValue value)
     {
-        return ContainsKey(key) && inner[key].Remove(value);
+        return inner.TryGetValue(key, out var list) && list.Remove(value);
     }
 
     public int RemoveWhere(TKey key, Predicate<TValue> match)
@@ -39,28 +38,19 @@ sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ILis
         if (!inner.TryGetValue(key, out var list) || list.Count == 0)
             return 0;
 
-        if (list is List<TValue> listImpl)
-        {
-            return listImpl.RemoveAll(match);
-        }
-
-        var toRemove = list.Where(x => match(x)).ToList();
-        foreach (var value in toRemove)
-        {
-            list.Remove(value);
-        }
-        return toRemove.Count;
+        return list.RemoveAll(match);
     }
 
-    public bool TryGetValue(TKey key, out IEnumerable<TValue> list)
+    public bool TryGetValue(TKey key, [NotNullWhen(true)] out IEnumerable<TValue>? values)
     {
-        list = Get(key);
-        return ContainsKey(key);
+        var result = inner.TryGetValue(key, out var list);
+        values = list;
+        return result;
     }
 
     public IEnumerable<TValue> Get(TKey key)
     {
-        return ContainsKey(key) ? inner[key] : empty;
+        return inner.TryGetValue(key, out var list) ? list : Enumerable.Empty<TValue>();
     }
 
     public void Clear()
@@ -70,7 +60,7 @@ sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ILis
 
     public IEnumerable<TValue> this[TKey key] => Get(key);
 
-    public IEnumerator<KeyValuePair<TKey, IList<TValue>>> GetEnumerator() => inner.GetEnumerator();
+    public IEnumerator<KeyValuePair<TKey, List<TValue>>> GetEnumerator() => inner.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
