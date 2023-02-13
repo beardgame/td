@@ -142,11 +142,12 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
         if ((height - neighborHeight).Squared > Constants.Game.Navigation.MaxWalkableHeightDifference.Squared)
             return;
 
-        var neighborBuilding = Owner.Game.BuildingLayer[neighbor];
+        var neighborFoundation = Owner.Game.BuildingLayer[neighbor]
+            .Select(b => b.GetComponents<IFoundation>().FirstOrDefault())
+            .FirstOrDefault(f => f != null);
 
-        neighborBuilding?.GetComponents<IFoundation>().MaybeFirst().Match(
-            neighborFoundation => drawConnection(drawer, i, center, neighbor, neighborFoundation, color)
-        );
+        if (neighborFoundation != null)
+            drawConnection(drawer, i, center, neighbor, neighborFoundation, color);
     }
 
     private void drawConnection(IComponentDrawer drawer, int i, Vector2 center, Tile neighbor,

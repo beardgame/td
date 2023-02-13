@@ -9,7 +9,6 @@ using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
-using static Bearded.TD.Game.Simulation.Buildings.BuildingLayer.Occupation;
 using static Bearded.TD.Game.Simulation.World.TileType;
 
 namespace Bearded.TD.Game.Simulation.Physics;
@@ -65,7 +64,7 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
                 }
             }
 
-            if (Parameters.WithBuildings && buildings.GetOccupationFor(tile) == MaterializedBuilding)
+            if (Parameters.WithBuildings && buildings.HasMaterializedBuilding(tile))
             {
                 collide(ref move, step, rayCaster);
                 return;
