@@ -31,7 +31,7 @@ sealed class ChapterScheduler
     public ChapterScheduler(WaveScheduler waveScheduler, ImmutableArray<Element> elements, Logger logger)
     {
         this.waveScheduler = waveScheduler;
-        this.elements = elements;
+        this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Dynamics) : elements;
         this.logger = logger;
         waveScheduler.WaveEnded += onWaveEnded;
     }
