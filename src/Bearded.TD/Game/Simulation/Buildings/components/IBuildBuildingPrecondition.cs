@@ -6,7 +6,6 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-
 interface IBuildBuildingPrecondition
 {
     public readonly record struct Parameters(GameState Game, PositionedFootprint Footprint);
@@ -23,7 +22,7 @@ interface IBuildBuildingPrecondition
         public static Result FromBool(bool isValid)
             => new (isValid, ImmutableArray<Tile>.Empty, ImmutableArray<TileEdge>.Empty, ResourceAmount.Zero);
 
-        public static Result And(Result one, Result other) => new Result(
+        public static Result And(Result one, Result other) => new(
             one.IsValid && other.IsValid,
             merge(one.BadTiles, other.BadTiles),
             merge(one.BadEdges, other.BadEdges),

@@ -5,21 +5,14 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
-using static Bearded.TD.Utilities.DebugAssert;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed class BuildingLayer
 {
-    public enum Occupation
-    {
-        None,
-        ReservedForBuilding, // a building is scheduled to be built in this tile, but hasn't yet
-        MaterializedBuilding
-    }
-
     private readonly GlobalGameEvents events;
-    private readonly Dictionary<Tile, GameObject> buildingLookup = new();
+    private readonly Dictionary<Tile, List<GameObject>> buildingLookup = new();
 
     public BuildingLayer(GlobalGameEvents events)
     {
@@ -30,8 +23,7 @@ sealed class BuildingLayer
     {
         foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
         {
-            State.Satisfies(!buildingLookup.ContainsKey(tile));
-            buildingLookup.Add(tile, building);
+            getList(tile).Add(building);
         }
     }
 
@@ -39,51 +31,44 @@ sealed class BuildingLayer
     {
         foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
         {
-            State.Satisfies(buildingLookup.ContainsKey(tile) && buildingLookup[tile] == building);
-            buildingLookup.Remove(tile);
+            getList(tile).Remove(building);
         }
 
+        // TODO: why is this event sent here? looks like something the building should take care of itself
+        // alternatively the event is badly named, since it's only purpose (at time of writing) is to update
+        // the pathfinder (and the opposite event should also be sent from this class in that case)
         if (building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State is { IsMaterialized: true })
         {
             events.Send(new BuildingDestroyed(building));
         }
     }
 
-    public Occupation GetOccupationFor(Tile tile)
+    public bool HasMaterializedBuilding(Tile tile)
     {
-        var state = getBuildingStateFor(tile);
-        return state switch
-        {
-            null => Occupation.None,
-            {IsMaterialized: true} => Occupation.MaterializedBuilding,
-            _ => Occupation.ReservedForBuilding
-        };
+        return buildingsAt(tile).Any(b => getStateFor(b) is { IsMaterialized: true });
     }
 
     public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out GameObject? building)
     {
-        if (GetBuildingFor(tile) is { } candidate && getStateFor(candidate) is { IsMaterialized: true })
+        foreach (var candidate in buildingsAt(tile))
         {
-            building = candidate;
-            return true;
+            if (getStateFor(candidate) is { IsMaterialized: true })
+            {
+                building = candidate;
+                return true;
+            }
         }
 
         building = null;
         return false;
     }
 
-    private IBuildingState? getBuildingStateFor(Tile tile)
-    {
-        return GetBuildingFor(tile) is { } building ? getStateFor(building) : null;
-    }
+    public IEnumerable<GameObject> this[Tile tile] => buildingsAt(tile);
 
-    public GameObject? GetBuildingFor(Tile tile)
-    {
-        buildingLookup.TryGetValue(tile, out var building);
-        return building;
-    }
+    private IEnumerable<GameObject> buildingsAt(Tile tile) =>
+        buildingLookup.TryGetValue(tile, out var list) ? list : Enumerable.Empty<GameObject>();
 
-    public GameObject? this[Tile tile] => GetBuildingFor(tile);
+    private List<GameObject> getList(Tile tile) => buildingLookup.GetValueOrInsertNewDefaultFor(tile);
 
     private static IBuildingState? getStateFor(GameObject building)
     {

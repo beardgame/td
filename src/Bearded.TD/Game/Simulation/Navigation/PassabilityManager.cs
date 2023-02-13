@@ -79,7 +79,7 @@ sealed class PassabilityManager
     private void updatePassabilityForTile(Tile tile)
     {
         var type = geometryLayer[tile].Type;
-        var hasBuilding = buildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.MaterializedBuilding;
+        var hasBuilding = buildingLayer.HasMaterializedBuilding(tile);
 
         var hasChangedPassability = false;
 

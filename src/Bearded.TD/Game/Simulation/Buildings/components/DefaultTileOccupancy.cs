@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,53 +7,67 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Linq;
+using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Game.Simulation.Buildings.IBuildBuildingPrecondition;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("defaultTileOccupancy")]
-class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
+class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Materialized>
 {
     protected override void OnAdded() { }
 
     public override void Activate()
     {
-        base.Activate();
-        addToBuildingLayerIfNotGhost();
-        Owner.Deleting += deleteFromBuildingLayerIfNotGhost;
-    }
-
-    private void addToBuildingLayerIfNotGhost()
-    {
         if (isGhost())
             return;
 
-        tryReplacingExistingBuildings();
+        tryReplacingExistingPlaceholders();
+        addToBuildingLayer();
+        Events.Subscribe(this);
+        Owner.Deleting += deleteFromBuildingLayer;
+    }
 
+    public void HandleEvent(Materialized @event)
+    {
+        tryReplacingExistingBuildings(_ => true);
+    }
+
+    private void addToBuildingLayer()
+    {
         Owner.Game.BuildingLayer.AddBuilding(Owner);
     }
 
-    private void tryReplacingExistingBuildings()
+    private void tryReplacingExistingPlaceholders()
     {
-        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner))
-        {
-            if (Owner.Game.BuildingLayer[tile] is not { } building)
-                continue;
-
-            var replacer = building.GetComponents<CanBeBuiltOn>().Single();
-
-            replacer.Replace();
-        }
+        tryReplacingExistingBuildings(b => !b.GetComponents<IBuildingStateProvider>().Single().State.IsMaterialized);
     }
 
-    private void deleteFromBuildingLayerIfNotGhost()
+    private void tryReplacingExistingBuildings(Func<GameObject, bool> selector)
     {
-        if (isGhost())
-            return;
+        var replacers = new HashSet<CanBeBuiltOn>();
 
+        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner))
+        {
+            var buildings = Owner.Game.BuildingLayer[tile]
+                .Where(building => building != Owner && selector(building));
+
+            var rs = buildings.Select(building => building.GetComponents<CanBeBuiltOn>().Single());
+
+            foreach (var r in rs)
+            {
+                replacers.Add(r);
+            }
+        }
+
+        replacers.ForEach(r => r.Replace());
+    }
+
+    private void deleteFromBuildingLayer()
+    {
         Owner.Game.BuildingLayer.RemoveBuilding(Owner);
     }
 
@@ -96,17 +111,14 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition
 
     private static bool tileContainsNoBuildingOrReplaceableBuilding(GameState game, Tile tile)
     {
-        return game.BuildingLayer.GetOccupationFor(tile) == BuildingLayer.Occupation.None
-            || game.BuildingLayer[tile]!.GetComponents<CanBeBuiltOn>().Any();
+        return game.BuildingLayer[tile].All(b => b.TryGetSingleComponent<CanBeBuiltOn>(out _));
     }
 
     private static ResourceAmount totalRefundsForReplacing(GameState game, IEnumerable<Tile> tiles)
     {
         var buildingsToReplace = tiles
-            .Select(t => game.BuildingLayer[t])
-            .NotNull()
+            .SelectMany(t => game.BuildingLayer[t])
             .Distinct();
-        var a = buildingsToReplace.Any();
         return buildingsToReplace
             .Select(obj => obj.TotalResourcesInvested().GetValueOrDefault(ResourceAmount.Zero))
             .Aggregate(ResourceAmount.Zero, (l, r) => l + r);
