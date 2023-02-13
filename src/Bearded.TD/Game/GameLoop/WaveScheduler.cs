@@ -21,11 +21,11 @@ namespace Bearded.TD.Game.GameLoop;
 
 sealed partial class WaveScheduler : IListener<WaveEnded>
 {
-    private readonly Random random = new();
     private readonly GameState game;
     private readonly Faction targetFaction;
     private readonly ImmutableArray<ISpawnableEnemy> spawnableEnemies;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
+    private readonly Random random;
     private readonly Logger logger;
     public event VoidEventHandler? WaveEnded;
 
@@ -36,12 +36,14 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         Faction targetFaction,
         ImmutableArray<ISpawnableEnemy> spawnableEnemies,
         ICommandDispatcher<GameInstance> commandDispatcher,
+        int seed,
         Logger logger)
     {
         this.game = game;
         this.targetFaction = targetFaction;
         this.spawnableEnemies = spawnableEnemies;
         this.commandDispatcher = commandDispatcher;
+        random = new Random(seed);
         this.logger = logger;
     }
 
