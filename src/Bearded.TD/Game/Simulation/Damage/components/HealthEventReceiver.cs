@@ -10,19 +10,23 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
         var previewDamage = new PreviewTakeDamage(typedDamage);
         Events.Preview(ref previewDamage);
 
-        var modifiedDamageInfo = typedDamage;
-        if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamageInfo.Amount)
+        var modifiedDamage = typedDamage;
+        if (previewDamage.Resistance is { } resistance)
         {
-            modifiedDamageInfo = typedDamage.WithAdjustedAmount(damageCap);
+            modifiedDamage = resistance.ApplyToDamage(modifiedDamage);
+        }
+        if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamage.Amount)
+        {
+            modifiedDamage = modifiedDamage.WithAdjustedAmount(damageCap);
         }
 
-        if (modifiedDamageInfo.Amount > HitPoints.Zero)
+        if (modifiedDamage.Amount > HitPoints.Zero)
         {
-            var result = new DamageResult(modifiedDamageInfo);
+            var result = new DamageResult(modifiedDamage);
             Events.Send(new TakeDamage(result, source));
         }
 
-        return modifiedDamageInfo;
+        return modifiedDamage;
     }
 
     public void Heal(HealInfo healInfo)

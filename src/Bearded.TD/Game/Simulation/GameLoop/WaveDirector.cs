@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
@@ -103,7 +104,7 @@ sealed class WaveDirector
                     spawnQueue.Enqueue(
                         new EnemySpawn(
                             script.SpawnedUnitIds[idIndex++],
-                            script.UnitBlueprint,
+                            spawnEvent.EnemyForm,
                             loc,
                             spawnEvent.TimeOffset));
                 }
@@ -190,7 +191,7 @@ sealed class WaveDirector
             {
                 spawnQueue.Dequeue();
                 var unit =
-                    EnemyUnitFactory.Create(spawn.UnitId, spawn.UnitBlueprint, spawn.SpawnLocation.SpawnTile);
+                    EnemyFactory.Create(spawn.UnitId, spawn.EnemyForm, spawn.SpawnLocation.SpawnTile);
                 game.Add(unit);
                 spawnedUnits.Add(unit);
             }
@@ -212,7 +213,7 @@ sealed class WaveDirector
 
     private sealed record EnemySpawn(
         Id<GameObject> UnitId,
-        IGameObjectBlueprint UnitBlueprint,
+        EnemyForm EnemyForm,
         SpawnLocation SpawnLocation,
         TimeSpan TimeSinceStart);
 }

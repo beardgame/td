@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Dynamic;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -26,6 +25,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
                 context.Factions.Find(targetFaction),
                 enemies.CastArray<ISpawnableEnemy>(),
                 commandDispatcher,
+                context.Seed,
                 context.Logger);
             var chapterScheduler = new ChapterScheduler(waveScheduler, elements, context.Seed, context.Logger);
             var gameScheduler = new GameScheduler(

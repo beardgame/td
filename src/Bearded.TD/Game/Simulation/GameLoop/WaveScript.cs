@@ -16,5 +16,4 @@ sealed record WaveScript(
     ResourceAmount ResourcesAwarded,
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript,
-    IGameObjectBlueprint UnitBlueprint,
     ImmutableArray<Id<GameObject>> SpawnedUnitIds);

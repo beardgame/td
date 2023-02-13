@@ -3,7 +3,8 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-readonly record struct PreviewTakeDamage(TypedDamage TypedDamage, HitPoints? DamageCap = null, float Resistance = 0)
+readonly record struct PreviewTakeDamage(
+        TypedDamage TypedDamage, HitPoints? DamageCap = null, Resistance? Resistance = null)
     : IComponentPreviewEvent
 {
     public PreviewTakeDamage CappedAt(HitPoints damageCap)
@@ -19,10 +20,9 @@ readonly record struct PreviewTakeDamage(TypedDamage TypedDamage, HitPoints? Dam
         };
     }
 
-    public PreviewTakeDamage ResistedWith(float resistance)
+    public PreviewTakeDamage ResistedWith(Resistance resistance)
     {
-        Argument.IsFraction(resistance);
-        if (Resistance >= resistance)
+        if (Resistance is { } existingResistance && existingResistance >= resistance)
         {
             return this;
         }

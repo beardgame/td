@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities.Collections;
@@ -15,16 +16,21 @@ sealed partial class WaveScheduler
     // The minimum number of enemies the wave should support to allow an enemy to be used for the current wave.
     private const int minEnemiesCount = 12;
 
-    private EnemiesToSpawn chooseEnemy(
-        double maxWaveValue, double minWaveValue)
+    private EnemiesToSpawn chooseEnemy(double minWaveValue, double maxWaveValue)
     {
         var eligibleEnemies = filteredEligibleEnemies(maxWaveValue);
         var blueprint = selectBlueprint(eligibleEnemies);
         var blueprintThreat = blueprint.GetThreat();
+        if (!enemyFormGenerator.TryGenerateEnemyForm(
+                blueprint, new EnemyFormGenerator.Requirements(), out var enemyForm))
+        {
+            // TODO: this can happen, just not in the default mod right now
+            throw new InvalidOperationException();
+        }
 
         var (minEnemies, maxEnemies) = enemyCountRange(minWaveValue, blueprintThreat, maxWaveValue);
         var enemyCount = maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
-        return new EnemiesToSpawn(blueprint, blueprintThreat, enemyCount);
+        return new EnemiesToSpawn(enemyForm, blueprintThreat, enemyCount);
     }
 
     private ImmutableArray<ISpawnableEnemy> filteredEligibleEnemies(double maxWaveValue)
@@ -66,5 +72,5 @@ sealed partial class WaveScheduler
     }
 
     [UsedImplicitly] // type is deconstructed
-    private record struct EnemiesToSpawn(IGameObjectBlueprint Blueprint, float Threat, int SpawnCount);
+    private record struct EnemiesToSpawn(EnemyForm EnemyForm, float Threat, int SpawnCount);
 }

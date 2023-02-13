@@ -2,6 +2,8 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -24,7 +26,6 @@ sealed class WaveScriptSerializer
     private int resourcesAwardedBySpawnPhase;
     private Id<SpawnLocation>[] spawnLocations = Array.Empty<Id<SpawnLocation>>();
     private readonly EnemySpawnScriptSerializer enemyScript = new();
-    private ModAwareId unitBlueprint;
     private Id<GameObject>[] spawnedUnitIds = Array.Empty<Id<GameObject>>();
 
     [UsedImplicitly]
@@ -40,7 +41,6 @@ sealed class WaveScriptSerializer
         resourcesAwardedBySpawnPhase = waveScript.ResourcesAwarded.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
         enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
-        unitBlueprint = waveScript.UnitBlueprint.Id;
         spawnedUnitIds = waveScript.SpawnedUnitIds.ToArray();
     }
 
@@ -54,8 +54,7 @@ sealed class WaveScriptSerializer
             new TimeSpan(spawnDuration),
             new ResourceAmount(resourcesAwardedBySpawnPhase),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
-            enemyScript.ToSpawnScript(),
-            game.Blueprints.GameObjects[unitBlueprint],
+            enemyScript.ToSpawnScript(game),
             spawnedUnitIds.ToImmutableArray());
     }
 
@@ -73,7 +72,6 @@ sealed class WaveScriptSerializer
             stream.Serialize(ref spawnLocations[i]);
         }
         enemyScript.Serialize(stream);
-        stream.Serialize(ref unitBlueprint);
         stream.SerializeArrayCount(ref spawnedUnitIds);
         for (var i = 0; i < spawnedUnitIds.Length; i++)
         {
@@ -104,12 +102,14 @@ sealed class WaveScriptSerializer
             }
         }
 
-        public EnemySpawnScript ToSpawnScript() => new(spawnEvents.Select(e => e!.ToSpawnEvent()).ToImmutableArray());
+        public EnemySpawnScript ToSpawnScript(GameInstance game) =>
+            new(spawnEvents.Select(e => e!.ToSpawnEvent(game)).ToImmutableArray());
     }
 
     private sealed class EnemySpawnEventSerializer
     {
         private TimeSpan time;
+        private readonly EnemyFormSerializer enemyForm = new();
 
         [UsedImplicitly]
         public EnemySpawnEventSerializer() {}
@@ -117,13 +117,59 @@ sealed class WaveScriptSerializer
         public EnemySpawnEventSerializer(EnemySpawnScript.EnemySpawnEvent spawnEvent)
         {
             time = spawnEvent.TimeOffset;
+            enemyForm = new EnemyFormSerializer(spawnEvent.EnemyForm);
         }
 
         public void Serialize(INetBufferStream stream)
         {
             stream.Serialize(ref time);
+            enemyForm.Serialize(stream);
         }
 
-        public EnemySpawnScript.EnemySpawnEvent ToSpawnEvent() => new(time);
+        public EnemySpawnScript.EnemySpawnEvent ToSpawnEvent(GameInstance game) =>
+            new(time, enemyForm.ToEnemyForm(game));
+    }
+
+    private sealed class EnemyFormSerializer
+    {
+        private ModAwareId blueprint;
+        private (SocketShape, ModAwareId)[] modules = Array.Empty<(SocketShape, ModAwareId)>();
+        private (DamageType, float)[] resistances = Array.Empty<(DamageType, float)>();
+
+        [UsedImplicitly]
+        public EnemyFormSerializer() {}
+
+        public EnemyFormSerializer(EnemyForm form)
+        {
+            blueprint = form.Blueprint.Id;
+            modules = form.Modules.Select(kvp => (kvp.Key, kvp.Value.Id)).ToArray();
+            resistances = form.Resistances.Select(kvp => (kvp.Key, kvp.Value.NumericValue)).ToArray();
+        }
+
+        public void Serialize(INetBufferStream stream)
+        {
+            stream.Serialize(ref blueprint);
+            stream.SerializeArrayCount(ref modules);
+            for (var i = 0; i < modules.Length; i++)
+            {
+                stream.Serialize(ref modules[i].Item1);
+                stream.Serialize(ref modules[i].Item2);
+            }
+            stream.SerializeArrayCount(ref resistances);
+            for (var i = 0; i < resistances.Length; i++)
+            {
+                stream.Serialize(ref resistances[i].Item1);
+                stream.Serialize(ref resistances[i].Item2);
+            }
+        }
+
+        public EnemyForm ToEnemyForm(GameInstance game) =>
+            new(game.Blueprints.GameObjects[blueprint], toModuleDictionary(game), toResistanceDictionary());
+
+        private ImmutableDictionary<SocketShape, IModule> toModuleDictionary(GameInstance game) =>
+            modules.ToImmutableDictionary(tuple => tuple.Item1, toTuple => game.Blueprints.Modules[toTuple.Item2]);
+
+        private ImmutableDictionary<DamageType, Resistance> toResistanceDictionary() =>
+            resistances.ToImmutableDictionary(tuple => tuple.Item1, tuple => new Resistance(tuple.Item2));
     }
 }
