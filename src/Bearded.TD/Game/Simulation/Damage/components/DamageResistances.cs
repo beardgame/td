@@ -15,6 +15,16 @@ sealed class DamageResistances : Component, IPreviewListener<PreviewTakeDamage>
     }
 
     protected override void OnAdded() { }
+    protected override void OnAdded()
+    {
+        Events.Subscribe<PreviewTakeDamage>(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe<PreviewTakeDamage>(this);
+        base.OnRemoved();
+    }
 
     public override void Activate() { }
 
