@@ -118,7 +118,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
                 return 1e6;
             }
 
-            if (buildings[toTile] is not null && !buildingTilesToIgnore.Contains(toTile))
+            if (buildings.HasMaterializedBuilding(toTile) && !buildingTilesToIgnore.Contains(toTile))
             {
                 return buildingPenalty;
             }
