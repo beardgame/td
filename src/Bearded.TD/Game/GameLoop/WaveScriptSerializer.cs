@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -133,6 +134,7 @@ sealed class WaveScriptSerializer
     {
         private ModAwareId blueprint;
         private (SocketShape, ModAwareId)[] modules = Array.Empty<(SocketShape, ModAwareId)>();
+        private (DamageType, float)[] resistances = Array.Empty<(DamageType, float)>();
 
         [UsedImplicitly]
         public EnemyFormSerializer() {}
@@ -141,6 +143,7 @@ sealed class WaveScriptSerializer
         {
             blueprint = form.Blueprint.Id;
             modules = form.Modules.Select(kvp => (kvp.Key, kvp.Value.Id)).ToArray();
+            resistances = form.Resistances.Select(kvp => (kvp.Key, kvp.Value.NumericValue)).ToArray();
         }
 
         public void Serialize(INetBufferStream stream)
@@ -152,12 +155,21 @@ sealed class WaveScriptSerializer
                 stream.Serialize(ref modules[i].Item1);
                 stream.Serialize(ref modules[i].Item2);
             }
+            stream.SerializeArrayCount(ref resistances);
+            for (var i = 0; i < resistances.Length; i++)
+            {
+                stream.Serialize(ref resistances[i].Item1);
+                stream.Serialize(ref resistances[i].Item2);
+            }
         }
 
         public EnemyForm ToEnemyForm(GameInstance game) =>
-            new(game.Blueprints.GameObjects[blueprint], toModuleDictionary(game));
+            new(game.Blueprints.GameObjects[blueprint], toModuleDictionary(game), toResistanceDictionary());
 
         private ImmutableDictionary<SocketShape, IModule> toModuleDictionary(GameInstance game) =>
             modules.ToImmutableDictionary(tuple => tuple.Item1, toTuple => game.Blueprints.Modules[toTuple.Item2]);
+
+        private ImmutableDictionary<DamageType, Resistance> toResistanceDictionary() =>
+            resistances.ToImmutableDictionary(tuple => tuple.Item1, tuple => new Resistance(tuple.Item2));
     }
 }

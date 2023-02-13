@@ -47,7 +47,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         this.commandDispatcher = commandDispatcher;
         random = new Random(seed);
         this.logger = logger;
-        enemyFormGenerator = new EnemyFormGenerator(Enumerable.Empty<IModule>(), random);
+        enemyFormGenerator = new EnemyFormGenerator(Enumerable.Empty<IModule>(), random, logger);
     }
 
     public void OnGameStart()

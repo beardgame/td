@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Tiles;
@@ -12,6 +13,7 @@ static class EnemyFactory
     {
         var obj = EnemyUnitFactory.Create(id, form.Blueprint, tile); // TODO: move the method to this class
         fillSockets(obj, form.Modules);
+        obj.AddComponent(new DamageResistances(form.Resistances));
         return obj;
     }
 
@@ -23,7 +25,6 @@ static class EnemyFactory
             {
                 socket.Fill(module);
             }
-            // TODO: should we throw here if no module was found?
         }
     }
 }
