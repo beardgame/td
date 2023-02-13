@@ -12,7 +12,7 @@ sealed class MultiDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ILis
 
     private readonly Dictionary<TKey, IList<TValue>> inner = new();
 
-    public bool ContainsKey(TKey key) => inner.ContainsKey(key);
+    public bool ContainsKey(TKey key) => inner.TryGetValue(key, out var list) && list.Count > 0;
 
     public void Add(TKey key, TValue value)
     {
