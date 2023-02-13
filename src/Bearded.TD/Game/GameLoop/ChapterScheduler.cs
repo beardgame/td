@@ -16,6 +16,7 @@ sealed class ChapterScheduler
 {
     private readonly WaveScheduler waveScheduler;
     private readonly ImmutableArray<Element> elements;
+    private readonly Random random;
     private readonly Logger logger;
 
     private ChapterScript? currentChapter;
@@ -28,10 +29,11 @@ sealed class ChapterScheduler
 
     public event VoidEventHandler? ChapterEnded;
 
-    public ChapterScheduler(WaveScheduler waveScheduler, ImmutableArray<Element> elements, Logger logger)
+    public ChapterScheduler(WaveScheduler waveScheduler, ImmutableArray<Element> elements, int seed, Logger logger)
     {
         this.waveScheduler = waveScheduler;
         this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Dynamics) : elements;
+        random = new Random(seed);
         this.logger = logger;
         waveScheduler.WaveEnded += onWaveEnded;
     }
@@ -85,7 +87,7 @@ sealed class ChapterScheduler
         ChapterElements candidate = default;
         for (var i = 0; i < maxAttempts; i++)
         {
-            var primaryElement = elements.RandomElement();
+            var primaryElement = elements.RandomElement(random);
             candidate = new ChapterElements(primaryElement, chooseAccentElement(primaryElement));
             if (candidate.PrimaryElement != lastChapterElements.PrimaryElement &&
                 candidate.AccentElement != lastChapterElements.AccentElement)
@@ -100,7 +102,7 @@ sealed class ChapterScheduler
     private Element chooseAccentElement(Element primaryElement)
     {
         var otherElements = elements.WhereNot(e => e == primaryElement).ToImmutableArray();
-        return otherElements.IsEmpty ? primaryElement : otherElements.RandomElement();
+        return otherElements.IsEmpty ? primaryElement : otherElements.RandomElement(random);
     }
 
     private void requestWave()

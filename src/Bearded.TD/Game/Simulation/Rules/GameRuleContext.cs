@@ -20,6 +20,7 @@ sealed class GameRuleContext
     public IGameFactions Factions => GameState.Factions;
     public IDispatcher<GameInstance> Dispatcher => GameState.Meta.Dispatcher;
     public IdManager Ids => GameState.Meta.Ids;
+    public int Seed => GameSettings.Seed;
 
     public GameRuleContext(
         GameState gameState, GlobalGameEvents events, ReadOnlyCollection<Player> players, Blueprints blueprints)
