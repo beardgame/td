@@ -60,6 +60,7 @@
                 targetFaction: "players",
                 chaptersPerGame: 5,
                 wavesPerChapter: 5,
+                elements: [ "dynamics", "combustion", "conductivity" ],
                 enemies: [
                     { blueprint: "standard01", probability: 1, },
                     { blueprint: "standard02", probability: 1, },

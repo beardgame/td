@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
+using Bearded.Utilities.IO;
+using Bearded.Utilities.Linq;
 using static Bearded.TD.Constants.Game.WaveGeneration;
 using static Bearded.TD.Game.GameLoop.WaveScheduler;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -10,18 +15,24 @@ namespace Bearded.TD.Game.GameLoop;
 sealed class ChapterScheduler
 {
     private readonly WaveScheduler waveScheduler;
+    private readonly ImmutableArray<Element> elements;
+    private readonly Logger logger;
 
     private ChapterScript? currentChapter;
     private int wavesSpawnedTotal;
     private int wavesSpawnedThisChapter;
 
+    private ChapterElements? lastChapterElements;
+
     private ResourceAmount nextWaveResources = FirstWaveResources;
 
     public event VoidEventHandler? ChapterEnded;
 
-    public ChapterScheduler(WaveScheduler waveScheduler)
+    public ChapterScheduler(WaveScheduler waveScheduler, ImmutableArray<Element> elements, Logger logger)
     {
         this.waveScheduler = waveScheduler;
+        this.elements = elements;
+        this.logger = logger;
         waveScheduler.WaveEnded += onWaveEnded;
     }
 
@@ -46,9 +57,50 @@ sealed class ChapterScheduler
     public void StartChapter(ChapterRequirements chapterRequirements)
     {
         State.Satisfies(currentChapter == null);
-        currentChapter = new ChapterScript(chapterRequirements.ChapterNumber, chapterRequirements.WaveCount);
+        currentChapter = createChapterScript(chapterRequirements);
+        lastChapterElements = currentChapter.Elements;
         wavesSpawnedThisChapter = 0;
+        logger.Debug?.Log(
+            $"Starting chapter {currentChapter.ChapterNumber} " +
+            $"with primary element {currentChapter.Elements.PrimaryElement} " +
+            $"and accent element {currentChapter.Elements.AccentElement}");
         requestWave();
+    }
+
+    private ChapterScript createChapterScript(ChapterRequirements requirements)
+    {
+        return new ChapterScript(requirements.ChapterNumber, requirements.WaveCount, chooseChapterElements());
+    }
+
+    private ChapterElements chooseChapterElements()
+    {
+        // TODO: this is super hardcoded and ugly; needs to be moved to a more generic system loaded from mod files
+        if (lastChapterElements is null)
+        {
+            // Always start the first wave with dynamics and a random accent element. After that, everything goes.
+            return new ChapterElements(Element.Dynamics, chooseAccentElement(Element.Dynamics));
+        }
+
+        const int maxAttempts = 5;
+        ChapterElements candidate = default;
+        for (var i = 0; i < maxAttempts; i++)
+        {
+            var primaryElement = elements.RandomElement();
+            candidate = new ChapterElements(primaryElement, chooseAccentElement(primaryElement));
+            if (candidate.PrimaryElement != lastChapterElements.PrimaryElement &&
+                candidate.AccentElement != lastChapterElements.AccentElement)
+            {
+                return candidate;
+            }
+        }
+
+        return candidate!;
+    }
+
+    private Element chooseAccentElement(Element primaryElement)
+    {
+        var otherElements = elements.WhereNot(e => e == primaryElement).ToImmutableArray();
+        return otherElements.IsEmpty ? primaryElement : otherElements.RandomElement();
     }
 
     private void requestWave()
@@ -76,17 +128,9 @@ sealed class ChapterScheduler
         ChapterEnded?.Invoke();
     }
 
-    public readonly struct ChapterRequirements
-    {
-        public int ChapterNumber { get; }
-        public int WaveCount { get; }
+    public readonly record struct ChapterRequirements(int ChapterNumber, int WaveCount);
 
-        public ChapterRequirements(int chapterNumber, int waveCount)
-        {
-            WaveCount = waveCount;
-            ChapterNumber = chapterNumber;
-        }
-    }
+    private sealed record ChapterScript(int ChapterNumber, int WaveCount, ChapterElements Elements);
 
-    private sealed record ChapterScript(int ChapterNumber, int WaveCount);
+    private sealed record ChapterElements(Element PrimaryElement, Element AccentElement);
 }

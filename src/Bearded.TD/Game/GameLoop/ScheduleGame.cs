@@ -3,6 +3,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Shared.Events;
 using JetBrains.Annotations;
@@ -18,14 +19,14 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     {
         context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
         {
-            var (targetFaction, chaptersPerGame, wavesPerChapter, enemies) = Parameters;
+            var (targetFaction, chaptersPerGame, wavesPerChapter, elements, enemies) = Parameters;
             var waveScheduler = new WaveScheduler(
                 context.GameState,
                 context.Factions.Find(targetFaction),
                 enemies.CastArray<ISpawnableEnemy>(),
                 commandDispatcher,
                 context.Logger);
-            var chapterScheduler = new ChapterScheduler(waveScheduler);
+            var chapterScheduler = new ChapterScheduler(waveScheduler, elements, context.Logger);
             var gameScheduler = new GameScheduler(
                 context.GameState,
                 commandDispatcher,
@@ -40,6 +41,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         ExternalId<Faction> TargetFaction,
         int ChaptersPerGame,
         int WavesPerChapter,
+        ImmutableArray<Element> Elements,
         ImmutableArray<SpawnableEnemy> Enemies);
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
