@@ -62,7 +62,7 @@ sealed class BuildingLayer
 
     public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out GameObject? building)
     {
-        if (GetBuildingFor(tile) is { } candidate && getStateFor(candidate) is { IsMaterialized: true })
+        if (buildingAt(tile) is { } candidate && getStateFor(candidate) is { IsMaterialized: true })
         {
             building = candidate;
             return true;
@@ -74,16 +74,16 @@ sealed class BuildingLayer
 
     private IBuildingState? getBuildingStateFor(Tile tile)
     {
-        return GetBuildingFor(tile) is { } building ? getStateFor(building) : null;
+        return buildingAt(tile) is { } building ? getStateFor(building) : null;
     }
 
-    public GameObject? GetBuildingFor(Tile tile)
+    public GameObject? this[Tile tile] => buildingAt(tile);
+
+    private GameObject? buildingAt(Tile tile)
     {
         buildingLookup.TryGetValue(tile, out var building);
         return building;
     }
-
-    public GameObject? this[Tile tile] => GetBuildingFor(tile);
 
     private static IBuildingState? getStateFor(GameObject building)
     {
