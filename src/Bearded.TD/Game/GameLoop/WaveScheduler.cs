@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -27,6 +28,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     private readonly Random random;
     private readonly Logger logger;
+    private readonly EnemyFormGenerator enemyFormGenerator;
     public event VoidEventHandler? WaveEnded;
 
     private Id<WaveScript>? activeWave;
@@ -45,6 +47,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         this.commandDispatcher = commandDispatcher;
         random = new Random(seed);
         this.logger = logger;
+        enemyFormGenerator = new EnemyFormGenerator(Enumerable.Empty<IModule>(), random);
     }
 
     public void OnGameStart()
@@ -80,9 +83,9 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
 
     private WaveScript createWaveScript(WaveRequirements requirements)
     {
-        var (blueprint, enemiesPerSpawn, spawnLocations, spawnDuration) = generateWaveParameters(requirements);
+        var (enemyForm, enemiesPerSpawn, spawnLocations, spawnDuration) = generateWaveParameters(requirements);
 
-        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration);
+        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration, enemyForm);
 
         return new WaveScript(
             game.Meta.Ids.GetNext<WaveScript>(),
@@ -93,7 +96,6 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
             requirements.Resources,
             spawnLocations,
             enemyScript,
-            blueprint,
             game.Meta.Ids.GetBatch<GameObject>(spawnLocations.Length * enemiesPerSpawn));
     }
 
@@ -104,7 +106,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
 
         var (minWaveValue, maxWaveValue) = waveValueRange(requirements);
 
-        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(maxWaveValue, minWaveValue);
+        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(minWaveValue, maxWaveValue);
 
         var spawnLocations = chooseSpawnLocations(enemyCount);
         var spawnLocationCount = spawnLocations.Length;
@@ -151,7 +153,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
     }
 
     private record struct WaveParameters(
-        IGameObjectBlueprint UnitBlueprint,
+        EnemyForm EnemyForm,
         int EnemiesPerSpawn,
         ImmutableArray<SpawnLocation> SpawnLocations,
         TimeSpan SpawnDuration);

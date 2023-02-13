@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameLoop;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -13,19 +14,20 @@ sealed partial class WaveScheduler
     private const int maxGroupSize = minGroupSize * 3;
     private const double targetDensity = 0.8;
 
-    private EnemySpawnScript toEnemyScript(int enemyCount, TimeSpan waveDuration)
+    private EnemySpawnScript toEnemyScript(int enemyCount, TimeSpan waveDuration, EnemyForm enemyForm)
     {
         var groupCount = enemyCount < minGroupSize * 2 ? 1 : determineGroupCount(enemyCount);
         if (groupCount == 1)
         {
             return new EnemySpawnScript(
-                spawnEventsSpreadUniformlyInDuration(enemyCount, TimeSpan.Zero, waveDuration).ToImmutableArray());
+                spawnEventsSpreadUniformlyInDuration(enemyCount, TimeSpan.Zero, waveDuration, enemyForm)
+                    .ToImmutableArray());
         }
 
         var batchSizes = determineBatchSizes(enemyCount, groupCount);
 
         return new EnemySpawnScript(
-            spawnEventsBatchedInDuration(batchSizes, waveDuration).ToImmutableArray());
+            spawnEventsBatchedInDuration(batchSizes, waveDuration, enemyForm).ToImmutableArray());
     }
 
     private int determineGroupCount(int enemyCount)
@@ -52,7 +54,7 @@ sealed partial class WaveScheduler
     }
 
     private IEnumerable<EnemySpawnScript.EnemySpawnEvent> spawnEventsBatchedInDuration(
-        IList<int> batchSizes, TimeSpan duration)
+        IList<int> batchSizes, TimeSpan duration, EnemyForm enemyForm)
     {
         if (batchSizes.Count < 2)
         {
@@ -71,7 +73,8 @@ sealed partial class WaveScheduler
             var batchOffset = i == 0 ? TimeSpan.Zero : result[idx - 1].TimeOffset + individualBreakDuration;
             var batchDuration = timePerEnemy * (batchSizes[i] - 1);
 
-            foreach (var spawnEvent in spawnEventsSpreadUniformlyInDuration(batchSizes[i], batchOffset, batchDuration))
+            foreach (var spawnEvent in spawnEventsSpreadUniformlyInDuration(
+                         batchSizes[i], batchOffset, batchDuration, enemyForm))
             {
                 result.Add(spawnEvent);
                 idx++;
@@ -82,10 +85,10 @@ sealed partial class WaveScheduler
     }
 
     private static IEnumerable<EnemySpawnScript.EnemySpawnEvent> spawnEventsSpreadUniformlyInDuration(
-        int count, TimeSpan additionalOffset, TimeSpan duration)
+        int count, TimeSpan additionalOffset, TimeSpan duration, EnemyForm enemyForm)
     {
         return offsetsSpreadUniformlyInDuration(count, additionalOffset, duration)
-            .Select(offset => new EnemySpawnScript.EnemySpawnEvent(offset));
+            .Select(offset => new EnemySpawnScript.EnemySpawnEvent(offset, enemyForm));
     }
 
     private static IEnumerable<TimeSpan> offsetsSpreadUniformlyInDuration(
