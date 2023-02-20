@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -101,10 +100,10 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
 
     private WaveParameters generateWaveParameters(WaveRequirements requirements)
     {
-        logger.Debug?.Log($"Wave parameters requested with threat {requirements.WaveValue}");
+        logger.Debug?.Log($"Wave parameters requested with threat {requirements.EnemyComposition.TotalThreat}");
         var sw = Stopwatch.StartNew();
 
-        var (minWaveValue, maxWaveValue) = waveValueRange(requirements);
+        var (minWaveValue, maxWaveValue) = totalThreatRange(requirements);
 
         var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(minWaveValue, maxWaveValue);
 
@@ -113,7 +112,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
 
         var enemiesPerSpawn = MoreMath.CeilToInt((double) enemyCount / spawnLocationCount);
 
-        optimizeForWaveValue(requirements, spawnLocationCount, blueprintThreat, ref enemiesPerSpawn);
+        optimizeForRequestedThreat(requirements, spawnLocationCount, blueprintThreat, ref enemiesPerSpawn);
 
         var spawnDuration = TimeSpan.Max(
             TimeSpan.Min(
@@ -129,35 +128,30 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         return new WaveParameters(blueprint, enemiesPerSpawn, spawnLocations, spawnDuration);
     }
 
-    private static (double minWaveValue, double maxWaveValue) waveValueRange(WaveRequirements requirements)
+    private static (double minThreat, double maxThreat) totalThreatRange(WaveRequirements requirements)
     {
-        var allowedValueError = requirements.WaveValue * WaveValueErrorFactor;
-        var minWaveValue = requirements.WaveValue - allowedValueError;
-        var maxWaveValue = requirements.WaveValue + allowedValueError;
+        var requestedThreat = requirements.EnemyComposition.TotalThreat;
+        var allowedValueError = requestedThreat * WaveValueErrorFactor;
+        var minWaveValue = requestedThreat - allowedValueError;
+        var maxWaveValue = requestedThreat + allowedValueError;
         return (minWaveValue, maxWaveValue);
     }
 
-    private static void optimizeForWaveValue(
+    private static void optimizeForRequestedThreat(
         WaveRequirements requirements, int spawnLocationCount, float blueprintThreat, ref int enemiesPerSpawn)
     {
+        var requestedThreat = requirements.EnemyComposition.TotalThreat;
+
         var actualValue = enemiesPerSpawn * spawnLocationCount * blueprintThreat;
-        var actualError = Math.Abs(actualValue - requirements.WaveValue);
+        var actualError = Math.Abs(actualValue - requestedThreat);
 
         // Try spawning one less enemy per spawn. If that ends up being closer to our desired value, do that.
         var candidateValue = (enemiesPerSpawn - 1) * spawnLocationCount * blueprintThreat;
-        var candidateError = Math.Abs(candidateValue - requirements.WaveValue);
+        var candidateError = Math.Abs(candidateValue - requestedThreat);
         if (candidateValue > 0 && candidateError < actualError)
         {
             enemiesPerSpawn--;
         }
     }
 
-    private record struct WaveParameters(
-        EnemyForm EnemyForm,
-        int EnemiesPerSpawn,
-        ImmutableArray<SpawnLocation> SpawnLocations,
-        TimeSpan SpawnDuration);
-
-    public sealed record WaveRequirements(
-        int ChapterNumber, int WaveNumber, double WaveValue, ResourceAmount Resources, TimeSpan? DowntimeDuration);
 }
