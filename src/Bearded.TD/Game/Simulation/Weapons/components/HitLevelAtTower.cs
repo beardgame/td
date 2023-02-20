@@ -48,6 +48,6 @@ sealed class HitLevelAtTower : Component, IListener<FireWeapon>
             ? p
             : Owner.Position;
 
-        Events.Send(new HitLevel(new HitInfo(point, new Difference3(0, 0, 1), new Difference3(0, 0, -1))));
+        Events.Send(new HitLevel(new Impact(point, new Difference3(0, 0, 1), new Difference3(0, 0, -1))));
     }
 }

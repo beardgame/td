@@ -66,7 +66,7 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 
     private void hitEnemy(Position3 point, Difference3 step, GameObject enemy, Difference3 normal)
     {
-        var info = new HitInfo(point, normal, step.NormalizedSafe());
+        var info = new Impact(point, normal, step.NormalizedSafe());
         Events.Send(new HitEnemy(enemy, info));
     }
 

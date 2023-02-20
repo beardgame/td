@@ -34,8 +34,8 @@ sealed class HitTargetOnActivate : Component
         }
 
         var hitInfo = resultForTarget.Enemy == target
-            ? new HitInfo(resultForTarget.Point, resultForTarget.Normal!.Value, ray.Direction)
-            : new HitInfo(target.Position, new Difference3(Vector3.UnitZ), ray.Direction);
+            ? new Impact(resultForTarget.Point, resultForTarget.Normal!.Value, ray.Direction)
+            : new Impact(target.Position, new Difference3(Vector3.UnitZ), ray.Direction);
 
         Events.Send(new HitEnemy(target, hitInfo));
     }

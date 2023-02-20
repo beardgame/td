@@ -47,7 +47,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
     public void HandleEvent(HitEnemy @event)
     {
-        onHit(@event.Info.Point);
+        onHit(@event.Impact.Point);
     }
 
     private void onHit(Position3 center)
@@ -79,12 +79,12 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
                 continue;
 
             var incident = new Difference3(difference.NumericValue.NormalizedSafe());
-            var hitInfo = new HitInfo(enemy.Position, -incident, incident);
+            var impact = new Impact(enemy.Position, -incident, incident);
 
             damageExecutor.TryDoDamage(
                 enemy,
                 damage.Typed(Parameters.DamageType ?? DamageType.Kinetic),
-                new HitContext(HitType.AreaOfEffect, hitInfo));
+                Hit.FromAreaOfEffect(impact));
         }
     }
 

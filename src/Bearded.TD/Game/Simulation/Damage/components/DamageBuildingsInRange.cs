@@ -73,16 +73,16 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
             }
 
             var damage = new TypedDamage(Parameters.Damage, DamageType.Kinetic);
-            var context = getHitContext(neighbor);
+            var hit = getHit(neighbor);
 
-            if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, context))
+            if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, hit))
             {
                 nextAttack += 1 / Parameters.AttackRate;
             }
         }
     }
 
-    private HitContext? getHitContext(Tile targetTile)
+    private Hit getHit(Tile targetTile)
     {
         var target = Level.GetPosition(targetTile).WithZ();
         var position = Owner.Position;
@@ -95,11 +95,11 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
         var direction = new Difference3((target - position).NumericValue.NormalizedSafe());
         var point = position + direction * rayCaster.CurrentRayFactor;
 
-        var hitInfo = new HitInfo(
+        var impact = new Impact(
             point,
             -direction,
             direction
         );
-        return new HitContext(HitType.Impact, hitInfo);
+        return Hit.FromImpact(impact);
     }
 }

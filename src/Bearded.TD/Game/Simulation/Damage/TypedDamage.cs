@@ -7,6 +7,8 @@ readonly struct TypedDamage
     public HitPoints Amount { get; }
     public DamageType Type { get; }
 
+    public static TypedDamage Zero(DamageType type) => new(HitPoints.Zero, type);
+
     public TypedDamage(HitPoints amount, DamageType type)
     {
         Argument.Satisfies(amount >= HitPoints.Zero);

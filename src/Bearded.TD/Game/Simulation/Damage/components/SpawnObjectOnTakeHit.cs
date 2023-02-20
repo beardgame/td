@@ -35,7 +35,7 @@ sealed class SpawnObjectOnTakeHit
 
     public void HandleEvent(TakeHit @event)
     {
-        var hitInfo = @event.Context.Info;
+        var hitInfo = @event.Context.Impact;
 
         var obj = GameObjectFactory
             .CreateFromBlueprintWithDefaultRenderer(
@@ -45,7 +45,7 @@ sealed class SpawnObjectOnTakeHit
                 Direction2.Zero);
 
         if (hitInfo is { } hit)
-            obj.AddComponent(new Property<HitInfo>(hit));
+            obj.AddComponent(new Property<Impact>(hit));
 
         if (Parameters.ScaleFromDamage is { } scalar)
         {

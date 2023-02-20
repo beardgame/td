@@ -11,22 +11,18 @@ readonly struct DamageExecutor
         this.damageSource = damageSource;
     }
 
-    public bool TryDoDamage(GameObject target, TypedDamage typedDamage, HitContext? context = null)
+    public bool TryDoDamage(GameObject target, TypedDamage typedDamage, Hit hit)
     {
-        var hitReceiver = context != null && target.TryGetSingleComponent<IEventReceiver<TakeHit>>(out var r)
-            ? r
-            : null;
+        // Affect actual health
+        target.TryGetSingleComponent<IHealthEventReceiver>(out var damageReceiver);
+        var damageTaken = damageReceiver?.Damage(typedDamage, damageSource) ?? TypedDamage.Zero(typedDamage.Type);
 
-        if (!target.TryGetSingleComponent<IHealthEventReceiver>(out var receiver))
-        {
-            hitReceiver?.InjectEvent(
-                new TakeHit(context.Value, typedDamage, new TypedDamage(HitPoints.Zero, typedDamage.Type)));
-            return false;
-        }
+        // Inject information about having been hit by something, whether damage was done or not
+        // Typically used for visual effects.
+        target.TryGetSingleComponent<IEventReceiver<TakeHit>>(out var hitReceiver);
+        hitReceiver?.InjectEvent(new TakeHit(hit, damageTaken));
 
-        var damageTaken = receiver.Damage(typedDamage, damageSource);
-        hitReceiver?.InjectEvent(new TakeHit(context.Value, typedDamage, damageTaken));
-        return true;
+        return damageReceiver != null;
     }
 
     public static DamageExecutor FromObject(GameObject source)

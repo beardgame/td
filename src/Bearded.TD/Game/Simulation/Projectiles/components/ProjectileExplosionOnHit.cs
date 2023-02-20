@@ -75,10 +75,10 @@ sealed class ProjectileExplosionOnHit
 
     public void HandleEvent(HitEnemy e)
     {
-        onHit(e.Info);
+        onHit(e.Impact);
     }
 
-    private void onHit(HitInfo hit)
+    private void onHit(Impact hit)
     {
         if (!Owner.TryGetProperty<UntypedDamage>(out var parentDamage))
         {
@@ -97,7 +97,7 @@ sealed class ProjectileExplosionOnHit
 
             var projectile = ProjectileFactory
                 .Create(Parameters.Projectile, Owner, Owner.Position, direction, velocity, projectileDamage, default);
-            projectile.AddComponent(new Property<HitInfo>(hit));
+            projectile.AddComponent(new Property<Impact>(hit));
             Owner.Game.Add(projectile);
         }
     }

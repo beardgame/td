@@ -92,7 +92,7 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
     public static void HitLevel(ComponentEvents events, Position3 point, Difference3 step, Direction? withStep)
     {
         var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
-        var info = new HitInfo(point, normal, step.NormalizedSafe());
+        var info = new Impact(point, normal, step.NormalizedSafe());
         events.Send(new HitLevel(info));
     }
 
