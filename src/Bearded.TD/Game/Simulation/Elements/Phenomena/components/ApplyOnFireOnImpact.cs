@@ -23,7 +23,7 @@ sealed class ApplyOnFireOnImpact : ApplyEffectOnImpact<ApplyOnFireOnImpact.IPara
     {
         var damagePerSecond =
             new UntypedDamagePerSecond(
-                ((int) (Parameters.FractionOfBaseDamageApplied
+                ((float) (Parameters.FractionOfBaseDamageApplied
                     * damage.Amount.NumericValue
                     / Parameters.EffectDuration.NumericValue))
                 .HitPoints());

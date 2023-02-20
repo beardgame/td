@@ -25,17 +25,17 @@ readonly struct UntypedDamage
         new(scalar * amount.Amount);
 
     public static UntypedDamage operator *(float scalar, UntypedDamage amount) =>
-        new(((int) (scalar * amount.Amount.NumericValue)).HitPoints());
+        new((scalar * amount.Amount.NumericValue).HitPoints());
 
     public static UntypedDamage operator *(UntypedDamage amount, int scalar) =>
         new(scalar * amount.Amount);
 
     public static UntypedDamage operator *(UntypedDamage amount, float scalar) =>
-        new(((int) (scalar * amount.Amount.NumericValue)).HitPoints());
+        new((scalar * amount.Amount.NumericValue).HitPoints());
 
     public static UntypedDamage operator /(UntypedDamage amount, int scalar) =>
         new((amount.Amount.NumericValue / scalar).HitPoints());
 
     public static UntypedDamage operator /(UntypedDamage amount, float scalar) =>
-        new(((int) (amount.Amount.NumericValue / scalar)).HitPoints());
+        new((amount.Amount.NumericValue / scalar).HitPoints());
 }

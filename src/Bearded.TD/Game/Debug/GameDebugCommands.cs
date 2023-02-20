@@ -101,7 +101,7 @@ static class GameDebugCommands
             return;
         }
 
-        if (!int.TryParse(p.Args[0], out var amount))
+        if (!float.TryParse(p.Args[0], out var amount))
         {
             logger.Warning?.Log($"Invalid amount: {amount}");
             return;

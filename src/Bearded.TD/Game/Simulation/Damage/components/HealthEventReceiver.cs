@@ -22,8 +22,7 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
 
         if (modifiedDamage.Amount > HitPoints.Zero)
         {
-            var result = new DamageResult(modifiedDamage);
-            Events.Send(new TakeDamage(result, source));
+            Events.Send(new TakeDamage(modifiedDamage, source));
         }
 
         return modifiedDamage;

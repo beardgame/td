@@ -20,17 +20,17 @@ readonly struct TypedDamage
         damage.WithAdjustedAmount(scalar * damage.Amount);
 
     public static TypedDamage operator *(float scalar, TypedDamage damage) =>
-        damage.WithAdjustedAmount(((int) (scalar * damage.Amount.NumericValue)).HitPoints());
+        damage.WithAdjustedAmount((scalar * damage.Amount.NumericValue).HitPoints());
 
     public static TypedDamage operator *(TypedDamage damage, int scalar) =>
         damage.WithAdjustedAmount(scalar * damage.Amount);
 
     public static TypedDamage operator *(TypedDamage damage, float scalar) =>
-        damage.WithAdjustedAmount(((int) (scalar * damage.Amount.NumericValue)).HitPoints());
+        damage.WithAdjustedAmount((scalar * damage.Amount.NumericValue).HitPoints());
 
     public static TypedDamage operator /(TypedDamage damage, int scalar) =>
         damage.WithAdjustedAmount((damage.Amount.NumericValue / scalar).HitPoints());
 
     public static TypedDamage operator /(TypedDamage damage, float scalar) =>
-        damage.WithAdjustedAmount(((int) (damage.Amount.NumericValue / scalar)).HitPoints());
+        damage.WithAdjustedAmount((damage.Amount.NumericValue / scalar).HitPoints());
 }

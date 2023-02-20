@@ -59,8 +59,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
         }
 
         var damage = new UntypedDamage(
-            StaticRandom.Discretise(
-                (float) unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
+            (unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
 
         var distanceSquared = Parameters.Range.Squared;
 

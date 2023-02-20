@@ -26,7 +26,7 @@ sealed class HealthReportControl : ReportControl
 
     public override void Update()
     {
-        health.SetFromSource($"{report.CurrentHealth.NumericValue} / {report.MaxHealth.NumericValue}");
+        health.SetFromSource($"{report.CurrentHealth.ToUiString()} / {report.MaxHealth.ToUiString()}");
     }
 
     public override void Dispose() {}
