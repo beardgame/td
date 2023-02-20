@@ -85,16 +85,17 @@ sealed class Health :
 
     private void onDamaged(TypedDamage typedDamage, IDamageSource? source)
     {
-        changeHealth(-typedDamage.Amount, out var discreteDifference);
-        Events.Send(new TookDamage(new DamageResult(typedDamage, discreteDifference), source));
+        changeHealth(-typedDamage.Amount, out var damageDoneDiscrete);
+        Events.Send(new TookDamage(new DamageResult(typedDamage, damageDoneDiscrete), source));
     }
 
-    private void changeHealth(HitPoints healthChange, out HitPoints discreteDifference)
+    private void changeHealth(HitPoints healthChange, out HitPoints damageDoneDiscrete)
     {
         var oldHealthDiscrete = CurrentHealth.Discrete();
         CurrentHealth = SpaceTime1MathF.Clamp(CurrentHealth + healthChange, HitPoints.Zero, MaxHealth);
         var newHealthDiscrete = CurrentHealth.Discrete();
-        discreteDifference = newHealthDiscrete - oldHealthDiscrete;
+        // This expression may look inverted, but that's because we want the difference as a positive number.
+        damageDoneDiscrete = oldHealthDiscrete - newHealthDiscrete;
     }
 
     public override void Update(TimeSpan elapsedTime)
