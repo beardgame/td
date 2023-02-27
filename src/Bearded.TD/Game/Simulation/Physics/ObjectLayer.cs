@@ -12,25 +12,9 @@ sealed class ObjectLayer
 
     public IEnumerable<GameObject> GetObjectsOnTile(Tile tile) => objectLookup.Get(tile);
 
-    public void AddObjectToTiles(GameObject obj, IEnumerable<Tile> tiles)
-    {
-        foreach (var tile in tiles)
-        {
-            AddObjectToTile(obj, tile);
-        }
-    }
-
     public void AddObjectToTile(GameObject obj, Tile tile)
     {
         objectLookup.Add(tile, obj);
-    }
-
-    public void RemoveObjectFromTiles(GameObject obj, IEnumerable<Tile> tiles)
-    {
-        foreach (var tile in tiles)
-        {
-            RemoveObjectFromTile(obj, tile);
-        }
     }
 
     public void RemoveObjectFromTile(GameObject obj, Tile tile)
