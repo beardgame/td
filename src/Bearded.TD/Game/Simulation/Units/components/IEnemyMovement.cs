@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 

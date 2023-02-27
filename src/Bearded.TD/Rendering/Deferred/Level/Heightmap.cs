@@ -10,7 +10,6 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Pipelines.Context.ColorMask;
 using static Bearded.Graphics.Pipelines.Pipeline;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 

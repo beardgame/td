@@ -1,6 +1,4 @@
-using System;
 using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Damage;
 using static Bearded.TD.Constants.Game.GameUI;
 
 namespace Bearded.TD.Game.Simulation.Model;

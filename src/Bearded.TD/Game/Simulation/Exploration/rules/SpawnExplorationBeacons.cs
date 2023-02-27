@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Rules;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;

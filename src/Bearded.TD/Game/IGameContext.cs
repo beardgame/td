@@ -1,5 +1,4 @@
 ﻿using System;
-using Bearded.TD.Audio;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Synchronization;

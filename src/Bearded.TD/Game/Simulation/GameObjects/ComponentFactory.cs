@@ -1,5 +1,4 @@
 ﻿using System;
-using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
