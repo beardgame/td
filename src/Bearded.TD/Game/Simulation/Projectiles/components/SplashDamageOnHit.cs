@@ -63,7 +63,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
         var distanceSquared = Parameters.Range.Squared;
 
-        var enemies = Owner.Game.UnitLayer;
+        var objects = Owner.Game.ObjectLayer;
         // Returns only tiles with their centre in the circle with the given range.
         // This means it may miss enemies that are strictly speaking in range, but are on a tile that itself is out
         // of range.
@@ -71,18 +71,18 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
         var damageExecutor = DamageExecutor.FromObject(Owner);
 
-        foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
+        foreach (var obj in tiles.SelectMany(objects.GetObjectsOnTile))
         {
-            var difference = enemy.Position - center;
+            var difference = obj.Position - center;
 
             if (difference.LengthSquared > distanceSquared)
                 continue;
 
             var incident = new Difference3(difference.NumericValue.NormalizedSafe());
-            var impact = new Impact(enemy.Position, -incident, incident);
+            var impact = new Impact(obj.Position, -incident, incident);
 
             damageExecutor.TryDoDamage(
-                enemy,
+                obj,
                 damage.Typed(Parameters.DamageType ?? DamageType.Kinetic),
                 Hit.FromAreaOfEffect(impact));
         }

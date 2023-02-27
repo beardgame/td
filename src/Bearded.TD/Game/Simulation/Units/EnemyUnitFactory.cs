@@ -43,7 +43,7 @@ static class EnemyUnitFactory
 
         unit.AddComponent(new TileBasedVisibility());
         unit.AddComponent(new CurrentTileNotifier());
-        unit.AddComponent(new UnitLayerOccupant());
+        unit.AddComponent(new TilePresence());
 
         return unit;
     }

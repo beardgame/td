@@ -6,7 +6,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -41,13 +41,13 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
         Unit Range { get; }
     }
 
-    private readonly Dictionary<GameObject, IUpgradeReceipt> affectedUnits = new();
+    private readonly Dictionary<GameObject, IUpgradeReceipt> affectedObjects = new();
 
     private IBuildingState? buildingState;
     private TileRangeDrawer? tileRangeDrawer;
 
     private Id<Modification> modificationId;
-    private UnitLayer unitLayer = null!;
+    private ObjectLayer objectLayer = null!;
     private Tile ownerTile;
     private Unit range;
     private ImmutableArray<Tile> tilesInRange;
@@ -70,7 +70,7 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
         base.Activate();
 
         modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
-        unitLayer = Owner.Game.UnitLayer;
+        objectLayer = Owner.Game.ObjectLayer;
         ownerTile = Level.GetTile(Owner.Position.XY());
         range = Parameters.Range;
         recalculateTilesInRange();
@@ -91,22 +91,22 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
     {
         if (buildingState?.IsFunctional == false)
         {
-            removeModificationsFromAllUnits();
+            removeModificationsFromAllObjects();
             return;
         }
 
         ensureRangeUpToDate();
 
-        removeModificationsFromUnitsOutOfRange();
-        addModificationsToNewUnitsInRange();
+        removeModificationsFromObjectsOutOfRange();
+        addModificationsToNewObjectsInRange();
     }
 
-    private void removeModificationsFromAllUnits()
+    private void removeModificationsFromAllObjects()
     {
-        if (affectedUnits.Count == 0)
+        if (affectedObjects.Count == 0)
             return;
 
-        foreach (var (_, upgradeReceipt) in affectedUnits)
+        foreach (var (_, upgradeReceipt) in affectedObjects)
         {
             upgradeReceipt.Rollback();
         }
@@ -119,29 +119,27 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
         recalculateTilesInRange();
     }
 
-    private void removeModificationsFromUnitsOutOfRange()
+    private void removeModificationsFromObjectsOutOfRange()
     {
         var effectsOutOfRange =
-            affectedUnits.Where(kvp =>
+            affectedObjects.Where(kvp =>
                 !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(kvp.Key)));
 
-        foreach (var (unit, upgradeReceipt) in effectsOutOfRange)
+        foreach (var (obj, upgradeReceipt) in effectsOutOfRange)
         {
-            affectedUnits.Remove(unit);
+            affectedObjects.Remove(obj);
             upgradeReceipt.Rollback();
         }
     }
 
-    private void addModificationsToNewUnitsInRange()
+    private void addModificationsToNewObjectsInRange()
     {
-        foreach (var unit in tilesInRange.SelectMany(unitLayer.GetUnitsOnTile))
+        var upgrade = createUpgrade();
+        foreach (var obj in tilesInRange.SelectMany(objectLayer.GetObjectsOnTile))
         {
-            if (affectedUnits.ContainsKey(unit)) continue;
+            if (affectedObjects.ContainsKey(obj) || !obj.CanApplyUpgrade(upgrade)) continue;
 
-            var upgrade = createUpgrade();
-            if (!unit.CanApplyUpgrade(upgrade)) continue;
-
-            affectedUnits.Add(unit, unit.ApplyUpgrade(upgrade));
+            affectedObjects.Add(obj, obj.ApplyUpgrade(upgrade));
         }
     }
 

@@ -27,7 +27,7 @@ sealed class SoftMutualUnitCollider : Component
 
     public override void Update(TimeSpan elapsedTime)
     {
-        var units = Owner.Game.UnitLayer;
+        var objects = Owner.Game.ObjectLayer;
         var currentTile = Level.GetTile(Owner.Position);
         var r = radius;
 
@@ -35,15 +35,15 @@ sealed class SoftMutualUnitCollider : Component
 
         foreach (var tile in Tilemap.GetSpiralCenteredAt(currentTile, 1))
         {
-            foreach (var unit in units.GetUnitsOnTile(tile))
+            foreach (var obj in objects.GetObjectsOnTile(tile))
             {
-                if (unit == Owner)
+                if (obj == Owner)
                     continue;
-                if (unit.GetComponents<SoftMutualUnitCollider>().SingleOrDefault() is not { } other)
+                if (obj.GetComponents<SoftMutualUnitCollider>().SingleOrDefault() is not { } other)
                     continue;
 
                 var otherRadius = other.radius;
-                var difference = unit.Position - Owner.Position;
+                var difference = obj.Position - Owner.Position;
                 var distanceSquared = difference.LengthSquared;
 
                 if (distanceSquared >= (r + otherRadius).Squared)
@@ -59,4 +59,3 @@ sealed class SoftMutualUnitCollider : Component
         physics.ApplyVelocityImpulse(acceleration * elapsedTime);
     }
 }
-

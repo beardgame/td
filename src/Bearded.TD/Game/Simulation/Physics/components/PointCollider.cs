@@ -30,8 +30,8 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 
         var ray = new Ray3(start, step);
 
-        var (result, _, point, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstEnemies(
-            ray, Owner.Game.UnitLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
+        var (result, _, point, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstObjects(
+            ray, Owner.Game.ObjectLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
 
         e = new PreviewMove(start, point - start);
 
@@ -47,7 +47,7 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
             case RayCastResultType.HitLevel:
                 hitLevel(point, step, lastStep);
                 break;
-            case RayCastResultType.HitEnemy:
+            case RayCastResultType.HitObject:
                 _ = enemy ?? throw new InvalidOperationException();
                 _ = normal ?? throw new InvalidOperationException();
                 if (enemiesHit.Add(enemy))

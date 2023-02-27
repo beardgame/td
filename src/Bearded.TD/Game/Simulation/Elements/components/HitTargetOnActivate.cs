@@ -26,14 +26,14 @@ sealed class HitTargetOnActivate : Component
         var target = targetProperty.Value.Object;
 
         var ray = new Ray3(Owner.Position, target.Position);
-        var rayCastResults = Owner.Game.Level.CastPiercingRayAgainstEnemies(ray, Owner.Game.UnitLayer, _ => true);
-        var resultForTarget = rayCastResults.FirstOrDefault(r => r.Enemy == target);
-        if (resultForTarget.Enemy != target)
+        var rayCastResults = Owner.Game.Level.CastPiercingRayAgainstObjects(ray, Owner.Game.ObjectLayer, _ => true);
+        var resultForTarget = rayCastResults.FirstOrDefault(r => r.Object == target);
+        if (resultForTarget.Object != target)
         {
             Owner.Game.Meta.Logger.Warning?.Log("Enemy not hit by ray pointing to enemy.");
         }
 
-        var hitInfo = resultForTarget.Enemy == target
+        var hitInfo = resultForTarget.Object == target
             ? new Impact(resultForTarget.Point, resultForTarget.Normal!.Value, ray.Direction)
             : new Impact(target.Position, new Difference3(Vector3.UnitZ), ray.Direction);
 

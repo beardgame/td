@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -14,23 +14,27 @@ enum RayCastResultType
 {
     HitNothing = 1,
     HitLevel = 2,
-    HitEnemy = 4
+    HitObject = 4
 }
 
 readonly record struct RayCastResult(
-    RayCastResultType Type, float RayFactor, Position3 Point,
-    GameObject? Enemy, Direction? LastTileStep, Difference3? Normal);
+    RayCastResultType Type,
+    float RayFactor,
+    Position3 Point,
+    GameObject? Object,
+    Direction? LastTileStep,
+    Difference3? Normal);
 
 static class RayCastingHelpers
 {
-    public static IEnumerable<RayCastResult> CastPiercingRayAgainstEnemies(
-        this Level level, Ray3 ray, UnitLayer unitLayer, PassabilityLayer passabilityLayer)
+    public static IEnumerable<RayCastResult> CastPiercingRayAgainstObjects(
+        this Level level, Ray3 ray, ObjectLayer objectLayer, PassabilityLayer passabilityLayer)
     {
-        return CastPiercingRayAgainstEnemies(level, ray, unitLayer, t => passabilityLayer[t].IsPassable);
+        return CastPiercingRayAgainstObjects(level, ray, objectLayer, t => passabilityLayer[t].IsPassable);
     }
 
-    public static IEnumerable<RayCastResult> CastPiercingRayAgainstEnemies(
-        this Level level, Ray3 ray, UnitLayer unitLayer, Predicate<Tile> isPassableCheck)
+    public static IEnumerable<RayCastResult> CastPiercingRayAgainstObjects(
+        this Level level, Ray3 ray, ObjectLayer objectLayer, Predicate<Tile> isPassableCheck)
     {
         level.Cast(ray.XY, out var rayCaster);
 
@@ -43,36 +47,36 @@ static class RayCastingHelpers
                 yield break;
             }
 
-            var enemies = unitLayer.GetUnitsOnTile(tile);
-            var hits = new List<(GameObject unit, float factor, Position3 point, Difference3 normal)>();
+            var objects = objectLayer.GetObjectsOnTile(tile);
+            var hits = new List<HitCandidate>();
 
-            foreach (var enemy in enemies)
+            foreach (var obj in objects)
             {
-                if (enemy.TryGetSingleComponent<ICollider>(out var collider)
+                if (obj.TryGetSingleComponent<ICollider>(out var collider)
                     && collider.TryHit(ray, out var f, out var point, out var normal))
                 {
-                    hits.Add((enemy, f, point, normal));
+                    hits.Add(new HitCandidate(obj, f, point, normal));
                 }
             }
 
-            hits.Sort((left, right) => left.factor.CompareTo(right.factor));
-            foreach (var (unit, factor, point, normal) in hits)
+            hits.Sort(HitCandidate.FactorComparison);
+            foreach (var hit in hits)
             {
-                yield return new RayCastResult(HitEnemy, factor, point, unit, rayCaster.LastStep, normal);
+                yield return hit.ToHitResult(rayCaster.LastStep);
             }
         }
 
         yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null);
     }
 
-    public static RayCastResult CastRayAgainstEnemies(
-        this Level level, Ray3 ray, UnitLayer unitLayer, PassabilityLayer passabilityLayer)
+    public static RayCastResult CastRayAgainstObjects(
+        this Level level, Ray3 ray, ObjectLayer objectLayer, PassabilityLayer passabilityLayer)
     {
-        return CastRayAgainstEnemies(level, ray, unitLayer, t => passabilityLayer[t].IsPassable);
+        return CastRayAgainstObjects(level, ray, objectLayer, t => passabilityLayer[t].IsPassable);
     }
 
-    public static RayCastResult CastRayAgainstEnemies(
-        this Level level, Ray3 ray, UnitLayer unitLayer, Predicate<Tile> isPassableCheck)
+    public static RayCastResult CastRayAgainstObjects(
+        this Level level, Ray3 ray, ObjectLayer objectLayer, Predicate<Tile> isPassableCheck)
     {
         level.Cast(ray.XY, out var rayCaster);
 
@@ -84,28 +88,43 @@ static class RayCastingHelpers
                 return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null);
             }
 
-            var enemies = unitLayer.GetUnitsOnTile(tile);
+            var objects = objectLayer.GetObjectsOnTile(tile);
 
-            var closestHit = default((GameObject unit, float factor, Position3 point, Difference3 normal));
-            closestHit.factor = float.PositiveInfinity;
+            var closestHit = HitCandidate.Initial;
 
-            foreach (var enemy in enemies)
+            foreach (var obj in objects)
             {
-                if (enemy.TryGetSingleComponent<ICollider>(out var collider)
-                    && collider.TryHit(ray, out var f, out var point, out var normal) && f < closestHit.factor)
+                if (obj.TryGetSingleComponent<ICollider>(out var collider)
+                    && collider.TryHit(ray, out var f, out var point, out var normal) && f < closestHit.Factor)
                 {
-                    closestHit = (enemy, f, point, normal);
+                    closestHit = new HitCandidate(obj, f, point, normal);
                 }
             }
 
-            if (closestHit.unit != null)
+            if (closestHit.Object != null)
             {
-                return new RayCastResult(
-                    HitEnemy, closestHit.factor, closestHit.point,
-                    closestHit.unit, rayCaster.LastStep, closestHit.normal);
+                return closestHit.ToHitResult(rayCaster.LastStep);
             }
         }
 
         return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null);
+    }
+
+    private readonly record struct HitCandidate(GameObject? Object, float Factor, Position3 Point, Difference3 Normal)
+    {
+        public static readonly Comparison<HitCandidate> FactorComparison =
+            (left, right) => left.Factor.CompareTo(right.Factor);
+
+        public static HitCandidate Initial => new() { Factor = float.PositiveInfinity };
+
+        public RayCastResult ToHitResult(Direction? lastTileStep)
+        {
+            if (Object is null)
+            {
+                throw new InvalidOperationException(
+                    "Can only convert a hit candidate to a hit result if the object is set.");
+            }
+            return new RayCastResult(HitObject, Factor, Point, Object, lastTileStep, Normal);
+        }
     }
 }
