@@ -16,9 +16,9 @@ sealed class StaticTileOccupation : TileOccupationBase
         this.footprint = footprint;
     }
 
-    protected override void OnAdded()
+    public override void Activate()
     {
-        base.OnAdded();
+        base.Activate();
         Events.Send(new FootprintChanged(footprint));
     }
 

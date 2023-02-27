@@ -8,8 +8,11 @@ abstract class TileOccupationBase : Component, ITileOccupation
 {
     public abstract IEnumerable<Tile> OccupiedTiles { get; }
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
+        base.Activate();
         foreach (var occupiedTile in OccupiedTiles)
         {
             Events.Send(new TileEntered(occupiedTile));
