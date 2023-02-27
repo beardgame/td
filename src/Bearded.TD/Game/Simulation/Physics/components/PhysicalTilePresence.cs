@@ -3,10 +3,10 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Units;
+namespace Bearded.TD.Game.Simulation.Physics;
 
-[Component("tilePresence")]
-sealed class TilePresence : Component, IListener<TileEntered>, IListener<TileLeft>
+[Component("physicalTilePresence")]
+sealed class PhysicalTilePresence : Component, IListener<TileEntered>, IListener<TileLeft>
 {
     protected override void OnAdded()
     {

@@ -44,7 +44,7 @@ static class EnemyUnitFactory
         unit.AddComponent(new TileBasedVisibility());
         unit.AddComponent(new CurrentTileNotifier());
         unit.AddComponent(new Targetable());
-        unit.AddComponent(new TilePresence());
+        unit.AddComponent(new PhysicalTilePresence());
 
         return unit;
     }
