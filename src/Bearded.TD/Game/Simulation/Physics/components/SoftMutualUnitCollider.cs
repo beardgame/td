@@ -27,7 +27,7 @@ sealed class SoftMutualUnitCollider : Component
 
     public override void Update(TimeSpan elapsedTime)
     {
-        var objects = Owner.Game.CollidableObjectLayer;
+        var objects = Owner.Game.PhysicsLayer;
         var currentTile = Level.GetTile(Owner.Position);
         var r = radius;
 

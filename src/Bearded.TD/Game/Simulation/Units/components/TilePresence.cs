@@ -16,12 +16,12 @@ sealed class TilePresence : Component, IListener<TileEntered>, IListener<TileLef
 
     public void HandleEvent(TileEntered e)
     {
-        Owner.Game.CollidableObjectLayer.AddObjectToTile(Owner, e.Tile);
+        Owner.Game.PhysicsLayer.AddObjectToTile(Owner, e.Tile);
     }
 
     public void HandleEvent(TileLeft e)
     {
-        Owner.Game.CollidableObjectLayer.RemoveObjectFromTile(Owner, e.Tile);
+        Owner.Game.PhysicsLayer.RemoveObjectFromTile(Owner, e.Tile);
     }
 
     public override void Update(TimeSpan elapsedTime)

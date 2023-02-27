@@ -47,7 +47,7 @@ sealed class GameState
 
     public GeometryLayer GeometryLayer { get; }
     public FluidLayer FluidLayer { get; }
-    public ObjectLayer CollidableObjectLayer { get; }
+    public ObjectLayer PhysicsLayer { get; }
     public TargetLayer TargetLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public SelectionLayer SelectionLayer { get; }
@@ -73,7 +73,7 @@ sealed class GameState
 
         GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
-        CollidableObjectLayer = new CollidableObjectLayer();
+        PhysicsLayer = new PhysicsLayer();
         TargetLayer = new TargetLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
         SelectionLayer = new SelectionLayer();

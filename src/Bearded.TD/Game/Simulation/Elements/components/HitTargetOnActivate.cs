@@ -26,7 +26,7 @@ sealed class HitTargetOnActivate : Component
         var target = targetProperty.Value.Object;
 
         var ray = new Ray3(Owner.Position, target.Position);
-        var rayCastResults = Owner.Game.Level.CastPiercingRayAgainstObjects(ray, Owner.Game.CollidableObjectLayer, _ => true);
+        var rayCastResults = Owner.Game.Level.CastPiercingRayAgainstObjects(ray, Owner.Game.PhysicsLayer, _ => true);
         var resultForTarget = rayCastResults.FirstOrDefault(r => r.Object == target);
         if (resultForTarget.Object != target)
         {
