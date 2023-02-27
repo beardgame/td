@@ -31,7 +31,7 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
         var ray = new Ray3(start, step);
 
         var (result, _, point, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstObjects(
-            ray, Owner.Game.ObjectLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
+            ray, Owner.Game.CollidableObjectLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
 
         e = new PreviewMove(start, point - start);
 

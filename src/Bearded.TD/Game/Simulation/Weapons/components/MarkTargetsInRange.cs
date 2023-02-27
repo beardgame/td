@@ -12,24 +12,24 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
-[Component("markEnemiesInRange")]
-sealed class MarkEnemiesInRange
-    : Component<MarkEnemiesInRange.IParameters>,
+[Component("markTargetsInRange")]
+sealed class MarkTargetsInRange
+    : Component<MarkTargetsInRange.IParameters>,
         IListener<FireWeapon>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(1)]
-        int MaxEnemyCount { get; }
+        int MaxTargetCount { get; }
 
         [Modifiable(Type = AttributeType.Range)]
         Unit Range { get; }
     }
 
     private PassabilityLayer passabilityLayer = null!;
-    private UnitLayer unitLayer = null!;
+    private TargetLayer targetLayer = null!;
 
-    public MarkEnemiesInRange(IParameters parameters) : base(parameters) { }
+    public MarkTargetsInRange(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -41,7 +41,7 @@ sealed class MarkEnemiesInRange
         base.Activate();
 
         passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
-        unitLayer = Owner.Game.UnitLayer;
+        targetLayer = Owner.Game.TargetLayer;
     }
 
     public override void Update(TimeSpan elapsedTime) {}
@@ -56,20 +56,20 @@ sealed class MarkEnemiesInRange
                 Parameters.Range,
                 t => !Owner.Game.Level.IsValid(t) && passabilityLayer[t].IsPassable)
             .Where(t => !t.visibility.IsBlocking && t.visibility.VisiblePercentage > 0.2);
-        var enemiesInRange = tilesInRange
+        var targetsInRange = tilesInRange
             .Select(t => t.tile)
-            .SelectMany(t => unitLayer.GetUnitsOnTile(t))
+            .SelectMany(t => targetLayer.GetObjectsOnTile(t))
             .Where(u => (u.Position - Owner.Position).LengthSquared <= Parameters.Range.Squared);
-        var selectedEnemies = enemiesInRange.RandomSubset(Parameters.MaxEnemyCount).ToImmutableArray();
-        if (selectedEnemies.IsEmpty)
+        var selectedTargets = targetsInRange.RandomSubset(Parameters.MaxTargetCount).ToImmutableArray();
+        if (selectedTargets.IsEmpty)
         {
             return;
         }
 
-        var damagePerEnemy = @event.Damage / selectedEnemies.Length;
-        foreach (var enemy in selectedEnemies)
+        var damagePerTarget = @event.Damage / selectedTargets.Length;
+        foreach (var target in selectedTargets)
         {
-            Events.Send(new EnemyMarked(enemy, damagePerEnemy));
+            Events.Send(new TargetMarked(target, damagePerTarget));
         }
     }
 }

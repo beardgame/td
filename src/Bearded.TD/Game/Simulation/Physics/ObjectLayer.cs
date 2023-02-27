@@ -6,7 +6,7 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
-sealed class ObjectLayer
+abstract class ObjectLayer
 {
     private readonly MultiDictionary<Tile, GameObject> objectLookup = new();
 

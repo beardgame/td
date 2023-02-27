@@ -7,7 +7,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("arcEmitter")]
-sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<EnemyMarked>
+sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<TargetMarked>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -24,7 +24,7 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<EnemyMark
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public void HandleEvent(EnemyMarked @event)
+    public void HandleEvent(TargetMarked @event)
     {
         var arc = ArcFactory.CreateArc(Parameters.Arc, Owner, @event.GameObject, @event.Damage, Parameters.LifeTime);
         Owner.Game.Add(arc);

@@ -63,7 +63,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
         var distanceSquared = Parameters.Range.Squared;
 
-        var objects = Owner.Game.ObjectLayer;
+        var objects = Owner.Game.CollidableObjectLayer;
         // Returns only tiles with their centre in the circle with the given range.
         // This means it may miss enemies that are strictly speaking in range, but are on a tile that itself is out
         // of range.

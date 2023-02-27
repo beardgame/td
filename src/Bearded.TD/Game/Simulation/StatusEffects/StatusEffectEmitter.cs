@@ -70,7 +70,7 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
         base.Activate();
 
         modificationId = Owner.Game.GamePlayIds.GetNext<Modification>();
-        objectLayer = Owner.Game.ObjectLayer;
+        objectLayer = Owner.Game.CollidableObjectLayer;
         ownerTile = Level.GetTile(Owner.Position.XY());
         range = Parameters.Range;
         recalculateTilesInRange();

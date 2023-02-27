@@ -5,8 +5,8 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Units;
 
-[Component("tilePresence")]
-sealed class TilePresence : Component, IListener<TileEntered>, IListener<TileLeft>
+[Component("targetable")]
+sealed class Targetable : Component, IListener<TileEntered>, IListener<TileLeft>
 {
     protected override void OnAdded()
     {
@@ -16,12 +16,12 @@ sealed class TilePresence : Component, IListener<TileEntered>, IListener<TileLef
 
     public void HandleEvent(TileEntered e)
     {
-        Owner.Game.CollidableObjectLayer.AddObjectToTile(Owner, e.Tile);
+        Owner.Game.TargetLayer.AddObjectToTile(Owner, e.Tile);
     }
 
     public void HandleEvent(TileLeft e)
     {
-        Owner.Game.CollidableObjectLayer.RemoveObjectFromTile(Owner, e.Tile);
+        Owner.Game.TargetLayer.RemoveObjectFromTile(Owner, e.Tile);
     }
 
     public override void Update(TimeSpan elapsedTime)
