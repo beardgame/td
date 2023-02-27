@@ -16,7 +16,7 @@ sealed class ContributeTags : Component<ContributeTags.IParameters>
 
     protected override void OnAdded()
     {
-        if (Owner.TryGetSingleComponent<GameObjectTags>(out var tags))
+        if (!Parameters.Tags.IsDefault && Owner.TryGetSingleComponent<GameObjectTags>(out var tags))
         {
             tags.AddRange(Parameters.Tags);
         }
