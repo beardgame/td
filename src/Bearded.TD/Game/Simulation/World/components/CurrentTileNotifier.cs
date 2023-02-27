@@ -9,6 +9,7 @@ namespace Bearded.TD.Game.Simulation.World;
 sealed class CurrentTileNotifier : Component , IListener<ObjectDeleting>
 {
     private Tile lastKnownTile;
+    private bool activated;
 
     protected override void OnAdded()
     {
@@ -19,12 +20,16 @@ sealed class CurrentTileNotifier : Component , IListener<ObjectDeleting>
         lastKnownTile = Level.GetTile(Owner.Position);
         Events.Send(new TileEntered(lastKnownTile));
         Events.Subscribe(this);
+        activated = true;
     }
 
     public override void OnRemoved()
     {
         Events.Unsubscribe(this);
-        Events.Send(new TileLeft(lastKnownTile));
+        if (activated)
+        {
+            Events.Send(new TileLeft(lastKnownTile));
+        }
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -46,4 +51,3 @@ sealed class CurrentTileNotifier : Component , IListener<ObjectDeleting>
         Events.Send(new TileLeft(lastKnownTile));
     }
 }
-
