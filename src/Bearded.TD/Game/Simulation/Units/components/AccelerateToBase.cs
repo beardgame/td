@@ -83,6 +83,5 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
         return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(tile);
     }
 
-    IEnumerable<Tile> ITileOccupation.OccupiedTiles => Level.GetTile(Owner.Position).Yield();
     void IEnemyMovement.Teleport(Position2 pos, Tile tile) { }
 }

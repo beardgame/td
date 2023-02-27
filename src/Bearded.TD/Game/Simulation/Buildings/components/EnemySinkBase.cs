@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
@@ -10,14 +10,20 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, IListener<ObjectDeleting>
 {
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+    private ITilePresence? tilePresence;
 
-    protected ReadOnlyCollection<Tile> OccupiedTiles => occupiedTilesTracker.OccupiedTiles;
+    protected IEnumerable<Tile> OccupiedTiles => tilePresence?.OccupiedTiles ?? ImmutableArray<Tile>.Empty;
 
     protected override void OnAdded()
     {
         Events.Subscribe<Materialized>(this);
         Events.Subscribe<ObjectDeleting>(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        tilePresence = Owner.GetTilePresence();
     }
 
     public override void OnRemoved()
@@ -35,8 +41,7 @@ abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, I
 
     public void HandleEvent(Materialized @event)
     {
-        occupiedTilesTracker.TileAdded += AddSink;
-        occupiedTilesTracker.TileRemoved += RemoveSink;
+        Owner.GetTilePresence().ObserveChanges(AddSink, RemoveSink);
 
         materialize();
     }
@@ -48,8 +53,7 @@ abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, I
 
     private void materialize()
     {
-        occupiedTilesTracker.Initialize(Owner, Events);
-        foreach (var tile in occupiedTilesTracker.OccupiedTiles)
+        foreach (var tile in OccupiedTiles)
         {
             AddSink(tile);
         }
@@ -59,11 +63,10 @@ abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, I
     private void cleanUp()
     {
         Unregister();
-        foreach (var tile in occupiedTilesTracker.OccupiedTiles)
+        foreach (var tile in OccupiedTiles)
         {
             RemoveSink(tile);
         }
-        occupiedTilesTracker.Dispose(Events);
     }
 
     public override void Update(TimeSpan elapsedTime) { }

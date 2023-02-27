@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
@@ -14,7 +16,7 @@ sealed partial class TargetEnemiesInRange
         }
 
         // TODO: accumulating tiles each frame is expensive, can we somehow cache this?
-        if (target != null && !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(target)))
+        if (target != null && !tilesInRange.OverlapsWithTiles(target.GetTilePresence().OccupiedTiles))
         {
             target = null;
         }

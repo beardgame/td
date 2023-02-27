@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -42,6 +43,7 @@ static class GameObjectFactory
     {
         var obj = new GameObject(parent, position, direction ?? Direction2.Zero);
         obj.AddComponent(new GameObjectTags());
+        obj.AddComponent(new TilePresence());
         return obj;
     }
 

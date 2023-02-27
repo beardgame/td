@@ -3,7 +3,12 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
-interface ITileOccupation
+delegate void TileEventHandler(Tile tile);
+
+interface ITilePresence
 {
+    event TileEventHandler TileAdded;
+    event TileEventHandler TileRemoved;
+
     IEnumerable<Tile> OccupiedTiles { get; }
 }

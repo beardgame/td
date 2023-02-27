@@ -16,7 +16,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("defaultTileOccupancy")]
-class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Materialized>
+sealed class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Materialized>
 {
     protected override void OnAdded() { }
 
@@ -50,7 +50,7 @@ class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Ma
     {
         var replacers = new HashSet<CanBeBuiltOn>();
 
-        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(Owner))
+        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
         {
             var buildings = Owner.Game.BuildingLayer[tile]
                 .Where(building => building != Owner && selector(building));

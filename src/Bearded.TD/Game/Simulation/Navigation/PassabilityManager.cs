@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -71,10 +72,10 @@ sealed class PassabilityManager
     public void HandleEvent(TileTypeChanged @event) => updatePassabilityForTile(@event.Tile);
 
     public void HandleEvent(BuildingConstructionStarted @event)
-        => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
+        => @event.Building.GetTilePresence().OccupiedTiles.ForEach(updatePassabilityForTile);
 
     public void HandleEvent(BuildingDestroyed @event)
-        => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
+        => @event.Building.GetTilePresence().OccupiedTiles.ForEach(updatePassabilityForTile);
 
     private void updatePassabilityForTile(Tile tile)
     {

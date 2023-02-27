@@ -1,28 +1,26 @@
 using System.Linq;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
 sealed class TileBasedVisibility : Component, IVisibility
 {
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+    private ITilePresence? tilePresence;
 
-    public ObjectVisibility Visibility =>
-        occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsVisible())
+    public ObjectVisibility Visibility => (tilePresence?.OccupiedTiles ?? Enumerable.Empty<Tile>())
+        .Any(t => Owner.Game.VisibilityLayer[t].IsVisible())
             ? ObjectVisibility.Visible
             : ObjectVisibility.Invisible;
 
-    protected override void OnAdded()
-    {
-        occupiedTilesTracker.Initialize(Owner, Events);
-    }
+    protected override void OnAdded() {}
 
-    public override void OnRemoved()
+    public override void Activate()
     {
-        occupiedTilesTracker.Dispose(Events);
-        base.OnRemoved();
+        base.Activate();
+        tilePresence = Owner.GetTilePresence();
     }
 
     public override void Update(TimeSpan elapsedTime) {}

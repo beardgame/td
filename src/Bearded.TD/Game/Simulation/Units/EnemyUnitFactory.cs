@@ -2,6 +2,7 @@ using System;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Synchronization;

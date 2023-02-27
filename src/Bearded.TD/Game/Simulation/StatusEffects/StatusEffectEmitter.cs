@@ -123,7 +123,7 @@ sealed class StatusEffectEmitter : Component<StatusEffectEmitter.IParameters>, I
     {
         var effectsOutOfRange =
             affectedObjects.Where(kvp =>
-                !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(kvp.Key)));
+                !tilesInRange.OverlapsWithTiles(kvp.Key.GetTilePresence().OccupiedTiles));
 
         foreach (var (obj, upgradeReceipt) in effectsOutOfRange)
         {

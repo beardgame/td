@@ -156,7 +156,7 @@ sealed class PlayerCursors
             {
                 var footprint =
                     cursor.InstantiatedGhost.Selection.GetPositionedFootprint(cursor.LocationAtTime(currentTime));
-                cursor.InstantiatedGhost!.TileOccupation.SetFootprint(footprint);
+                cursor.InstantiatedGhost!.TileNotifier.SetFootprint(footprint);
             }
         }
     }
@@ -219,5 +219,5 @@ sealed class PlayerCursors
     private sealed record InstantiatedGhost(
         GameObject Ghost,
         TileSelection Selection,
-        MovableTileOccupation TileOccupation);
+        DynamicFootprintTileNotifier TileNotifier);
 }

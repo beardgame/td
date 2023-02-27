@@ -25,7 +25,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
         Frequency AttackRate { get; }
     }
 
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
+    private ITilePresence tilePresence = null!;
     private IEnemyMovement? movement;
     private Instant nextAttack;
 
@@ -34,12 +34,12 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IEnemyMovement>(Owner, Events, m => movement = m);
-        occupiedTilesTracker.Initialize(Owner, Events);
     }
 
     public override void Activate()
     {
         base.Activate();
+        tilePresence = Owner.GetTilePresence();
         resetAttackTime();
     }
 
@@ -64,9 +64,9 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
     {
         while (nextAttack <= Owner.Game.Time)
         {
-            var desiredDirection = Owner.Game.Navigator.GetDirections(occupiedTilesTracker.OccupiedTiles.Single());
+            var desiredDirection = Owner.Game.Navigator.GetDirections(tilePresence.OccupiedTiles.Single());
 
-            var neighbor = occupiedTilesTracker.OccupiedTiles.Single().Neighbor(desiredDirection);
+            var neighbor = tilePresence.OccupiedTiles.Single().Neighbor(desiredDirection);
             if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(neighbor, out var target))
             {
                 return;
