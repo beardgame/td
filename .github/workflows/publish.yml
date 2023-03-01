@@ -57,7 +57,7 @@ jobs:
         run: dotnet publish src/${{matrix.binary}} -c Release --no-build -r ${{matrix.runtime}} --self-contained -o publish/${{matrix.runtime}} -p:PublishSingleFile=true
 
       - name: Create zip archive
-        uses: thedoctor0/zip-release@0.7.1
+        uses: thedoctor0/zip-release@0.7.2
         with:
           type: zip
           filename: ${{matrix.binary}}-${{ env.RELEASE_VERSION }}-${{matrix.runtime}}.zip
