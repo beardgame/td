@@ -90,7 +90,8 @@ abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
             }
             catch (Exception e)
             {
-                LogException(e, $"Error loading '{Context.Meta.Id}/{RelativePath}/../{file.Name}': {e.Message}");
+                Context.Context.AddError(new ModLoadingError(path(file), e));
+                LogException(e, $"Error loading '{path(file)}': {e.Message}");
             }
             finally
             {
