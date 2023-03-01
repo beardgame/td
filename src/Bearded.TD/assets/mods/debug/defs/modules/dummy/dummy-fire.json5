@@ -8,7 +8,7 @@
             parameters: {
                 id: "sprite",
                 parameters: {
-                    sprite: "particle.orb-soft",
+                    sprite: "default.particle.orb-soft",
                     color: "red",
                     size: 0.2,
                     heightOffset: 0.15

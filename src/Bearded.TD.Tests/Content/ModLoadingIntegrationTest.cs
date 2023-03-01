@@ -45,7 +45,7 @@ namespace Bearded.TD.Tests.Content
                 loadedMods.Add(modForLoading.GetLoadedMod());
             }
 
-            context.Errors.Should().BeEmpty("no errors should be thrown by any blueprints.");
+            context.Errors.Should().BeEmpty("no errors should be thrown by any blueprints");
         }
 
         private static void waitForModLoaded(ModForLoading modForLoading)
