@@ -130,7 +130,7 @@ sealed class FeatureTileAssigner
                 featureArea.Add(tile);
             }
 
-            var dilutedArea = diluteConnection(featureArea, feature, nodesByTile);
+            var dilutedArea = dilateConnection(featureArea, feature, nodesByTile);
 
             featuresWithTiles.Add(feature.WithTiles(dilutedArea));
         }
@@ -138,7 +138,7 @@ sealed class FeatureTileAssigner
         return (featuresWithTiles, boundaryTiles);
     }
 
-    private IEnumerable<Tile> diluteConnection(
+    private IEnumerable<Tile> dilateConnection(
         List<Tile> featureArea, Connection feature, IDictionary<Tile, TiledFeature> nodesByTile)
     {
         var (feature1, feature2) = (feature.From.Feature, feature.To.Feature);
