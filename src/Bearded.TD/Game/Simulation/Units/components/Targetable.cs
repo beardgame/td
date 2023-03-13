@@ -14,7 +14,7 @@ sealed class Targetable : Component
         base.Activate();
         Owner.GetTilePresence().ObserveChanges(
             addedTile => Owner.Game.TargetLayer.AddObjectToTile(Owner, addedTile),
-            removedTile => Owner.Game.TargetLayer.AddObjectToTile(Owner, removedTile));
+            removedTile => Owner.Game.TargetLayer.RemoveObjectFromTile(Owner, removedTile));
     }
 
     public override void Update(TimeSpan elapsedTime) { }
