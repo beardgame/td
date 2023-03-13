@@ -307,7 +307,7 @@ sealed class GameRenderer
                     shapeDrawer.FillCircle(disk.Center.NumericValue, disk.Radius.NumericValue, disk.Color);
                     break;
                 case LevelDebugMetadata.LineSegment segment:
-                    shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, .1f, segment.Color);
+                    shapeDrawer.DrawLine(segment.From.NumericValue, segment.To.NumericValue, segment.Width?.NumericValue ?? 0 + .1f, segment.Color);
                     break;
                 case LevelDebugMetadata.Text text:
                     debugGeometryTextDrawer.DrawLine(text.Color, text.Position.WithZ(0).NumericValue, text.Value, text.FontHeight?.NumericValue, text.AlignX);

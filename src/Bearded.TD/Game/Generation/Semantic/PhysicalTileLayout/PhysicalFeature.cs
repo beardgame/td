@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 
@@ -25,7 +26,7 @@ abstract record PhysicalFeature
     public sealed record Node(Features.Node Blueprint, ImmutableArray<Circle> Circles)
         : WithCircles(Circles);
 
-    public sealed record Connection(FeatureCircle From, FeatureCircle To)
+    public sealed record Connection(FeatureCircle From, FeatureCircle To, Unit Radius)
         : PhysicalFeature;
 
     public sealed record Crevice(ImmutableArray<Circle> Circles)

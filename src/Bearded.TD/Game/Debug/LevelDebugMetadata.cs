@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Debug;
 sealed class LevelDebugMetadata
 {
     public record Data;
-    public sealed record LineSegment(Position2 From, Position2 To, Color Color) : Data;
+    public sealed record LineSegment(Position2 From, Position2 To, Color Color, Unit? Width = null) : Data;
     public sealed record AreaBorder(TileAreaBorder Border, Color Color) : Data;
     public sealed record Tile(Bearded.TD.Tiles.Tile XY, Unit Z, Color Color) : Data;
     public sealed record Circle(Position2 Center, Unit Radius, Unit LineWidth, Color Color) : Data;

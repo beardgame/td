@@ -24,7 +24,7 @@ sealed class PhysicalFeatureGenerator
         LogicalTilemap logicalTilemap, Random random)
     {
         var nodesByLogicalTile = createNodeFeatures(logicalTilemap, random);
-        var connections = createNodeConnectionFeatures(logicalTilemap, nodesByLogicalTile);
+        var connections = createNodeConnectionFeatures(logicalTilemap, nodesByLogicalTile, random);
 
         var crevices = createCreviceFeatures(logicalTilemap);
 
@@ -66,7 +66,7 @@ sealed class PhysicalFeatureGenerator
 
     private List<PhysicalFeature.Connection> createNodeConnectionFeatures(
         LogicalTilemap logicalTilemap,
-        Dictionary<Tile, PhysicalFeature.Node> nodes)
+        Dictionary<Tile, PhysicalFeature.Node> nodes, Random random)
     {
         var connections = new List<PhysicalFeature.Connection>();
         foreach (var tile in Tilemap.EnumerateTilemapWith(logicalTilemap.Radius))
@@ -93,7 +93,14 @@ sealed class PhysicalFeatureGenerator
             var from = new FeatureCircle(nodes[tile], 0);
             var to = new FeatureCircle(nodes[neighborTile], 0);
 
-            var connection = new PhysicalFeature.Connection(from, to);
+            var (r1, r2) = (from.Circle.Radius, to.Circle.Radius);
+            var maxRadius = (Math.Min(r1.NumericValue, r2.NumericValue) - 1).Clamped(0, 3);
+            var radius = random.NextFloat(0, maxRadius).U();
+
+            if (node.MacroFeatures.TryGetValue(dir, out var macroFeature) && macroFeature is Crevice)
+                radius = 0.U();
+
+            var connection = new PhysicalFeature.Connection(from, to, radius);
 
             connections.Add(connection);
         }

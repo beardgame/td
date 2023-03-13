@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
+using OpenTK.Mathematics;
 using static Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout.PhysicalFeature;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
@@ -26,9 +30,12 @@ sealed class FeatureTileAssigner
 
         var nodesWithAreas = assignTilesToClosestContainingCircleArea(nodes);
         var nodesWithAreasAfterErosion = erode(nodesWithAreas).ToList();
-        var nodeTiles = nodesWithAreasAfterErosion.SelectMany(f => f.Tiles).ToImmutableHashSet();
+        var nodesByTile = nodesWithAreasAfterErosion.SelectMany(f => f.Tiles.Select(t => (Tile: t, Node: f)))
+            .ToImmutableDictionary(t => t.Tile, t => t.Node);
+        var nodeTiles = nodesByTile.Keys.ToImmutableHashSet();
         var crevicesWithAreas = assignTilesToClosestContainingCircleArea(crevices, nodeTiles);
-        var (connectionsWithAreas, connectionBoundaryTiles) = assignTilesAlongConnection(connections, nodeTiles);
+        var (connectionsWithAreas, connectionBoundaryTiles) =
+            assignTilesAlongConnection(connections, nodeTiles, nodesByTile);
 
         var nodesWithAreasAndConnectionTiles = nodesWithAreasAfterErosion
             .Select(n => new TiledFeature.Node((Node) n.Feature, n.Tiles,
@@ -78,17 +85,17 @@ sealed class FeatureTileAssigner
 
     private (List<TiledFeature> ConnectionFeatures, List<Tile> ConnectionBoundaryTiles)
         assignTilesAlongConnection(
-            IEnumerable<Connection> features, IEnumerable<Tile>? tilesToAvoid = null)
+            IEnumerable<Connection> features, IEnumerable<Tile> tilesToAvoid,
+            IDictionary<Tile, TiledFeature> nodesByTile)
     {
-        var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ??
-            ImmutableHashSet.CreateRange(tilesToAvoid ?? ImmutableHashSet<Tile>.Empty);
+        var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ?? ImmutableHashSet.CreateRange(tilesToAvoid);
 
         var featuresWithTiles = new List<TiledFeature>();
         var boundaryTiles = new List<Tile>();
 
         foreach (var feature in features)
         {
-            var (from, to) = feature;
+            var (from, to, _) = feature;
 
             var rayCaster = new LevelRayCaster();
             rayCaster.StartEnumeratingTiles(new Ray(from.Circle.Center, to.Circle.Center));
@@ -106,12 +113,14 @@ sealed class FeatureTileAssigner
                     // abort when we reach target
                     if (adding)
                     {
+                        DebugAssert.State.Satisfies(nodesByTile[tile].Feature == to.Feature);
                         if (previousTile.HasValue)
                             boundaryTiles.Add(previousTile.Value);
                         boundaryTiles.Add(tile);
                         break;
                     }
                     // skip until the first tile we can take
+                    DebugAssert.State.Satisfies(nodesByTile[tile].Feature == from.Feature);
                     previousTile = tile;
                     continue;
                 }
@@ -120,10 +129,81 @@ sealed class FeatureTileAssigner
 
                 featureArea.Add(tile);
             }
-            featuresWithTiles.Add(feature.WithTiles(featureArea));
+
+            var dilutedArea = diluteConnection(featureArea, feature, nodesByTile);
+
+            featuresWithTiles.Add(feature.WithTiles(dilutedArea));
         }
 
         return (featuresWithTiles, boundaryTiles);
+    }
+
+    private IEnumerable<Tile> diluteConnection(
+        List<Tile> featureArea, Connection feature, IDictionary<Tile, TiledFeature> nodesByTile)
+    {
+        var (feature1, feature2) = (feature.From.Feature, feature.To.Feature);
+        var (point1, point2) = (feature.From.Circle.Center.NumericValue, feature.To.Circle.Center.NumericValue);
+        var connectionVector = point2 - point1;
+        var connectionLength = connectionVector.Length;
+        var connectionVectorNormalized = connectionVector / connectionLength;
+
+        var tilesToDilute = new Queue<Tile>();
+        featureArea.ForEach(tilesToDilute.Enqueue);
+
+        var dilutedArea = new HashSet<Tile>(featureArea);
+
+        while (tilesToDilute.Count > 0)
+        {
+            var tile = tilesToDilute.Dequeue();
+
+            foreach (var neighbor in tile.PossibleNeighbours().Where(n => n.Radius < tilemapRadius))
+            {
+                // already seen tile
+                if (dilutedArea.Contains(neighbor))
+                    continue;
+
+                // never expand into any node
+                if (belongsToAnyNode(neighbor))
+                    continue;
+
+                // don't touch any other than the connecting nodes
+                if (neighbor.PossibleNeighbours().Any(belongsToOtherNode))
+                    continue;
+
+                // don't dilute past connection radius
+                if (distanceToConnection(neighbor) > feature.Radius)
+                    continue;
+
+                // don't extend connection past it's ends
+                if (scalarProjectionOf(tile) is < 0 or > 1)
+                    continue;
+
+                dilutedArea.Add(neighbor);
+                tilesToDilute.Enqueue(neighbor);
+            }
+        }
+        Unit distanceToConnection(Tile t)
+        {
+            var p = Level.GetPosition(t).NumericValue;
+
+            // source: https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Line_defined_by_two_points
+            var a = Math.Abs(connectionVector.X * (point1.Y - p.Y) - connectionVector.Y * (point1.X - p.X));
+            return (a / connectionLength).U();
+        }
+
+        float scalarProjectionOf(Tile t)
+        {
+            var p = Level.GetPosition(t).NumericValue;
+            var scalar = Vector2.Dot(p - point1, connectionVectorNormalized);
+            return scalar / connectionLength;
+        }
+
+        bool belongsToAnyNode(Tile t) => nodesByTile.ContainsKey(t);
+
+        bool belongsToOtherNode(Tile t)
+            => nodesByTile.TryGetValue(t, out var node) && node.Feature != feature1 && node.Feature != feature2;
+
+        return dilutedArea;
     }
 
     private IEnumerable<TiledFeature> erode(IEnumerable<TiledFeature> features)
