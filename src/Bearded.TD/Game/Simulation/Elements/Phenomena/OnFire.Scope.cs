@@ -30,7 +30,7 @@ static partial class OnFire
         {
             var damage = effect.DamagePerSecond * TickDuration;
             DamageExecutor.FromDamageSource(effect.DamageSource)
-                .TryDoDamage(target, damage.Typed(DamageType.Fire), new HitContext(HitType.Self, null));
+                .TryDoDamage(target, damage.Typed(DamageType.Fire), Hit.FromSelf());
         }
 
         protected override void StartEffect(GameObject target)

@@ -2,7 +2,6 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Testing.GameStates;
-using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -12,11 +11,12 @@ sealed class ComponentTestBed
 {
     private readonly GameTestBed gameTestBed;
     private readonly ComponentInternals internals = new();
-    private readonly GameObject obj = new(null, Position3.Zero, Direction2.Zero);
+    private readonly GameObject obj;
 
     private ComponentTestBed(GameTestBed? gameTestBed = null)
     {
         this.gameTestBed = gameTestBed ?? GameTestBed.Create();
+        obj = GameObjectFactory.CreateWithoutRenderer(null, Position3.Zero);
         obj.AddComponent(internals);
     }
 

@@ -23,7 +23,6 @@ sealed class Ruined
     private readonly Disposer disposer = new();
 
     private IBuildingStateProvider? buildingStateProvider;
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private ReportAggregator.IReportHandle? reportHandle;
     private IncompleteRepair? incompleteRepair;
 
@@ -34,7 +33,6 @@ sealed class Ruined
         disposer.AddDisposable(
             ComponentDependencies.Depend<IBuildingStateProvider>(
                 Owner, Events, provider => buildingStateProvider = provider));
-        occupiedTilesTracker.Initialize(Owner, Events);
         Events.Send(new ObjectRuined());
         Events.Subscribe<RepairCancelled>(this);
         Events.Subscribe<RepairFinished>(this);
@@ -44,7 +42,6 @@ sealed class Ruined
     public override void OnRemoved()
     {
         disposer.Dispose();
-        occupiedTilesTracker.Dispose(Events);
         Events.Send(new ObjectRepaired());
         Events.Unsubscribe<RepairCancelled>(this);
         Events.Unsubscribe<RepairFinished>(this);
@@ -78,7 +75,7 @@ sealed class Ruined
         return incompleteRepair == null &&
             (buildingStateProvider?.State.AcceptsPlayerHealthChanges ?? false) &&
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out _) &&
-            occupiedTilesTracker.OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsRevealed());
+            Owner.GetTilePresence().OccupiedTiles.Any(t => Owner.Game.VisibilityLayer[t].IsRevealed());
     }
 
     public void HandleEvent(RepairCancelled @event)

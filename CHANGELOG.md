@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.13
+
+* Show the price of building a building on top of the ghost, keeping in mind refunds
+* All damage output now more accurately follows the intended balance
+* Wave generation is now seeded
+* Bug fix: walls are now retained until tower replacing it actually starts building
+* Colours of elements are now consistent between technology and damage numbers
+
 ## v0.12
 
 * Rebalanced the early game by providing 245 resources instead of 150

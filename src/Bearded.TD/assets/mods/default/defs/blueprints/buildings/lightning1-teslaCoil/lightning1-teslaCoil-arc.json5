@@ -5,7 +5,7 @@
             id: "damageOnHit",
             parameters: {
                 damageType: "electric",
-                fractionOfBaseDamage: 0.5,
+                fractionOfBaseDamage: 0.75,
             }
         },
         {

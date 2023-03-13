@@ -42,7 +42,7 @@ static class GiveBuildingXp
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
-        private int experienceAmount;
+        private float experienceAmount;
 
         [UsedImplicitly]
         public Serializer() {}

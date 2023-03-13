@@ -12,7 +12,6 @@ using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -41,8 +40,7 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
         Unit Height { get; }
     }
 
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
-
+    private ITilePresence? tilePresence;
     private Sprite spriteSide;
     private Sprite spriteTop;
     private IFactionProvider? factionProvider;
@@ -60,14 +58,14 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
         BaseHeight = Owner.Position.Z;
         TopHeight = BaseHeight + Parameters.Height;
 
-        occupiedTilesTracker.Initialize(Owner, Events);
-
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
     }
 
     public override void Activate()
     {
         base.Activate();
+
+        tilePresence = Owner.GetTilePresence();
 
         // TODO: don't hardcode this, specify in parameters
         var shader = Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-sprite-3d")];
@@ -86,7 +84,6 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
 
     public override void OnRemoved()
     {
-        occupiedTilesTracker.Dispose(Events);
         Events.Unsubscribe(this);
     }
 
@@ -98,7 +95,7 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
     {
         var color = factionProvider?.Faction.Color ?? Color.Gray;
 
-        foreach (var tile in occupiedTilesTracker.OccupiedTiles)
+        foreach (var tile in tilePresence?.OccupiedTiles ?? Enumerable.Empty<Tile>())
         {
             drawTile(e.Drawer, tile, BaseHeight, TopHeight, color);
         }

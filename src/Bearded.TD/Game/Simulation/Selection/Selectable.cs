@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Selection;
@@ -23,8 +22,8 @@ sealed class Selectable :
     private IVisibility? visibility;
     private SelectionLayer? selectionLayer;
     private SelectionState selectionState;
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private SelectionManager.UndoDelegate? resetFunc;
+    private ITilePresenceListener? tilePresenceListener;
 
     public bool IsSelectable => visibility?.Visibility.IsVisible() ?? true;
     public IReportSubject Subject =>
@@ -32,7 +31,6 @@ sealed class Selectable :
 
     protected override void OnAdded()
     {
-        occupiedTilesTracker.Initialize(Owner, Events);
         Events.Subscribe(this);
 
         disposer.AddDisposable(ComponentDependencies.Depend<IVisibility>(Owner, Events, v => visibility = v));
@@ -43,16 +41,16 @@ sealed class Selectable :
         base.Activate();
 
         selectionLayer = Owner.Game.SelectionLayer;
-        occupiedTilesTracker.OccupiedTiles.ForEach(registerTile);
-        occupiedTilesTracker.TileAdded += registerTile;
-        occupiedTilesTracker.TileRemoved += unregisterTile;
+        tilePresenceListener = Owner.GetTilePresence().ObserveChanges(registerTile, unregisterTile);
     }
 
     public override void OnRemoved()
     {
-        occupiedTilesTracker.Dispose(Events);
+        tilePresenceListener?.Detach();
         Events.Unsubscribe(this);
         disposer.Dispose();
+
+        base.OnRemoved();
     }
 
     public void ResetSelection()
@@ -92,7 +90,8 @@ sealed class Selectable :
 
     public void HandleEvent(ObjectDeleting @event)
     {
-        unregisterAllTiles();
+        tilePresenceListener?.Detach();
+        tilePresenceListener = null;
         resetFunc?.Invoke();
     }
 
@@ -104,14 +103,6 @@ sealed class Selectable :
     private void unregisterTile(Tile tile)
     {
         selectionLayer?.UnregisterSelectable(tile, this);
-    }
-
-    private void unregisterAllTiles()
-    {
-        foreach (var t in occupiedTilesTracker.OccupiedTiles)
-        {
-            selectionLayer?.UnregisterSelectable(t, this);
-        }
     }
 
     public override void Update(TimeSpan elapsedTime) {}

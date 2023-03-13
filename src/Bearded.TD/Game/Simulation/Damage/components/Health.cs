@@ -75,22 +75,27 @@ sealed class Health :
 
     public void HandleEvent(TakeDamage @event)
     {
-        onDamaged(@event.Damage.TypedDamage);
+        onDamaged(@event.Damage, @event.Source);
     }
 
     private void onHealed(HealInfo heal)
     {
-        changeHealth(heal.Amount);
+        changeHealth(heal.Amount, out _);
     }
 
-    private void onDamaged(TypedDamage typedDamage)
+    private void onDamaged(TypedDamage typedDamage, IDamageSource? source)
     {
-        changeHealth(-typedDamage.Amount);
+        changeHealth(-typedDamage.Amount, out var damageDoneDiscrete);
+        Events.Send(new TookDamage(new DamageResult(typedDamage, damageDoneDiscrete), source));
     }
 
-    private void changeHealth(HitPoints healthChange)
+    private void changeHealth(HitPoints healthChange, out HitPoints damageDoneDiscrete)
     {
-        CurrentHealth = DiscreteSpaceTime1Math.Clamp(CurrentHealth + healthChange, HitPoints.Zero, MaxHealth);
+        var oldHealthDiscrete = CurrentHealth.Discrete();
+        CurrentHealth = SpaceTime1MathF.Clamp(CurrentHealth + healthChange, HitPoints.Zero, MaxHealth);
+        var newHealthDiscrete = CurrentHealth.Discrete();
+        // This expression may look inverted, but that's because we want the difference as a positive number.
+        damageDoneDiscrete = oldHealthDiscrete - newHealthDiscrete;
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -115,7 +120,7 @@ sealed class Health :
         else
         {
             MaxHealth = Parameters.MaxHealth;
-            CurrentHealth = DiscreteSpaceTime1Math.Min(CurrentHealth, MaxHealth);
+            CurrentHealth = SpaceTime1MathF.Min(CurrentHealth, MaxHealth);
         }
     }
 
@@ -124,7 +129,7 @@ sealed class Health :
     private sealed class HealthSynchronizedState : IStateToSync
     {
         private readonly Health source;
-        private int currentHealth;
+        private float currentHealth;
 
         public HealthSynchronizedState(Health source)
         {

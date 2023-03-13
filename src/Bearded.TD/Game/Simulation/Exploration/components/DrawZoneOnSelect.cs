@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
@@ -16,14 +17,12 @@ namespace Bearded.TD.Game.Simulation.Exploration;
 
 sealed class DrawZoneOnSelect : Component, IListener<DrawComponents>
 {
-    private readonly OccupiedTilesTracker occupiedTilesTracker = new();
     private TileRangeDrawer tileRangeDrawer = null!;
     private SelectionState selectionState;
     private TileAreaBorder areaBorder = TileAreaBorder.From(ImmutableHashSet<Tile>.Empty);
 
     protected override void OnAdded()
     {
-        occupiedTilesTracker.Initialize(Owner, Events);
         SelectionListener.Create(
                 onFocus: () => selectionState = SelectionState.Focused,
                 onFocusReset: () => selectionState = SelectionState.Default,
@@ -41,17 +40,15 @@ sealed class DrawZoneOnSelect : Component, IListener<DrawComponents>
             () => areaBorder,
             new Color(50, 168, 82));
 
-        occupiedTilesTracker.TileAdded += _ => updateTiles();
-        occupiedTilesTracker.TileRemoved += _ => updateTiles();
-        updateTiles();
+        Owner.GetTilePresence().Observe(updateTiles);
 
         Events.Subscribe(this);
     }
 
-    private void updateTiles()
+    private void updateTiles(IEnumerable<Tile> occupiedTiles)
     {
         areaBorder = TileAreaBorder.From(
-            occupiedTilesTracker.OccupiedTiles
+            occupiedTiles
                 .Select(t => Owner.Game.ZoneLayer.ZoneForTile(t))
                 .NotNull()
                 .Distinct()

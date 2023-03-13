@@ -1,10 +1,9 @@
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Units;
 
-interface IEnemyMovement : ITileOccupation
+interface IEnemyMovement
 {
     interface IPhysicalPresence
     {

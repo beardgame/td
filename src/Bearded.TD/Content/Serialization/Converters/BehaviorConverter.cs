@@ -57,7 +57,7 @@ sealed class BehaviorConverter<TComponentInterface> : JsonConverterBase<TCompone
         if (!behaviorTypes.TryGetValue(id, out var behaviorType))
             throw new InvalidDataException($"Unknown Behavior id '{id}'.");
 
-        var behavior = Activator.CreateInstance(behaviorType);
+        var behavior = Activator.CreateInstance(behaviorType)!;
         serializer.Populate(json.CreateReader(), behavior);
         return (TComponentInterface) behavior;
     }

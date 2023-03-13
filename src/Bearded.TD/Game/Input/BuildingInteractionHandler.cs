@@ -12,7 +12,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
     private readonly IGameObjectBlueprint blueprint;
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
-    private MovableTileOccupation? ghostTileOccupation;
+    private DynamicFootprintTileNotifier? ghostTileOccupation;
 
     public BuildingInteractionHandler(GameInstance game, Faction faction, IGameObjectBlueprint blueprint) : base(game)
     {

@@ -94,7 +94,7 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
         public override void OnProgressSet(double percentage)
         {
             var expectedHealthGiven = new HitPoints(MoreMath.CeilToInt(percentage * maxHealth.NumericValue));
-            State.Satisfies(expectedHealthGiven >= 0.HitPoints());
+            State.Satisfies(expectedHealthGiven >= HitPoints.Zero);
             if (expectedHealthGiven == HitPoints.Zero)
             {
                 return;

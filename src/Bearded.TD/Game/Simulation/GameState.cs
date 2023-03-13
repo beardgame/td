@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
@@ -46,7 +47,8 @@ sealed class GameState
 
     public GeometryLayer GeometryLayer { get; }
     public FluidLayer FluidLayer { get; }
-    public UnitLayer UnitLayer { get; }
+    public ObjectLayer PhysicsLayer { get; }
+    public TargetLayer TargetLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
@@ -71,7 +73,8 @@ sealed class GameState
 
         GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
-        UnitLayer = new UnitLayer();
+        PhysicsLayer = new PhysicsLayer();
+        TargetLayer = new TargetLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);

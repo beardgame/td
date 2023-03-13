@@ -101,7 +101,7 @@ sealed class VeterancyReportControl : ReportControl
         currentLevel.SetFromSource(report.CurrentVeterancyLevel.ToString());
         nextLevel.SetFromSource(report.NextLevelThreshold == null
             ? "max!"
-            : $"{report.CurrentExperience} / {report.NextLevelThreshold.Value}");
+            : $"{report.CurrentExperience.ToUiString()} / {report.NextLevelThreshold.Value.ToUiString()}");
         levelProgress.SetFromSource(report.PercentageToNextLevel);
     }
 

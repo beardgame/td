@@ -2,7 +2,6 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -43,7 +42,7 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
 
     public void HandleEvent(HitEnemy @event)
     {
-        onHit(@event.Info.SurfaceNormal);
+        onHit(@event.Impact.SurfaceNormal);
     }
 
     public void HandleEvent(HitLevel @event)

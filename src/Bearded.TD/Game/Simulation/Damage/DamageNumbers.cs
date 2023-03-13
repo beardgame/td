@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Shared.Events;
@@ -14,9 +14,10 @@ namespace Bearded.TD.Game.Simulation.Damage;
 [Component("damageNumbers")]
 sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawComponents>
 {
-    static readonly TimeSpan lifeTime = 0.5.S();
+    private static readonly TimeSpan lifeTime = 0.5.S();
 
-    readonly record struct Number(string Amount, Color Color, Instant StartTime, Position3 Origin, Velocity3 Velocity);
+    private readonly record struct Number(
+        string Amount, Color Color, Instant StartTime, Position3 Origin, Velocity3 Velocity);
 
     private readonly Queue<Number> numbers = new();
 
@@ -38,13 +39,13 @@ sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawC
     {
         var p = e.Target.Position;
         var damage = e.Result.TypedDamage;
-        var amount = damage.Amount;
+        var amount = e.Result.DamageDoneDiscrete;
         var type = damage.Type;
 
         var color = type.ToElement().GetColor();
 
         var number = new Number(
-            amount.NumericValue.ToString(),
+            amount.NumericValue.ToString(CultureInfo.InvariantCulture),
             color, Owner.Game.Time,
             p, new Velocity3(0, 0.5f, 0));
 

@@ -113,7 +113,7 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
     private sealed class VeterancySynchronizedState : IStateToSync
     {
         private readonly Veterancy source;
-        private int currentExperience;
+        private float currentExperience;
 
         public VeterancySynchronizedState(Veterancy source)
         {

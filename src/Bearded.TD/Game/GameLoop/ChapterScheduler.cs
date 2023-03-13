@@ -23,7 +23,7 @@ sealed class ChapterScheduler
     private int wavesSpawnedTotal;
     private int wavesSpawnedThisChapter;
 
-    private ChapterElements? lastChapterElements;
+    private ElementalTheme? lastChapterElements;
 
     private ResourceAmount nextWaveResources = FirstWaveResources;
 
@@ -74,21 +74,21 @@ sealed class ChapterScheduler
         return new ChapterScript(requirements.ChapterNumber, requirements.WaveCount, chooseChapterElements());
     }
 
-    private ChapterElements chooseChapterElements()
+    private ElementalTheme chooseChapterElements()
     {
         // TODO: this is super hardcoded and ugly; needs to be moved to a more generic system loaded from mod files
         if (lastChapterElements is null)
         {
             // Always start the first wave with dynamics and a random accent element. After that, everything goes.
-            return new ChapterElements(Element.Dynamics, chooseAccentElement(Element.Dynamics));
+            return new ElementalTheme(Element.Dynamics, chooseAccentElement(Element.Dynamics));
         }
 
         const int maxAttempts = 5;
-        ChapterElements candidate = default;
+        ElementalTheme candidate = default;
         for (var i = 0; i < maxAttempts; i++)
         {
             var primaryElement = elements.RandomElement(random);
-            candidate = new ChapterElements(primaryElement, chooseAccentElement(primaryElement));
+            candidate = new ElementalTheme(primaryElement, chooseAccentElement(primaryElement));
             if (candidate.PrimaryElement != lastChapterElements.PrimaryElement &&
                 candidate.AccentElement != lastChapterElements.AccentElement)
             {
@@ -116,7 +116,7 @@ sealed class ChapterScheduler
         waveScheduler.StartWave(new WaveRequirements(
             currentChapter.ChapterNumber,
             waveNumber,
-            waveValue,
+            new WaveEnemyComposition(waveValue, currentChapter.Elements),
             nextWaveResources,
             waveNumber == 1 ? FirstDownTimeDuration : DownTimeDuration));
 
@@ -132,7 +132,5 @@ sealed class ChapterScheduler
 
     public readonly record struct ChapterRequirements(int ChapterNumber, int WaveCount);
 
-    private sealed record ChapterScript(int ChapterNumber, int WaveCount, ChapterElements Elements);
-
-    private sealed record ChapterElements(Element PrimaryElement, Element AccentElement);
+    private sealed record ChapterScript(int ChapterNumber, int WaveCount, ElementalTheme Elements);
 }

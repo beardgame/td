@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
-readonly record struct HitInfo(Position3 Point, Difference3 SurfaceNormal, Difference3 IncidentDirection)
+readonly record struct Impact(Position3 Point, Difference3 SurfaceNormal, Difference3 IncidentDirection)
 {
     public Difference3 GetReflection()
     {

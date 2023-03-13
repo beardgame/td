@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Console;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -101,9 +102,9 @@ static class GameDebugCommands
             return;
         }
 
-        if (!int.TryParse(p.Args[0], out var amount))
+        if (!float.TryParse(p.Args[0], out var amount))
         {
-            logger.Warning?.Log($"Invalid amount: {amount}");
+            logger.Warning?.Log($"Invalid amount: {p.Args[0]}");
             return;
         }
 
@@ -114,6 +115,25 @@ static class GameDebugCommands
     private static void buildingLevel(Logger logger, CommandParameters _) => run(logger, gameInstance =>
     {
         gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GiveBuildingLevel.Request(gameInstance));
+    });
+
+    [DebugCommand("game.building.stun")]
+    private static void buildingStun(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+    {
+        if (p.Args.Length > 1)
+        {
+            logger.Warning?.Log("Usage: \"game.building.stun [duration]\"");
+            return;
+        }
+
+        var durationS = 2.0;
+        if (p.Args.Length == 1 && !double.TryParse(p.Args[0], out durationS))
+        {
+            logger.Warning?.Log($"Invalid duration: {p.Args[0]}");
+            return;
+        }
+
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, StunBuilding.Request(gameInstance, durationS.S()));
     });
 
     [DebugCommand("game.killall")]

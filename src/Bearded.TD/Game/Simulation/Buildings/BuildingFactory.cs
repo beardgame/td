@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Debug;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -36,6 +37,7 @@ static class BuildingFactory
         building.AddComponent(new DamageAttributor());
         building.AddComponent(new DamageSource());
         building.AddComponent(new DebugInvulnerable());
+        building.AddComponent(new ElementSystemEntity());
         building.AddComponent(new FactionProvider(faction));
         building.AddComponent(new FootprintPosition());
         building.AddComponent(new HealthBar());
@@ -45,7 +47,7 @@ static class BuildingFactory
         building.AddComponent(new Killable());
         building.AddComponent(new ReportSubject());
         building.AddComponent(new Selectable());
-        building.AddComponent(new StaticTileOccupation(footprint));
+        building.AddComponent(new StaticFootprintTileNotifier(footprint));
         building.AddComponent(new StatisticCollector());
         building.AddComponent(new TileBasedVisibility());
         building.AddComponent(new EventReceiver<TakeHit>());
@@ -57,7 +59,7 @@ static class BuildingFactory
 
     public static GameObject CreateGhost(
         IGameObjectBlueprint blueprint, Faction faction,
-        out MovableTileOccupation tileOccupation)
+        out DynamicFootprintTileNotifier tileNotifier)
     {
         var ghost = GameObjectFactory.CreateFromBlueprintWithoutRenderer(
             blueprint, null, Position3.Zero, Direction2.Zero);
@@ -66,8 +68,8 @@ static class BuildingFactory
         ghost.AddComponent(new GhostBuildingStateProvider());
         ghost.AddComponent(new FactionProvider(faction));
         ghost.AddComponent(new FootprintPosition());
-        tileOccupation = new MovableTileOccupation();
-        ghost.AddComponent(tileOccupation);
+        tileNotifier = new DynamicFootprintTileNotifier();
+        ghost.AddComponent(tileNotifier);
         return ghost;
     }
 }

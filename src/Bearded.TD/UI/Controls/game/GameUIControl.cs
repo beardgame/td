@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Rendering;
-using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 

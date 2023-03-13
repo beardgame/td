@@ -8,11 +8,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
-sealed class MovableTileOccupation : TileOccupationBase
+sealed class DynamicFootprintTileNotifier : TileNotifierBase
 {
     private PositionedFootprint footprint;
 
-    public override IEnumerable<Tile> OccupiedTiles => footprint.OccupiedTiles;
+    protected override IEnumerable<Tile> OccupiedTiles => footprint.OccupiedTiles;
 
     public void SetFootprint(PositionedFootprint newFootprint)
     {

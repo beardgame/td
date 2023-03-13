@@ -12,13 +12,13 @@ namespace Bearded.TD.Game.Simulation.Statistics;
 
 sealed class StatisticCollector : Component, ISyncable
 {
-    private long totalDamage;
+    private double totalDamage;
     private long totalKills;
 
-    private long currentWaveDamage;
+    private double currentWaveDamage;
     private long currentWaveKills;
 
-    private long previousWaveDamage;
+    private double previousWaveDamage;
     private long previousWaveKills;
     private IListener<WaveStarted>? waveListener;
 
@@ -71,7 +71,7 @@ sealed class StatisticCollector : Component, ISyncable
     private sealed class StatisticCollectorStateToSync : IStateToSync
     {
         private readonly StatisticCollector source;
-        private long totalDamage;
+        private double totalDamage;
         private long totalKills;
 
         public StatisticCollectorStateToSync(StatisticCollector source)
@@ -98,11 +98,11 @@ sealed class StatisticCollector : Component, ISyncable
     {
         public ReportType Type => ReportType.Effectivity;
 
-        public long TotalDamage => source.totalDamage;
+        public long TotalDamage => (long) source.totalDamage;
         public long TotalKills => source.totalKills;
-        public long CurrentWaveDamage => source.currentWaveDamage;
+        public long CurrentWaveDamage => (long) source.currentWaveDamage;
         public long CurrentWaveKills => source.currentWaveKills;
-        public long PreviousWaveDamage => source.previousWaveDamage;
+        public long PreviousWaveDamage => (long) source.previousWaveDamage;
         public long PreviousWaveKills => source.previousWaveKills;
 
         private readonly StatisticCollector source;

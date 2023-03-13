@@ -57,14 +57,14 @@ sealed class SpawnObjectOnHit
 
     public void HandleEvent(HitEnemy e)
     {
-        onHit(e.Info);
+        onHit(e.Impact);
     }
 
-    private void onHit(HitInfo hit)
+    private void onHit(Impact hit)
     {
         var obj = GameObjectFactory
             .CreateFromBlueprintWithDefaultRenderer(Parameters.Object, Owner, hit.Point, Direction2.Zero);
-        obj.AddComponent(new Property<HitInfo>(hit));
+        obj.AddComponent(new Property<Impact>(hit));
         Owner.Game.Add(obj);
     }
 

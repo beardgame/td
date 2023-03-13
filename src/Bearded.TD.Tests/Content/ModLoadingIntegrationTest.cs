@@ -14,6 +14,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.IO;
+using FluentAssertions;
 using SixLabors.ImageSharp;
 using Xunit;
 
@@ -43,6 +44,8 @@ namespace Bearded.TD.Tests.Content
                 }
                 loadedMods.Add(modForLoading.GetLoadedMod());
             }
+
+            context.Errors.Should().BeEmpty("no errors should be thrown by any blueprints");
         }
 
         private static void waitForModLoaded(ModForLoading modForLoading)

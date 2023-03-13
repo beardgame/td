@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Commands.Gameplay;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
@@ -29,6 +30,7 @@ sealed class GameOverOnDestroy : Component, IListener<ObjectKilled>
         // Ugly but... well.
         if (eventSent) return;
         Events.Send(new PreventPlayerHealthChanges());
+        Events.Send(new PreventRuin());
         eventSent = true;
     }
 }

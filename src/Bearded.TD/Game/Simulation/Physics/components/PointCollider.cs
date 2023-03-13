@@ -8,9 +8,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Geometry;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Physics;
@@ -30,8 +28,8 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 
         var ray = new Ray3(start, step);
 
-        var (result, _, point, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstEnemies(
-            ray, Owner.Game.UnitLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
+        var (result, _, point, enemy, lastStep, normal) = Owner.Game.Level.CastRayAgainstObjects(
+            ray, Owner.Game.PhysicsLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
 
         e = new PreviewMove(start, point - start);
 
@@ -47,7 +45,7 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
             case RayCastResultType.HitLevel:
                 hitLevel(point, step, lastStep);
                 break;
-            case RayCastResultType.HitEnemy:
+            case RayCastResultType.HitObject:
                 _ = enemy ?? throw new InvalidOperationException();
                 _ = normal ?? throw new InvalidOperationException();
                 if (enemiesHit.Add(enemy))
@@ -66,7 +64,7 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 
     private void hitEnemy(Position3 point, Difference3 step, GameObject enemy, Difference3 normal)
     {
-        var info = new HitInfo(point, normal, step.NormalizedSafe());
+        var info = new Impact(point, normal, step.NormalizedSafe());
         Events.Send(new HitEnemy(enemy, info));
     }
 

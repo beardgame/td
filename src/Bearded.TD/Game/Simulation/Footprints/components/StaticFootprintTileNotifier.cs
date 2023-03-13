@@ -5,13 +5,13 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 
-sealed class StaticTileOccupation : TileOccupationBase
+sealed class StaticFootprintTileNotifier : TileNotifierBase
 {
     private readonly PositionedFootprint footprint;
 
-    public override IEnumerable<Tile> OccupiedTiles => footprint.OccupiedTiles;
+    protected override IEnumerable<Tile> OccupiedTiles => footprint.OccupiedTiles;
 
-    public StaticTileOccupation(PositionedFootprint footprint)
+    public StaticFootprintTileNotifier(PositionedFootprint footprint)
     {
         this.footprint = footprint;
     }

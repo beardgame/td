@@ -36,7 +36,7 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
             && DamageExecutor.FromObject(Owner).TryDoDamage(
                 @event.Enemy,
                 (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
-                new HitContext(HitType.Impact, @event.Info));
+                Hit.FromImpact(@event.Impact));
         DebugAssert.State.Satisfies(damageDone);
     }
 

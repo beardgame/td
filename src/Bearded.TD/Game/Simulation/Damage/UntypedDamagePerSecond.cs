@@ -18,8 +18,8 @@ readonly struct UntypedDamagePerSecond
     public static UntypedDamage operator *(TimeSpan timeSpan, UntypedDamagePerSecond dps) => dps * timeSpan;
 
     public static UntypedDamage operator *(UntypedDamagePerSecond dps, TimeSpan timeSpan) =>
-        new(((int) (dps.Amount.NumericValue * timeSpan.NumericValue)).HitPoints());
+        new(((float) (dps.Amount.NumericValue * timeSpan.NumericValue)).HitPoints());
 
     public static UntypedDamage operator /(UntypedDamagePerSecond dps, Frequency fireRate) =>
-        new(((int) (dps.Amount.NumericValue / fireRate.NumericValue)).HitPoints());
+        new(((float) (dps.Amount.NumericValue / fireRate.NumericValue)).HitPoints());
 }

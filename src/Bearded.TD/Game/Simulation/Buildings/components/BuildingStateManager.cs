@@ -15,15 +15,19 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed class BuildingStateManager : Component,
         IBuildingStateProvider,
+        ISabotageHandler,
         IListener<ConstructionFinished>,
         IListener<ConstructionStarted>,
         IListener<ObjectKilled>,
         IListener<ObjectRepaired>,
         IListener<ObjectRuined>,
-        IListener<PreventPlayerHealthChanges>
+        IListener<PreventPlayerHealthChanges>,
+        IListener<PreventRuin>
 {
     private readonly BuildingState state = new();
     private IHealth? health;
+    private ISabotageReceipt? ruinedSabotage;
+    private bool ruinPrevented;
 
     public IBuildingState State { get; }
 
@@ -52,7 +56,10 @@ sealed class BuildingStateManager : Component,
 
         var ruinState = new FindObjectRuinState(false);
         Events.Preview(ref ruinState);
-        state.IsRuined = ruinState.IsRuined;
+        if (ruinState.IsRuined && !ruinPrevented)
+        {
+            ruinedSabotage = SabotageObject();
+        }
     }
 
     public override void OnRemoved()
@@ -77,17 +84,33 @@ sealed class BuildingStateManager : Component,
 
     public void HandleEvent(ObjectRepaired @event)
     {
-        state.IsRuined = false;
+        ruinedSabotage?.Repair();
+        ruinedSabotage = null;
     }
 
     public void HandleEvent(ObjectRuined @event)
     {
-        state.IsRuined = true;
+        if (ruinPrevented) return;
+        ruinedSabotage ??= SabotageObject();
     }
 
     public void HandleEvent(PreventPlayerHealthChanges @event)
     {
         state.AcceptsPlayerHealthChanges = false;
+    }
+
+    public void HandleEvent(PreventRuin @event)
+    {
+        ruinedSabotage?.Repair();
+        ruinedSabotage = null;
+        ruinPrevented = true;
+    }
+
+    public ISabotageReceipt SabotageObject()
+    {
+        var sabotage = new ActiveSabotage(state);
+        state.ActiveSabotages.Add(sabotage);
+        return sabotage;
     }
 
     private void materialize()
@@ -100,7 +123,7 @@ sealed class BuildingStateManager : Component,
     public override void Update(TimeSpan elapsedTime)
     {
         if (state.IsCompleted &&
-            !state.IsRuined &&
+            ruinedSabotage == null &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
             Owner.Sync(RuinBuilding.Command);
@@ -124,6 +147,21 @@ sealed class BuildingStateManager : Component,
         {
             Building = owner;
             this.buildingStateProvider = buildingStateProvider;
+        }
+    }
+
+    private sealed class ActiveSabotage : ISabotageReceipt
+    {
+        private readonly BuildingState mutableState;
+
+        public ActiveSabotage(BuildingState mutableState)
+        {
+            this.mutableState = mutableState;
+        }
+
+        public void Repair()
+        {
+            mutableState.ActiveSabotages.Remove(this);
         }
     }
 }

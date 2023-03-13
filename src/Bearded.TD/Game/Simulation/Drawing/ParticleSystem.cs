@@ -114,7 +114,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
     private void initializeParticles()
     {
-        var hitInfo = Owner.TryGetSingleComponent<IProperty<HitInfo>>(out var h) ? h : null;
+        var hitInfo = Owner.TryGetSingleComponent<IProperty<Impact>>(out var h) ? h : null;
         var scale = Owner.TryGetSingleComponent<IProperty<Scale>>(out var s) ? s : null;
 
         var reflectionVelocity = hitInfo != null

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Rules;
 
 namespace Bearded.TD.Content.Models;

@@ -14,7 +14,7 @@ sealed partial class TargetEnemiesInRange
         }
 
         // TODO: accumulating tiles each frame is expensive, can we somehow cache this?
-        if (target != null && !tilesInRange.OverlapsWithTiles(OccupiedTileAccumulator.AccumulateOccupiedTiles(target)))
+        if (target != null && !tilesInRange.OverlapsWithTiles(target.GetTilePresence().OccupiedTiles))
         {
             target = null;
         }
@@ -28,7 +28,7 @@ sealed partial class TargetEnemiesInRange
     private void tryFindTarget()
     {
         target = weapon.TargetingMode.SelectTarget(
-            tilesInRange.SelectMany(Owner.Game.UnitLayer.GetUnitsOnTile),
+            tilesInRange.SelectMany(Owner.Game.TargetLayer.GetObjectsOnTile),
             new TargetingContext(Owner.Position, weapon.Direction, Owner.Game.Navigator));
     }
 }

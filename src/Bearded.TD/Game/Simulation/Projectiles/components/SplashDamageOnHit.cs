@@ -47,7 +47,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
     public void HandleEvent(HitEnemy @event)
     {
-        onHit(@event.Info.Point);
+        onHit(@event.Impact.Point);
     }
 
     private void onHit(Position3 center)
@@ -59,12 +59,11 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
         }
 
         var damage = new UntypedDamage(
-            StaticRandom.Discretise(
-                (float) unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
+            (unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
 
         var distanceSquared = Parameters.Range.Squared;
 
-        var enemies = Owner.Game.UnitLayer;
+        var objects = Owner.Game.PhysicsLayer;
         // Returns only tiles with their centre in the circle with the given range.
         // This means it may miss enemies that are strictly speaking in range, but are on a tile that itself is out
         // of range.
@@ -72,20 +71,20 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
         var damageExecutor = DamageExecutor.FromObject(Owner);
 
-        foreach (var enemy in tiles.SelectMany(enemies.GetUnitsOnTile))
+        foreach (var obj in tiles.SelectMany(objects.GetObjectsOnTile))
         {
-            var difference = enemy.Position - center;
+            var difference = obj.Position - center;
 
             if (difference.LengthSquared > distanceSquared)
                 continue;
 
             var incident = new Difference3(difference.NumericValue.NormalizedSafe());
-            var hitInfo = new HitInfo(enemy.Position, -incident, incident);
+            var impact = new Impact(obj.Position, -incident, incident);
 
             damageExecutor.TryDoDamage(
-                enemy,
+                obj,
                 damage.Typed(Parameters.DamageType ?? DamageType.Kinetic),
-                new HitContext(HitType.AreaOfEffect, hitInfo));
+                Hit.FromAreaOfEffect(impact));
         }
     }
 

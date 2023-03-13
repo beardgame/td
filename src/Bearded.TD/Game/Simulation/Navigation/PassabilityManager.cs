@@ -71,10 +71,10 @@ sealed class PassabilityManager
     public void HandleEvent(TileTypeChanged @event) => updatePassabilityForTile(@event.Tile);
 
     public void HandleEvent(BuildingConstructionStarted @event)
-        => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
+        => @event.Building.GetTilePresence().OccupiedTiles.ForEach(updatePassabilityForTile);
 
     public void HandleEvent(BuildingDestroyed @event)
-        => OccupiedTileAccumulator.AccumulateOccupiedTiles(@event.Building).ForEach(updatePassabilityForTile);
+        => @event.Building.GetTilePresence().OccupiedTiles.ForEach(updatePassabilityForTile);
 
     private void updatePassabilityForTile(Tile tile)
     {

@@ -21,7 +21,7 @@ sealed class BuildingLayer
 
     public void AddBuilding(GameObject building)
     {
-        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
+        foreach (var tile in building.GetTilePresence().OccupiedTiles)
         {
             getList(tile).Add(building);
         }
@@ -29,7 +29,7 @@ sealed class BuildingLayer
 
     public void RemoveBuilding(GameObject building)
     {
-        foreach (var tile in OccupiedTileAccumulator.AccumulateOccupiedTiles(building))
+        foreach (var tile in building.GetTilePresence().OccupiedTiles)
         {
             getList(tile).Remove(building);
         }

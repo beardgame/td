@@ -15,7 +15,7 @@
             }
         },
         {
-            id: "markEnemiesInRange",
+            id: "markTargetsInRange",
             parameters: {
                 range: 3,
             }
