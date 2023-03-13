@@ -2,6 +2,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Debug;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -36,6 +37,7 @@ static class BuildingFactory
         building.AddComponent(new DamageAttributor());
         building.AddComponent(new DamageSource());
         building.AddComponent(new DebugInvulnerable());
+        building.AddComponent(new ElementSystemEntity());
         building.AddComponent(new FactionProvider(faction));
         building.AddComponent(new FootprintPosition());
         building.AddComponent(new HealthBar());
