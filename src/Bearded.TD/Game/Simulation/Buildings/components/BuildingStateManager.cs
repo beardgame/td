@@ -21,11 +21,13 @@ sealed class BuildingStateManager : Component,
         IListener<ObjectKilled>,
         IListener<ObjectRepaired>,
         IListener<ObjectRuined>,
-        IListener<PreventPlayerHealthChanges>
+        IListener<PreventPlayerHealthChanges>,
+        IListener<PreventRuin>
 {
     private readonly BuildingState state = new();
     private IHealth? health;
     private ISabotageReceipt? ruinedSabotage;
+    private bool ruinPrevented;
 
     public IBuildingState State { get; }
 
@@ -54,7 +56,7 @@ sealed class BuildingStateManager : Component,
 
         var ruinState = new FindObjectRuinState(false);
         Events.Preview(ref ruinState);
-        if (ruinState.IsRuined)
+        if (ruinState.IsRuined && !ruinPrevented)
         {
             ruinedSabotage = SabotageObject();
         }
@@ -88,12 +90,20 @@ sealed class BuildingStateManager : Component,
 
     public void HandleEvent(ObjectRuined @event)
     {
+        if (ruinPrevented) return;
         ruinedSabotage ??= SabotageObject();
     }
 
     public void HandleEvent(PreventPlayerHealthChanges @event)
     {
         state.AcceptsPlayerHealthChanges = false;
+    }
+
+    public void HandleEvent(PreventRuin @event)
+    {
+        ruinedSabotage?.Repair();
+        ruinedSabotage = null;
+        ruinPrevented = true;
     }
 
     public ISabotageReceipt SabotageObject()
