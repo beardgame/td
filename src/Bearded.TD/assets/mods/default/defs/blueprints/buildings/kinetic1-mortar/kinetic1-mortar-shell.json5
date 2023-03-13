@@ -5,7 +5,7 @@
         {
             id: "splashDamageOnHit",
             parameters: {
-                range: 1.5
+                range: 2.5
             }
         },
         { id: "deleteOnHit" },
