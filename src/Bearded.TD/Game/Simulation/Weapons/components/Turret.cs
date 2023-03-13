@@ -104,6 +104,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
         {
             case (true, {} reason):
                 reason.Resolve();
+                weaponDisabledReason = null;
                 break;
             case (false, null):
                 weaponDisabledReason = new WeaponDisabledReason();
