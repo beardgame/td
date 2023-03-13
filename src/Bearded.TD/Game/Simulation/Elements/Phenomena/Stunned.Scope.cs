@@ -47,16 +47,14 @@ static partial class Stunned
 
         protected override void EndEffect(GameObject target)
         {
-            if (receipt == null || sparks == null)
-            {
-                throw new InvalidOperationException("Cannot end effect that was not started.");
-            }
-
             receipt?.Repair();
             receipt = null;
 
-            target.RemoveComponent(sparks);
-            sparks = null;
+            if (sparks != null)
+            {
+                target.RemoveComponent(sparks);
+                sparks = null;
+            }
         }
     }
 }
