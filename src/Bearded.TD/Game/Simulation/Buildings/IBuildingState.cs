@@ -11,7 +11,6 @@ interface IBuildingState
     public bool IsMaterialized { get; }
     public bool IsCompleted { get; }
     public bool IsFunctional { get; }
-    public bool CanApplyUpgrades { get; }
     // Whether the player can impact the current health of this building using repairs or deleting the building.
     public bool AcceptsPlayerHealthChanges { get; }
 }
