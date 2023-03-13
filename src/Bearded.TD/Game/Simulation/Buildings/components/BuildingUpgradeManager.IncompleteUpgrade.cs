@@ -1,3 +1,5 @@
+using Bearded.TD.Game.Simulation.Buildings.Ruins;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
@@ -7,6 +9,7 @@ sealed partial class BuildingUpgradeManager
     private sealed class IncompleteUpgrade : IncompleteWork, IIncompleteUpgrade
     {
         private readonly BuildingUpgradeManager manager;
+        private ISabotageReceipt? sabotageReceipt;
 
         public IPermanentUpgrade Upgrade { get; }
         public double PercentageComplete { get; private set; }
@@ -27,7 +30,14 @@ sealed partial class BuildingUpgradeManager
             manager.sendSyncUpgradeCompletion(this);
         }
 
-        public override void OnStart() { }
+        public override void OnStart()
+        {
+            if (sabotageReceipt == null
+                && manager.Owner.TryGetSingleComponent<ISabotageHandler>(out var sabotageHandler))
+            {
+                sabotageReceipt = sabotageHandler.SabotageObject();
+            }
+        }
 
         public override void OnProgressSet(double percentage)
         {
@@ -37,6 +47,7 @@ sealed partial class BuildingUpgradeManager
         public override void OnComplete()
         {
             manager.onUpgradeCompleted(this);
+            sabotageReceipt?.Repair();
         }
 
         public override void OnCancel()

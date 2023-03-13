@@ -84,7 +84,7 @@ static partial class Constants
         public static class Resources
         {
             public static readonly ResourceRate ConstructionSpeed = 15.ResourcesPerSecond();
-            public static readonly ResourceRate UpgradeSpeed = 10.ResourcesPerSecond();
+            public static readonly ResourceRate UpgradeSpeed = 25.ResourcesPerSecond();
         }
 
         public static class Enemy
