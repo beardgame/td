@@ -1,23 +1,15 @@
 {
     id: "maze",
     behaviors: [
-
-        { id: "tagSelected", parameters: { value: 1 } },
-        { id: "erodeSelection", parameters: { } },
-        { id: "tagSelected", parameters: { value: -1 } },
-        { id: "erodeSelection", parameters: { } },
-        { id: "tagSelected", parameters: { value: 1 } },
-        { id: "erodeSelection", parameters: { } },
-        { id: "tagSelected", parameters: { value: -1 } },
-        { id: "erodeSelection", parameters: { } },
-        { id: "tagSelected", parameters: { value: 1 } },
-        { id: "erodeSelection", parameters: { } },
-        { id: "tagSelected", parameters: { value: -1 } },
-
-        { id: "selectRandom", parameters: { percentage: 0.15 } },
-        { id: "tagSelected", parameters: { value: 1 } },
-
-        { id: "selectTag", parameters: { } },
-        { id: "setTiles", parameters: { type: "floor" } }
+        { id: "erodeSelection", parameters: { }  },
+        { id: "setTiles", parameters: { type: "floor" } },
+        { id: "erodeSelection", parameters: { }  },
+        { id: "setTiles", parameters: { type: "wall" } },
+        
+        { id: "selectRandom", parameters: { percentage: 0.1 } },
+        { id: "dilateSelection" },
+        { id: "setTiles", parameters: { type: "floor" } },
+        { id: "selectRandom", parameters: { percentage: 0.2 } },
+        { id: "setTiles", parameters: { type: "floor" } },
     ]
 }

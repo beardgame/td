@@ -1,9 +1,29 @@
 {
     id: "ring",
     behaviors: [
+        { id: "tagSelected", parameters: { value: 1 } },
+        { id: "erodeSelection", parameters: { } },
+        { id: "erodeSelection", parameters: { } },
+        { id: "tagSelected", parameters: { value: -1 } },
+        { id: "erodeSelection", parameters: { } },
+        { id: "erodeSelection", parameters: { } },
+        { id: "tagSelected", parameters: { value: 1 } },
+
+        { id: "selectRandom", parameters: { percentage: 0.35 } },
+        { id: "tagSelected", parameters: { value: 1 } },
+
+        { id: "selectTag", parameters: { } },
         { id: "setTiles", parameters: { type: "floor" } },
+
+        { id: "selectAll" },
+        { id: "resetTagSelected", parameters: { } },
         { id: "erodeSelection", parameters: { } },
         { id: "erodeSelection", parameters: { } },
+        { id: "tagSelected", parameters: { value: -10 } },
+        
+        { id: "selectRandom", parameters: { percentage: 0.1 } },
+        { id: "tagSelected", parameters: { value: 1 } },
+        { id: "selectTag", parameters: { } },
         { id: "setTiles", parameters: { type: "wall" } }
     ]
 }

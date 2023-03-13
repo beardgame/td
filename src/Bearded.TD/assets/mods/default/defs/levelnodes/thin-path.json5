@@ -1,6 +1,13 @@
 {
     id: "thin-path",
     behaviors: [
-        { id: "setTiles", parameters: { type: "crevice" } }
+        { id: "setTiles", parameters: { type: "crevice" } },
+
+        { id: "selectRandom", parameters: { percentage: 0.05 } },
+        { id: "dilateSelection" },
+        { id: "setTiles", parameters: { type: "floor" } },
+        
+        { id: "selectRandom", parameters: { percentage: 0.1 } },
+        { id: "setTiles", parameters: { type: "floor" } }
     ]
 }

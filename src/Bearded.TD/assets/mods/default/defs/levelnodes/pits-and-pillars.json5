@@ -2,9 +2,9 @@
     id: "pits-and-pillars",
     behaviors: [
         { id: "setTiles", parameters: { type: "floor" } },
-        { id: "selectRandom", parameters: { percentage: 0.3 } },
+        { id: "selectRandom", parameters: { percentage: 0.25 } },
         { id: "setTiles", parameters: { type: "crevice" } },
-        { id: "selectRandom", parameters: { percentage: 0.2 } },
+        { id: "selectRandom", parameters: { percentage: 0.1 } },
         { id: "setTiles", parameters: { type: "wall" } }
     ]
 }
