@@ -60,32 +60,10 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
         var damage = new UntypedDamage(
             (unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
+        var typedDamage = damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
 
-        var distanceSquared = Parameters.Range.Squared;
-
-        var objects = Owner.Game.PhysicsLayer;
-        // Returns only tiles with their centre in the circle with the given range.
-        // This means it may miss enemies that are strictly speaking in range, but are on a tile that itself is out
-        // of range.
-        var tiles = Level.TilesWithCenterInCircle(center.XY(), Parameters.Range);
-
-        var damageExecutor = DamageExecutor.FromObject(Owner);
-
-        foreach (var obj in tiles.SelectMany(objects.GetObjectsOnTile))
-        {
-            var difference = obj.Position - center;
-
-            if (difference.LengthSquared > distanceSquared)
-                continue;
-
-            var incident = new Difference3(difference.NumericValue.NormalizedSafe());
-            var impact = new Impact(obj.Position, -incident, incident);
-
-            damageExecutor.TryDoDamage(
-                obj,
-                damage.Typed(Parameters.DamageType ?? DamageType.Kinetic),
-                Hit.FromAreaOfEffect(impact));
-        }
+        AreaOfEffect.Damage(
+            Owner.Game, DamageExecutor.FromObject(Owner), typedDamage, center, Parameters.Range);
     }
 
     public override void Update(TimeSpan elapsedTime) { }
