@@ -1,10 +1,8 @@
-using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
-using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -31,7 +29,7 @@ sealed class ProjectileExplosionOnHit
         Speed RandomVelocity { get; }
 
         [Modifiable(1)]
-        double DamageFactor { get; }
+        float DamageFactor { get; }
     }
 
     public ProjectileExplosionOnHit(IParameters parameters) : base(parameters)
@@ -86,44 +84,17 @@ sealed class ProjectileExplosionOnHit
             return;
         }
 
-        var projectileNumber = getProjectileNumber(parentDamage);
-
-        var projectileDamage = parentDamage / projectileNumber;
-
-        foreach (var _ in Enumerable.Range(0, projectileNumber))
+        var projectiles = ProjectileExplosion.CreateProjectilesForExplosion(
+            Parameters.Projectile,
+            Owner,
+            parentDamage * Parameters.DamageFactor,
+            Parameters.MinProjectileNumber,
+            Parameters.MaxProjectileNumber,
+            Parameters.RandomVelocity);
+        foreach (var projectile in projectiles)
         {
-            var velocity = Vectors.GetRandomUnitVector3() * Parameters.RandomVelocity;
-            var direction = Direction2.Of(velocity.NumericValue.Xy);
-
-            var projectile = ProjectileFactory
-                .Create(Parameters.Projectile, Owner, Owner.Position, direction, velocity, projectileDamage, default);
             projectile.AddComponent(new Property<Impact>(hit));
             Owner.Game.Add(projectile);
         }
-    }
-
-    private int getProjectileNumber(UntypedDamage parentDamage)
-    {
-        var desiredDamage = (int) (parentDamage.Amount.NumericValue * Parameters.DamageFactor);
-
-        if (desiredDamage <= Parameters.MaxProjectileNumber)
-        {
-            return desiredDamage;
-        }
-
-        var bestProjectileNumber = Parameters.MaxProjectileNumber;
-        var bestTotalDamage = desiredDamage / bestProjectileNumber * bestProjectileNumber;
-
-        for (var n = Parameters.MinProjectileNumber; n < Parameters.MaxProjectileNumber; n++)
-        {
-            var totalDamage = desiredDamage / n * n;
-            if (totalDamage > bestTotalDamage)
-            {
-                bestProjectileNumber = n;
-                bestTotalDamage = totalDamage;
-            }
-        }
-
-        return bestProjectileNumber;
     }
 }
