@@ -19,7 +19,7 @@ static class EnemyFactory
 
     private static void fillSockets(GameObject obj, ImmutableDictionary<SocketShape,IModule> modules)
     {
-        foreach (var socket in obj.GetComponents<ISocket>())
+        foreach (var socket in obj.GetComponents<ISocket>().ToImmutableArray())
         {
             if (modules.TryGetValue(socket.Shape, out var module))
             {
