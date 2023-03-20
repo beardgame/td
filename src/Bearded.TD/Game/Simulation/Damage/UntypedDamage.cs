@@ -1,3 +1,4 @@
+using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Damage;
@@ -38,4 +39,7 @@ readonly struct UntypedDamage
 
     public static UntypedDamage operator /(UntypedDamage amount, float scalar) =>
         new((amount.Amount.NumericValue / scalar).HitPoints());
+
+    public static UntypedDamagePerSecond operator /(UntypedDamage amount, TimeSpan duration) =>
+        new(((float) (amount.Amount.NumericValue / duration.NumericValue)).HitPoints());
 }
