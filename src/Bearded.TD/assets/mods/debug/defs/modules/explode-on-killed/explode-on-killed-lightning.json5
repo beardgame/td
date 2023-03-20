@@ -1,0 +1,38 @@
+{
+    id: "explode-on-killed-lightning",
+    affinityElement: "conductivity",
+    socketShape: "explodeOnKilled",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "splashDamageOnKilled",
+                parameters: {
+                    range: 2.5,
+                    damage: 10,
+                    damageType: "electric",
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "shockNearbyObjectsOnKilled",
+                parameters: {
+                    range: 2.5,
+                    duration: 0.7,
+                    movementPenalty: 0.8,
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "spawnObjectOnKilled",
+                parameters: {
+                    object: "default.enemyExplosion"
+                }
+            }
+        },
+    ]
+}

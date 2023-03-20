@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
@@ -23,14 +22,11 @@ static class AreaOfEffect
     }
 
     public static void ApplyStatusEffect<T>(
-        GameState game, T effect, Position3 center, Unit range, float? probability = null, Random? random = null)
+        GameState game, T effect, Position3 center, Unit range)
         where T : IElementalEffect
     {
-        random ??= Random.Shared;
-
         foreach (var (obj, _) in findObjects(game, center, range))
         {
-            if (probability is { } p && !random.NextBool(p)) continue;
             obj.TryApplyEffect(effect);
         }
     }

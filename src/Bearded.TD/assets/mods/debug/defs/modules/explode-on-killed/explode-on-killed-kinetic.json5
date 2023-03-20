@@ -1,0 +1,20 @@
+{
+    id: "explode-on-killed-kinetic",
+    affinityElement: "dynamics",
+    socketShape: "explodeOnKilled",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "projectileExplosionOnKilled",
+                parameters: {
+                    projectile: "default.shrapnel",
+                    minProjectileNumber: 10,
+                    maxProjectileNumber: 15,
+                    randomVelocity: 6,
+                    damage: 50,
+                }
+            }
+        },
+    ],
+}
