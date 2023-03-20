@@ -9,9 +9,10 @@
     { id: "sink" },
     { id: "defaultTileOccupancy" },
     { id: "gameOverOnDestroy" },
+    { id: "damageNumbers" },
     { id: "revealSurroundingZones", parameters: { steps: 1 } },
     { id: "droneSpawner", parameters: { drone: "simple-drone" } },
-    
+
     { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
 
 

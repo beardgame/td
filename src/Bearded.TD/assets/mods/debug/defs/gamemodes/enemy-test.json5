@@ -63,6 +63,7 @@
                 elements: [ "dynamics", "combustion", "conductivity" ],
                 enemies: [
                     { blueprint: "single-element-enemy", probability: 1, },
+                    //{ blueprint: "volatile-enemy", probability: 1, },
                 ],
             }
         },
