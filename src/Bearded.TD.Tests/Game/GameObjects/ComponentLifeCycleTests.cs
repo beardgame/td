@@ -40,6 +40,7 @@ public sealed class ComponentLifeCycleTests
         typeof(ParticleSystem), // Attempts to instantiate a sprite on activate.
         typeof(PlaySoundOnActivate), // Attempts to play a sound on activate.
         typeof(Sprite), // Attempts to instantiate a sprite on activate.
+        typeof(TargetEnemiesInRange), // Attempts to access the weapon state on activate.
         typeof(Trail) // Attempts to instantiate a sprite on activate.
     );
 
