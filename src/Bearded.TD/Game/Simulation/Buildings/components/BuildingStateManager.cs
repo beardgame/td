@@ -49,6 +49,7 @@ sealed class BuildingStateManager : Component,
         Events.Subscribe<ObjectRepaired>(this);
         Events.Subscribe<ObjectRuined>(this);
         Events.Subscribe<PreventPlayerHealthChanges>(this);
+        Events.Subscribe<PreventRuin>(this);
 
         ReportAggregator.Register(Events, new BuildingStateReport(Owner, this));
 
