@@ -47,7 +47,7 @@ static partial class Constants
 
             public static readonly Color DynamicsColor = Color.LightGray;
             public static readonly Color CombustionColor = Color.OrangeRed;
-            public static readonly Color ConductivityColor = Color.Purple;
+            public static readonly Color ConductivityColor = Color.Plum;
             public static readonly Color AlchemyColor = Color.LimeGreen;
             public static readonly Color HydrologyColor = Color.LightBlue;
             public static readonly Color PhotonicsColor = Color.Yellow;
