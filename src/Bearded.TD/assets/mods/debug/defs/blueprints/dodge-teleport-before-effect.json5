@@ -1,0 +1,54 @@
+﻿{
+  id: "dodge-teleport-before-effect",
+  components: [
+    {
+      id: "animatedSprite",
+      parameters: {
+        sprite: "default.particle.halo",
+        animation : {
+          timeScale: 0.3,
+          keyFrames: [
+            {
+              color: "transparent",
+              size: 0.5
+            },
+            {
+              color: "00DDA0DD",
+              size: 1,
+              duration: 0.3
+            },
+            {
+              color: "transparent",
+              size: 0,
+              duration: 0.7
+            },
+          ]
+        },
+        heightOffset: 0.1,
+      }
+    },
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 8,
+        sprite: "default.particle.orb-soft",
+        color: "00DDA0DD",
+        size: 0.2,
+        finalSize: 0.3,
+        lifetime: 0.3,
+        randomVelocity: 3,
+        gravityFactor: 1,
+        collideWithLevel: true,
+        collisionNormalFactor: 0.2,
+        collisionTangentFactor: 0.2,
+        drawMode: "sprite"
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 0.3
+      }
+    }
+  ]
+}

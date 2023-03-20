@@ -1,0 +1,56 @@
+﻿{
+  id: "dodge-backwards-effect",
+  components: [
+    {
+      id: "animatedSprite",
+      parameters: {
+        sprite: "default.particle.crater",
+        drawGroupOrderKey: -20,
+        randomAngle: true,
+        animation : {
+          timeScale: 1,
+          keyFrames: [
+            {
+              color: "00000000",
+              size: 0.5
+            },
+            {
+              color: "88444444",
+              size: 0.5,
+              duration: 0.01
+            },
+            {
+              color: "00000000",
+              size: 0.5,
+              duration: 0.99
+            },
+          ]
+        },
+        heightOffset: 0.1,
+      }
+    },
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 8,
+        sprite: "default.particle.mote",
+        color: "88222222",
+        size: 0.2,
+        finalSize: 0.3,
+        lifetime: 0.5,
+        randomVelocity: 0.3,
+        initialVelocity: [0, 0, 0.4],
+        vectorVelocity: -0.1,
+        gravityFactor: 0,
+        dontRandomize: true,
+        drawMode: "sprite"
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 1
+      }
+    }
+  ]
+}

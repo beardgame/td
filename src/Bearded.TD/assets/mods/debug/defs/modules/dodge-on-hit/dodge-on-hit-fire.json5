@@ -9,7 +9,8 @@
         id: "boostForwardsOnTakeHit",
         parameters: {
           cooldown: 1,
-          impulse: 10
+          impulse: 10,
+          spawnObject: "boost-forward-effect"
         }
       }
     }

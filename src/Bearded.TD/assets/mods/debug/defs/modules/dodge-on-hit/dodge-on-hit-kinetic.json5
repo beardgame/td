@@ -8,8 +8,9 @@
       parameters: {
         id: "boostForwardsOnTakeHit",
         parameters: {
-          cooldown: 1,
-          impulse: 10
+          cooldown: 1.5,
+          impulse: -10,
+          spawnObject: "dodge-backwards-effect"
         }
       }
     }

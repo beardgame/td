@@ -1,0 +1,41 @@
+﻿{
+  id: "boost-forward-effect",
+  components: [
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 8,
+        sprite: "default.particle.orb-soft",
+        color: "FF000000",
+        size: 0.15,
+        finalSize: 0.35,
+        lifetime: 0.6,
+        randomVelocity: 0.75,
+        vectorVelocity: -2,
+        gravityFactor: -0.2,
+        drawMode: "sprite"
+      }
+    },
+    {
+      id: "particleSystem",
+      parameters: {
+        count: 8,
+        sprite: "default.particle.orb-soft",
+        color: "00FF4500",
+        size: 0.15,
+        finalSize: 0.3,
+        lifetime: 0.4,
+        randomVelocity: 0.75,
+        vectorVelocity: -2,
+        gravityFactor: 0.2,
+        drawMode: "sprite"
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 0.6
+      }
+    }
+  ]
+}

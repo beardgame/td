@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;

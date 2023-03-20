@@ -6,10 +6,13 @@
     {
       type: "component",
       parameters: {
-        id: "boostForwardsOnTakeHit",
+        id: "teleportRandomlyOnTakeHit",
         parameters: {
-          cooldown: 1,
-          impulse: 10
+          cooldown: 2,
+          minDistance: 1.5,
+          maxDistance: 2.5,
+          spawnObjectBefore: "dodge-teleport-before-effect",
+          spawnObjectAfter: "dodge-teleport-after-effect"
         }
       }
     }
