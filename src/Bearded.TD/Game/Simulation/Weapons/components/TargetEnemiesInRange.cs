@@ -70,6 +70,8 @@ sealed partial class TargetEnemiesInRange
     {
         base.Activate();
 
+        AimDirection = weapon.NeutralDirection;
+
         passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
         tileRangeDrawer = new TileRangeDrawer(
             Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);

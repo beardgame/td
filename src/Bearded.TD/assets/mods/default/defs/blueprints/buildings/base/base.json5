@@ -12,6 +12,38 @@
     { id: "revealSurroundingZones", parameters: { steps: 1 } },
     { id: "droneSpawner", parameters: { drone: "simple-drone" } },
     
-    { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }}
+    { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
+
+
+    {
+      id: "turret",
+      onGhost: true,
+      parameters: {
+        weapon: "base-gatling-weapon",
+        height: 0.3,
+        neutralDirection: 0,
+        offset: [1, 0]
+      }
+    },
+    {
+      id: "turret",
+      onGhost: true,
+      parameters: {
+        weapon: "base-gatling-weapon",
+        height: 0.3,
+        neutralDirection: 120,
+        offset: [-0.5, 0.866]
+      }
+    },
+    {
+      id: "turret",
+      onGhost: true,
+      parameters: {
+        weapon: "base-gatling-weapon",
+        height: 0.3,
+        neutralDirection: 240,
+        offset: [-0.5, -0.866]
+      }
+    }
   ]
 }
