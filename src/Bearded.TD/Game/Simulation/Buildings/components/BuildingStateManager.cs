@@ -124,6 +124,7 @@ sealed class BuildingStateManager : Component,
     {
         if (state.IsCompleted &&
             ruinedSabotage == null &&
+            !ruinPrevented &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
             Owner.Sync(RuinBuilding.Command);
