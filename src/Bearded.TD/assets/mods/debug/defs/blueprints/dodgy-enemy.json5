@@ -1,7 +1,7 @@
 {
-    id: "single-element-enemy",
+    id: "dodgy-enemy",
     components: [
-        { id: "name", parameters: { name: "Single element enemy" } },
+        { id: "name", parameters: { name: "Dodgy enemy" } },
         {
             id: "sprite",
             parameters: {
