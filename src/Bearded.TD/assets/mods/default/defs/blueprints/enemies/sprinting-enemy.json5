@@ -21,7 +21,7 @@
             id: "resistanceContributions",
             parameters: {
                 factors: {
-                    dodgeOnHit: 0.2
+                    sprintOnStraights: 0.2
                 }
             }
         },
