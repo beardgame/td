@@ -12,7 +12,7 @@ sealed partial class WaveScheduler
 {
     private const int minGroupSize = 7;
     private const int maxGroupSize = minGroupSize * 3;
-    private const double targetDensity = 0.8;
+    private const double targetDensity = 0.6;
 
     private EnemySpawnScript toEnemyScript(int enemyCount, TimeSpan waveDuration, EnemyForm enemyForm)
     {
