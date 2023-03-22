@@ -4,7 +4,7 @@
         {
             id: "targetEnemiesInRange",
             parameters: {
-                range: 5,
+                range: 3,
                 coneOfFire: 10,
             }
         },
@@ -26,7 +26,7 @@
             id: "projectileEmitter",
             parameters: {
                 projectile: "fire1-flamethrower-flame",
-                muzzleSpeed: 8,
+                muzzleSpeed: 6,
                 spread: 3,
                 bulletDropCompensation: 0,
                 muzzleOffset: [0.3, 0]

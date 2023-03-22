@@ -16,7 +16,7 @@
     },
     {
       id: "deleteAfter",
-      parameters: { timeSpan: 0.3 }
+      parameters: { timeSpan: 0.2 }
     }
   ]
 }

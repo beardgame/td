@@ -4,7 +4,7 @@
         {
             id: "targetEnemiesInRange",
             parameters: {
-                range: 6,
+                range: 3,
             }
         },
         {
