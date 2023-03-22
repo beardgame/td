@@ -31,7 +31,12 @@ sealed class NetBufferWriter : INetBufferStream
 
     public void Serialize<T>(ref T t)
         where T : struct
-        => buffer.Write(t);
+    {
+        if (typeof(T).IsEnum)
+            buffer.WriteEnum(ref t);
+        else
+            buffer.WriteStruct(t);
+    }
 
     public void Serialize<T>(ref Id<T> t) => buffer.Write(t.Value);
 

@@ -33,7 +33,12 @@ sealed class NetBufferReader : INetBufferStream
 
     public void Serialize<T>(ref T t)
         where T : struct
-        => buffer.Read(out t);
+    {
+        if (typeof(T).IsEnum)
+            buffer.ReadEnum(out t);
+        else
+            buffer.ReadStruct(out t);
+    }
 
     public void Serialize<T>(ref Id<T> t) => t = new Id<T>(buffer.ReadInt32());
 
