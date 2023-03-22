@@ -133,7 +133,7 @@ sealed class WaveScriptSerializer
     private sealed class EnemyFormSerializer
     {
         private ModAwareId blueprint;
-        private (SocketShape, ModAwareId)[] modules = Array.Empty<(SocketShape, ModAwareId)>();
+        private (string, ModAwareId)[] modules = Array.Empty<(string, ModAwareId)>();
         private (DamageType, float)[] resistances = Array.Empty<(DamageType, float)>();
 
         [UsedImplicitly]
@@ -142,7 +142,7 @@ sealed class WaveScriptSerializer
         public EnemyFormSerializer(EnemyForm form)
         {
             blueprint = form.Blueprint.Id;
-            modules = form.Modules.Select(kvp => (kvp.Key, kvp.Value.Id)).ToArray();
+            modules = form.Modules.Select(kvp => (kvp.Key.Id, kvp.Value.Id)).ToArray();
             resistances = form.Resistances.Select(kvp => (kvp.Key, kvp.Value.NumericValue)).ToArray();
         }
 
@@ -167,7 +167,8 @@ sealed class WaveScriptSerializer
             new(game.Blueprints.GameObjects[blueprint], toModuleDictionary(game), toResistanceDictionary());
 
         private ImmutableDictionary<SocketShape, IModule> toModuleDictionary(GameInstance game) =>
-            modules.ToImmutableDictionary(tuple => tuple.Item1, toTuple => game.Blueprints.Modules[toTuple.Item2]);
+            modules.ToImmutableDictionary(tuple =>
+                SocketShape.FromLiteral(tuple.Item1), toTuple => game.Blueprints.Modules[toTuple.Item2]);
 
         private ImmutableDictionary<DamageType, Resistance> toResistanceDictionary() =>
             resistances.ToImmutableDictionary(tuple => tuple.Item1, tuple => new Resistance(tuple.Item2));
