@@ -17,13 +17,13 @@ sealed partial class WaveScheduler
     // The minimum number of enemies the wave should support to allow an enemy to be used for the current wave.
     private const int minEnemiesCount = 12;
 
-    private EnemiesToSpawn chooseEnemy(double minWaveValue, double maxWaveValue)
+    private EnemiesToSpawn chooseEnemy(Element element, double minWaveValue, double maxWaveValue)
     {
         var eligibleEnemies = filteredEligibleEnemies(maxWaveValue);
         var blueprint = selectBlueprint(eligibleEnemies);
         var blueprintThreat = blueprint.GetThreat();
         if (!enemyFormGenerator.TryGenerateEnemyForm(
-                blueprint, new EnemyFormGenerator.Requirements(), out var enemyForm))
+                blueprint, new EnemyFormGenerator.Requirements(element), out var enemyForm))
         {
             // TODO: this can happen, just not in the default mod right now
             throw new InvalidOperationException();

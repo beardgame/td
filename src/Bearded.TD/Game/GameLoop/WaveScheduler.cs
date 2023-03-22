@@ -104,8 +104,9 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         var sw = Stopwatch.StartNew();
 
         var (minWaveValue, maxWaveValue) = totalThreatRange(requirements);
+        var element = requirements.EnemyComposition.Elements.PrimaryElement;
 
-        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(minWaveValue, maxWaveValue);
+        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(element, minWaveValue, maxWaveValue);
 
         var spawnLocations = chooseSpawnLocations(enemyCount);
         var spawnLocationCount = spawnLocations.Length;
