@@ -1,0 +1,19 @@
+﻿{
+  id: "sprint-on-straights-kinetic",
+  affinityElement: "dynamics",
+  socketShape: "sprintOnStraights",
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "sprintOnStraights",
+        parameters: {
+          timeToSprint: 1,
+          minAcceleration: 5,
+          timeToMaxAcceleration: 2,
+          maxAcceleration: 20,
+        }
+      }
+    }
+  ],
+}

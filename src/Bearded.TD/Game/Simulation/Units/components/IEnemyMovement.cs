@@ -7,4 +7,5 @@ interface IEnemyMovement
 {
     bool IsMoving { get; }
 
+    Direction TileDirection { get; }
 }

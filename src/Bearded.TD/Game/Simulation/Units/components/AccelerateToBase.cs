@@ -17,6 +17,7 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
     private PassabilityLayer passabilityLayer = null!;
 
     public bool IsMoving { get; private set; }
+    public Direction TileDirection { get; private set; }
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -41,17 +42,17 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
     public override void Update(TimeSpan elapsedTime)
     {
         var tile = Level.GetTile(Owner.Position);
-        var nextTileDirection = getBestDirection(tile);
+        TileDirection = getBestDirection(tile);
 
-        if (nextTileDirection == Direction.Unknown)
+        if (TileDirection == Direction.Unknown)
         {
             IsMoving = false;
             return;
         }
 
-        IsMoving = passabilityLayer[tile.Neighbor(nextTileDirection)].IsPassable;
+        IsMoving = passabilityLayer[tile.Neighbor(TileDirection)].IsPassable;
 
-        var nextTile = tile.Neighbor(nextTileDirection);
+        var nextTile = tile.Neighbor(TileDirection);
         var nextTilePosition = Level.GetPosition(nextTile);
 
         var direction = (nextTilePosition - Owner.Position.XY()).NumericValue.NormalizedSafe();
