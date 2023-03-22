@@ -62,9 +62,9 @@
                 wavesPerChapter: 5,
                 elements: [ "dynamics", "combustion", "conductivity" ],
                 enemies: [
-                    //{ blueprint: "dodgy-enemy", probability: 1, },
-                    //{ blueprint: "volatile-enemy", probability: 1, },
-                    { blueprint: "sprinting-enemy", probability: 1, }
+                    //{ blueprint: "default.dodgy-enemy", probability: 1, },
+                    //{ blueprint: "default.volatile-enemy", probability: 1, },
+                    { blueprint: "default.sprinting-enemy", probability: 1, }
                 ],
             }
         },
