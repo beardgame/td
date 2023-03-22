@@ -2,8 +2,8 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Synchronization;
 
-interface ISynchronizedState<in TSubject>
+interface IStateToSync
 {
-    void ApplyTo(TSubject subject);
     void Serialize(INetBufferStream stream);
+    void Apply();
 }
