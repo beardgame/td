@@ -6,12 +6,20 @@ using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.Utilities.IO;
+using CommandLine;
 
 namespace Bearded.TD;
 
 static class EntryPoint
 {
     public static void Main(string[] args)
+    {
+        Parser.Default.ParseArguments<Options>(args)
+            .WithParsed(run)
+            .WithNotParsed(errors => errors.Output());
+    }
+
+    private static void run(Options options)
     {
         using var stream = new FileStream(
             Constants.Paths.LogFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
