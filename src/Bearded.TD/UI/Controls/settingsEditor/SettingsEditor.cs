@@ -20,6 +20,6 @@ sealed class SettingsEditor : NavigationNode<Void>
     public void OnBackToMenuButtonClicked()
     {
         UserSettings.Save(logger);
-        Navigation!.Replace<MainMenu>(this);
+        Navigation!.Replace<MainMenu, Intent>(Intent.None, this);
     }
 }

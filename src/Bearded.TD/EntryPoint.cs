@@ -14,7 +14,12 @@ static class EntryPoint
 {
     public static void Main(string[] args)
     {
-        Parser.Default.ParseArguments<Options>(args)
+        var parser = new Parser(with =>
+        {
+            with.CaseInsensitiveEnumValues = true;
+        });
+
+        parser.ParseArguments<Options>(args)
             .WithParsed(run)
             .WithNotParsed(errors => errors.Output());
     }
@@ -49,7 +54,7 @@ static class EntryPoint
 
         logger.Info?.Log("");
         logger.Info?.Log("Creating game");
-        var game = new TheGame(logger);
+        var game = new TheGame(logger, options.Intent);
 
         logger.Info?.Log("Running game");
         game.Run();
