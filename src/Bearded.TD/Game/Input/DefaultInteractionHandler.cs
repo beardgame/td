@@ -25,7 +25,7 @@ sealed class DefaultInteractionHandler : InteractionHandler
 
         // TODO: make this work for multiple selectables
         var selectable = Game.State.SelectionLayer.SelectablesForTile(currentFootprint.RootTile)
-            .FirstOrDefault(s => s.IsSelectable);
+            .LastOrDefault(s => s.IsSelectable);
         var clicked = cursor.Click.Hit;
 
         if (selectable != null)
