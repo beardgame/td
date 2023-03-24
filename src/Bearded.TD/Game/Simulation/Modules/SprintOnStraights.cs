@@ -47,7 +47,7 @@ sealed class SprintOnStraights : Component<SprintOnStraights.IParameters>
     {
         var newDirection = movement.TileDirection;
 
-        if (newDirection == Direction.Unknown || newDirection != currentDirection)
+        if (!movement.IsMoving || newDirection == Direction.Unknown || newDirection != currentDirection)
         {
             stopSprinting();
             resetTime();
