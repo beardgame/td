@@ -3,6 +3,7 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;

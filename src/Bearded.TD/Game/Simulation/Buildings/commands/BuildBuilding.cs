@@ -55,16 +55,7 @@ static class BuildBuilding
 
             return factionTechnology.IsBuildingUnlocked(blueprint)
                 && faction.SharesBehaviorWith<FactionResources>(actor.Faction)
-                && componentPreconditionsAreMet();
-        }
-
-        private bool componentPreconditionsAreMet()
-        {
-            var preconditionParameters = new IBuildBuildingPrecondition.Parameters(
-                game.State, footprint);
-
-            return blueprint.GetBuildBuildingPreconditions()
-                .All(c => c.CanBuild(preconditionParameters).IsValid);
+                && preconditionsResult().IsValid;
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
@@ -76,10 +67,20 @@ static class BuildBuilding
 
         public override void Execute()
         {
+            var result = preconditionsResult();
             var building = BuildingFactory.Create(id, blueprint, faction, footprint);
-            building.AddComponent(
-                new BuildingConstructionWork(building.GetComponents<IncompleteBuildingComponent>().Single().Work));
+            var incompleteBuilding = building.GetComponents<IncompleteBuildingComponent>().Single().Work;
+            building.AddComponent(new BuildingConstructionWork(incompleteBuilding, result.AdditionalCost));
             game.State.Add(building);
+        }
+
+        private IBuildBuildingPrecondition.Result preconditionsResult()
+        {
+            var preconditionParameters = new IBuildBuildingPrecondition.Parameters(game.State, footprint);
+            var result = blueprint.GetBuildBuildingPreconditions()
+                .Select(c => c.CanBuild(preconditionParameters))
+                .Aggregate(IBuildBuildingPrecondition.Result.Valid, IBuildBuildingPrecondition.Result.And);
+            return result;
         }
 
         protected override UnifiedRequestCommandSerializer GetSerializer() =>

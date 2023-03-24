@@ -124,7 +124,7 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         }
         lobbyManager.Game.ContentManager.CleanUpAll();
         lobbyManager.Close();
-        Navigation.Replace<MainMenu>(this);
+        Navigation.Replace<MainMenu, Intent>(Intent.None, this);
     }
 
     public void OnSetModEnabled(ModMetadata mod, bool enabled)

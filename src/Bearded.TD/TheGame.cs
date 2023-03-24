@@ -48,6 +48,7 @@ sealed class TheGame : Window, IMouseScaleProvider
     private static TheGame? instance;
 
     private readonly Logger logger;
+    private readonly Intent intent;
     private readonly ManualActionQueue glActionQueue = new();
     private readonly ScreenshotSaver screenshots;
     private readonly ActivityTimer activityTimer;
@@ -65,9 +66,10 @@ sealed class TheGame : Window, IMouseScaleProvider
     private ViewportSize viewportSize;
     public float MouseScale { get; private set; }
 
-    public TheGame(Logger logger)
+    public TheGame(Logger logger, Intent intent)
     {
         this.logger = logger;
+        this.intent = intent;
         screenshots = new ScreenshotSaver(logger, glActionQueue);
 
         var activityStopwatch = Stopwatch.StartNew();
@@ -150,7 +152,7 @@ sealed class TheGame : Window, IMouseScaleProvider
         var (models, views) = UILibrary.CreateFactories(renderContext);
         navigationController =
             new NavigationController(navigationRoot, dependencyResolver, models, views);
-        navigationController.Push<MainMenu>();
+        navigationController.Push<MainMenu, Intent>(intent);
         var debugConsole = navigationController.Push<DebugConsole>(a => a.Bottom(relativePercentage: .5));
         navigationController.Push<VersionOverlay>(a =>
             a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));

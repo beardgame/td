@@ -1,24 +1,29 @@
 ﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Content;
 using Bearded.TD.Networking;
 using Bearded.TD.Rendering;
 using Bearded.UI.Navigation;
 using Bearded.Utilities.IO;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class MainMenu : NavigationNode<Void>
+sealed class MainMenu : NavigationNode<Intent>
 {
     private Logger logger = null!;
     private IGraphicsLoader graphicsLoader = null!;
     private RenderContext renderContext = null!;
 
-    protected override void Initialize(DependencyResolver dependencies, Void _)
+    protected override void Initialize(DependencyResolver dependencies, Intent intent)
     {
         logger = dependencies.Resolve<Logger>();
         graphicsLoader = dependencies.Resolve<IGraphicsLoader>();
         renderContext = dependencies.Resolve<RenderContext>();
+
+        if (intent != Intent.None)
+        {
+            dependencies.Resolve<UIUpdater>().Add(new IntentExecutor(intent, this));
+        }
     }
 
     public void OnQuickGameButtonClicked()
@@ -47,4 +52,32 @@ sealed class MainMenu : NavigationNode<Void>
     public void OnOptionsButtonClicked() => Navigation!.Replace<SettingsEditor>(this);
 
     public void OnQuitGameButtonClicked() => Navigation!.Exit();
+
+    private sealed class IntentExecutor : UIUpdater.IUpdatable
+    {
+        private readonly Intent intent;
+        private readonly MainMenu menu;
+
+        public bool Deleted { get; private set; }
+
+        public IntentExecutor(Intent intent, MainMenu menu)
+        {
+            this.intent = intent;
+            this.menu = menu;
+        }
+
+        public void Update(UpdateEventArgs args)
+        {
+            switch (intent)
+            {
+                case Intent.QuickGame:
+                    menu.OnQuickGameButtonClicked();
+                    break;
+                default:
+                    menu.logger.Error?.Log($"Unsupported intent: {intent}");
+                    break;
+            }
+            Deleted = true;
+        }
+    }
 }

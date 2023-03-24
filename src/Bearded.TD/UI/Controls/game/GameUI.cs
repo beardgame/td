@@ -187,7 +187,7 @@ sealed class GameUI :
     public void OnReturnToMainMenuButtonClicked()
     {
         runner.Shutdown();
-        Navigation!.Replace<MainMenu>(this);
+        Navigation!.Replace<MainMenu, Intent>(Intent.None, this);
         GameLeft?.Invoke();
     }
 

@@ -138,7 +138,7 @@ sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
     public void OnBackToMenuButtonClicked()
     {
         networkInterface.Shutdown();
-        Navigation.Replace<MainMenu>(this);
+        Navigation.Replace<MainMenu, Intent>(Intent.None, this);
     }
 
     private static string playerName

@@ -16,7 +16,6 @@ class CanBeBuiltOn : Component
 
     public void Replace()
     {
-        Owner.TryRefund();
         Owner.Delete();
     }
 }

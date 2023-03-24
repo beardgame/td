@@ -18,7 +18,7 @@ static class UILibrary
             .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))
             .Add<Lobby, LobbyManager>(m => new LobbyControl(m))
             .Add<LobbyList, Void>(m => new LobbyListControl(m))
-            .Add<MainMenu, Void>(m => new MainMenuControl(m))
+            .Add<MainMenu, Intent>(m => new MainMenuControl(m))
             .Add<PerformanceOverlay, Void>(m => new PerformanceOverlayControl(m))
             .Add<SettingsEditor, Void>(m => new SettingsEditorControl(m))
             .Add<UIDebugOverlay, Void>(m => new UIDebugOverlayControl(m))
