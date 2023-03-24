@@ -12,6 +12,7 @@ sealed class Drag : Component<Drag.IParameters>
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
+        [Modifiable(0, Type = AttributeType.Drag)]
         float Amount { get; }
     }
 
