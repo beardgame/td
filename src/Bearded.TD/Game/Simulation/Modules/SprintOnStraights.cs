@@ -8,6 +8,9 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Modules;
 
+readonly record struct StartedSprinting(Direction Direction) : IComponentEvent;
+readonly record struct StoppedSprinting(Direction Direction) : IComponentEvent;
+
 [Component("sprintOnStraights")]
 sealed class SprintOnStraights : Component<SprintOnStraights.IParameters>
 {
@@ -55,7 +58,7 @@ sealed class SprintOnStraights : Component<SprintOnStraights.IParameters>
         }
         else if (Owner.Game.Time - lastDirectionChange > Parameters.TimeToSprint)
         {
-            startSprinting();
+            startSprinting(newDirection);
         }
 
         currentDirection = newDirection;
@@ -77,13 +80,13 @@ sealed class SprintOnStraights : Component<SprintOnStraights.IParameters>
         physics.ApplyVelocityImpulse(acceleration * elapsedTime);
     }
 
-    private void startSprinting()
+    private void startSprinting(Direction direction)
     {
         if (sprinting)
             return;
 
         sprinting = true;
-        // todo: start sprint event?
+        Events.Send(new StartedSprinting(direction));
     }
 
     private void resetTime()
@@ -97,7 +100,7 @@ sealed class SprintOnStraights : Component<SprintOnStraights.IParameters>
             return;
 
         sprinting = false;
-        // todo: stop sprint event?
+        Events.Send(new StoppedSprinting(currentDirection));
     }
 }
 
