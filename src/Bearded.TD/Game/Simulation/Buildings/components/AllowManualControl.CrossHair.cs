@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed partial class AllowManualControl
 {
-    private sealed class CrossHair : Component, IManualTarget3, IListener<DrawComponents>
+    public sealed class CrossHair : Component, IManualTarget3, IListener<DrawComponents>
     {
         private readonly IManualTarget2 target;
         private IFactionProvider? faction;
