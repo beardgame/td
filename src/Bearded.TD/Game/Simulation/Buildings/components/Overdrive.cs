@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
@@ -12,20 +11,13 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 sealed class Overdrive : Component
 {
     private static readonly TimeSpan damageInterval = 0.5.S();
-    private static float damagePercentile = 0.025f;
+    private const float damagePercentile = 0.025f;
 
     private IUpgradeReceipt? upgradeReceipt;
-    private ComponentDependencies.IDependencyRef weaponTriggerDependency = null!;
 
-    private IWeaponTrigger? trigger;
-    private bool wasTriggerPulledLastFrame;
     private Instant nextDamageTime;
 
-    protected override void OnAdded()
-    {
-        weaponTriggerDependency = ComponentDependencies
-            .DependDynamic<IWeaponTrigger>(Owner, Events, t => trigger = t);
-    }
+    protected override void OnAdded() {}
 
     public override void Activate()
     {
@@ -40,6 +32,7 @@ sealed class Overdrive : Component
         var upgrade = Upgrade.FromEffects(fireRate, damageOverTime);
 
         upgradeReceipt = Owner.ApplyUpgrade(upgrade);
+        nextDamageTime = Owner.Game.Time;
     }
 
     private static ModificationWithId damageModification(IdManager ids)
@@ -48,22 +41,18 @@ sealed class Overdrive : Component
     public override void OnRemoved()
     {
         upgradeReceipt?.Rollback();
-        weaponTriggerDependency.Dispose();
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
-        var triggerIsPulled = trigger?.TriggerPulled ?? false;
-
-        if (triggerIsPulled && nextDamageTime <= Owner.Game.Time)
+        if (nextDamageTime > Owner.Game.Time)
         {
-            damageOwner();
-
-            var timeOfDamage = wasTriggerPulledLastFrame ? nextDamageTime : Owner.Game.Time;
-            nextDamageTime = timeOfDamage + damageInterval;
+            return;
         }
 
-        wasTriggerPulledLastFrame = triggerIsPulled;
+        damageOwner();
+
+        nextDamageTime += damageInterval;
     }
 
     private void damageOwner()
