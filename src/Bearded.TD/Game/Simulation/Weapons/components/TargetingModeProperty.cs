@@ -7,7 +7,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("targetingModes")]
-sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters>, IProperty<ITargetingMode>
+sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters>, IProperty<ITargetingMode>, ITargetingModeSetter
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -17,15 +17,22 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
 
     public ITargetingMode Value { get; private set; } = TargetingMode.Default;
 
+    public ImmutableArray<ITargetingMode> AllowedTargetingModes =>
+        Parameters.AllowedTargetingModes ?? TargetingMode.All;
+
     public TargetingModeProperty(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
-        ReportAggregator.Register(
-            Events, new TargetingReport(this, Parameters.AllowedTargetingModes ?? TargetingMode.All));
+        ReportAggregator.Register(Events, new TargetingReport(this));
     }
 
     public override void Update(TimeSpan elapsedTime) { }
+
+    public void SetTargetingMode(ITargetingMode newMode)
+    {
+        Value = newMode;
+    }
 
     private sealed class TargetingReport : ITargetingReport
     {
@@ -33,18 +40,13 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
 
         public ReportType Type => ReportType.EntityMode;
 
-        public ImmutableArray<ITargetingMode> AvailableTargetingModes { get; }
+        public GameObject Object => subject.Owner;
+        public ImmutableArray<ITargetingMode> AvailableTargetingModes => subject.AllowedTargetingModes;
+        public ITargetingMode TargetingMode => subject.Value;
 
-        public ITargetingMode TargetingMode
-        {
-            get => subject.Value;
-            set => subject.Value = value;
-        }
-
-        public TargetingReport(TargetingModeProperty subject, ImmutableArray<ITargetingMode> availableTargetingModes)
+        public TargetingReport(TargetingModeProperty subject)
         {
             this.subject = subject;
-            AvailableTargetingModes = availableTargetingModes;
         }
     }
 }

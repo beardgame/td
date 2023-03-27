@@ -46,7 +46,7 @@ sealed class ReportControlFactory : IReportControlFactory
             IManualOverdriveReport manualOverdriveReport =>
                 new ManualOverdriveReportControl(game, manualOverdriveReport),
             IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
-            ITargetingReport targetingReport => new TargetingReportControl(targetingReport),
+            ITargetingReport targetingReport => new TargetingReportControl(game, targetingReport),
             IUpgradeReport upgradeReport =>
                 new UpgradeReportControl(upgradeReport.CreateInstance(game), detailsContainer),
             IVeterancyReport veterancyReport => new VeterancyReportControl(veterancyReport),
