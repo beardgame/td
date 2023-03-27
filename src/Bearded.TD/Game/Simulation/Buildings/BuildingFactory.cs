@@ -32,6 +32,7 @@ static class BuildingFactory
 
         building.AddComponent(new GhostBuildingRenderer());
         building.AddComponent(new AllowManualControl());
+        building.AddComponent(new AllowManualOverdrive());
         building.AddComponent(new BuildingStateManager());
         building.AddComponent(new BuildingUpgradeManager());
         building.AddComponent(new DamageAttributor());

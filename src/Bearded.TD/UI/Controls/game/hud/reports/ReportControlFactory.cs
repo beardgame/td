@@ -43,6 +43,8 @@ sealed class ReportControlFactory : IReportControlFactory
             IBuildingStateReport buildingStateReport => new BuildingStateControl(game, buildingStateReport),
             IHealthReport healthReport => new HealthReportControl(healthReport),
             IManualControlReport manualControlReport => new ManualControlReportControl(game, manualControlReport),
+            IManualOverdriveReport manualOverdriveReport =>
+                new ManualOverdriveReportControl(game, manualOverdriveReport),
             IStatisticsReport statisticsReport => new StatisticsReportControl(statisticsReport),
             ITargetingReport targetingReport => new TargetingReportControl(targetingReport),
             IUpgradeReport upgradeReport =>
