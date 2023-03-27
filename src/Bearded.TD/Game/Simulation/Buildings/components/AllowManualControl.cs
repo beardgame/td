@@ -5,76 +5,53 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class AllowManualControl : Component, IManualControlReport
+[Component("allowManualControl")]
+sealed partial class AllowManualControl : AllowManualOverride<AllowManualControl.Override>, IManualControlReport
 {
-    private sealed record Control(Action Cancel, CrossHair CrossHair, Overdrive Overdrive);
+    public new sealed record Override(Action Cancel, CrossHair CrossHair, Overdrive Overdrive)
+        : AllowManualOverride<Override>.Override(Cancel);
 
-    private Control? activeControl;
-
-    private IFactionProvider? factionProvider;
-    private IBuildingStateProvider? buildingState;
+    protected override IReport Report => this;
     public ReportType Type => ReportType.ManualControl;
-
-    protected override void OnAdded()
-    {
-        ReportAggregator.Register(Events, this);
-        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
-        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, provider => buildingState = provider);
-    }
-
-    public override void Update(TimeSpan elapsedTime)
-    {
-        if (activeControl == null)
-            return;
-
-        if (buildingState is { State.IsFunctional: false })
-        {
-            activeControl.Cancel();
-        }
-    }
-
-    public bool CanBeControlledBy(Faction faction)
-    {
-        if (buildingState is { State.IsFunctional: false })
-            return false;
-
-        return factionProvider != null && factionProvider.Faction.OwnedBuildingsCanBeManuallyControlledBy(faction);
-    }
 
     public Position2 SubjectPosition => Owner.Position.XY();
     public Unit SubjectRange { get; private set; }
 
+    public bool CanBeControlledBy(Faction faction) => CanBeOverriddenBy(faction);
+
     public void StartControl(IManualTarget2 target, Action cancelControl)
     {
-        DebugAssert.State.Satisfies(activeControl == null);
+        var control = new Override(cancelControl, new CrossHair(target), new Overdrive());
+        StartOverride(control);
+    }
 
-        activeControl = new Control(cancelControl, new CrossHair(target), new Overdrive());
+    public void EndControl()
+    {
+        EndOverride();
+    }
 
-        Owner.AddComponent(activeControl.Overdrive);
-        Owner.AddComponent(activeControl.CrossHair);
+    protected override void OnOverrideStart(Override @override)
+    {
+        Owner.AddComponent(@override.Overdrive);
+        Owner.AddComponent(@override.CrossHair);
 
         SubjectRange = 3.U();
 
         foreach (var turret in Owner.GetComponents<ITurret>())
         {
-            turret.OverrideTargeting(activeControl.CrossHair);
+            turret.OverrideTargeting(@override.CrossHair);
             if (turret.Weapon.TryGetSingleComponent<IWeaponRange>(out var range))
                 SubjectRange = Math.Max(SubjectRange.NumericValue, range.Range.NumericValue).U();
         }
     }
 
-    public void EndControl()
+    protected override void OnOverrideEnd(Override @override)
     {
-        DebugAssert.State.Satisfies(activeControl != null);
-
-        Owner.RemoveComponent(activeControl!.Overdrive);
-        Owner.RemoveComponent(activeControl.CrossHair);
-
-        activeControl = null;
+        Owner.RemoveComponent(@override.Overdrive);
+        Owner.RemoveComponent(@override.CrossHair);
 
         foreach (var turret in Owner.GetComponents<ITurret>())
         {

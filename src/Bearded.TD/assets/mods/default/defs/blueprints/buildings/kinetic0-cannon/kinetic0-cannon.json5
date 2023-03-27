@@ -6,6 +6,8 @@
     { id: "footprint", parameters: { group: "single" } },
     { id: "defaultTileOccupancy" },
     { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
+    { id: "allowManualControl" },
+    { id: "allowManualOverdrive" },
     { id: "autoRepair", parameters: { } },
     { id: "gainXpOnDamage" },
     { id: "veterancy" },

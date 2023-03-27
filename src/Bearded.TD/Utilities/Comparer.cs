@@ -19,4 +19,16 @@ sealed class Comparer<T> : IComparer<T>
     }
 
     public int Compare(T x, T y) => compareFunc(x, y);
+
+    public Comparer<T> ThenComparing<TComparable>(Func<T, TComparable> selector)
+        where TComparable : IComparable<TComparable>
+    {
+        return new Comparer<T>(func);
+
+        int func(T x, T y)
+        {
+            var firstComparison = compareFunc(x, y);
+            return firstComparison == 0 ? selector(x).CompareTo(selector(y)) : firstComparison;
+        }
+    }
 }
