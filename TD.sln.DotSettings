@@ -173,8 +173,8 @@ namespace $NAMESPACE$
 {
     static class $CLASS$
     {
-        public static IRequest&lt;Player, GameInstance&gt; Request(GameInstance game)
-            =&gt; new Implementation(game);
+        public static IRequest&lt;Player, GameInstance&gt; Request(GameInstance game) =&gt;
+            new Implementation(game);
 
         private sealed class Implementation : UnifiedRequestCommand
         {
@@ -328,8 +328,8 @@ namespace $NAMESPACE$
 {
     static class $CLASS$
     {
-        public static ISerializableCommand&lt;GameInstance&gt; Command(GameInstance game)
-            =&gt; new Implementation(game);
+        public static ISerializableCommand&lt;GameInstance&gt; Command(GameInstance game) =&gt;
+            new Implementation(game);
 
         private sealed class Implementation : ISerializableCommand&lt;GameInstance&gt;
         {
