@@ -9,9 +9,9 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 abstract class AllowManualOverride<T>
-    : Component, IListener<ManualOverrideStarted>, IListener<ManualOverrideEnded> where T : AllowManualOverride<T>.Control
+    : Component, IListener<ManualOverrideStarted>, IListener<ManualOverrideEnded> where T : AllowManualOverride<T>.Override
 {
-    public abstract record Control(Action Cancel);
+    public abstract record Override(Action Cancel);
 
     private bool anyOverrideActive;
     private T? activeControl;
@@ -41,7 +41,7 @@ abstract class AllowManualOverride<T>
         }
     }
 
-    public bool CanBeControlledBy(Faction faction)
+    protected bool CanBeOverriddenBy(Faction faction)
     {
         if (anyOverrideActive || buildingState is { State.IsFunctional: false })
         {
@@ -63,7 +63,7 @@ abstract class AllowManualOverride<T>
         anyOverrideActive = false;
     }
 
-    protected void StartControl(T control)
+    protected void StartOverride(T control)
     {
         State.Satisfies(activeControl == null);
         activeControl = control;
@@ -73,7 +73,7 @@ abstract class AllowManualOverride<T>
 
     protected abstract void OnOverrideStart(T control);
 
-    public void EndControl()
+    protected void EndOverride()
     {
         State.Satisfies(activeControl != null);
         OnOverrideEnd(activeControl!);

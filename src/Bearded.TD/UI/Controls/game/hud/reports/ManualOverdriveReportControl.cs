@@ -1,4 +1,5 @@
 using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
@@ -26,12 +27,12 @@ sealed class ManualOverdriveReportControl : ReportControl
 
     private void startControl()
     {
-        report.StartControl(report.EndControl);
+        game.Request(StartManualOverdrive.Request, report.Building);
     }
 
     public override void Update()
     {
-        canControl.SetFromSource(report.CanBeControlledBy(game.Me.Faction));
+        canControl.SetFromSource(report.CanBeEnabledBy(game.Me.Faction));
     }
 
     public override void Dispose()
