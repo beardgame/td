@@ -164,6 +164,7 @@ sealed class $CLASS$ : Component
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Networking.Serialization;
 using JetBrains.Annotations;
@@ -320,6 +321,7 @@ namespace $NAMESPACE$
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F0C243D2DAE166488F544AF11493EA01/Text/@EntryValue">$HEADER$using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Networking.Serialization;
 
 namespace $NAMESPACE$
