@@ -4,6 +4,8 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
+using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
@@ -37,7 +39,7 @@ sealed class LightningShocks : Component, IListener<DrawComponents>
     public void HandleEvent(DrawComponents e)
     {
         e.Core.PointLight.Draw(
-            Owner.Position.NumericValue,
+            Owner.Position.NumericValue + new Vector3(0, 0, 0.5f),
             1.5f * shocksRenderStrength,
             Color.AliceBlue * shocksRenderStrength
         );

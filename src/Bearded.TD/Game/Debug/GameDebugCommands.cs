@@ -133,7 +133,7 @@ static class GameDebugCommands
             return;
         }
 
-        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, StunBuilding.Request(gameInstance, durationS.S()));
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, StunAllBuildings.Request(gameInstance, durationS.S()));
     });
 
     [DebugCommand("game.killall")]

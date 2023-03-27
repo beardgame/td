@@ -11,7 +11,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-static class StunBuilding
+static class StunAllBuildings
 {
     public static IRequest<Player, GameInstance> Request(GameInstance game, TimeSpan duration) =>
         new Implementation(game, duration);
