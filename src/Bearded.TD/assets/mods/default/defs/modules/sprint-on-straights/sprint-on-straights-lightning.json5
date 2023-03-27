@@ -14,6 +14,18 @@
           maxAcceleration: 20
         }
       }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "stunNearbyBuildingsWhileSprinting",
+        parameters: {
+          delayAfterSprintStart: 0.5,
+          timeBetweenStuns: 0.25,
+          stunDuration : 0.25,
+          range: 1.5
+        }
+      }
     }
   ]
 }

@@ -83,4 +83,28 @@ static class LinqExtensions
 
     public static IEnumerable<T> WhereNot<T>(this IEnumerable<T> source, Predicate<T> predicate)
         => source.Where(item => !predicate(item));
+
+    public static T? RandomElementOrDefault<T>(this IEnumerable<T> source, Random random)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof (source));
+        if (random == null)
+            throw new ArgumentNullException(nameof (random));
+        if (source is ICollection<T> collection)
+        {
+            return collection.Count == 0
+                ? default
+                : collection.ElementAt(random.Next(collection.Count));
+        }
+        T returnValue = default;
+        var count = 0;
+        foreach (var candidate in source)
+        {
+            count++;
+            if (random.Next(count) == 0)
+                returnValue = candidate;
+        }
+        return returnValue;
+    }
+
 }
