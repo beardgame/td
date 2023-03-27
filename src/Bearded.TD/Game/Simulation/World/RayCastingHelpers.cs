@@ -23,7 +23,8 @@ readonly record struct RayCastResult(
     Position3 Point,
     GameObject? Object,
     Direction? LastTileStep,
-    Difference3? Normal);
+    Difference3? Normal,
+    Tile Tile);
 
 static class RayCastingHelpers
 {
@@ -43,7 +44,7 @@ static class RayCastingHelpers
             if (!level.IsValid(tile) || !isPassableCheck(tile))
             {
                 var factor = rayCaster.CurrentRayFactor;
-                yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null);
+                yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null, tile);
                 yield break;
             }
 
@@ -55,7 +56,7 @@ static class RayCastingHelpers
                 if (obj.TryGetSingleComponent<ICollider>(out var collider)
                     && collider.TryHit(ray, out var f, out var point, out var normal))
                 {
-                    hits.Add(new HitCandidate(obj, f, point, normal));
+                    hits.Add(new HitCandidate(obj, f, point, normal, tile));
                 }
             }
 
@@ -66,7 +67,7 @@ static class RayCastingHelpers
             }
         }
 
-        yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null);
+        yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null, rayCaster.Current);
     }
 
     public static RayCastResult CastRayAgainstObjects(
@@ -85,7 +86,7 @@ static class RayCastingHelpers
             if (!level.IsValid(tile) || !isPassableCheck(tile))
             {
                 var factor = rayCaster.CurrentRayFactor;
-                return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null);
+                return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null, tile);
             }
 
             var objects = objectLayer.GetObjectsOnTile(tile);
@@ -97,7 +98,7 @@ static class RayCastingHelpers
                 if (obj.TryGetSingleComponent<ICollider>(out var collider)
                     && collider.TryHit(ray, out var f, out var point, out var normal) && f < closestHit.Factor)
                 {
-                    closestHit = new HitCandidate(obj, f, point, normal);
+                    closestHit = new HitCandidate(obj, f, point, normal, tile);
                 }
             }
 
@@ -107,10 +108,10 @@ static class RayCastingHelpers
             }
         }
 
-        return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null);
+        return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null, rayCaster.Current);
     }
 
-    private readonly record struct HitCandidate(GameObject? Object, float Factor, Position3 Point, Difference3 Normal)
+    private readonly record struct HitCandidate(GameObject? Object, float Factor, Position3 Point, Difference3 Normal, Tile Tile)
     {
         public static readonly Comparison<HitCandidate> FactorComparison =
             (left, right) => left.Factor.CompareTo(right.Factor);
@@ -124,7 +125,7 @@ static class RayCastingHelpers
                 throw new InvalidOperationException(
                     "Can only convert a hit candidate to a hit result if the object is set.");
             }
-            return new RayCastResult(HitObject, Factor, Point, Object, lastTileStep, Normal);
+            return new RayCastResult(HitObject, Factor, Point, Object, lastTileStep, Normal, Tile);
         }
     }
 }
