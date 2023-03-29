@@ -11,4 +11,8 @@
       <PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" PrivateAssets="all" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\libs\fluentsourcegen\Bearded.FluentSourceGen\Bearded.FluentSourceGen.csproj" />
+    </ItemGroup>
+
 </Project>
