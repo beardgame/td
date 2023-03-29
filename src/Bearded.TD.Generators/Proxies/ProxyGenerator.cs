@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -11,9 +12,9 @@ namespace Bearded.TD.Generators.Proxies
 {
     [Generator]
     [UsedImplicitly]
-    public sealed class ProxyGenerator : ISourceGenerator
+    public sealed class ProxyGenerator : IIncrementalGenerator
     {
-        public void Initialize(GeneratorInitializationContext context)
+        public void Initialize(IncrementalGeneratorInitializationContext context)
         {
 // #if DEBUG
 //             if (!Debugger.IsAttached)
@@ -22,31 +23,53 @@ namespace Bearded.TD.Generators.Proxies
 //             }
 // #endif
 
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+            var interfacesToGenerateFor = context.SyntaxProvider.CreateSyntaxProvider(
+                    predicate: (node, _) => node is InterfaceDeclarationSyntax { AttributeLists.Count: > 0 },
+                    transform: (ctx, _) => toInterfaceToGenerateFor(ctx))
+                .Where(i => i is not null)
+                .Select((i, _) => i!);
+
+            var interfacesWithCompilation = context.CompilationProvider.Combine(interfacesToGenerateFor.Collect());
+
+            context.RegisterSourceOutput(
+                interfacesWithCompilation, (spc, source) => execute(source.Left, source.Right, spc));
         }
 
+        private static InterfaceDeclarationSyntax? toInterfaceToGenerateFor(GeneratorSyntaxContext ctx)
+        {
+            var automaticProxyAttribute = ctx.SemanticModel.Compilation.GetTypeByMetadataName(
+                "Bearded.TD.Shared.Proxies.AutomaticProxyAttribute");
 
-        public void Execute(GeneratorExecutionContext context)
+            // Predicate already filters on type.
+            var syntax = (InterfaceDeclarationSyntax) ctx.Node;
+            foreach (var attribute in syntax.AttributeLists.SelectMany(attributeList => attributeList.Attributes))
+            {
+                if (ctx.SemanticModel.GetSymbolInfo(attribute).Symbol is not IMethodSymbol attributeSymbol)
+                {
+                    continue;
+                }
+                var attributeTypeSymbol = attributeSymbol.ContainingType;
+                if (attributeTypeSymbol.Equals(automaticProxyAttribute, SymbolEqualityComparer.Default))
+                {
+                    return syntax;
+                }
+            }
+
+            return null;
+        }
+
+        private static void execute(
+            Compilation compilation,
+            ImmutableArray<InterfaceDeclarationSyntax> interfacesToGenerateFor,
+            SourceProductionContext context)
         {
             try
             {
-                if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
-                {
-                    return;
-                }
-
-                var automaticProxyAttribute = context.Compilation
-                        .GetTypeByMetadataName("Bearded.TD.Shared.Proxies.AutomaticProxyAttribute") ??
-                    throw new InvalidOperationException("Could not find automatic proxy attribute.");
-
-                var interfacesToGeneratorFor =
-                    SymbolFilters.FindSymbolsWithAttribute(
-                        context.Compilation, receiver.Interfaces, automaticProxyAttribute);
-
-                foreach (var interfaceSymbol in interfacesToGeneratorFor)
+                foreach (var interfaceSymbol in interfacesToGenerateFor.Select(syntax => toSymbol(compilation, syntax)))
                 {
                     var name = NameFactory.FromInterfaceName(interfaceSymbol.Name).ClassNameWithSuffix("Proxy");
-                    var source = SourceText.From(ProxySourceGenerator.GenerateFor(name, interfaceSymbol), Encoding.Default);
+                    var source = SourceText.From(ProxySourceGenerator.GenerateFor(name, interfaceSymbol),
+                        Encoding.Default);
                     context.AddSource(name, source);
                 }
             }
@@ -56,19 +79,11 @@ namespace Bearded.TD.Generators.Proxies
             }
         }
 
-        private sealed class SyntaxReceiver : ISyntaxReceiver
+        private static INamedTypeSymbol toSymbol(Compilation compilation, SyntaxNode typeSyntax)
         {
-            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new();
-
-            public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-            {
-                switch (syntaxNode)
-                {
-                    case InterfaceDeclarationSyntax interfaceSyntax:
-                        Interfaces.Add(interfaceSyntax);
-                        break;
-                }
-            }
+            var classModel = compilation.GetSemanticModel(typeSyntax.SyntaxTree);
+            return classModel.GetDeclaredSymbol(typeSyntax) as INamedTypeSymbol
+                ?? throw new InvalidCastException("Expected a named type");
         }
     }
 }
