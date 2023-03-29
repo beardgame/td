@@ -7,3 +7,6 @@
 [submodule "libs/lidgren"]
 	path = libs/lidgren
 	url = https://github.com/amulware/lidgren-network-gen3.git
+[submodule "libs/fluentsourcegen"]
+	path = libs/fluentsourcegen
+	url = https://github.com/beardgame/fluentsourcegen.git
