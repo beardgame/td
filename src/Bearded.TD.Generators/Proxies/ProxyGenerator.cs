@@ -41,7 +41,7 @@ public sealed class ProxyGenerator : IIncrementalGenerator
     {
         try
         {
-            foreach (var interfaceSymbol in interfacesToGenerateFor.Select(compilation.ResolveSymbol))
+            foreach (var interfaceSymbol in interfacesToGenerateFor.Select(compilation.ResolveNamedTypeSymbol))
             {
                 var name = NameFactory.FromInterfaceName(interfaceSymbol.Name).ClassNameWithSuffix("Proxy");
                 var source = SourceText.From(ProxySourceGenerator.GenerateFor(name, interfaceSymbol),

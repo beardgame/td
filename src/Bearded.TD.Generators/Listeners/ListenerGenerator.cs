@@ -54,7 +54,7 @@ public sealed class ListenerGenerator : IIncrementalGenerator
 
             foreach (var classSyntax in classesToGenerateFor)
             {
-                var classSymbol = compilation.ResolveSymbol(classSyntax);
+                var classSymbol = compilation.ResolveNamedTypeSymbol(classSyntax);
 
                 var name = classSymbol.Name;
                 var modifiers = classSyntax.Modifiers.Select(m => m.Text).ToImmutableArray();

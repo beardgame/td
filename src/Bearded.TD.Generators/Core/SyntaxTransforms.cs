@@ -22,9 +22,30 @@ static class SyntaxTransforms
             throw new InvalidOperationException($"Could not find attribute with name {fullAttributeName}");
 
         var syntax = (T) context.Node;
-        foreach (var attribute in syntax.AttributeLists.SelectMany(attributeList => attributeList.Attributes))
+        return syntax.AttributeLists.containsAttribute(desiredAttributeTypeSymbol, context.SemanticModel)
+            ? syntax
+            : null;
+    }
+
+    public static FieldDeclarationSyntax? AsFieldWithAttribute(GeneratorSyntaxContext context, string fullAttributeName)
+    {
+        var desiredAttributeTypeSymbol = context.SemanticModel.Compilation.GetTypeByMetadataName(fullAttributeName) ??
+            throw new InvalidOperationException($"Could not find attribute with name {fullAttributeName}");
+
+        var syntax = (FieldDeclarationSyntax) context.Node;
+        return syntax.AttributeLists.containsAttribute(desiredAttributeTypeSymbol, context.SemanticModel)
+            ? syntax
+            : null;
+    }
+
+    private static bool containsAttribute(
+        this SyntaxList<AttributeListSyntax> attributeLists,
+        ISymbol desiredAttributeTypeSymbol,
+        SemanticModel semanticModel)
+    {
+        foreach (var attribute in attributeLists.SelectMany(attributeList => attributeList.Attributes))
         {
-            if (context.SemanticModel.GetSymbolInfo(attribute).Symbol is not IMethodSymbol attributeSymbol)
+            if (semanticModel.GetSymbolInfo(attribute).Symbol is not IMethodSymbol attributeSymbol)
             {
                 continue;
             }
@@ -32,10 +53,10 @@ static class SyntaxTransforms
             var attributeTypeSymbol = attributeSymbol.ContainingType;
             if (attributeTypeSymbol.Equals(desiredAttributeTypeSymbol, SymbolEqualityComparer.Default))
             {
-                return syntax;
+                return true;
             }
         }
 
-        return null;
+        return false;
     }
 }
