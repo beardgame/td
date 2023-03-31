@@ -13,9 +13,11 @@ namespace Bearded.TD.Generators.TechEffects
 {
     [Generator]
     [UsedImplicitly]
-    public sealed class TechEffectGenerator : ISourceGenerator
+    public sealed class TechEffectGenerator : IIncrementalGenerator
     {
-        public void Initialize(GeneratorInitializationContext context)
+        private const string convertsAttributeFullName = "Bearded.TD.Shared.TechEffects.ConvertsAttributeAttribute";
+
+        public void Initialize(IncrementalGeneratorInitializationContext context)
         {
 // #if DEBUG
 //             if (!Debugger.IsAttached)
@@ -24,34 +26,37 @@ namespace Bearded.TD.Generators.TechEffects
 //             }
 // #endif
 
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+            var convertsAttributeFields =
+                SyntaxProviders.FieldsWithAttribute(context.SyntaxProvider, convertsAttributeFullName);
+            var interfaces = SyntaxProviders.Interfaces(context.SyntaxProvider);
+
+            var combined = context.CompilationProvider
+                .Combine(convertsAttributeFields.Collect())
+                .Combine(interfaces.Collect());
+
+            context.RegisterSourceOutput(
+                combined, (spc, source) => execute(source.Left.Left, source.Left.Right, source.Right, spc));
         }
 
-        public void Execute(GeneratorExecutionContext context)
+        private static void execute(
+            Compilation compilation,
+            ImmutableArray<FieldDeclarationSyntax> convertsAttributeFields,
+            ImmutableArray<InterfaceDeclarationSyntax> allInterfaces,
+            SourceProductionContext context)
         {
             try
             {
-                if (context.SyntaxReceiver is not SyntaxReceiver receiver)
-                {
-                    return;
-                }
-
-                var convertsAttribute = context.Compilation
-                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ConvertsAttributeAttribute") ??
-                    throw new InvalidOperationException("Could not find converts attribute attribute.");
                 var attributeConverters = attributeConverterDictionary(
-                    context,
-                    findFieldsWithAnnotation(
-                        context.Compilation, receiver.AttributeConverterCandidates, convertsAttribute));
+                    compilation, convertsAttributeFields.Select(compilation.ResolveFieldSymbol));
 
-                var templateInterface = context.Compilation
+                var templateInterface = compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
                         .ConstructUnboundGenericType() ??
                     throw new InvalidOperationException("Could not find parameters template interface.");
                 var interfacesToGenerateFor =
-                    findSymbolsImplementingInterface(context.Compilation, receiver.Interfaces, templateInterface);
+                    findSymbolsImplementingInterface(compilation, allInterfaces, templateInterface);
 
-                var attributeInterface = context.Compilation
+                var attributeInterface = compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ModifiableAttribute") ??
                     throw new InvalidOperationException("Could not find modifiable attribute.");
                 foreach (var namedTypeSymbol in interfacesToGenerateFor)
@@ -72,10 +77,10 @@ namespace Bearded.TD.Generators.TechEffects
             }
         }
 
-        private ImmutableDictionary<ITypeSymbol, IFieldSymbol> attributeConverterDictionary(
-            GeneratorExecutionContext context, IEnumerable<IFieldSymbol> attributes)
+        private static ImmutableDictionary<ITypeSymbol, IFieldSymbol> attributeConverterDictionary(
+            Compilation compilation, IEnumerable<IFieldSymbol> attributes)
         {
-            var attributeConverterType = context.Compilation
+            var attributeConverterType = compilation
                     .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.AttributeConverter`1")?
                     .ConstructUnboundGenericType() ??
                 throw new InvalidOperationException("Could not find attribute converter class.");
@@ -91,27 +96,6 @@ namespace Bearded.TD.Generators.TechEffects
             }
 
             return dict.ToImmutableDictionary(SymbolEqualityComparer.Default);
-        }
-
-        private static IEnumerable<IFieldSymbol> findFieldsWithAnnotation(
-            Compilation compilation, IEnumerable<FieldDeclarationSyntax> candidates, ISymbol target)
-        {
-            foreach (var fieldSyntax in candidates)
-            {
-                var fieldModel = compilation.GetSemanticModel(fieldSyntax.SyntaxTree);
-                var fieldSymbolsWithAttribute = fieldSyntax.Declaration.Variables
-                    .Select(v => fieldModel.GetDeclaredSymbol(v) as IFieldSymbol)
-                    .Where(symbol => symbol != null)
-                    .Where(symbol =>
-                        symbol?.GetAttributes().Any(a =>
-                            a.AttributeClass?.Equals(target, SymbolEqualityComparer.Default) ?? false) ?? false)
-                    .Select(symbol => symbol!);
-
-                foreach (var symbol in fieldSymbolsWithAttribute)
-                {
-                    yield return symbol;
-                }
-            }
         }
 
         private static ITypeSymbol? extractAttributeConverterType(
@@ -141,30 +125,6 @@ namespace Bearded.TD.Generators.TechEffects
                 if (candidateInterfaces.Any(i => i.Equals(target, SymbolEqualityComparer.Default)))
                 {
                     yield return classSymbol;
-                }
-            }
-        }
-
-        private sealed class SyntaxReceiver : ISyntaxReceiver
-        {
-            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new();
-
-            public List<FieldDeclarationSyntax> AttributeConverterCandidates { get; } = new();
-
-            public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-            {
-                switch (syntaxNode)
-                {
-                    case InterfaceDeclarationSyntax interfaceSyntax:
-                        Interfaces.Add(interfaceSyntax);
-                        break;
-                    case FieldDeclarationSyntax fieldSyntax:
-                        if (fieldSyntax.AttributeLists.Any())
-                        {
-                            AttributeConverterCandidates.Add(fieldSyntax);
-                        }
-
-                        break;
                 }
             }
         }

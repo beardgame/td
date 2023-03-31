@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -7,14 +8,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using static Bearded.TD.Generators.DiagnosticFactory;
 
-namespace Bearded.TD.Generators.Proxies
+namespace Bearded.TD.Generators.Proxies;
+
+[Generator]
+[UsedImplicitly]
+public sealed class ProxyGenerator : IIncrementalGenerator
 {
-    [Generator]
-    [UsedImplicitly]
-    public sealed class ProxyGenerator : ISourceGenerator
+    private const string fullAttributeName = "Bearded.TD.Shared.Proxies.AutomaticProxyAttribute";
+
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        public void Initialize(GeneratorInitializationContext context)
-        {
 // #if DEBUG
 //             if (!Debugger.IsAttached)
 //             {
@@ -22,53 +25,33 @@ namespace Bearded.TD.Generators.Proxies
 //             }
 // #endif
 
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-        }
+        var interfacesToGenerateFor =
+            SyntaxProviders.InterfacesWithAttribute(context.SyntaxProvider, fullAttributeName);
 
+        var interfacesWithCompilation = context.CompilationProvider.Combine(interfacesToGenerateFor.Collect());
 
-        public void Execute(GeneratorExecutionContext context)
+        context.RegisterSourceOutput(
+            interfacesWithCompilation, (spc, source) => execute(source.Left, source.Right, spc));
+    }
+
+    private static void execute(
+        Compilation compilation,
+        ImmutableArray<InterfaceDeclarationSyntax> interfacesToGenerateFor,
+        SourceProductionContext context)
+    {
+        try
         {
-            try
+            foreach (var interfaceSymbol in interfacesToGenerateFor.Select(compilation.ResolveNamedTypeSymbol))
             {
-                if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
-                {
-                    return;
-                }
-
-                var automaticProxyAttribute = context.Compilation
-                        .GetTypeByMetadataName("Bearded.TD.Shared.Proxies.AutomaticProxyAttribute") ??
-                    throw new InvalidOperationException("Could not find automatic proxy attribute.");
-
-                var interfacesToGeneratorFor =
-                    SymbolFilters.FindSymbolsWithAttribute(
-                        context.Compilation, receiver.Interfaces, automaticProxyAttribute);
-
-                foreach (var interfaceSymbol in interfacesToGeneratorFor)
-                {
-                    var name = NameFactory.FromInterfaceName(interfaceSymbol.Name).ClassNameWithSuffix("Proxy");
-                    var source = SourceText.From(ProxySourceGenerator.GenerateFor(name, interfaceSymbol), Encoding.Default);
-                    context.AddSource(name, source);
-                }
-            }
-            catch (Exception e)
-            {
-                context.ReportDiagnostic(CreateDebugDiagnostic(e.ToString(), DiagnosticSeverity.Error));
+                var name = NameFactory.FromInterfaceName(interfaceSymbol.Name).ClassNameWithSuffix("Proxy");
+                var source = SourceText.From(ProxySourceGenerator.GenerateFor(name, interfaceSymbol),
+                    Encoding.Default);
+                context.AddSource(name, source);
             }
         }
-
-        private sealed class SyntaxReceiver : ISyntaxReceiver
+        catch (Exception e)
         {
-            public List<InterfaceDeclarationSyntax> Interfaces { get; } = new();
-
-            public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-            {
-                switch (syntaxNode)
-                {
-                    case InterfaceDeclarationSyntax interfaceSyntax:
-                        Interfaces.Add(interfaceSyntax);
-                        break;
-                }
-            }
+            context.ReportDiagnostic(CreateDebugDiagnostic(e.ToString(), DiagnosticSeverity.Error));
         }
     }
 }
