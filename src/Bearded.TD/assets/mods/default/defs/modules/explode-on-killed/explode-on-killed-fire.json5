@@ -34,5 +34,19 @@
                 }
             }
         },
+        {
+            type: "component",
+            parameters: {
+                id: "sprite",
+                parameters: {
+                    sprite: "enemies.volatile-enemy",
+                    size: 0.3,
+                    heightOffset: 0.1,
+                    offset: [-0.25, -0.25],
+                    direction: 0,
+                    color: "ffff4500",
+                }
+            }
+        }
     ],
 }
