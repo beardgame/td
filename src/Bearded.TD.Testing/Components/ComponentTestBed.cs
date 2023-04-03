@@ -60,9 +60,19 @@ sealed class ComponentTestBed
         return q;
     }
 
+    public void AdvanceFramesFor(TimeSpan duration)
+    {
+        gameTestBed.AdvanceFramesFor(duration);
+    }
+
     public void AdvanceSingleFrame()
     {
         gameTestBed.AdvanceSingleFrame();
+    }
+
+    public void MoveObject(Position3 pos)
+    {
+        obj.Position = pos;
     }
 
     private sealed class ComponentInternals : Component

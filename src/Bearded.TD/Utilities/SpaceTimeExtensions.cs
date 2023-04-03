@@ -12,6 +12,7 @@ static class SpaceTimeExtensions
     public static Speed UnitsPerSecond(this float val) => new(val);
 
     public static Frequency PerSecond(this int val) => new(val);
+    public static Frequency PerSecond(this float val) => new(val);
     public static Frequency PerSecond(this double val) => new(val);
 
     public static Acceleration UnitsPerSecondSquared(this int val) => new(val);

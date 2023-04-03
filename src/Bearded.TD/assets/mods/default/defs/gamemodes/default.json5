@@ -63,8 +63,9 @@
                 elements: [ "dynamics", "combustion", "conductivity" ],
                 enemies: [
                     { blueprint: "default.dodgy-enemy", probability: 1, },
-                    { blueprint: "default.volatile-enemy", probability: 1, },
                     { blueprint: "default.sprinting-enemy", probability: 1, },
+                    { blueprint: "default.suicide-enemy", probability: 1, },
+                    { blueprint: "default.volatile-enemy", probability: 1, },
                     //{ blueprint: "standard01", probability: 1, },
                     //{ blueprint: "standard02", probability: 1, },
                     { blueprint: "standard03", probability: 1, },
