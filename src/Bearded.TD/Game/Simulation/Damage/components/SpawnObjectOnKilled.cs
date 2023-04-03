@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.Utilities.Geometry;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
@@ -31,7 +30,7 @@ sealed class SpawnObjectOnKilled
     public void HandleEvent(ObjectKilled @event)
     {
         var obj = GameObjectFactory
-            .CreateFromBlueprintWithDefaultRenderer(Parameters.Object, Owner, Owner.Position, Direction2.Zero);
+            .CreateFromBlueprintWithDefaultRenderer(Parameters.Object, Owner, Owner.Position, Owner.Direction);
         Owner.Game.Add(obj);
     }
 }
