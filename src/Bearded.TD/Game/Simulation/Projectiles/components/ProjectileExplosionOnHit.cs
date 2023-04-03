@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("projectileExplosionOnHit")]
 sealed class ProjectileExplosionOnHit
-    : Component<ProjectileExplosionOnHit.IParameters>, IListener<HitLevel>, IListener<HitEnemy>
+    : Component<ProjectileExplosionOnHit.IParameters>, IListener<HitLevel>, IListener<HitObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -40,7 +40,7 @@ sealed class ProjectileExplosionOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Subscribe<HitEnemy>(this);
+            Events.Subscribe<HitObject>(this);
         }
 
         if (Parameters.OnHitLevel)
@@ -53,7 +53,7 @@ sealed class ProjectileExplosionOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Unsubscribe<HitEnemy>(this);
+            Events.Unsubscribe<HitObject>(this);
         }
 
         if (Parameters.OnHitLevel)
@@ -71,7 +71,7 @@ sealed class ProjectileExplosionOnHit
         onHit(e.Info);
     }
 
-    public void HandleEvent(HitEnemy e)
+    public void HandleEvent(HitObject e)
     {
         onHit(e.Impact);
     }

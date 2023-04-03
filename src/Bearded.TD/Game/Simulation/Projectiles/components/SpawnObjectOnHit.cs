@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("spawnObjectOnHit")]
 sealed class SpawnObjectOnHit
-    : Component<SpawnObjectOnHit.IParameters>, IListener<HitLevel>, IListener<HitEnemy>
+    : Component<SpawnObjectOnHit.IParameters>, IListener<HitLevel>, IListener<HitObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -28,7 +28,7 @@ sealed class SpawnObjectOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Subscribe<HitEnemy>(this);
+            Events.Subscribe<HitObject>(this);
         }
 
         if (Parameters.OnHitLevel)
@@ -41,7 +41,7 @@ sealed class SpawnObjectOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Unsubscribe<HitEnemy>(this);
+            Events.Unsubscribe<HitObject>(this);
         }
 
         if (Parameters.OnHitLevel)
@@ -55,7 +55,7 @@ sealed class SpawnObjectOnHit
         onHit(e.Info);
     }
 
-    public void HandleEvent(HitEnemy e)
+    public void HandleEvent(HitObject e)
     {
         onHit(e.Impact);
     }

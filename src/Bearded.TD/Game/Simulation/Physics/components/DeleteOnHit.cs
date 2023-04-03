@@ -6,11 +6,11 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Physics;
 
 [Component("deleteOnHit")]
-sealed class DeleteOnHit : Component, IListener<HitEnemy>, IListener<HitLevel>
+sealed class DeleteOnHit : Component, IListener<HitObject>, IListener<HitLevel>
 {
     protected override void OnAdded()
     {
-        Events.Subscribe<HitEnemy>(this);
+        Events.Subscribe<HitObject>(this);
         Events.Subscribe<HitLevel>(this);
     }
 
@@ -18,7 +18,7 @@ sealed class DeleteOnHit : Component, IListener<HitEnemy>, IListener<HitLevel>
     {
     }
 
-    public void HandleEvent(HitEnemy e)
+    public void HandleEvent(HitObject e)
     {
         Owner.Delete();
     }

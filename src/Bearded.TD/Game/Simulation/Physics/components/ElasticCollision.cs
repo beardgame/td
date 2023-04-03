@@ -9,7 +9,7 @@ using OpenTK.Mathematics;
 namespace Bearded.TD.Game.Simulation.Physics;
 
 [Component("elasticCollision")]
-sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListener<HitEnemy>, IListener<HitLevel>
+sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListener<HitObject>, IListener<HitLevel>
 {
     private IPhysics physics = null!;
 
@@ -27,7 +27,7 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
 
     protected override void OnAdded()
     {
-        Events.Subscribe<HitEnemy>(this);
+        Events.Subscribe<HitObject>(this);
         Events.Subscribe<HitLevel>(this);
         ComponentDependencies.Depend<IPhysics>(Owner, Events, p => physics = p);
     }
@@ -40,7 +40,7 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
     {
     }
 
-    public void HandleEvent(HitEnemy @event)
+    public void HandleEvent(HitObject @event)
     {
         onHit(@event.Impact.SurfaceNormal);
     }
