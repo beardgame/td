@@ -9,7 +9,7 @@
                 id: "damageBuildingOnStuck",
                 parameters: {
                     damage: 16,
-                    damageType: "kinetic",
+                    damageType: "electric",
                     spawnObject: "default.medium-shockwave",
                 }
             }
