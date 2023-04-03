@@ -8,7 +8,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damageOnHit")]
-sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnemy>
+sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -30,11 +30,11 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
         Events.Unsubscribe(this);
     }
 
-    public void HandleEvent(HitEnemy @event)
+    public void HandleEvent(HitObject @event)
     {
         var damageDone = Owner.TryGetProperty<UntypedDamage>(out var damage)
             && DamageExecutor.FromObject(Owner).TryDoDamage(
-                @event.Enemy,
+                @event.Object,
                 (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
                 Hit.FromImpact(@event.Impact));
         DebugAssert.State.Satisfies(damageDone);

@@ -1,0 +1,23 @@
+﻿{
+  id: "fire-sprinter-trail",
+  components: [
+    {
+      id: "trail",
+      parameters: {
+        width: 0.2,
+        timeout: 0.5,
+        color: "FF4500",
+        sprite: "particle.circle-soft"
+      }
+    },
+    {
+      id: "applyOnFireInTrail",
+      parameters: {
+        damagePerSecond: 10,
+        duration: 0.25,
+        excludeSelf: true,
+        excludeParent: true,
+      }
+    }
+    ]
+}

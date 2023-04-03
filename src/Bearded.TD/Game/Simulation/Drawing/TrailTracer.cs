@@ -25,7 +25,7 @@ sealed class TrailTracer : IReadOnlyList<TrailTracer.Part>
         }
     }
 
-    private readonly List<Part> parts = new List<Part>();
+    private readonly List<Part> parts = new();
     private readonly float angleThresholdCosine;
     private readonly Squared<Unit> distanceThresholdSquared;
 
@@ -199,13 +199,13 @@ sealed class TrailTracer : IReadOnlyList<TrailTracer.Part>
     }
 
     private static Part part(Position3 point, Vector2 normal, Unit distanceToPreviousPart, Instant timeOut)
-        => new Part(point, normal, distanceToPreviousPart, timeOut);
+        => new(point, normal, distanceToPreviousPart, timeOut);
 
     private static Part part(Position3 position, Instant timeOut)
-        => new Part(position, Vector2.Zero, Unit.Zero, timeOut);
+        => new(position, Vector2.Zero, Unit.Zero, timeOut);
 
-    private static Part part(Part part, Vector2 normal)
-        => new Part(part.Point, normal, part.DistanceToPreviousPart, part.Timeout);
+    private static Part part(Part part, Vector2 normal) =>
+        new(part.Point, normal, part.DistanceToPreviousPart, part.Timeout);
 
 
     public IEnumerator<Part> GetEnumerator()

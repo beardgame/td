@@ -18,6 +18,18 @@
     {
       type: "component",
       parameters: {
+        id: "spawnObjectOnSprintStart",
+        parameters: {
+          object: "fire-sprinter-trail",
+          attach: "whileSprinting",
+          delete: "afterSprintStop",
+          deletionDelay: 0.5,
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
         id: "sprite",
         parameters: {
           sprite: "enemies.sprinting-enemy",
