@@ -1,6 +1,6 @@
 {
-    id: "explode-on-core-arrival-kinetic",
-    affinityElement: "dynamics",
+    id: "explode-on-core-arrival-lightning",
+    affinityElement: "conductivity",
     socketShape: "explodeOnCoreArrival",
     effects: [
         {
@@ -8,9 +8,18 @@
             parameters: {
                 id: "damageBuildingOnStuck",
                 parameters: {
-                    damage: 36,
+                    damage: 16,
                     damageType: "kinetic",
                     spawnObject: "default.medium-shockwave",
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "stunBuildingOnStuck",
+                parameters: {
+                    duration: 0.5,
                 }
             }
         },
@@ -30,7 +39,7 @@
                     heightOffset: 0.1,
                     offset: [-0.25, -0.25],
                     direction: 0,
-                    color: "ffd3d3d3",
+                    color: "ffdda0dd",
                 }
             }
         }

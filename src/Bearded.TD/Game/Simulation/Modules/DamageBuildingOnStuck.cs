@@ -15,9 +15,6 @@ sealed class DamageBuildingOnStuck : Component<DamageBuildingOnStuck.IParameters
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        [Modifiable(Type = AttributeType.SplashRange)]
-        Unit Range { get; }
-
         [Modifiable(10)]
         UntypedDamage Damage { get; }
 
