@@ -35,7 +35,7 @@ sealed class LevelGenerationCommandAccumulator
 
     public void PlaceGameObject(IGameObjectBlueprint blueprint, Position3 position, Direction2 direction)
     {
-        commands.Add(gameInstance => PlopComponentGameObject.Command(gameInstance, blueprint, position, direction));
+        commands.Add(gameInstance => SpawnGameObject.Command(gameInstance.State, blueprint, null, position, direction));
     }
 
     public ImmutableArray<CommandFactory> ToCommandFactories()
