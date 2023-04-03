@@ -26,6 +26,7 @@
         },
 
         { id: "groundLockedMovement" },
+        { id: "notifyWhenStuck", parameters: { }},
         { id: "accelerateToBase", parameters: { acceleration: 5 } },
         { id: "drag", parameters: { amount: 2 } },
         {

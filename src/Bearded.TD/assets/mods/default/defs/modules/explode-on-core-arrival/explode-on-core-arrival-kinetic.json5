@@ -19,6 +19,12 @@
         {
             type: "component",
             parameters: {
+                id: "dieOnStuck",
+            }
+        },
+        {
+            type: "component",
+            parameters: {
                 id: "sprite",
                 parameters: {
                     sprite: "enemies.suicide-enemy",

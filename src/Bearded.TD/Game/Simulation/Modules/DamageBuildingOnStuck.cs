@@ -2,15 +2,16 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Projectiles;
+using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Modules;
 
 [Component("damageBuildingOnStuck")]
-sealed class DamageBuildingOnStuck : DoSomethingOnStuck<DamageBuildingOnStuck.IParameters>
+sealed class DamageBuildingOnStuck : Component<DamageBuildingOnStuck.IParameters>, IListener<EnemyGotStuck>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -22,19 +23,22 @@ sealed class DamageBuildingOnStuck : DoSomethingOnStuck<DamageBuildingOnStuck.IP
 
         DamageType? DamageType { get; }
 
-        TimeSpan Delay { get; }
-
         IGameObjectBlueprint? SpawnObject { get; }
     }
 
-    protected override TimeSpan Delay => Parameters.Delay;
-
     public DamageBuildingOnStuck(IParameters parameters) : base(parameters) { }
 
-    protected override void DoAction(Tile targetTile)
+    protected override void OnAdded()
+    {
+        Events.Subscribe(this);
+    }
+
+    public override void Update(TimeSpan elapsedTime) { }
+
+    public void HandleEvent(EnemyGotStuck @event)
     {
         var buildings = Owner.Game.BuildingLayer;
-        if (!buildings.TryGetMaterializedBuilding(targetTile, out var targetBuilding))
+        if (!buildings.TryGetMaterializedBuilding(@event.IntendedTarget, out var targetBuilding))
         {
             return;
         }
