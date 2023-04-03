@@ -22,6 +22,9 @@ readonly struct UntypedDamage
         return $"{Amount.NumericValue} Damage";
     }
 
+    public static UntypedDamage operator +(UntypedDamage left, UntypedDamage right) =>
+        new(left.Amount + right.Amount);
+
     public static UntypedDamage operator *(int scalar, UntypedDamage amount) =>
         new(scalar * amount.Amount);
 

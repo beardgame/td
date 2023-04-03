@@ -41,6 +41,7 @@ sealed class ReportControlFactory : IReportControlFactory
         return report switch
         {
             IBuildingStateReport buildingStateReport => new BuildingStateControl(game, buildingStateReport),
+            IEmergencyEMPReport emergencyEMPReport => new EmergencyEMPControl(game, emergencyEMPReport),
             IHealthReport healthReport => new HealthReportControl(healthReport),
             IManualControlReport manualControlReport => new ManualControlReportControl(game, manualControlReport),
             IManualOverdriveReport manualOverdriveReport =>

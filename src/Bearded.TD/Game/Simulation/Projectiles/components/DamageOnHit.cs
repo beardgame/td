@@ -1,4 +1,6 @@
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -16,6 +18,8 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitObje
 
         [Modifiable(defaultValue: 1.0f)]
         float FractionOfBaseDamage { get; }
+
+        bool ExcludeBuildings { get; }
     }
 
     public DamageOnHit(IParameters parameters) : base(parameters) { }
@@ -32,6 +36,9 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitObje
 
     public void HandleEvent(HitObject @event)
     {
+        if (Parameters.ExcludeBuildings && @event.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
+            return;
+
         var damageDone = Owner.TryGetProperty<UntypedDamage>(out var damage)
             && DamageExecutor.FromObject(Owner).TryDoDamage(
                 @event.Object,
