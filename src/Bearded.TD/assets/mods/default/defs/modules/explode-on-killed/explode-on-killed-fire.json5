@@ -9,7 +9,7 @@
                 id: "splashDamageOnKilled",
                 parameters: {
                     range: 2.5,
-                    damage: 10,
+                    damage: 20,
                     damageType: "fire",
                 }
             }
@@ -21,7 +21,7 @@
                 parameters: {
                     range: 2.5,
                     duration: 1,
-                    damagePerSecond: 20,
+                    damagePerSecond: 40,
                 }
             }
         },

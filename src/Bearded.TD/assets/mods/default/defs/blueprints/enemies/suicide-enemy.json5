@@ -6,13 +6,13 @@
             id: "sprite",
             parameters: {
                 sprite: "default.particle.orb-soft",
-                color: "39d140",
-                size: 0.4,
+                color: "8bbf00",
+                size: 0.45,
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 100 } },
-        { id: "threat", parameters:  { threat: 120 } },
+        { id: "health", parameters: { maxHealth: 200 } },
+        { id: "threat", parameters:  { threat: 240 } },
 
         { id: "archetype", parameters: { value: "elite" } },
         { id: "socket", parameters: { shape: "explodeOnCoreArrival" } },

@@ -10,7 +10,7 @@
                 parameters: {
                     delay: 4,
                     propagationRange: 2.5,
-                    damage: 36,
+                    damage: 48,
                     damageType: "fire",
                     spawnObject: "default.medium-shockwave",
                 }

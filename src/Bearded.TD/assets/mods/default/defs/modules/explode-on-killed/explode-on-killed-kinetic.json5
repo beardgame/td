@@ -12,7 +12,7 @@
                     minProjectileNumber: 10,
                     maxProjectileNumber: 15,
                     randomVelocity: 6,
-                    damage: 50,
+                    damage: 120,
                 }
             }
         },

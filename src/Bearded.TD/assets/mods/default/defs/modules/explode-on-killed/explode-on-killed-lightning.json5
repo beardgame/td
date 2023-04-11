@@ -9,7 +9,7 @@
                 id: "splashDamageOnKilled",
                 parameters: {
                     range: 2.5,
-                    damage: 10,
+                    damage: 25,
                     damageType: "electric",
                 }
             }

@@ -8,7 +8,7 @@
             parameters: {
                 id: "damageBuildingOnStuck",
                 parameters: {
-                    damage: 36,
+                    damage: 48,
                     damageType: "kinetic",
                     spawnObject: "default.medium-shockwave",
                 }
