@@ -6,6 +6,12 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 sealed partial class TargetEnemiesInRange
 {
+    public void HandleEvent(TargetingModeChanged @event)
+    {
+        target = null;
+        tryFindTarget();
+    }
+
     private void ensureTargetValid()
     {
         if (target?.Deleted == true)
