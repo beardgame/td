@@ -15,7 +15,7 @@ sealed class CoreStats : Component, ICoreStats
     public bool Deleted => deleted || Owner.Deleted;
 
     public HitPoints CurrentHealth => health?.CurrentHealth ?? HitPoints.Zero;
-    public HitPoints MaxHealth => health?.CurrentHealth ?? HitPoints.Zero;
+    public HitPoints MaxHealth => health?.MaxHealth ?? HitPoints.Zero;
 
     public EMPStatus EMPStatus =>
         emp == null ? EMPStatus.Absent : (emp.Available ? EMPStatus.Ready : EMPStatus.Recharging);
