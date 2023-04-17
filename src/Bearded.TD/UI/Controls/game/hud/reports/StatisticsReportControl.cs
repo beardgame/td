@@ -1,9 +1,13 @@
+using Bearded.TD.Game;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(IStatisticsReport), ReportType.Effectivity)]
 sealed class StatisticsReportControl : ReportControl
 {
     public override double Height { get; }

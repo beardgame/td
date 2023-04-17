@@ -1,11 +1,14 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(IManualControlReport), ReportType.ManualControl)]
 sealed class ManualControlReportControl : ReportControl
 {
     private readonly GameInstance game;

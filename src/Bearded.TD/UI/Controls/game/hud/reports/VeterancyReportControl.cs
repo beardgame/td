@@ -1,9 +1,13 @@
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(IVeterancyReport), ReportType.EntityProgression)]
 sealed class VeterancyReportControl : ReportControl
 {
     private readonly IVeterancyReport report;

@@ -1,12 +1,15 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(ITargetingReport), ReportType.EntityMode)]
 sealed class TargetingReportControl : ReportControl
 {
     private readonly ITargetingReport report;
