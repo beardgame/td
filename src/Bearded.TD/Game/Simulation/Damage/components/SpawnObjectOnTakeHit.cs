@@ -1,7 +1,6 @@
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
-using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.Geometry;
@@ -18,6 +17,8 @@ sealed class SpawnObjectOnTakeHit
         float? ScaleFromDamage { get; }
 
         IGameObjectBlueprint Object { get; }
+
+        DamageType? DamageType { get; }
     }
 
     public SpawnObjectOnTakeHit(IParameters parameters) : base(parameters)
@@ -37,6 +38,9 @@ sealed class SpawnObjectOnTakeHit
     {
         var hitInfo = @event.Context.Impact;
 
+        if (!isValidDamageType(@event.ActualDamage))
+            return;
+
         var obj = GameObjectFactory
             .CreateFromBlueprintWithDefaultRenderer(
                 Parameters.Object,
@@ -55,4 +59,7 @@ sealed class SpawnObjectOnTakeHit
 
         Owner.Game.Add(obj);
     }
+
+    private bool isValidDamageType(TypedDamage damage)
+        => Parameters.DamageType == null || Parameters.DamageType == damage.Type;
 }

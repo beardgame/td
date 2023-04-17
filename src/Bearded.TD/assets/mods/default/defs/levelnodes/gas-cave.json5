@@ -1,0 +1,15 @@
+{
+    id: "gas-cave",
+    behaviors: [
+        { id: "setTiles", parameters: { type: "floor" } },
+        {
+            id: "spawnGameObject",
+            parameters: {
+                blueprint: "gas-pocket",
+                placement: "randomTile",
+                aligntment: "randomlyInTile",
+                z: 0.5
+            }
+        }
+    ]
+}

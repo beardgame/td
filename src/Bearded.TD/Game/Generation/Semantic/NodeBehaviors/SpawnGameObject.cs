@@ -9,6 +9,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using JetBrains.Annotations;
+using Extensions = Bearded.Utilities.Linq.Extensions;
 
 namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 
@@ -36,6 +37,8 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
             AwayFromConnections => validTiles(context)
                 .MaxBy(t => context.NodeData.Connections.Sum(c => c.DistanceTo(t))),
+
+            RandomTile => Extensions.RandomElement(context.Tiles.Selection, context.Random),
 
             _ => throw new ArgumentOutOfRangeException($"Unhandled placement mode: {Parameters.Placement}")
         };
@@ -72,6 +75,7 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
     {
         FirstFromSelection = 0,
         AwayFromConnections,
+        RandomTile,
     }
 
     public enum AlignmentMode

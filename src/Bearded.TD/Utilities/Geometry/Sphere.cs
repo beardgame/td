@@ -34,7 +34,7 @@ readonly struct Sphere
         {
             var f = -dirOffsetStartDot - MathF.Sqrt(s);
 
-            if (f >= 0 && f.Squared() <= dir.LengthSquared)
+            if (f < 0 || f.Squared() <= dir.LengthSquared)
             {
                 rayFactor = f;
                 point = ray.Start + new Difference3(dirNormal * f);

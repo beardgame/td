@@ -1,0 +1,37 @@
+﻿{
+  id: "gas-pocket",
+  components: [
+    { id: "currentTileNotifier" },
+    { id: "physicalTilePresence" },
+    { id: "takeHitEventReceiver", },
+    {
+      id: "spawnObjectOnTakeHit",
+      parameters: {
+        object: "gas-pocket-explosion",
+        damageType: "fire"
+      }
+    },
+    {
+      id: "sphereCollider",
+      parameters: {
+        radius: 2,
+        solid: false,
+      }
+    },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "default.particle.mote",
+        color: "00222222",
+        size: 1,
+      }
+    },
+    {
+      id: "pointlight",
+      parameters: {
+        color: "FF333344",
+        radius: 3
+      }
+    }
+  ]
+}

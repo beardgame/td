@@ -6,6 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;
 
+[Component("currentTileNotifier")]
 sealed class CurrentTileNotifier : Component , IListener<ObjectDeleting>
 {
     private Tile lastKnownTile;

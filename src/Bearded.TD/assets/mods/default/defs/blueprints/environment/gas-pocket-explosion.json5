@@ -1,0 +1,51 @@
+﻿{
+  id: "gas-pocket-explosion",
+  components: [
+    { id: "attachToParent" },
+    {
+      id: "shockwave",
+      parameters: {
+        minRange: 1,
+        maxRange: 3,
+        speed: 4,
+        minRangeDamage: 100,
+        maxRangeDamage: 50
+      }
+    },
+    {
+      id: "damageOnHit",
+      parameters: {
+        excludeBuildings : true
+      }
+    },
+    {
+      id: "animatedSprite",
+      parameters: {
+        sprite: "default.particle.halo",
+        drawGroupOrderKey: -20,
+        randomAngle: true,
+        animation: {
+          timeScale: 0.5,
+          keyFrames: [
+            {
+              color: "FF4500",
+              size: 1
+            },
+            {
+              color: "00000000",
+              size: 4.5,
+              duration: 1
+            },
+          ]
+        },
+        heightOffset: 0.1,
+      }
+    },
+    {
+      id: "deleteAfter",
+      parameters: {
+        timeSpan: 0.5
+      }
+    }
+  ]
+}

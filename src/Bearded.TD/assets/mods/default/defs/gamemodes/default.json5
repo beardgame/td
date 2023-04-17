@@ -90,8 +90,9 @@
             parameters: {
                 nodes: [
                     { id: "default.base", fixedNumber: 1 },
+                    { id: "default.gas-cave", fixedNumber: 2 },
                     { nodes: [
-                        { id: "default.empty", weight: 2 },
+                        { id: "default.empty", weight: 1 },
                         { id: "default.ring", weight: 1, minNumber: 1 },
                         { id: "default.pillars", weight: 1, minNumber: 1 },
                         { id: "default.pits", weight: 1, minNumber: 1 },

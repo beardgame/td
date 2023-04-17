@@ -39,12 +39,11 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<TouchOb
         if (Parameters.ExcludeBuildings && @event.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
             return;
 
-        var damageDone = Owner.TryGetProperty<UntypedDamage>(out var damage)
+        _ = Owner.TryGetProperty<UntypedDamage>(out var damage)
             && DamageExecutor.FromObject(Owner).TryDoDamage(
                 @event.Object,
                 (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
                 Hit.FromImpact(@event.Impact));
-        DebugAssert.State.Satisfies(damageDone);
     }
 
     public override void Update(TimeSpan elapsedTime) { }
