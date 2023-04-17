@@ -49,6 +49,11 @@ sealed class CoreStatsUI : IListener<WaveStarted>
         });
     }
 
+    public void FireEMP()
+    {
+        coreStats?.FireEMP();
+    }
+
     public void Update()
     {
         updateBindings();

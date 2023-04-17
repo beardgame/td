@@ -13,10 +13,16 @@ sealed class CoreStatsUIControl : CompositeControl
     public CoreStatsUIControl(CoreStatsUI model)
     {
         this.BindIsVisible(model.Visible);
+        Add(new BackgroundBox());
 
         this.BuildLayout()
             .ForContentBox()
-            .DockFixedSizeToTop(new CoreHealthBar(model.Health), 32);
+            .DockFixedSizeToRight(
+                ButtonFactories.Button("EMP")
+                    .BindIsEnabled(model.EMPAvailable)
+                    .Subscribe(b => b.Clicked += _ => model.FireEMP()),
+                Constants.UI.Button.Width)
+            .FillContent(new CoreHealthBar(model.Health));
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

@@ -35,7 +35,7 @@ sealed class GameUIControl : CompositeControl
                 .Below(gameStatusControl, height: 100)));
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
             .Anchor(a => a
-                .Top(height: 64)
+                .Top(height: Constants.UI.LayoutMargin * 2 + Constants.UI.Button.Height)
                 .Left(margin: -240, width: 480, relativePercentage: .5)));
         Add(nonDiegeticUIWrapper);
 
