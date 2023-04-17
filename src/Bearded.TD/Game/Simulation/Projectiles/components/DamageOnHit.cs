@@ -1,6 +1,5 @@
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
@@ -11,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damageOnHit")]
-sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<CollideWithObject>
+sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<TouchObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -35,7 +34,7 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<Collide
         Events.Unsubscribe(this);
     }
 
-    public void HandleEvent(CollideWithObject @event)
+    public void HandleEvent(TouchObject @event)
     {
         if (Parameters.ExcludeBuildings && @event.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
             return;
