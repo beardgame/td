@@ -9,7 +9,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<HitObject>
+abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<CollideWithObject>
     where TParameters : IParametersTemplate<TParameters>
     where TEffect : IElementalEffect
 {
@@ -24,7 +24,7 @@ abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public void HandleEvent(HitObject @event)
+    public void HandleEvent(CollideWithObject @event)
     {
         if (!StaticRandom.Bool(Probability)) return;
         if (!Owner.TryGetProperty<UntypedDamage>(out var damage)) return;

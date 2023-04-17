@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("splashDamageOnHit")]
 sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
-    IListener<HitLevel>, IListener<HitObject>
+    IListener<CollideWithLevel>, IListener<CollideWithObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -31,22 +31,22 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
     protected override void OnAdded()
     {
-        Events.Subscribe<HitLevel>(this);
-        Events.Subscribe<HitObject>(this);
+        Events.Subscribe<CollideWithLevel>(this);
+        Events.Subscribe<CollideWithObject>(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe<HitLevel>(this);
-        Events.Unsubscribe<HitObject>(this);
+        Events.Unsubscribe<CollideWithLevel>(this);
+        Events.Unsubscribe<CollideWithObject>(this);
     }
 
-    public void HandleEvent(HitLevel @event)
+    public void HandleEvent(CollideWithLevel @event)
     {
         onHit(@event.Info.Point);
     }
 
-    public void HandleEvent(HitObject @event)
+    public void HandleEvent(CollideWithObject @event)
     {
         onHit(@event.Impact.Point);
     }

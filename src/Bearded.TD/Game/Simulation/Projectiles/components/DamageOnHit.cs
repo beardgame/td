@@ -11,7 +11,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damageOnHit")]
-sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitObject>
+sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<CollideWithObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -35,7 +35,7 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitObje
         Events.Unsubscribe(this);
     }
 
-    public void HandleEvent(HitObject @event)
+    public void HandleEvent(CollideWithObject @event)
     {
         if (Parameters.ExcludeBuildings && @event.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
             return;

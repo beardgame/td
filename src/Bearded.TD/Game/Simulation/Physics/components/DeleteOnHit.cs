@@ -5,24 +5,24 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Physics;
 
 [Component("deleteOnHit")]
-sealed class DeleteOnHit : Component, IListener<HitObject>, IListener<HitLevel>
+sealed class DeleteOnHit : Component, IListener<CollideWithObject>, IListener<CollideWithLevel>
 {
     protected override void OnAdded()
     {
-        Events.Subscribe<HitObject>(this);
-        Events.Subscribe<HitLevel>(this);
+        Events.Subscribe<CollideWithObject>(this);
+        Events.Subscribe<CollideWithLevel>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
     }
 
-    public void HandleEvent(HitObject e)
+    public void HandleEvent(CollideWithObject e)
     {
         Owner.Delete();
     }
 
-    public void HandleEvent(HitLevel e)
+    public void HandleEvent(CollideWithLevel e)
     {
         Owner.Delete();
     }

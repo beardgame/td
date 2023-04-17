@@ -10,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("stunBuildingsOnHit")]
-sealed class StunBuildingsOnHit : Component<StunBuildingsOnHit.IParameters>, IListener<HitObject>
+sealed class StunBuildingsOnHit : Component<StunBuildingsOnHit.IParameters>, IListener<CollideWithObject>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -35,7 +35,7 @@ sealed class StunBuildingsOnHit : Component<StunBuildingsOnHit.IParameters>, ILi
     {
     }
 
-    public void HandleEvent(HitObject e)
+    public void HandleEvent(CollideWithObject e)
     {
         if (!e.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
             return;

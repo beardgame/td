@@ -93,6 +93,6 @@ sealed class Shockwave : Component<Shockwave.IParameters>
     {
         var direction = Owner.Position - obj.Position;
         var impact = new Impact(obj.Position, -direction, direction);
-        Events.Send(new HitObject(obj, impact));
+        Events.Send(new CollideWithObject(obj, impact));
     }
 }

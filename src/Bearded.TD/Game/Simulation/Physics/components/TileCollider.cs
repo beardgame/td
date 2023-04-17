@@ -93,7 +93,7 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
     {
         var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
         var info = new Impact(point, normal, step.NormalizedSafe());
-        events.Send(new HitLevel(info, tile));
+        events.Send(new CollideWithLevel(info, tile));
     }
 
     public override void Update(TimeSpan elapsedTime)

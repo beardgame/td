@@ -10,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("shakeScreenOnHit")]
-sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListener<HitObject>, IListener<HitLevel>
+sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListener<CollideWithObject>, IListener<CollideWithLevel>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -29,20 +29,20 @@ sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListen
 
     protected override void OnAdded()
     {
-        Events.Subscribe<HitLevel>(this);
-        Events.Subscribe<HitObject>(this);
+        Events.Subscribe<CollideWithLevel>(this);
+        Events.Subscribe<CollideWithObject>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
     }
 
-    public void HandleEvent(HitObject @event)
+    public void HandleEvent(CollideWithObject @event)
     {
         onHit();
     }
 
-    public void HandleEvent(HitLevel @event)
+    public void HandleEvent(CollideWithLevel @event)
     {
         onHit();
     }

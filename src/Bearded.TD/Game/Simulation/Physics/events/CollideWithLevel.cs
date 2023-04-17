@@ -3,4 +3,4 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
-readonly record struct HitLevel(Impact Info, Tile Tile) : IComponentEvent;
+readonly record struct CollideWithLevel(Impact Info, Tile Tile) : IComponentEvent;
