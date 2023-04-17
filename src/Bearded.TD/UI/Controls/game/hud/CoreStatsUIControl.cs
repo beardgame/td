@@ -14,7 +14,9 @@ sealed class CoreStatsUIControl : CompositeControl
     {
         this.BindIsVisible(model.Visible);
 
-        Add(new CoreHealthBar(model.Health));
+        this.BuildLayout()
+            .ForContentBox()
+            .DockFixedSizeToTop(new CoreHealthBar(model.Health), 32);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
@@ -37,6 +39,7 @@ sealed class CoreStatsUIControl : CompositeControl
             Add(healthControl);
             Add(lostHealthControl);
             Add(remainderControl);
+            Add(new Border());
 
             updateValues(health.Value);
             health.SourceUpdated += updateValues;
