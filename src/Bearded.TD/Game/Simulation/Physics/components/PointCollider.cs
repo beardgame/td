@@ -71,9 +71,11 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
         var impact = new Impact(point, normal, step.NormalizedSafe());
         Events.Send(new TouchObject(obj, impact));
 
-        passThrough = obj.TryGetSingleComponent<ICollider>(out var collider) && collider.IsSolid;
+        var isSolid = obj.TryGetSingleComponent<ICollider>(out var collider) && collider.IsSolid;
+        passThrough = !isSolid;
         if (passThrough)
             return;
+
         Events.Send(new CollideWithObject(obj, impact));
     }
 
