@@ -48,7 +48,9 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
                     _ = normal ?? throw new InvalidOperationException();
                     if (objectsHit.Add(obj))
                     {
-                        hitObject(point, step, obj, normal.Value);
+                        hitObject(point, step, obj, normal.Value, out var passThrough);
+                        if (passThrough)
+                            continue;
                     }
                     break;
                 default:
@@ -64,10 +66,17 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
     {
     }
 
-    private void hitObject(Position3 point, Difference3 step, GameObject enemy, Difference3 normal)
+    private void hitObject(Position3 point, Difference3 step, GameObject obj, Difference3 normal, out bool passThrough)
     {
-        var info = new Impact(point, normal, step.NormalizedSafe());
-        Events.Send(new CollideWithObject(enemy, info));
+        var impact = new Impact(point, normal, step.NormalizedSafe());
+        Events.Send(new TouchObject(obj, impact));
+
+        var isSolid = obj.TryGetSingleComponent<ICollider>(out var collider) && collider.IsSolid;
+        passThrough = !isSolid;
+        if (passThrough)
+            return;
+
+        Events.Send(new CollideWithObject(obj, impact));
     }
 
     private void hitLevel(Position3 point, Difference3 step, Direction? withStep, Tile tile)

@@ -38,7 +38,7 @@ sealed class HitTargetOnActivate : Component
             ? new Impact(resultForTarget.Point, resultForTarget.Normal!.Value, ray.Direction)
             : new Impact(target.Position, new Difference3(Vector3.UnitZ), ray.Direction);
 
-        Events.Send(new CollideWithObject(target, hitInfo));
+        Events.Send(new TouchObject(target, hitInfo));
     }
 
     public override void Update(TimeSpan elapsedTime) { }
