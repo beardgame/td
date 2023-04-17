@@ -33,6 +33,10 @@ sealed class GameUIControl : CompositeControl
             .Anchor(a => a
                 .Right(width: 200)
                 .Below(gameStatusControl, height: 100)));
+        nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
+            .Anchor(a => a
+                .Top(height: 64)
+                .Left(margin: -240, width: 480, relativePercentage: .5)));
         Add(nonDiegeticUIWrapper);
 
         Add(new GameMenuControl()
