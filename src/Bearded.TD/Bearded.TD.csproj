@@ -58,4 +58,8 @@
     <ProjectReference Include="..\Bearded.TD.Analyzers\Bearded.TD.Analyzers.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Bearded.TD.Generators\Bearded.TD.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Game\Simulation\Projectiles\events" />
+  </ItemGroup>
 </Project>

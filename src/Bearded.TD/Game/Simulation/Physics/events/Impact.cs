@@ -1,7 +1,7 @@
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 
-namespace Bearded.TD.Game.Simulation.Projectiles;
+namespace Bearded.TD.Game.Simulation.Physics;
 
 readonly record struct Impact(Position3 Point, Difference3 SurfaceNormal, Difference3 IncidentDirection)
 {
