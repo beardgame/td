@@ -12,7 +12,7 @@ static class ProgressBarFactories
     {
         var barControl = new BackgroundBox(color ?? DefaultColor)
             .Anchor(a => a.Right(relativePercentage: progress.Value));
-        progress.SourceUpdated += p => barControl.Anchor(a => a.Left(relativePercentage: p));
+        progress.SourceUpdated += p => barControl.Anchor(a => a.Right(relativePercentage: p));
         return barControl;
     }
 

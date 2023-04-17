@@ -62,6 +62,17 @@ static class TextFactories
             Header(text, Controls.Label.TextAnchorCenter, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
     }
 
+    public static Label Label(Binding<string> text, Vector2d? textAnchor = null, Binding<Color>? color = null)
+    {
+        var label = Label(text.Value, textAnchor, color?.Value);
+        text.SourceUpdated += newText => label.Text = newText;
+        if (color != null)
+        {
+            color.SourceUpdated += newColor => label.Color = newColor;
+        }
+        return label;
+    }
+
     public static Label Label(string text, Vector2d? textAnchor = null, Color? color = null) => new(text)
     {
         Color = color ?? TextColor,
@@ -88,17 +99,10 @@ static class TextFactories
         Color? leftColor = null,
         Binding<Color>? rightColor = null)
     {
-        var valueLabel = Label(rightText.Value, new Vector2d(1, verticalAnchor ?? 0.5), rightColor?.Value);
-        rightText.SourceUpdated += newValue => valueLabel.Text = newValue;
-        if (rightColor != null)
-        {
-            rightColor.SourceUpdated += newValue => valueLabel.Color = newValue;
-        }
-
         return new CompositeControl
         {
             Label(leftText, new Vector2d(0, verticalAnchor ?? 0.5), leftColor),
-            valueLabel
+            Label(rightText, new Vector2d(1, verticalAnchor ?? 0.5), rightColor),
         };
     }
 
