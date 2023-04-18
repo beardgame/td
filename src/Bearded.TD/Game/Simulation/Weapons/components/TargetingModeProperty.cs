@@ -32,6 +32,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
     public void SetTargetingMode(ITargetingMode newMode)
     {
         Value = newMode;
+        Events.Send(new TargetingModeChanged());
     }
 
     private sealed class TargetingReport : ITargetingReport

@@ -2,6 +2,7 @@ using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Rendering.Vertices;

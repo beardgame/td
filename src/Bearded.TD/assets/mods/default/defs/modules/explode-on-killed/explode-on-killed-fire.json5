@@ -9,7 +9,7 @@
                 id: "splashDamageOnKilled",
                 parameters: {
                     range: 2.5,
-                    damage: 10,
+                    damage: 20,
                     damageType: "fire",
                 }
             }
@@ -21,7 +21,7 @@
                 parameters: {
                     range: 2.5,
                     duration: 1,
-                    damagePerSecond: 20,
+                    damagePerSecond: 40,
                 }
             }
         },
@@ -34,5 +34,19 @@
                 }
             }
         },
+        {
+            type: "component",
+            parameters: {
+                id: "sprite",
+                parameters: {
+                    sprite: "enemies.volatile-enemy",
+                    size: 0.3,
+                    heightOffset: 0.1,
+                    offset: [-0.25, -0.25],
+                    direction: 0,
+                    color: "ffff4500",
+                }
+            }
+        }
     ],
 }

@@ -1,0 +1,45 @@
+{
+    id: "suicide-enemy",
+    components: [
+        { id: "name", parameters: { name: "Suicide enemy" } },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.particle.orb-soft",
+                color: "8bbf00",
+                size: 0.45,
+                heightOffset: 0.1
+            }
+        },
+        { id: "health", parameters: { maxHealth: 200 } },
+        { id: "threat", parameters:  { threat: 240 } },
+
+        { id: "archetype", parameters: { value: "elite" } },
+        { id: "socket", parameters: { shape: "explodeOnCoreArrival" } },
+        {
+            id: "resistanceContributions",
+            parameters: {
+                factors: {
+                    explodeOnCoreArrival: 0.3
+                }
+            }
+        },
+
+        { id: "groundLockedMovement" },
+        { id: "notifyWhenStuck", parameters: { }},
+        { id: "accelerateToBase", parameters: { acceleration: 5 } },
+        { id: "drag", parameters: { amount: 2 } },
+        {
+            id: "tileCollider",
+            parameters: {
+                withWalls: true,
+                withCrevices: true,
+                withBuildings: true
+            }
+        },
+        { id: "elasticCollision", parameters:  { normal: 0.5, tangent: 1 }},
+        { id: "softMutualUnitCollider" },
+        { id: "spawnObjectOnKilled", parameters:  { object: "default.enemyExplosion" } },
+        { id: "spawnObjectOnTakeHit", parameters: { object: "default.enemyHit", scaleFromDamage: 0.1 }},
+    ]
+}

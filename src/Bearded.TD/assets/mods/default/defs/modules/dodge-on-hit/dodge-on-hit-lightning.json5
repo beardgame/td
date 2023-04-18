@@ -15,6 +15,20 @@
           spawnObjectAfter: "dodge-teleport-after-effect"
         }
       }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "sprite",
+        parameters: {
+          sprite: "enemies.dodgy-enemy",
+          size: 0.3,
+          heightOffset: 0.1,
+          offset: [-0.25, -0.25],
+          direction: 0,
+          color: "ffdda0dd",
+        }
+      }
     }
   ]
 }

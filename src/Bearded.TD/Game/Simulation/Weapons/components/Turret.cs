@@ -24,7 +24,11 @@ interface ITurret : IPositionable
 }
 
 [Component("turret")]
-sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComponents>, IListener<ObjectDeleting>
+sealed class Turret : Component<Turret.IParameters>,
+    ITurret,
+    IListener<DrawComponents>,
+    IListener<ObjectDeleting>,
+    IListener<TargetingModeChanged>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -67,6 +71,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
 
         Events.Subscribe<DrawComponents>(this);
         Events.Subscribe<ObjectDeleting>(this);
+        Events.Subscribe<TargetingModeChanged>(this);
     }
 
     public override void Activate()
@@ -79,6 +84,7 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
     {
         Events.Unsubscribe<DrawComponents>(this);
         Events.Unsubscribe<ObjectDeleting>(this);
+        Events.Unsubscribe<TargetingModeChanged>(this);
     }
 
     public void HandleEvent(DrawComponents e)
@@ -89,6 +95,11 @@ sealed class Turret : Component<Turret.IParameters>, ITurret, IListener<DrawComp
     public void HandleEvent(ObjectDeleting @event)
     {
         Weapon.Delete();
+    }
+
+    public void HandleEvent(TargetingModeChanged @event)
+    {
+        weaponState.InjectEvent(@event);
     }
 
     public override void Update(TimeSpan elapsedTime)

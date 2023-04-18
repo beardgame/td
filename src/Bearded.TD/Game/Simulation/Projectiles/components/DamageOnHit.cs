@@ -1,5 +1,7 @@
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
@@ -8,7 +10,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damageOnHit")]
-sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnemy>
+sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<TouchObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -16,6 +18,8 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
 
         [Modifiable(defaultValue: 1.0f)]
         float FractionOfBaseDamage { get; }
+
+        bool ExcludeBuildings { get; }
     }
 
     public DamageOnHit(IParameters parameters) : base(parameters) { }
@@ -30,11 +34,14 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<HitEnem
         Events.Unsubscribe(this);
     }
 
-    public void HandleEvent(HitEnemy @event)
+    public void HandleEvent(TouchObject @event)
     {
+        if (Parameters.ExcludeBuildings && @event.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
+            return;
+
         var damageDone = Owner.TryGetProperty<UntypedDamage>(out var damage)
             && DamageExecutor.FromObject(Owner).TryDoDamage(
-                @event.Enemy,
+                @event.Object,
                 (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
                 Hit.FromImpact(@event.Impact));
         DebugAssert.State.Satisfies(damageDone);

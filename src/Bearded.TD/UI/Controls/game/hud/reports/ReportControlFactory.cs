@@ -41,6 +41,7 @@ sealed class ReportControlFactory : IReportControlFactory
         return report switch
         {
             IBuildingStateReport buildingStateReport => new BuildingStateControl(game, buildingStateReport),
+            IEmergencyEMPReport emergencyEMPReport => new EmergencyEMPControl(game, emergencyEMPReport),
             IHealthReport healthReport => new HealthReportControl(healthReport),
             IManualControlReport manualControlReport => new ManualControlReportControl(game, manualControlReport),
             IManualOverdriveReport manualOverdriveReport =>
@@ -74,38 +75,4 @@ sealed class ReportControlFactory : IReportControlFactory
             pulse.Heartbeat -= control.Update;
         }
     }
-}
-
-sealed class VeterancyReportControl : ReportControl
-{
-    private readonly IVeterancyReport report;
-
-    private readonly Binding<string> currentLevel = new();
-    private readonly Binding<string> nextLevel = new();
-    private readonly Binding<double> levelProgress = new();
-
-    public override double Height { get; }
-
-    public VeterancyReportControl(IVeterancyReport report)
-    {
-        this.report = report;
-        var column = this.BuildFixedColumn();
-        column
-            .AddValueLabel("Current level", currentLevel)
-            .AddValueLabel("Next level", nextLevel)
-            .AddProgressBar(levelProgress);
-        Height = column.Height;
-        Update();
-    }
-
-    public override void Update()
-    {
-        currentLevel.SetFromSource(report.CurrentVeterancyLevel.ToString());
-        nextLevel.SetFromSource(report.NextLevelThreshold == null
-            ? "max!"
-            : $"{report.CurrentExperience.ToUiString()} / {report.NextLevelThreshold.Value.ToUiString()}");
-        levelProgress.SetFromSource(report.PercentageToNextLevel);
-    }
-
-    public override void Dispose() {}
 }

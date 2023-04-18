@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
@@ -31,6 +32,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
         Unit Size { get; }
         Unit HeightOffset { get; }
         Difference2 Offset { get; }
+        Direction2? Direction { get; }
     }
 
 
@@ -62,20 +64,21 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     public void HandleEvent(DrawComponents e)
     {
         var color = GetColor(Owner, Parameters.ColorMode, Parameters.Color);
+        var direction = Parameters.Direction ?? Owner.Direction;
 
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
 
         if (Parameters.Offset is var offset && offset != Difference2.Zero)
         {
-            var unitY = Owner.Direction.Vector;
+            var unitY = direction.Vector;
 
             var o = unitY * offset.Y + unitY.PerpendicularRight * offset.X;
 
             p.Xy += o.NumericValue;
         }
 
-        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, Owner.Direction.Radians, color);
+        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, direction.Radians, color);
     }
 
     public static Color GetColor(GameObject obj, ColorMode mode, Color defaultColor)

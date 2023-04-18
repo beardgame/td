@@ -6,14 +6,14 @@
             id: "sprite",
             parameters: {
                 sprite: "default.particle.orb-soft",
-                color: "39d140",
-                size: 0.4,
+                color: "62c820",
+                size: 0.42,
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 100 } },
-        { id: "threat", parameters:  { threat: 120 } },
-        { id: "damageBuildings", parameters: { damage: 6, attackRate: 0.5 } },
+        { id: "health", parameters: { maxHealth: 150 } },
+        { id: "threat", parameters:  { threat: 180 } },
+        { id: "damageBuildings", parameters: { damage: 12, attackRate: 0.5 } },
 
         { id: "archetype", parameters: { value: "elite" } },
         { id: "socket", parameters: { shape: "explodeOnKilled" } },

@@ -46,4 +46,6 @@ static class DispatcherExtensions
         => d(obj).RunOnlyOnServer(func, obj.Game, p1, p2);
     public static void Sync<T1, T2, T3>(this GameObject obj, Func<GameState, T1, T2, T3, ISerializableCommand<GameInstance>> func, T1 p1, T2 p2, T3 p3)
         => d(obj).RunOnlyOnServer(func, obj.Game, p1, p2, p3);
+    public static void Sync<T1, T2, T3, T4>(this GameObject obj, Func<GameState, T1, T2, T3, T4, ISerializableCommand<GameInstance>> func, T1 p1, T2 p2, T3 p3, T4 p4)
+        => d(obj).RunOnlyOnServer(func, obj.Game, p1, p2, p3, p4);
 }

@@ -23,7 +23,8 @@ sealed partial class TargetEnemiesInRange
         IWeaponAimer,
         IWeaponTrigger,
         IWeaponRange,
-        IListener<DrawComponents>
+        IListener<DrawComponents>,
+        IListener<TargetingModeChanged>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -76,12 +77,14 @@ sealed partial class TargetEnemiesInRange
         tileRangeDrawer = new TileRangeDrawer(
             Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
 
-        Events.Subscribe(this);
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<TargetingModeChanged>(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe(this);
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<TargetingModeChanged>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)

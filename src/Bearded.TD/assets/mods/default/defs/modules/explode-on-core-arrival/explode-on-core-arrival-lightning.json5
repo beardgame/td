@@ -1,0 +1,47 @@
+{
+    id: "explode-on-core-arrival-lightning",
+    affinityElement: "conductivity",
+    socketShape: "explodeOnCoreArrival",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "damageBuildingOnStuck",
+                parameters: {
+                    damage: 32,
+                    damageType: "electric",
+                    spawnObject: "default.medium-shockwave",
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "stunBuildingOnStuck",
+                parameters: {
+                    duration: 0.5,
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "dieOnStuck",
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "sprite",
+                parameters: {
+                    sprite: "enemies.suicide-enemy",
+                    size: 0.3,
+                    heightOffset: 0.1,
+                    offset: [-0.25, -0.25],
+                    direction: 0,
+                    color: "ffdda0dd",
+                }
+            }
+        }
+    ],
+}

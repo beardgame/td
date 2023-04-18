@@ -35,6 +35,7 @@ sealed class GameUI :
 
     public GameNotificationsUI NotificationsUI { get; }
     public ActionBar ActionBar { get; }
+    public CoreStatsUI CoreStats { get; }
     public GameStatusUI GameStatusUI { get; }
     public PlayerStatusUI PlayerStatusUI { get; }
     public TechnologyWindow TechnologyUI { get; }
@@ -54,6 +55,7 @@ sealed class GameUI :
 
         NotificationsUI = new GameNotificationsUI(GameUIController);
         ActionBar = new ActionBar();
+        CoreStats = new CoreStatsUI();
         GameStatusUI = new GameStatusUI();
         PlayerStatusUI = new PlayerStatusUI();
         TechnologyUI = new TechnologyWindow();
@@ -74,6 +76,7 @@ sealed class GameUI :
 
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game);
+        CoreStats.Initialize(Game);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, tooltipFactory);
@@ -89,6 +92,7 @@ sealed class GameUI :
     {
         NotificationsUI.Terminate();
         ActionBar.Terminate();
+        CoreStats.Terminate();
         TechnologyUI.Terminate();
         updateOverlayState(false, ref debugOverlay);
         base.Terminate();
@@ -108,6 +112,7 @@ sealed class GameUI :
 
         TimeSource.Update(args);
         uiUpdater.Update(args);
+        CoreStats.Update();
         NotificationsUI.Update();
         GameStatusUI.Update();
         PlayerStatusUI.Update();

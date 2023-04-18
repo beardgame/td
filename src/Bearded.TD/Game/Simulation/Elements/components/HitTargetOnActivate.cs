@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Utilities.Geometry;
@@ -37,7 +38,7 @@ sealed class HitTargetOnActivate : Component
             ? new Impact(resultForTarget.Point, resultForTarget.Normal!.Value, ray.Direction)
             : new Impact(target.Position, new Difference3(Vector3.UnitZ), ray.Direction);
 
-        Events.Send(new HitEnemy(target, hitInfo));
+        Events.Send(new TouchObject(target, hitInfo));
     }
 
     public override void Update(TimeSpan elapsedTime) { }

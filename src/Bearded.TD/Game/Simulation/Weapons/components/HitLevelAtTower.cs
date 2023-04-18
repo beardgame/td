@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -48,6 +49,6 @@ sealed class HitLevelAtTower : Component, IListener<FireWeapon>
             ? p
             : Owner.Position;
 
-        Events.Send(new HitLevel(new Impact(point, new Difference3(0, 0, 1), new Difference3(0, 0, -1)), Level.GetTile(point)));
+        Events.Send(new CollideWithLevel(new Impact(point, new Difference3(0, 0, 1), new Difference3(0, 0, -1)), Level.GetTile(point)));
     }
 }

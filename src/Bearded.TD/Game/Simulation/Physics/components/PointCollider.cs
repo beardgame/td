@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
@@ -15,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Physics;
 
 sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 {
-    private readonly HashSet<GameObject> enemiesHit = new();
+    private readonly HashSet<GameObject> objectsHit = new();
 
     protected override void OnAdded()
     {
@@ -28,32 +27,38 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
 
         var ray = new Ray3(start, step);
 
-        var (result, _, point, enemy, lastStep, normal, tile) = Owner.Game.Level.CastRayAgainstObjects(
+        var rayCast = Owner.Game.Level.CastPiercingRayAgainstObjects(
             ray, Owner.Game.PhysicsLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
 
-        e = new PreviewMove(start, point - start);
-
-        switch (result)
+        foreach (var (result, _, point, obj, lastStep, normal, tile) in rayCast)
         {
-            case RayCastResultType.HitNothing:
-                if (point.Z < Owner.Game.GeometryLayer[tile].DrawInfo.Height)
-                {
-                    hitLevel(point, step, null, tile);
-                }
-                break;
-            case RayCastResultType.HitLevel:
-                hitLevel(point, step, lastStep, tile);
-                break;
-            case RayCastResultType.HitObject:
-                _ = enemy ?? throw new InvalidOperationException();
-                _ = normal ?? throw new InvalidOperationException();
-                if (enemiesHit.Add(enemy))
-                {
-                    hitEnemy(point, step, enemy, normal.Value);
-                }
-                break;
-            default:
-                throw new IndexOutOfRangeException();
+            switch (result)
+            {
+                case RayCastResultType.HitNothing:
+                    if (point.Z < Owner.Game.GeometryLayer[tile].DrawInfo.Height)
+                    {
+                        hitLevel(point, step, null, tile);
+                    }
+                    break;
+                case RayCastResultType.HitLevel:
+                    hitLevel(point, step, lastStep, tile);
+                    break;
+                case RayCastResultType.HitObject:
+                    _ = obj ?? throw new InvalidOperationException();
+                    _ = normal ?? throw new InvalidOperationException();
+                    if (objectsHit.Add(obj))
+                    {
+                        hitObject(point, step, obj, normal.Value, out var passThrough);
+                        if (passThrough)
+                            continue;
+                    }
+                    break;
+                default:
+                    throw new IndexOutOfRangeException();
+            }
+
+            e = new PreviewMove(start, point - start);
+            return;
         }
     }
 
@@ -61,10 +66,17 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
     {
     }
 
-    private void hitEnemy(Position3 point, Difference3 step, GameObject enemy, Difference3 normal)
+    private void hitObject(Position3 point, Difference3 step, GameObject obj, Difference3 normal, out bool passThrough)
     {
-        var info = new Impact(point, normal, step.NormalizedSafe());
-        Events.Send(new HitEnemy(enemy, info));
+        var impact = new Impact(point, normal, step.NormalizedSafe());
+        Events.Send(new TouchObject(obj, impact));
+
+        var isSolid = obj.TryGetSingleComponent<ICollider>(out var collider) && collider.IsSolid;
+        passThrough = !isSolid;
+        if (passThrough)
+            return;
+
+        Events.Send(new CollideWithObject(obj, impact));
     }
 
     private void hitLevel(Position3 point, Difference3 step, Direction? withStep, Tile tile)

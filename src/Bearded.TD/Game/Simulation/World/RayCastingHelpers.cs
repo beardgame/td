@@ -6,9 +6,10 @@ using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.Simulation.World.RayCastResultType;
 
 namespace Bearded.TD.Game.Simulation.World;
+
+using static RayCastResultType;
 
 enum RayCastResultType
 {

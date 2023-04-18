@@ -1,0 +1,34 @@
+{
+    id: "explode-on-core-arrival-fire",
+    affinityElement: "combustion",
+    socketShape: "explodeOnCoreArrival",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "delayedChainExplosionOnStuck",
+                parameters: {
+                    delay: 4,
+                    propagationRange: 2.5,
+                    damage: 48,
+                    damageType: "fire",
+                    spawnObject: "default.medium-shockwave",
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "sprite",
+                parameters: {
+                    sprite: "enemies.suicide-enemy",
+                    size: 0.3,
+                    heightOffset: 0.1,
+                    offset: [-0.25, -0.25],
+                    direction: 0,
+                    color: "ffff4500",
+                }
+            }
+        }
+    ],
+}

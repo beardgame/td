@@ -1,17 +1,26 @@
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;
 
-sealed class SphereCollider : Component, ICollider, IRadius
+[Component("sphereCollider")]
+sealed class SphereCollider : Component<SphereCollider.IParameters>, ICollider, IRadius
 {
-    public Unit Radius { get; }
-    private Sphere collisionSphere => new(Owner.Position, Radius);
-
-    public SphereCollider(Unit radius)
+    public interface IParameters : IParametersTemplate<IParameters>
     {
-        Radius = radius;
+        Unit Radius { get; }
+        bool Solid { get; }
+    }
+
+    public Unit Radius => Parameters.Radius;
+    public bool IsSolid => Parameters.Solid;
+
+    private Sphere collisionSphere => new(Owner.Position, Parameters.Radius);
+
+    public SphereCollider(IParameters parameters) : base(parameters)
+    {
     }
 
     protected override void OnAdded() {}

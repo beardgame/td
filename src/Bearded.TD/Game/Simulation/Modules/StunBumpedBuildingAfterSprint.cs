@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Simulation.Modules;
 
 [Component("stunBumpedBuildingAfterSprint")]
 sealed class StunBumpedBuildingAfterSprint
-    : Component<StunBumpedBuildingAfterSprint.IParameters>, IListener<StoppedSprinting>, IListener<HitLevel>
+    : Component<StunBumpedBuildingAfterSprint.IParameters>, IListener<StoppedSprinting>, IListener<CollideWithLevel>
 {
     private Instant stunUntil;
 
@@ -27,7 +28,7 @@ sealed class StunBumpedBuildingAfterSprint
     protected override void OnAdded()
     {
         Events.Subscribe<StoppedSprinting>(this);
-        Events.Subscribe<HitLevel>(this);
+        Events.Subscribe<CollideWithLevel>(this);
     }
 
     public override void Activate()
@@ -43,7 +44,7 @@ sealed class StunBumpedBuildingAfterSprint
         stunUntil = Owner.Game.Time + Parameters.TimeAfterSprint;
     }
 
-    public void HandleEvent(HitLevel e)
+    public void HandleEvent(CollideWithLevel e)
     {
         if (stunUntil < Owner.Game.Time)
             return;

@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Modules;
 [Component("splashDamageOnKilled")]
 sealed class SplashDamageOnKilled : Component<SplashDamageOnKilled.IParameters>, IListener<ObjectKilled>
 {
-    internal interface IParameters : IParametersTemplate<IParameters>
+    public interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(Type = AttributeType.SplashRange)]
         Unit Range { get; }

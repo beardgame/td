@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -26,6 +27,8 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 
     private readonly TrailTracer tracer;
     private TrailDrawer drawer = null!;
+
+    public IReadOnlyList<TrailTracer.Part> Parts => tracer;
 
     public Trail(IParameters parameters) : base(parameters)
     {

@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -8,7 +9,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<HitEnemy>
+abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<TouchObject>
     where TParameters : IParametersTemplate<TParameters>
     where TEffect : IElementalEffect
 {
@@ -23,11 +24,11 @@ abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public void HandleEvent(HitEnemy @event)
+    public void HandleEvent(TouchObject @event)
     {
         if (!StaticRandom.Bool(Probability)) return;
         if (!Owner.TryGetProperty<UntypedDamage>(out var damage)) return;
-        if (!@event.Enemy.TryGetSingleComponent<IElementSystemEntity>(out var elementSystemEntity)) return;
+        if (!@event.Object.TryGetSingleComponent<IElementSystemEntity>(out var elementSystemEntity)) return;
 
         var effect = CreateEffect(damage);
         elementSystemEntity.ApplyEffect(effect);

@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("projectileExplosionOnHit")]
 sealed class ProjectileExplosionOnHit
-    : Component<ProjectileExplosionOnHit.IParameters>, IListener<HitLevel>, IListener<HitEnemy>
+    : Component<ProjectileExplosionOnHit.IParameters>, IListener<CollideWithLevel>, IListener<CollideWithObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -40,12 +41,12 @@ sealed class ProjectileExplosionOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Subscribe<HitEnemy>(this);
+            Events.Subscribe<CollideWithObject>(this);
         }
 
         if (Parameters.OnHitLevel)
         {
-            Events.Subscribe<HitLevel>(this);
+            Events.Subscribe<CollideWithLevel>(this);
         }
     }
 
@@ -53,12 +54,12 @@ sealed class ProjectileExplosionOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Unsubscribe<HitEnemy>(this);
+            Events.Unsubscribe<CollideWithObject>(this);
         }
 
         if (Parameters.OnHitLevel)
         {
-            Events.Unsubscribe<HitLevel>(this);
+            Events.Unsubscribe<CollideWithLevel>(this);
         }
     }
 
@@ -66,12 +67,12 @@ sealed class ProjectileExplosionOnHit
     {
     }
 
-    public void HandleEvent(HitLevel e)
+    public void HandleEvent(CollideWithLevel e)
     {
         onHit(e.Info);
     }
 
-    public void HandleEvent(HitEnemy e)
+    public void HandleEvent(CollideWithObject e)
     {
         onHit(e.Impact);
     }

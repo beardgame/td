@@ -12,9 +12,23 @@
                     minProjectileNumber: 10,
                     maxProjectileNumber: 15,
                     randomVelocity: 6,
-                    damage: 50,
+                    damage: 120,
                 }
             }
         },
+        {
+            type: "component",
+            parameters: {
+                id: "sprite",
+                parameters: {
+                    sprite: "enemies.volatile-enemy",
+                    size: 0.3,
+                    heightOffset: 0.1,
+                    offset: [-0.25, -0.25],
+                    direction: 0,
+                    color: "ffd3d3d3",
+                }
+            }
+        }
     ],
 }

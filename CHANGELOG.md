@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.14
+
+* Added a variety of enemies with different behaviours:
+  * Enemies that sprint when moving in straight lines;
+  * Enemies that explode when dying;
+  * Enemies that kill themselves when arriving at the Core, doing a large chunk of damage;
+  * Enemies that attempt to dodge out of the way of incoming projectiles.
+* The Core is now outfitted with weapons to defend itself
+* The Core is now outfitted with an emergency EMP that deals massive damage to enemies, but disables all towers temporarily
+* Added overdrive mode for towers, increasing their damage output but slowly damaging them
+* Wider corridors between caves can now be generated
+* Cave layouts have been improved for better gameplay and mazing
+* Changing the targeting mode of a tower immediately causes the target to seek a new target
+* Balance: difficulty of the generated enemies now scales less fast
+* Balance: enemies typically spawn in tighter groups now
+* Balance: tower upgrades are now applied faster, but disable the tower while being upgraded
+* UI: changed the colour for electric damage and conductivity research to a lighter purple
+* Bug fix: targeting mode is now synchronized over the network
+* Bug fix: enemy position synchronization over the network works again
+* Bug fix: building a tower on top of a wall will now take into account the reduced cost for deciding when to start building
+
 ## v0.13
 
 * Show the price of building a building on top of the ghost, keeping in mind refunds

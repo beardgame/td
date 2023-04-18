@@ -21,6 +21,7 @@ interface IDispatcher<TObject>
     void RunOnlyOnServer<T1, T2>(Func<T1, T2, ISerializableCommand<TObject>> func, T1 p1, T2 p2);
     void RunOnlyOnServer<T1, T2, T3>(Func<T1, T2, T3, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3);
     void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4);
+    void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5);
 }
 
 abstract class BaseClientDispatcher<TObject> : IDispatcher<TObject>
@@ -42,6 +43,7 @@ abstract class BaseClientDispatcher<TObject> : IDispatcher<TObject>
     public void RunOnlyOnServer<T1, T2>(Func<T1, T2, ISerializableCommand<TObject>> func, T1 p1, T2 p2) {}
     public void RunOnlyOnServer<T1, T2, T3>(Func<T1, T2, T3, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3) { }
     public void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4) { }
+    public void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5) { }
 }
 
 abstract class BaseServerDispatcher<TObject> : IDispatcher<TObject>
@@ -78,6 +80,8 @@ abstract class BaseServerDispatcher<TObject> : IDispatcher<TObject>
         => dispatch(func(p1, p2, p3));
     public void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4)
         => dispatch(func(p1, p2, p3, p4));
+    public void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5)
+        => dispatch(func(p1, p2, p3, p4, p5));
 
     private void dispatch(ISerializableCommand<TObject> command)
     {
