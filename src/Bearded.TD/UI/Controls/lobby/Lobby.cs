@@ -30,15 +30,24 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     public ChatLog ChatLog => lobbyManager.Game.ChatLog;
 
     public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
+    public ModAwareId GameMode => gameSettings.GameMode ?? throw new InvalidOperationException();
     public int LevelSize => gameSettings.LevelSize;
     public LevelGenerationMethod LevelGenerationMethod => gameSettings.LevelGenerationMethod;
 
-    public bool CanToggleReady => lobbyManager.Game.ContentManager.IsFinishedLoading && !enabledModsCache.IsEmpty;
+    private bool gameModesNeedReloading = true;
+    public ImmutableArray<ModAwareId> AvailableGameModes { get; private set; } = ImmutableArray<ModAwareId>.Empty;
+
+    public bool CanToggleReady =>
+        lobbyManager.Game.ContentManager.IsFinishedLoading &&
+        !enabledModsCache.IsEmpty &&
+        GameMode.IsValid &&
+        enabledModsCache.Contains(lobbyManager.Game.ContentManager.FindMod(GameMode.ModId ?? ""));
     public ModLoadingProfiler LoadingProfiler => lobbyManager.Game.ContentManager.LoadingProfiler;
 
     public event VoidEventHandler? LoadingUpdated;
     public event VoidEventHandler? PlayersChanged;
-    public event VoidEventHandler? ModsChanged;
+    public event VoidEventHandler? EnabledModsChanged;
+    public event VoidEventHandler? AvailableGameModesChanged;
     public event VoidEventHandler? GameSettingsChanged;
     public event VoidEventHandler? ChatMessagesUpdated;
 
@@ -52,6 +61,7 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         gameSettings = CanChangeGameSettings
             ? new GameSettings.Builder(UserSettings.Instance.LastGameSettings)
             : new GameSettings.Builder();
+        gameSettings.GameMode ??= ModAwareId.ForDefaultMod("default");
         if (CanChangeGameSettings)
         {
             lobbyManager.UpdateGameSettings(gameSettings.Build());
@@ -91,11 +101,20 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
             onModsChanged();
         }
 
+        if (gameModesNeedReloading && lobbyManager.Game.ContentManager.IsFinishedLoading)
+        {
+            AvailableGameModes = lobbyManager.Game.ContentManager.LoadedEnabledMods
+                .SelectMany(m => m.Blueprints.GameModes.All)
+                .Select(gameMode => gameMode.Id).ToImmutableArray();
+            gameModesNeedReloading = false;
+            AvailableGameModesChanged?.Invoke();
+        }
+
         var chatMessages = lobbyManager.Game.ChatLog.Messages;
         if (chatMessages.Count > 0
-            && (lastSeenChatMessage == null || chatMessages[chatMessages.Count - 1] != lastSeenChatMessage))
+            && (lastSeenChatMessage == null || chatMessages[^1] != lastSeenChatMessage))
         {
-            lastSeenChatMessage = chatMessages[chatMessages.Count - 1];
+            lastSeenChatMessage = chatMessages[^1];
             ChatMessagesUpdated?.Invoke();
         }
     }
@@ -124,7 +143,7 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         }
         lobbyManager.Game.ContentManager.CleanUpAll();
         lobbyManager.Close();
-        Navigation.Replace<MainMenu, Intent>(Intent.None, this);
+        Navigation!.Replace<MainMenu, Intent>(Intent.None, this);
     }
 
     public void OnSetModEnabled(ModMetadata mod, bool enabled)
@@ -140,6 +159,12 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     }
 
     public bool IsModEnabled(ModMetadata mod) => lobbyManager.Game.ContentManager.EnabledMods.Contains(mod);
+
+    public void OnSetGameMode(ModAwareId gameMode)
+    {
+        gameSettings.GameMode = gameMode;
+        lobbyManager.UpdateGameSettings(gameSettings.Build());
+    }
 
     public void OnSetLevelSize(int size)
     {
@@ -162,7 +187,7 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
             UserSettings.RaiseSettingsChanged();
             UserSettings.Save(logger);
         }
-        Navigation.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(), this);
+        Navigation!.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(), this);
     }
 
     private void onPlayersChanged(Player player)
@@ -172,7 +197,8 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
 
     private void onModsChanged()
     {
-        ModsChanged?.Invoke();
+        gameModesNeedReloading = true;
+        EnabledModsChanged?.Invoke();
     }
 
     private void onGameSettingsChanged(IGameSettings newGameSettings)

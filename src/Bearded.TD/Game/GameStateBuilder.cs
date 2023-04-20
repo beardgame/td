@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bearded.TD.Commands;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Loading;
 using Bearded.Utilities;
@@ -25,7 +25,9 @@ sealed class GameStateBuilder
         yield return InitializeTypes.Command();
         yield return CreateGameState.Command(game, gameSettings);
 
-        var gameMode = game.Blueprints.GameModes[gameSettings.GameMode ?? ModAwareId.ForDefaultMod("default")];
+        var gameModeId = gameSettings.GameMode ??
+            throw new InvalidOperationException("Cannot start game without game mode");
+        var gameMode = game.Blueprints.GameModes[gameModeId];
         yield return ApplyGameRules.Command(game, gameMode);
 
         var nodeAccumulator = new AccumulateNodeGroups.Accumulator();

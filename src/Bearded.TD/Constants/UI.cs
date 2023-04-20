@@ -77,6 +77,7 @@ static partial class Constants
             public const float LineHeight = 20;
 
             public static readonly Color TextColor = Color.White;
+            public static readonly Color ErrorTextColor = Color.Red;
             public static readonly Color DisabledTextColor = TextColor * 0.7f;
         }
 

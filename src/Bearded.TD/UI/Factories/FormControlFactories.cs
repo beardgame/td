@@ -54,22 +54,52 @@ static class FormControlFactories
     }
 
     public static Control DropdownSelect<T>(
-        IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding)
+            IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding) =>
+        DropdownSelect(Binding.Create(options), renderer, valueBinding);
+
+    public static Control DropdownSelect<T>(
+        Binding<IEnumerable<T>> options, Func<T, string> renderer, Binding<T> valueBinding)
     {
         // TODO: implement an actual dropdown select
 
-        var optionsList = options.ToList();
+        List<T> optionsList;
+        var errorBinding = Binding.Create(false);
 
-        var button = ButtonFactories.Button(() => renderer(valueBinding.Value));
-        button.Clicked += _ => advanceSelection();
+        updateOptions(options.Value);
+        options.SourceUpdated += updateOptions;
+        valueBinding.SourceUpdated += _ => updateValidity();
+
+        var button = ButtonFactories.Button(b => b
+            .WithLabel(() => renderer(valueBinding.Value))
+            .WithError(errorBinding)
+            .WithOnClick(advanceSelection));
         return button;
+
+        void updateOptions(IEnumerable<T> newOptions)
+        {
+            optionsList = newOptions.ToList();
+            updateValidity();
+        }
+
+        void updateValidity()
+        {
+            var selectedIndex = optionsList.FindIndex(e => e.Equals(valueBinding.Value));
+            errorBinding.SetFromControl(selectedIndex == -1);
+        }
 
         void advanceSelection()
         {
+            if (optionsList.Count == 0)
+            {
+                return;
+            }
+
             var selectedIndex = optionsList.FindIndex(e => e.Equals(valueBinding.Value));
-            DebugAssert.State.Satisfies(selectedIndex != -1);
+            // If the index is not found, selectedIndex is -1, so this will set the selection to the first possible
+            // field
             selectedIndex = (selectedIndex + 1) % optionsList.Count;
             valueBinding.SetFromControl(optionsList[selectedIndex]);
+            errorBinding.SetFromControl(false);
         }
     }
 
@@ -152,14 +182,29 @@ static class FormControlFactories
 
     public static FormFactories.Builder AddDropdownSelectRow<T>(
         this FormFactories.Builder builder,
-        string label, IEnumerable<T> options,
+        string label,
+        IEnumerable<T> options,
+        Func<T, string> renderer,
+        Binding<T> valueBinding)
+    {
+        return builder.AddDropdownSelectRow(
+            label,
+            Binding.Create(options),
+            renderer,
+            valueBinding);
+    }
+
+    public static FormFactories.Builder AddDropdownSelectRow<T>(
+        this FormFactories.Builder builder,
+        string label,
+        Binding<IEnumerable<T>> optionsBinding,
         Func<T, string> renderer,
         Binding<T> valueBinding)
     {
         return builder.AddFormRow(
             label,
             layout => layout.DockFixedSizeToRight(
-                DropdownSelect(options, renderer, valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                DropdownSelect(optionsBinding, renderer, valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
                 Constants.UI.Form.InputWidth));
     }
 

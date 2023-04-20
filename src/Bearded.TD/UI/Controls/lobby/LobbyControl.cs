@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
@@ -70,7 +71,7 @@ sealed class LobbyControl : CompositeControl
         private readonly ListControl loadingList;
         private readonly Control chatLog;
         private readonly Control loadingLog;
-        private readonly Binding<string> chatInputBinding = new Binding<string>();
+        private readonly Binding<string> chatInputBinding = new();
 
         public LogsControl(Lobby model)
         {
@@ -194,6 +195,8 @@ sealed class LobbyControl : CompositeControl
                 mod => mod,
                 mod => Binding.Create(model.IsModEnabled(mod), newValue => model.OnSetModEnabled(mod, newValue)));
             var modStatuses = modStatusBindings.Select(pair => (pair.Key.Name, pair.Value)).ToList();
+            var availableGameModes = Binding.Create<IEnumerable<ModAwareId>>(model.AvailableGameModes);
+            var gameMode = Binding.Create(model.GameMode, model.OnSetGameMode);
             var levelSize = Binding.Create(model.LevelSize, model.OnSetLevelSize);
             var levelGenerationMethod =
                 Binding.Create(model.LevelGenerationMethod, model.OnSetLevelGenerationMethod);
@@ -203,6 +206,11 @@ sealed class LobbyControl : CompositeControl
                 .AddCollectionEditor(modStatuses)
                 .AddHeader("Game settings")
                 .AddForm(builder => builder
+                    .AddDropdownSelectRow(
+                        "Game mode",
+                        availableGameModes,
+                        b => b.Id,
+                        gameMode)
                     .AddNumberSelectRow("Level size", 10, 100, levelSize)
                     .AddDropdownSelectRow(
                         "Level generation method",
@@ -214,7 +222,7 @@ sealed class LobbyControl : CompositeControl
                         e => e.ToString(),
                         levelGenerationMethod));
 
-            model.ModsChanged += () =>
+            model.EnabledModsChanged += () =>
             {
                 foreach (var (mod, binding) in modStatusBindings)
                 {
@@ -223,8 +231,13 @@ sealed class LobbyControl : CompositeControl
             };
             model.GameSettingsChanged += () =>
             {
+                gameMode.SetFromSource(model.GameMode);
                 levelSize.SetFromSource(model.LevelSize);
                 levelGenerationMethod.SetFromSource(model.LevelGenerationMethod);
+            };
+            model.AvailableGameModesChanged += () =>
+            {
+                availableGameModes.SetFromSource(model.AvailableGameModes);
             };
         }
     }
@@ -300,10 +313,10 @@ sealed class LobbyControl : CompositeControl
         }
 
         public static LoadingBlueprintsListRow ForCurrentlyLoading(string path) =>
-            new LoadingBlueprintsListRow(path, Color.LightBlue, Maybe.Nothing);
+            new(path, Color.LightBlue, Maybe.Nothing);
 
         public static LoadingBlueprintsListRow ForLoaded(ModLoadingProfiler.BlueprintLoadingProfile profile) =>
-            new LoadingBlueprintsListRow(profile.Path, color(profile), Maybe.Just(profile.LoadingTime));
+            new(profile.Path, color(profile), Maybe.Just(profile.LoadingTime));
 
         private static Color color(ModLoadingProfiler.BlueprintLoadingProfile profile)
         {
@@ -312,7 +325,7 @@ sealed class LobbyControl : CompositeControl
                 ModLoadingProfiler.LoadingResult.Success => Color.White,
                 ModLoadingProfiler.LoadingResult.HasWarning => Color.Orange,
                 ModLoadingProfiler.LoadingResult.HasError => Color.Red,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException(nameof(profile))
             };
         }
     }

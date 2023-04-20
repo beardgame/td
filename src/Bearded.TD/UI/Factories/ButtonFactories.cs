@@ -62,6 +62,7 @@ static class ButtonFactories
         private GenericEventHandler<Button.ClickEventArgs>? onClick;
         private Binding<bool>? isEnabled;
         private Binding<bool>? isActive;
+        private Binding<bool>? isError;
         private bool isDisabled;
 
         public Builder WithLabel(string label)
@@ -129,6 +130,12 @@ static class ButtonFactories
             return this;
         }
 
+        public Builder WithError(Binding<bool> isError)
+        {
+            this.isError = isError;
+            return this;
+        }
+
         public Builder MakeDisabled()
         {
             isDisabled = true;
@@ -193,7 +200,14 @@ static class ButtonFactories
             }
             return button;
 
-            Color colorProvider() => button.IsEnabled ? TextColor : DisabledTextColor;
+            Color colorProvider()
+            {
+                if (isError?.Value ?? false)
+                {
+                    return ErrorTextColor;
+                }
+                return button.IsEnabled ? TextColor : DisabledTextColor;
+            }
         }
     }
 }

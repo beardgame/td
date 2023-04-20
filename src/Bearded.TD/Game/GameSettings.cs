@@ -51,7 +51,7 @@ sealed class GameSettings : IGameSettings
             // Copy values
             Seed = template.Seed;
             ActiveModIds.AddRange(template.ActiveModIds);
-            GameMode = template.GameMode;
+            GameMode = template.GameMode is { IsValid: true } ? template.GameMode : null;
             LevelSize = template.LevelSize;
             LevelGenerationMethod = template.LevelGenerationMethod;
         }
