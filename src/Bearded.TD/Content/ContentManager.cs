@@ -7,7 +7,6 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Content;
@@ -26,8 +25,8 @@ sealed class ContentManager
     private readonly Dictionary<ModMetadata, ModForLoading> modsForLoading = new();
     private readonly Queue<ModMetadata> modLoadingQueue = new();
 
-    public Maybe<ModMetadata> CurrentlyLoading { get; private set; } = Maybe.Nothing;
-    public bool IsFinishedLoading => CurrentlyLoading.Select(_ => false).ValueOrDefault(modLoadingQueue.Count == 0);
+    public ModMetadata? CurrentlyLoading { get; private set; }
+    public bool IsFinishedLoading => CurrentlyLoading is null && modLoadingQueue.Count == 0;
 
     public IEnumerable<Mod> LoadedEnabledMods
     {
@@ -141,7 +140,7 @@ sealed class ContentManager
 
     private void pumpLoadingQueue()
     {
-        CurrentlyLoading.Match(metadata =>
+        if (CurrentlyLoading is { } metadata)
         {
             var modForLoading = modsForLoading[metadata];
             if (!modForLoading.IsDone)
@@ -149,9 +148,13 @@ sealed class ContentManager
                 return;
             }
             // TODO: deal with errors
-            CurrentlyLoading = Maybe.Nothing;
+            CurrentlyLoading = null;
+        }
+
+        if (CurrentlyLoading is null)
+        {
             startLoadingNextMod();
-        }, startLoadingNextMod);
+        }
     }
 
     private void startLoadingNextMod()
@@ -176,7 +179,7 @@ sealed class ContentManager
             .AsReadOnly();
 
         modForLoading.StartLoading(loadingContext, loadedDependencies);
-        CurrentlyLoading = Maybe.Just(metadata);
+        CurrentlyLoading = metadata;
     }
 
     public void CleanUp()
