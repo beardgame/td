@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities.SpaceTime;

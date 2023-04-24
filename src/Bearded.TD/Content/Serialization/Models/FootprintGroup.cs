@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;

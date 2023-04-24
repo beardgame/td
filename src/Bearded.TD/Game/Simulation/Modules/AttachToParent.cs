@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Modules;

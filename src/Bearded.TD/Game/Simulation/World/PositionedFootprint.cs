@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;

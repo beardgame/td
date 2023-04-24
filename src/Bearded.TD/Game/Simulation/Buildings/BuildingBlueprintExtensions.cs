@@ -4,7 +4,6 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 

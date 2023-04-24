@@ -4,7 +4,6 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
 

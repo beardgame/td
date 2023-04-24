@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game;
 

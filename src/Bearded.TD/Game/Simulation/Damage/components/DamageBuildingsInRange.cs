@@ -2,7 +2,6 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
-using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.TechEffects;

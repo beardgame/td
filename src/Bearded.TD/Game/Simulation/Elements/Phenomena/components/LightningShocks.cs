@@ -4,7 +4,6 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 

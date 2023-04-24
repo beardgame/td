@@ -4,7 +4,6 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
