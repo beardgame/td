@@ -42,15 +42,10 @@ sealed partial class WaveScheduler
     {
         var enemiesPerGroup = enemyCount / groupCount;
         var enemiesLeft = enemyCount % groupCount;
-        if (enemiesLeft == 0)
-        {
-            return Enumerable.Repeat(enemiesPerGroup, groupCount).ToImmutableArray();
-        }
 
-        enemiesPerGroup++;
-        var enemiesInLastGroup = enemiesPerGroup + enemiesLeft - groupCount;
-
-        return Enumerable.Repeat(enemiesPerGroup, groupCount - 1).Append(enemiesInLastGroup).ToImmutableArray();
+        return Enumerable.Repeat(enemiesPerGroup + 1, enemiesLeft)
+            .Concat(Enumerable.Repeat(enemiesPerGroup, groupCount - enemiesLeft))
+            .ToImmutableArray();
     }
 
     private IEnumerable<EnemySpawnScript.EnemySpawnEvent> spawnEventsBatchedInDuration(
