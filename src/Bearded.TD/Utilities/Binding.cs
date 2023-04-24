@@ -23,14 +23,14 @@ sealed class Binding<T>
 
     public void SetFromControl(T value)
     {
-        if (value.Equals(Value)) return;
+        if (value?.Equals(Value) ?? Value is null) return;
         Value = value;
         ControlUpdated?.Invoke(value);
     }
 
     public void SetFromSource(T value)
     {
-        if (value.Equals(Value)) return;
+        if (value?.Equals(Value) ?? Value is null) return;
         Value = value;
         SourceUpdated?.Invoke(value);
     }
