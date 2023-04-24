@@ -15,6 +15,7 @@
     {
       id: "damageOnHit",
       parameters: {
+        damageType: "fire",
         excludeBuildings : true
       }
     },

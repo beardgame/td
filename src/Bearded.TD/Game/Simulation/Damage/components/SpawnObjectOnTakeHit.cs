@@ -19,7 +19,11 @@ sealed class SpawnObjectOnTakeHit
         IGameObjectBlueprint Object { get; }
 
         DamageType? DamageType { get; }
+
+        TimeSpan? CoolDown { get; }
     }
+
+    private Instant nextPossibleSpawn;
 
     public SpawnObjectOnTakeHit(IParameters parameters) : base(parameters)
     {
@@ -36,6 +40,9 @@ sealed class SpawnObjectOnTakeHit
 
     public void HandleEvent(TakeHit @event)
     {
+        if (nextPossibleSpawn > Owner.Game.Time)
+            return;
+
         var hitInfo = @event.Context.Impact;
 
         if (!isValidDamageType(@event.ActualDamage))
@@ -58,6 +65,9 @@ sealed class SpawnObjectOnTakeHit
         }
 
         Owner.Game.Add(obj);
+
+        if (Parameters.CoolDown is { } coolDown)
+            nextPossibleSpawn = Owner.Game.Time + coolDown;
     }
 
     private bool isValidDamageType(TypedDamage damage)
