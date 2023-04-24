@@ -140,7 +140,7 @@ sealed class PlayerCursors
                     {
                         InstantiatedGhost = new InstantiatedGhost(
                             ghost,
-                            TileSelection.FromFootprints(notYetInstantiatedGhost.GetFootprintGroup()),
+                            TileSelection.FromFootprint(notYetInstantiatedGhost.GetFootprint()),
                             tileOccupation)
                     };
                     cursors[player] = cursor;

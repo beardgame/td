@@ -63,7 +63,6 @@ static class PlopBuilding
         private Id<Faction> faction;
         private ModAwareId blueprint;
         private ModAwareId footprint;
-        private int footprintIndex;
         private int footprintX;
         private int footprintY;
 
@@ -75,7 +74,7 @@ static class PlopBuilding
             this.id = id;
             this.faction = faction.Id;
             this.blueprint = blueprint.Id;
-            this.footprint = footprint.Footprint.Id;
+            this.footprint = footprint.Footprint?.Id ?? ModAwareId.Invalid;
             footprintX = footprint.RootTile.X;
             footprintY = footprint.RootTile.Y;
         }
@@ -88,7 +87,7 @@ static class PlopBuilding
                 id,
                 game.Blueprints.GameObjects[blueprint],
                 new PositionedFootprint(
-                    game.Blueprints.Footprints[footprint], footprintIndex,
+                    footprint.IsValid ? game.Blueprints.Footprints[footprint] : PositionedFootprint.Invalid,
                     new Tile(footprintX, footprintY)));
         }
 
@@ -98,7 +97,6 @@ static class PlopBuilding
             stream.Serialize(ref id);
             stream.Serialize(ref blueprint);
             stream.Serialize(ref footprint);
-            stream.Serialize(ref footprintIndex);
             stream.Serialize(ref footprintX);
             stream.Serialize(ref footprintY);
         }

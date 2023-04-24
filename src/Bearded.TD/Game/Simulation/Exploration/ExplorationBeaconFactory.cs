@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Game.Simulation.Zones;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -21,7 +22,7 @@ static class ExplorationBeaconFactory
         obj.AddComponent(new DrawZoneOnSelect());
         obj.AddComponent(new ReportSubject());
         obj.AddComponent(new Selectable());
-        obj.AddComponent(new StaticFootprintTileNotifier(blueprint.GetFootprintGroup().Positioned(0, tile)));
+        obj.AddComponent(new StaticFootprintTileNotifier(blueprint.GetFootprint().Positioned(tile)));
         obj.AddComponent(new ZoneRevealer(zone));
 
         return obj;

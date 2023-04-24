@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities.SpaceTime;
@@ -25,7 +26,7 @@ sealed class MouseCursorHandler : ICursorHandler
         this.camera = camera;
         defaultCameraController = new DefaultMouseKeyboardCameraController(cameraController);
         currentCameraController = defaultCameraController;
-        tileSelection = TileSelection.FromFootprints(FootprintGroup.Single);
+        tileSelection = TileSelection.FromFootprint(Footprint.Single);
     }
 
     public void HandleInput(InputState input)

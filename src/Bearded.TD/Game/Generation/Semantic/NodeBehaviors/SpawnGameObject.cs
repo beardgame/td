@@ -4,6 +4,7 @@ using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -48,11 +49,11 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
     private IEnumerable<Tile> validTiles(NodeGenerationContext context)
     {
-        var footprint = Parameters.Blueprint.GetFootprintGroup();
+        var footprint = Parameters.Blueprint.GetFootprint();
 
         var area = context.Tiles.All;
 
-        return area.Where(t => footprint.Positioned(0, t).OccupiedTiles.All(area.Contains));
+        return area.Where(t => footprint.Positioned(t).OccupiedTiles.All(area.Contains));
     }
 
     private Position3 getPositionWithinTile(Tile tile, NodeGenerationContext context)

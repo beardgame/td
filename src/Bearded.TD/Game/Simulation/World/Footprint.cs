@@ -1,19 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Mods;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Tiles;
+namespace Bearded.TD.Game.Simulation.World;
 
-sealed class Footprint
+sealed class Footprint : IFootprint
 {
-    public static readonly Footprint Single = new(new[] { new Step(0, 0) });
+    public static readonly Footprint Single = FromOffsets(new[] { new Step(0, 0) });
+
+    public static Footprint FromOffsets(IEnumerable<Step> tileOffsets) => new(ModAwareId.Invalid, tileOffsets);
 
     private readonly ImmutableArray<Step> tileOffsets;
     private readonly Difference2 rootTileOffset; // vector that points from center of footprint to center of root tile
 
-    public Footprint(IEnumerable<Step> tileOffsets)
+    public ModAwareId Id { get; }
+
+    public Footprint(ModAwareId id, IEnumerable<Step> tileOffsets)
     {
+        Id = id;
         this.tileOffsets = tileOffsets.ToImmutableArray();
         rootTileOffset = -this.tileOffsets
             .Select(step =>

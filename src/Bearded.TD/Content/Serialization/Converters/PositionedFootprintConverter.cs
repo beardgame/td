@@ -7,9 +7,9 @@ namespace Bearded.TD.Content.Serialization.Converters;
 
 sealed class PositionedFootprintConverter : JsonConverterBase<PositionedFootprint>
 {
-    private readonly IDependencyResolver<FootprintGroup> footprintDependencyResolver;
+    private readonly IDependencyResolver<IFootprint> footprintDependencyResolver;
 
-    public PositionedFootprintConverter(IDependencyResolver<FootprintGroup> footprintDependencyResolver)
+    public PositionedFootprintConverter(IDependencyResolver<IFootprint> footprintDependencyResolver)
     {
         this.footprintDependencyResolver = footprintDependencyResolver;
     }
@@ -17,22 +17,9 @@ sealed class PositionedFootprintConverter : JsonConverterBase<PositionedFootprin
     protected override PositionedFootprint ReadJson(JsonReader reader, JsonSerializer serializer)
     {
         var jsonModel = serializer.Deserialize<JsonModel>(reader);
-        var footprint = footprintDependencyResolver.Resolve(jsonModel.Group);
-        return footprint.Positioned(jsonModel.Index, jsonModel.RootTile);
+        var footprint = footprintDependencyResolver.Resolve(jsonModel.Footprint);
+        return footprint.Positioned(jsonModel.RootTile);
     }
 
-    private readonly struct JsonModel
-    {
-        public string Group { get; }
-        public Tile RootTile { get; }
-        public int Index { get; }
-
-        [JsonConstructor]
-        public JsonModel(string group, Tile rootTile, int index = 0)
-        {
-            Group = group;
-            RootTile = rootTile;
-            Index = index;
-        }
-    }
+    private readonly record struct JsonModel(string Footprint, Tile RootTile);
 }

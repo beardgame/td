@@ -91,9 +91,8 @@ static class BuildBuilding
     {
         private Id<Faction> faction;
         private ModAwareId blueprint;
-        private ModAwareId footprint;
-        private int footprintIndex;
         private Id<GameObject> id;
+        private ModAwareId footprint;
         private int footprintX;
         private int footprintY;
 
@@ -109,8 +108,7 @@ static class BuildBuilding
             this.id = id;
             this.faction = faction.Id;
             this.blueprint = blueprint.Id;
-            this.footprint = footprint.Footprint!.Id;
-            footprintIndex = footprint.FootprintIndex;
+            this.footprint = footprint.Footprint?.Id ?? ModAwareId.Invalid;
             footprintX = footprint.RootTile.X;
             footprintY = footprint.RootTile.Y;
         }
@@ -123,7 +121,7 @@ static class BuildBuilding
                 id,
                 game.Blueprints.GameObjects[blueprint],
                 new PositionedFootprint(
-                    game.Blueprints.Footprints[footprint], footprintIndex,
+                    footprint.IsValid ? game.Blueprints.Footprints[footprint] : PositionedFootprint.Invalid,
                     new Tile(footprintX, footprintY)));
         }
 
@@ -133,7 +131,6 @@ static class BuildBuilding
             stream.Serialize(ref id);
             stream.Serialize(ref blueprint);
             stream.Serialize(ref footprint);
-            stream.Serialize(ref footprintIndex);
             stream.Serialize(ref footprintX);
             stream.Serialize(ref footprintY);
         }

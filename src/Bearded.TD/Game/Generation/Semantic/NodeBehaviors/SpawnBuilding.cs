@@ -6,6 +6,7 @@ using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using JetBrains.Annotations;
 
@@ -40,11 +41,11 @@ sealed class SpawnBuilding : NodeBehavior<SpawnBuilding.BehaviorParameters>
 
     private IEnumerable<Tile> validRootTiles(NodeGenerationContext context)
     {
-        var footprint = Parameters.Building.GetFootprintGroup();
+        var footprint = Parameters.Building.GetFootprint();
 
         var area = context.Tiles.All;
 
-        return area.Where(t => footprint.Positioned(0, t).OccupiedTiles.All(area.Contains));
+        return area.Where(t => footprint.Positioned(t).OccupiedTiles.All(area.Contains));
     }
 
     [UsedImplicitly]

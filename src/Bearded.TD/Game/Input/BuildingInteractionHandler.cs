@@ -18,7 +18,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
     {
         this.faction = faction;
         this.blueprint = blueprint;
-        TileSelection = TileSelection.FromFootprints(blueprint.GetFootprintGroup());
+        TileSelection = TileSelection.FromFootprint(blueprint.GetFootprint());
     }
 
     protected override void OnStart(ICursorHandler cursor)

@@ -5,6 +5,7 @@ using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -36,8 +37,7 @@ sealed class NodeContentGenerationContext
 
     public void PlaceBuilding(IGameObjectBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
     {
-        // TODO: we currently hardcode the 0 variant of the footprint group. Pending a footprint rework.
-        var positionedFootprint = blueprint.GetFootprintGroup().Positioned(0, rootTile);
+        var positionedFootprint = blueprint.GetFootprint().Positioned(rootTile);
         if (!positionedFootprint.OccupiedTiles.All(tiles.Contains))
         {
             throw new ArgumentException("May not place buildings outside node.", nameof(rootTile));

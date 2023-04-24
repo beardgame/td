@@ -61,7 +61,7 @@ static class ModLoader
             var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
             var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
-            var footprints = new FootprintGroupBlueprintLoader(loadingContext).LoadBlueprints();
+            var footprints = new FootprintBlueprintLoader(loadingContext).LoadBlueprints();
             var gameObjects = new GameObjectBlueprintLoader(loadingContext).LoadBlueprints();
             var upgrades = new UpgradeBlueprintLoader(loadingContext).LoadBlueprints();
             var modules = new ModuleBlueprintLoader(loadingContext).LoadBlueprints();

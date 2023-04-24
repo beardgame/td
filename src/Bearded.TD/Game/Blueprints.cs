@@ -11,6 +11,7 @@ using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game;
 
@@ -20,7 +21,7 @@ sealed class Blueprints
     public ReadonlyBlueprintCollection<Material> Materials { get; }
     public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
     public ReadonlyBlueprintCollection<ISoundEffect> SoundEffects { get; }
-    public ReadonlyBlueprintCollection<FootprintGroup> Footprints { get; }
+    public ReadonlyBlueprintCollection<IFootprint> Footprints { get; }
     public ReadonlyBlueprintCollection<IGameObjectBlueprint> GameObjects { get; }
     public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
     public ReadonlyBlueprintCollection<IModule> Modules { get; }
@@ -32,7 +33,7 @@ sealed class Blueprints
         ReadonlyBlueprintCollection<Material> materials,
         ReadonlyBlueprintCollection<SpriteSet> sprites,
         ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
-        ReadonlyBlueprintCollection<FootprintGroup> footprints,
+        ReadonlyBlueprintCollection<IFootprint> footprints,
         ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
         ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
         ReadonlyBlueprintCollection<IModule> modules,

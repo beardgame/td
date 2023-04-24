@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
-using Bearded.Utilities.Geometry;
 using JetBrains.Annotations;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -12,27 +13,16 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Content.Serialization.Models;
 
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-sealed class FootprintGroup : IConvertsTo<Game.Simulation.World.FootprintGroup, Void>
+sealed class Footprint : IConvertsTo<IFootprint, Void>
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public sealed class Footprint
-    {
-        public List<Step>? Tiles { get; set; }
-        public Angle Orientation { get; set; }
-    }
-
     public string? Id { get; set; }
-    public List<Footprint>? Footprints { get; set; }
+    public List<Step>? Tiles { get; set; }
 
-    public Game.Simulation.World.FootprintGroup ToGameModel(ModMetadata modMetadata, Void v)
+    public IFootprint ToGameModel(ModMetadata modMetadata, Void v)
     {
         _ = Id ?? throw new InvalidDataException($"{nameof(Id)} must be non-null");
-        var footprints = Footprints ?? new List<Footprint>();
+        var tiles = Tiles ?? new List<Step>();
 
-        return new(
-            ModAwareId.FromNameInMod(Id, modMetadata),
-            footprints.Select(footprint => new Bearded.TD.Tiles.Footprint(footprint.Tiles ?? Enumerable.Empty<Step>())),
-            footprints.Select(footprint => footprint.Orientation)
-        );
+        return new Bearded.TD.Game.Simulation.World.Footprint(ModAwareId.FromNameInMod(Id, modMetadata), tiles);
     }
 }

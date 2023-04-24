@@ -1,16 +1,12 @@
 {
     id: "seven",
-    footprints: [
-        {
-            tiles: [
-                "base",
-                "left",
-                "downleft",
-                "downright",
-                "right",
-                "upright",
-                "upleft"
-            ]
-        }
+    tiles: [
+        "base",
+        "left",
+        "downleft",
+        "downright",
+        "right",
+        "upright",
+        "upleft"
     ]
 }
