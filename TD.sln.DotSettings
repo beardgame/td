@@ -365,6 +365,7 @@ namespace $NAMESPACE$
 }
 </s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=aimer/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Capturer/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Collidable/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Heightmap/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=heightmaps/@EntryIndexedValue">True</s:Boolean>

@@ -14,6 +14,7 @@ using Bearded.TD.Rendering.UI;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
@@ -139,7 +140,7 @@ sealed class TheGame : Window, IMouseScaleProvider
         uiUpdater = new UIUpdater();
         dependencyResolver.Add(uiUpdater);
 
-        var shortcuts = new ShortcutManager();
+        var shortcuts = new ShortcutCapturer();
         dependencyResolver.Add(shortcuts);
 
         var navigationRoot = new OnTopCompositeControl();
@@ -163,8 +164,15 @@ sealed class TheGame : Window, IMouseScaleProvider
         var tooltipFactory = new TooltipFactory(overlayLayer);
         dependencyResolver.Add(tooltipFactory);
 
-        shortcuts.RegisterShortcut(Keys.GraveAccent, debugConsole.Toggle);
-        shortcuts.RegisterShortcut(Keys.F3, () => togglePerformanceOverlay(logger, null));
+        var globalShortcuts = ShortcutLayer.CreateBuilder()
+            .AddShortcut(Keys.GraveAccent, debugConsole.Toggle)
+            .AddShortcut(Keys.F3, () => togglePerformanceOverlay(logger, null))
+#if DEBUG
+            .AddShortcut(Keys.F11, () => screenshots.SendScreenshotToDiscordAsync(viewportSize))
+#endif
+            .AddShortcut(Keys.F12, () => screenshots.SaveScreenShotAsync(viewportSize))
+            .Build();
+        shortcuts.AddLayer(globalShortcuts);
 
         UserSettings.SettingsChanged += TriggerResize;
 
@@ -236,16 +244,6 @@ sealed class TheGame : Window, IMouseScaleProvider
         using (activityTimer.Start(Activity.SwapBuffer))
         {
             SwapBuffers();
-        }
-#if DEBUG
-        if (inputManager.IsKeyHit(Keys.F11))
-        {
-            _ = screenshots.SendScreenshotToDiscordAsync(viewportSize);
-        }
-#endif
-        if (inputManager.IsKeyHit(Keys.F12))
-        {
-            _ = screenshots.SaveScreenShotAsync(viewportSize);
         }
     }
 

@@ -29,6 +29,7 @@ sealed class GameUI :
     private GameRunner runner = null!;
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
+    private ShortcutCapturer shortcutCapturer = null!;
     private IMouseScaleProvider mouseScaleProvider = null!;
 
     public GameUIController GameUIController { get; }
@@ -71,6 +72,7 @@ sealed class GameUI :
 
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
+        shortcutCapturer = dependencies.Resolve<ShortcutCapturer>();
         mouseScaleProvider = dependencies.Resolve<IMouseScaleProvider>();
         var tooltipFactory = dependencies.Resolve<TooltipFactory>();
 
@@ -153,6 +155,7 @@ sealed class GameUI :
         var dependencies = new DependencyResolver();
         dependencies.Add(Game);
         dependencies.Add(uiUpdater);
+        dependencies.Add(shortcutCapturer);
 
         var (models, views) = NavigationFactories.ForBoth()
             .Add<ReportSubjectOverlay, IReportSubject>(m => new ReportSubjectOverlayControl(m))

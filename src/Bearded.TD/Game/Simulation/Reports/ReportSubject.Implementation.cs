@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Reports;
 sealed class ReportSubject : Component, IReportSubject, ReportAggregator.IReportConsumer
 {
     private readonly SortedSet<IReport> reports =
-        new(Utilities.Comparer<IReport>
+        new(Utilities.Comparer
             .Comparing<IReport, byte>(r => (byte) r.Type)
             .ThenComparing(r => r.GetHashCode()));
 
