@@ -19,7 +19,7 @@ enum VisibilityFlags : byte
     BlockedFully = BlockedLeftAndRight | 8,
 }
 
-struct TileVisibility
+readonly struct TileVisibility
 {
     public VisibilityFlags Flags { get; }
     public float VisiblePercentage { get; }
@@ -78,7 +78,7 @@ struct LevelVisibilityChecker
         {
             var isBlocking = blocksVisibility(tile);
 
-            if (intervalsBlocked.Count == 0)
+            if (intervalsBlocked!.Count == 0)
             {
                 if (!isBlocking)
                 {
