@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
