@@ -21,6 +21,7 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
+        [Modifiable(Type = AttributeType.MovementSpeed)]
         Acceleration Acceleration { get; }
     }
 
