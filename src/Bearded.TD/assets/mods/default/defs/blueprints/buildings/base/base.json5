@@ -4,6 +4,7 @@
     { id: "name", parameters: { name: "Main Base" } },
     { id: "cost", parameters: { resources: 1 } },
     { id: "footprint", parameters: { group: "seven" } },
+    { id: "footprintTransformation" },
     { id: "foundation", parameters: { sprites: "foundations" } },
     { id: "health", parameters: { maxHealth: 1000 } },
     { id: "sink" },

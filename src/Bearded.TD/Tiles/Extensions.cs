@@ -123,6 +123,7 @@ static class Extensions
     #region Orientations
 
     public static Angle Rotation(this Orientation orientation) => (int) orientation * Angle.FromDegrees(60);
+    public static Orientation HexagonalOrientation(this Direction2 direction) => (Orientation) ((int) direction.Hexagonal() - 1);
 
     #endregion
 }

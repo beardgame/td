@@ -4,6 +4,7 @@
     { id: "name", parameters: { name: "Wall" } },
     { id: "cost", parameters: { resources: 7 } },
     { id: "footprint", parameters: { group: "single" } },
+    { id: "footprintTransformation" },
     { id: "defaultTileOccupancy" },
     { id: "canBeBuiltOn" },
     {
