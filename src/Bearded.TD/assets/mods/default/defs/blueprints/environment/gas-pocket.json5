@@ -8,7 +8,8 @@
       id: "spawnObjectOnTakeHit",
       parameters: {
         object: "gas-pocket-explosion",
-        damageType: "fire"
+        damageType: "fire",
+        coolDown: 5,
       }
     },
     {
