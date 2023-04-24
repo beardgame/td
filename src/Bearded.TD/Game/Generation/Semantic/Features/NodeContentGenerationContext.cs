@@ -37,7 +37,7 @@ sealed class NodeContentGenerationContext
 
     public void PlaceBuilding(IGameObjectBlueprint blueprint, Tile rootTile, ExternalId<Faction> faction)
     {
-        var positionedFootprint = blueprint.GetFootprint().Positioned(rootTile);
+        var positionedFootprint = blueprint.GetFootprint().Positioned(rootTile, Orientation.Default);
         if (!positionedFootprint.OccupiedTiles.All(tiles.Contains))
         {
             throw new ArgumentException("May not place buildings outside node.", nameof(rootTile));

@@ -65,6 +65,7 @@ static class PlopBuilding
         private ModAwareId footprint;
         private int footprintX;
         private int footprintY;
+        private Orientation orientation;
 
         [UsedImplicitly]
         public Serializer() {}
@@ -77,6 +78,7 @@ static class PlopBuilding
             this.footprint = footprint.Footprint?.Id ?? ModAwareId.Invalid;
             footprintX = footprint.RootTile.X;
             footprintY = footprint.RootTile.Y;
+            orientation = footprint.Orientation;
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
@@ -88,7 +90,8 @@ static class PlopBuilding
                 game.Blueprints.GameObjects[blueprint],
                 new PositionedFootprint(
                     footprint.IsValid ? game.Blueprints.Footprints[footprint] : PositionedFootprint.Invalid,
-                    new Tile(footprintX, footprintY)));
+                    new Tile(footprintX, footprintY),
+                    orientation));
         }
 
         public void Serialize(INetBufferStream stream)
@@ -99,6 +102,7 @@ static class PlopBuilding
             stream.Serialize(ref footprint);
             stream.Serialize(ref footprintX);
             stream.Serialize(ref footprintY);
+            stream.Serialize(ref orientation);
         }
     }
 }

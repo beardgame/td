@@ -95,6 +95,7 @@ static class BuildBuilding
         private ModAwareId footprint;
         private int footprintX;
         private int footprintY;
+        private Orientation orientation;
 
         [UsedImplicitly]
         public Serializer() {}
@@ -111,6 +112,7 @@ static class BuildBuilding
             this.footprint = footprint.Footprint?.Id ?? ModAwareId.Invalid;
             footprintX = footprint.RootTile.X;
             footprintY = footprint.RootTile.Y;
+            orientation = footprint.Orientation;
         }
 
         protected override UnifiedRequestCommand GetSerialized(GameInstance game)
@@ -122,7 +124,8 @@ static class BuildBuilding
                 game.Blueprints.GameObjects[blueprint],
                 new PositionedFootprint(
                     footprint.IsValid ? game.Blueprints.Footprints[footprint] : PositionedFootprint.Invalid,
-                    new Tile(footprintX, footprintY)));
+                    new Tile(footprintX, footprintY),
+                    orientation));
         }
 
         public override void Serialize(INetBufferStream stream)
@@ -133,6 +136,7 @@ static class BuildBuilding
             stream.Serialize(ref footprint);
             stream.Serialize(ref footprintX);
             stream.Serialize(ref footprintY);
+            stream.Serialize(ref orientation);
         }
     }
 }

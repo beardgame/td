@@ -6,8 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;
 
-readonly record struct PositionedFootprint(
-    IFootprint? Footprint, Tile RootTile, Orientation Orientation = Orientation.Default)
+readonly record struct PositionedFootprint(IFootprint? Footprint, Tile RootTile, Orientation Orientation)
 {
     public static IFootprint? Invalid => default;
 

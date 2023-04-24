@@ -18,8 +18,8 @@ sealed class PositionedFootprintConverter : JsonConverterBase<PositionedFootprin
     {
         var jsonModel = serializer.Deserialize<JsonModel>(reader);
         var footprint = footprintDependencyResolver.Resolve(jsonModel.Footprint);
-        return footprint.Positioned(jsonModel.RootTile);
+        return footprint.Positioned(jsonModel.RootTile, jsonModel.Orientation ?? Orientation.Default);
     }
 
-    private readonly record struct JsonModel(string Footprint, Tile RootTile);
+    private readonly record struct JsonModel(string Footprint, Tile RootTile, Orientation? Orientation);
 }

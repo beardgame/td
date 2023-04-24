@@ -45,7 +45,7 @@ sealed class SpawnBuilding : NodeBehavior<SpawnBuilding.BehaviorParameters>
 
         var area = context.Tiles.All;
 
-        return area.Where(t => footprint.Positioned(t).OccupiedTiles.All(area.Contains));
+        return area.Where(t => footprint.Positioned(t, Orientation.Default).OccupiedTiles.All(area.Contains));
     }
 
     [UsedImplicitly]

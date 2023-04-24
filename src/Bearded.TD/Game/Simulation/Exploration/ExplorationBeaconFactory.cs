@@ -22,7 +22,8 @@ static class ExplorationBeaconFactory
         obj.AddComponent(new DrawZoneOnSelect());
         obj.AddComponent(new ReportSubject());
         obj.AddComponent(new Selectable());
-        obj.AddComponent(new StaticFootprintTileNotifier(blueprint.GetFootprint().Positioned(tile)));
+        obj.AddComponent(
+            new StaticFootprintTileNotifier(blueprint.GetFootprint().Positioned(tile, Orientation.Default)));
         obj.AddComponent(new ZoneRevealer(zone));
 
         return obj;

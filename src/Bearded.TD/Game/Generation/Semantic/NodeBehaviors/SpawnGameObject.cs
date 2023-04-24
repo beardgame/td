@@ -53,7 +53,7 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
         var area = context.Tiles.All;
 
-        return area.Where(t => footprint.Positioned(t).OccupiedTiles.All(area.Contains));
+        return area.Where(t => footprint.Positioned(t, Orientation.Default).OccupiedTiles.All(area.Contains));
     }
 
     private Position3 getPositionWithinTile(Tile tile, NodeGenerationContext context)
