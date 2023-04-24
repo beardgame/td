@@ -7,11 +7,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.World;
 
-readonly record struct PositionedFootprint(IFootprint? Footprint, Tile RootTile)
+readonly record struct PositionedFootprint(
+    IFootprint? Footprint, Tile RootTile, Orientation Orientation = Orientation.Default)
 {
     public static IFootprint? Invalid => default;
 
-    public Angle Orientation => Angle.Zero;
     public IEnumerable<Tile> OccupiedTiles => Footprint?.OccupiedTiles(RootTile) ?? ImmutableHashSet<Tile>.Empty;
     public Position2 CenterPosition => Footprint?.Center(RootTile) ?? Position2.Zero;
 

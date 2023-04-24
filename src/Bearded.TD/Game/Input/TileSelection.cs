@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Input;

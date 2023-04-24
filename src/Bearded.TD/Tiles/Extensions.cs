@@ -43,6 +43,16 @@ static class Extensions
         Direction.DownRight,
     };
 
+    private static readonly Orientation[] orientations =
+    {
+        Orientation.Right,
+        Orientation.UpRight,
+        Orientation.UpLeft,
+        Orientation.Left,
+        Orientation.DownLeft,
+        Orientation.DownRight,
+    };
+
     private static readonly Vector2[] corners =
         Enumerable.Range(0, 7)
             .Select(i =>
@@ -107,6 +117,12 @@ static class Extensions
     public static Directions Except(this Directions directions, Directions directions2) => directions & ~directions2;
     public static Directions Intersect(this Directions directions, Directions directions2) => directions & directions2;
     public static bool IsSubsetOf(this Directions directions, Directions directions2) => directions2.HasFlag(directions);
+
+    #endregion
+
+    #region Orientations
+
+    public static Angle Rotation(this Orientation orientation) => (int) orientation * Angle.FromDegrees(60);
 
     #endregion
 }
