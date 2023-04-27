@@ -1,5 +1,8 @@
 # Bearded.TD
 
+[![Build & test](https://github.com/beardgame/td/actions/workflows/dotnet-build.yml/badge.svg)](https://github.com/beardgame/td/actions/workflows/dotnet-build.yml)
+[![GitHub release](https://img.shields.io/github/release/beardgame/td.svg)](https://github.com/beardgame/td/releases/)
+
 Bearded.TD is a tower defence game developed by [paulcscharf](https://www.github.com/paulcscharf) and [tomrijnbeek](https://www.github.com/tomrijnbeek).
 
 ![Screenshot of the game](https://cdn.discordapp.com/attachments/930514569644867624/1095326260936314880/screenshot-2023-04-11T143529.9015.png)
