@@ -19,13 +19,14 @@ namespace Bearded.TD.Rendering.Loading;
 
 class GraphicsLoader : IGraphicsLoader
 {
-    private readonly RenderContext context;
+    // TODO: use mod specific shader managers (tricky bit: hot reload)
+    private readonly ShaderManager shaderManager;
     private readonly IActionQueue glActions;
     private readonly Logger logger;
 
-    public GraphicsLoader(RenderContext context, IActionQueue glActionQueue, Logger logger)
+    public GraphicsLoader(ShaderManager shaderManager, IActionQueue glActionQueue, Logger logger)
     {
-        this.context = context;
+        this.shaderManager = shaderManager;
         glActions = glActionQueue;
         this.logger = logger;
     }
@@ -105,9 +106,6 @@ class GraphicsLoader : IGraphicsLoader
 
     public IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName)
     {
-        // TODO: use mod specific shader managers (tricky bit: hot reload)
-        var shaderManager = context.Shaders.ShaderManager;
-
         var shadersToAdd = shaders.Where(s => !shaderManager.Contains(s.Type, s.FriendlyName)).ToList();
 
         if (shaderManager.TryGetRendererShader(shaderProgramName, out var shaderProgram))
