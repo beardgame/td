@@ -79,7 +79,7 @@ sealed class GameUI :
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
         NotificationsUI.Initialize(Game, TimeSource);
-        ActionBar.Initialize(Game);
+        ActionBar.Initialize(Game, shortcutCapturer);
         CoreStats.Initialize(Game, shortcutCapturer);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
