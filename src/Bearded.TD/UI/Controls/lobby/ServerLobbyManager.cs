@@ -88,7 +88,7 @@ sealed class ServerLobbyManager : LobbyManager
     public static ServerLobbyManager Create(
         ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
     {
-        var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAll());
+        var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAllVisible());
         contentManager.SetEnabledModsById(UserSettings.Instance.LastGameSettings.ActiveModIds);
 
         var ids = new IdManager();

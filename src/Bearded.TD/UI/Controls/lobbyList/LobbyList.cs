@@ -106,7 +106,7 @@ sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
         var info = LobbyPlayerInfo.FromBuffer(msg.SenderConnection.RemoteHailMessage);
         var game = new GameInstance(
             new ClientGameContext(networkInterface, logger),
-            new ContentManager(logger, graphicsLoader, new ModLister().GetAll()),
+            new ContentManager(logger, graphicsLoader, new ModLister().GetAllVisible()),
             new Player(info.Id, playerName) { ConnectionState = PlayerConnectionState.Connecting },
             new IdManager(),
             renderContext);

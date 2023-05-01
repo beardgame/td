@@ -11,6 +11,13 @@ namespace Bearded.TD.Content.Mods;
 
 sealed class ModLister
 {
+    public List<ModMetadata> GetAllVisible()
+    {
+        var mods = GetAll();
+        mods.RemoveAll(m => !m.Visible);
+        return mods;
+    }
+
     public List<ModMetadata> GetAll()
     {
         var path = Constants.Paths.Content.Asset("mods/");
