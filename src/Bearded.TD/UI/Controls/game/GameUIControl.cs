@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Rendering;
 using Bearded.UI.Controls;
-using Bearded.UI.EventArgs;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -40,7 +39,7 @@ sealed class GameUIControl : CompositeControl
         Add(nonDiegeticUIWrapper);
 
         Add(new GameMenuControl()
-            .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += () => ctrl.IsVisible = false)
+            .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
             .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
 
@@ -59,12 +58,6 @@ sealed class GameUIControl : CompositeControl
         gameUI.GameOverTriggered += onGameOver;
         gameUI.GameVictoryTriggered += onGameVictory;
         gameUI.GameLeft += gameWorldControl.CleanUp;
-    }
-
-    public override void KeyHit(KeyEventArgs keyEventArgs)
-    {
-        keyEventArgs.Handled = gameUI.GameUIController.TryHandleKeyHit(keyEventArgs);
-        base.KeyHit(keyEventArgs);
     }
 
     private void onGameOver()

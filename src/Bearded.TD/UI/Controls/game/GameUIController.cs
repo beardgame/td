@@ -1,6 +1,6 @@
 using System;
+using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.Utilities;
-using Bearded.UI.EventArgs;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls;
@@ -18,7 +18,8 @@ sealed class GameUIController
     public IReadonlyBinding<bool> ActionBarVisibility { get; }
 
     public Binding<bool> TechnologyModalVisibility { get; } = new();
-    private bool technologyModalVisible => TechnologyModalVisibility.Value;
+
+    public ShortcutLayer Shortcuts { get; }
 
     public GameUIController()
     {
@@ -27,39 +28,12 @@ sealed class GameUIController
             GameMenuVisibility,
             (uiVisible, menuVisible) => uiVisible && !menuVisible);
         ActionBarVisibility = openEntityStatus.Transform(openEntity => !openEntity.HasValue);
+        Shortcuts = buildShortcuts();
     }
 
-    public bool TryHandleKeyHit(KeyEventArgs args)
-    {
-        switch (args.Key)
-        {
-            case Keys.T:
-                toggleTechnologyModal();
-                return true;
-            case Keys.Escape:
-                if (hideAllModals())
-                {
-                    return true;
-                }
-
-                toggleGameMenu();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private void toggleTechnologyModal()
-    {
-        if (technologyModalVisible)
-        {
-            HideTechnologyModal();
-        }
-        else
-        {
-            ShowTechnologyModal();
-        }
-    }
+    private ShortcutLayer buildShortcuts() => ShortcutLayer.CreateBuilder()
+        .AddShortcut(Keys.Escape, toggleGameMenu)
+        .Build();
 
     private void toggleGameMenu()
     {
@@ -91,32 +65,32 @@ sealed class GameUIController
         GameMenuVisibility.SetFromSource(true);
     }
 
-    private bool hideAllModals()
+    private void hideAllModals()
     {
-        var anyModalHidden = false;
-        anyModalHidden |= HideTechnologyModal();
-        anyModalHidden |= closeEntityStatus();
-        return anyModalHidden;
+        hideTechnologyModal();
+        closeEntityStatus();
     }
 
-    public bool HideTechnologyModal()
+    private void hideTechnologyModal()
     {
-        if (!technologyModalVisible) return false;
         TechnologyModalVisibility.SetFromSource(false);
-        return true;
     }
 
-    private bool closeEntityStatus()
+    private void closeEntityStatus()
     {
-        if (!entityStatusOpen) return false;
+        if (!entityStatusOpen) return;
         openEntityStatus.Value!.Value.Close();
         HideEntityStatus();
-        return true;
     }
 
     public void HideEntityStatus()
     {
         openEntityStatus.SetFromSource(null);
+    }
+
+    public void ResumeGame()
+    {
+        hideGameMenu();
     }
 
     private void hideGameMenu()

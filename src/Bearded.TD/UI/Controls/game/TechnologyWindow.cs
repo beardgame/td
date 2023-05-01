@@ -4,24 +4,44 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<TechnologyTokenConsumed>
 {
+    private readonly ShortcutLayer alwaysActiveShortcuts;
+    private readonly ShortcutLayer visibleOnlyShortcuts;
+
     private GameInstance game = null!;
+    private ShortcutCapturer shortcutCapturer = null!;
     private FactionTechnology factionTechnology = null!;
     private Binding<bool> windowVisibility = null!;
-
     public TooltipFactory TooltipFactory { get; private set; } = null!;
     public TechTree TechTree { get; private set; } = null!;
     public Binding<bool> CanUnlockTechnologyNowBinding { get; private set; } = null!;
 
-    public void Initialize(GameInstance game, Binding<bool> windowVisibility, TooltipFactory tooltipFactory)
+    public TechnologyWindow()
+    {
+        alwaysActiveShortcuts = ShortcutLayer.CreateBuilder()
+            .AddShortcut(Keys.T, toggleWindow)
+            .Build();
+        visibleOnlyShortcuts = ShortcutLayer.CreateBuilder()
+            .AddShortcut(Keys.Escape, CloseWindow)
+            .Build();
+    }
+
+    public void Initialize(
+        GameInstance game,
+        Binding<bool> windowVisibility,
+        ShortcutCapturer shortcutCapturer,
+        TooltipFactory tooltipFactory)
     {
         this.game = game;
+        this.shortcutCapturer = shortcutCapturer;
         this.windowVisibility = windowVisibility;
         TooltipFactory = tooltipFactory;
 
@@ -32,8 +52,10 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
         TechTree = TechTree.FromBlueprints(game.Blueprints.Technologies, factionTechnology, game.State.Meta.Events);
         CanUnlockTechnologyNowBinding = new Binding<bool>();
 
+        shortcutCapturer.AddLayer(alwaysActiveShortcuts);
         game.State.Meta.Events.Subscribe<TechnologyTokenAwarded>(this);
         game.State.Meta.Events.Subscribe<TechnologyTokenConsumed>(this);
+        windowVisibility.SourceUpdated += syncWindowVisibility;
     }
 
     public void Terminate()
@@ -41,6 +63,8 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
         TechTree.Dispose();
         game.State.Meta.Events.Unsubscribe<TechnologyTokenAwarded>(this);
         game.State.Meta.Events.Unsubscribe<TechnologyTokenConsumed>(this);
+        shortcutCapturer.RemoveLayer(alwaysActiveShortcuts);
+        windowVisibility.SourceUpdated -= syncWindowVisibility;
     }
 
     public void RequestTechnologyUnlock(ITechnologyBlueprint technology)
@@ -54,9 +78,40 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
         game.Request(ForceUnlockTechnology.Request(game.Me.Faction, technology));
     }
 
+    private void syncWindowVisibility(bool newVisibility)
+    {
+        if (newVisibility)
+        {
+            OpenWindow();
+        }
+        else
+        {
+            CloseWindow();
+        }
+    }
+
+    private void toggleWindow()
+    {
+        if (windowVisibility.Value)
+        {
+            CloseWindow();
+        }
+        else
+        {
+            OpenWindow();
+        }
+    }
+
+    public void OpenWindow()
+    {
+        windowVisibility.SetFromControl(true);
+        shortcutCapturer.AddLayer(visibleOnlyShortcuts);
+    }
+
     public void CloseWindow()
     {
         windowVisibility.SetFromControl(false);
+        shortcutCapturer.RemoveLayer(visibleOnlyShortcuts);
     }
 
     public void HandleEvent(TechnologyTokenAwarded @event)
