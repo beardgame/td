@@ -4,7 +4,9 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.Utilities;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -17,16 +19,28 @@ sealed class CoreStatsUI : IListener<WaveStarted>
      * considered.
      */
 
+    private readonly ShortcutLayer shortcuts;
+
     private GameInstance? gameInstance;
+    private ShortcutCapturer? shortcutCapturer;
     private ICoreStats? coreStats;
 
     public Binding<bool> Visible { get; } = new();
     public Binding<CoreHealthStats> Health { get; } = new();
     public Binding<bool> EMPAvailable { get; } = new();
 
-    public void Initialize(GameInstance game)
+    public CoreStatsUI()
+    {
+        shortcuts = ShortcutLayer.CreateBuilder()
+            .AddShortcut(Keys.E, tryFireEMP)
+            .Build();
+    }
+
+    public void Initialize(GameInstance game, ShortcutCapturer shortcutCapturer)
     {
         gameInstance = game;
+        this.shortcutCapturer = shortcutCapturer;
+        shortcutCapturer.AddLayer(shortcuts);
         coreStats = game.State.Enumerate<ICoreStats>().SingleOrDefault();
         Health.SetFromSource(new CoreHealthStats(
             MaxHealth: coreStats?.MaxHealth ?? HitPoints.Zero,
@@ -39,6 +53,7 @@ sealed class CoreStatsUI : IListener<WaveStarted>
     public void Terminate()
     {
         gameInstance?.State.Meta.Events.Unsubscribe(this);
+        shortcutCapturer?.RemoveLayer(shortcuts);
     }
 
     public void HandleEvent(WaveStarted @event)
@@ -47,6 +62,14 @@ sealed class CoreStatsUI : IListener<WaveStarted>
         {
             HealthAtWaveStart = coreStats?.CurrentHealth ?? Health.Value.HealthAtWaveStart
         });
+    }
+
+    private void tryFireEMP()
+    {
+        if (coreStats?.EMPStatus == EMPStatus.Ready)
+        {
+            FireEMP();
+        }
     }
 
     public void FireEMP()

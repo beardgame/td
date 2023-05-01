@@ -13,6 +13,7 @@ sealed class GameMenuControl : CompositeControl
     public GameMenuControl()
     {
         IsClickThrough = true;
+        Add(new SimpleControl()); // block click-through
         this.BuildLayout()
             .AddMenu(b => b
                 .WithCloseAction("To main menu", () => ReturnToMainMenuButtonClicked?.Invoke())

@@ -76,12 +76,14 @@ sealed class GameUI :
         mouseScaleProvider = dependencies.Resolve<IMouseScaleProvider>();
         var tooltipFactory = dependencies.Resolve<TooltipFactory>();
 
+        shortcutCapturer.AddLayer(GameUIController.Shortcuts);
+
         NotificationsUI.Initialize(Game, TimeSource);
-        ActionBar.Initialize(Game);
-        CoreStats.Initialize(Game);
+        ActionBar.Initialize(Game, shortcutCapturer);
+        CoreStats.Initialize(Game, shortcutCapturer);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
-        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, tooltipFactory);
+        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, tooltipFactory);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;
@@ -97,6 +99,9 @@ sealed class GameUI :
         CoreStats.Terminate();
         TechnologyUI.Terminate();
         updateOverlayState(false, ref debugOverlay);
+
+        shortcutCapturer.RemoveLayer(GameUIController.Shortcuts);
+
         base.Terminate();
     }
 
@@ -197,6 +202,11 @@ sealed class GameUI :
         runner.Shutdown();
         Navigation!.Replace<MainMenu, Intent>(Intent.None, this);
         GameLeft?.Invoke();
+    }
+
+    public void OnResumeGameButtonClicked()
+    {
+        GameUIController.ResumeGame();
     }
 
     public record struct Parameters(GameInstance Game, NetworkInterface Network);

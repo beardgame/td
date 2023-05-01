@@ -7,7 +7,7 @@ using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Utilities;
 
-sealed class Binding<T>
+sealed class Binding<T> : IReadonlyBinding<T>
 {
     public T Value { get; private set; }
 
@@ -36,6 +36,13 @@ sealed class Binding<T>
     }
 }
 
+interface IReadonlyBinding<out T>
+{
+    T Value { get; }
+    event GenericEventHandler<T>? ControlUpdated;
+    event GenericEventHandler<T>? SourceUpdated;
+}
+
 static class Binding
 {
     public static Binding<T> Create<T>(T initialValue) => new(initialValue);
@@ -47,15 +54,15 @@ static class Binding
         return binding;
     }
 
-    public static Binding<bool> And(this Binding<bool> left, Binding<bool> right) =>
+    public static IReadonlyBinding<bool> And(this IReadonlyBinding<bool> left, IReadonlyBinding<bool> right) =>
         Combine(left, right, (l, r) => l && r);
 
-    public static Binding<bool> Or(this Binding<bool> left, Binding<bool> right) =>
+    public static IReadonlyBinding<bool> Or(this IReadonlyBinding<bool> left, IReadonlyBinding<bool> right) =>
         Combine(left, right, (l, r) => l || r);
 
-    public static Binding<bool> Negate(this Binding<bool> binding) => binding.Transform(b => !b);
+    public static IReadonlyBinding<bool> Negate(this IReadonlyBinding<bool> binding) => binding.Transform(b => !b);
 
-    public static Binding<TOut> Transform<TIn, TOut>(this Binding<TIn> binding, Func<TIn, TOut> func)
+    public static IReadonlyBinding<TOut> Transform<TIn, TOut>(this IReadonlyBinding<TIn> binding, Func<TIn, TOut> func)
     {
         var transformed = new Binding<TOut>(func(binding.Value));
         binding.ControlUpdated += v => transformed.SetFromControl(func(v));
@@ -63,8 +70,8 @@ static class Binding
         return transformed;
     }
 
-    public static Binding<TOut> Combine<TLeft, TRight, TOut>(
-        Binding<TLeft> left, Binding<TRight> right, Func<TLeft, TRight, TOut> combine)
+    public static IReadonlyBinding<TOut> Combine<TLeft, TRight, TOut>(
+        IReadonlyBinding<TLeft> left, IReadonlyBinding<TRight> right, Func<TLeft, TRight, TOut> combine)
     {
         var combined = new Binding<TOut>(combine(left.Value, right.Value));
         left.ControlUpdated += v => combined.SetFromControl(combine(v, right.Value));
@@ -74,8 +81,8 @@ static class Binding
         return combined;
     }
 
-    public static Binding<TOut> Aggregate<TIn, TOut>(
-        IEnumerable<Binding<TIn>> bindings, Func<IEnumerable<TIn>, TOut> aggregator)
+    public static IReadonlyBinding<TOut> Aggregate<TIn, TOut>(
+        IEnumerable<IReadonlyBinding<TIn>> bindings, Func<IEnumerable<TIn>, TOut> aggregator)
     {
         var bindingsArray = bindings.ToImmutableArray();
         var aggregated = new Binding<TOut>(aggregatedValue());
@@ -90,7 +97,7 @@ static class Binding
         TOut aggregatedValue() => aggregator(bindingsArray.Select(b => b.Value));
     }
 
-    public static Binding<Void> AggregateChanges<TIn>(IEnumerable<Binding<TIn>> bindings)
+    public static IReadonlyBinding<Void> AggregateChanges<TIn>(IEnumerable<Binding<TIn>> bindings)
     {
         var aggregated = new Binding<Void>();
         foreach (var binding in bindings)

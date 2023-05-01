@@ -80,8 +80,8 @@ sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
     {
         public ImmutableArray<Technology> Technologies { get; }
         public int TechsRequiredForCompletionCount { get; }
-        public Binding<int> TechsUnlockedCountBinding { get; }
-        public Binding<double> CompletionPercentageBinding { get; }
+        public IReadonlyBinding<int> TechsUnlockedCountBinding { get; }
+        public IReadonlyBinding<double> CompletionPercentageBinding { get; }
 
         public Tier(ImmutableArray<Technology> technologies, int techsRequiredForCompletionCount)
         {
