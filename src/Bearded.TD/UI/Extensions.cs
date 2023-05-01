@@ -28,7 +28,7 @@ static class Extensions
     public static Anchor WithAddedOffset(this Anchor anchor, double offset) =>
         new Anchor(anchor.Percentage, anchor.Offset + offset);
 
-    public static Control BindIsVisible(this Control control, Binding<bool> isVisible)
+    public static Control BindIsVisible(this Control control, IReadonlyBinding<bool> isVisible)
     {
         control.IsVisible = isVisible.Value;
         isVisible.SourceUpdated += visible => control.IsVisible = visible;

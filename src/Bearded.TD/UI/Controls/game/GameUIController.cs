@@ -10,12 +10,12 @@ sealed class GameUIController
     public Binding<bool> GameMenuVisibility { get; } = new();
     private bool gameMenuVisible => GameMenuVisibility.Value;
 
-    public Binding<bool> NonDiegeticUIVisibility { get; }
+    public IReadonlyBinding<bool> NonDiegeticUIVisibility { get; }
     private readonly Binding<bool> nonDiegeticUIVisibility = new(true);
 
     private readonly Binding<OpenEntityStatus?> openEntityStatus = new();
     private bool entityStatusOpen => openEntityStatus.Value.HasValue;
-    public Binding<bool> ActionBarVisibility { get; }
+    public IReadonlyBinding<bool> ActionBarVisibility { get; }
 
     public Binding<bool> TechnologyModalVisibility { get; } = new();
     private bool technologyModalVisible => TechnologyModalVisibility.Value;

@@ -57,12 +57,12 @@ static class ButtonFactories
     {
         private Func<string>? labelProvider;
         private (int CostAmount, Color Color)? cost;
-        private (Binding<double> Progress, Color? Color)? progressBar;
+        private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
         private GenericEventHandler<Button.ClickEventArgs>? onClick;
-        private Binding<bool>? isEnabled;
-        private Binding<bool>? isActive;
-        private Binding<bool>? isError;
+        private IReadonlyBinding<bool>? isEnabled;
+        private IReadonlyBinding<bool>? isActive;
+        private IReadonlyBinding<bool>? isError;
         private bool isDisabled;
 
         public Builder WithLabel(string label)
@@ -118,19 +118,19 @@ static class ButtonFactories
             return this;
         }
 
-        public Builder WithEnabled(Binding<bool> isEnabled)
+        public Builder WithEnabled(IReadonlyBinding<bool> isEnabled)
         {
             this.isEnabled = isEnabled;
             return this;
         }
 
-        public Builder WithActive(Binding<bool> isActive)
+        public Builder WithActive(IReadonlyBinding<bool> isActive)
         {
             this.isActive = isActive;
             return this;
         }
 
-        public Builder WithError(Binding<bool> isError)
+        public Builder WithError(IReadonlyBinding<bool> isError)
         {
             this.isError = isError;
             return this;

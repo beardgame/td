@@ -12,7 +12,8 @@ static class TextFactories
     public static Label Header(string text, Vector2d? textAnchor = null, Color? color = null) =>
         Header(Binding.Create(text), textAnchor, color == null ? null : Binding.Create(color.Value));
 
-    public static Label Header(Binding<string> text, Vector2d? textAnchor = null, Binding<Color>? color = null)
+    public static Label Header(
+        IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
     {
         var label = new Label(text.Value)
         {
@@ -36,7 +37,7 @@ static class TextFactories
     }
 
     public static Layouts.IColumnLayout AddHeader(
-        this Layouts.IColumnLayout columnLayout, Binding<string> text, Binding<Color>? color = null)
+        this Layouts.IColumnLayout columnLayout, IReadonlyBinding<string> text, IReadonlyBinding<Color>? color = null)
     {
         return columnLayout.Add(Header(text, Controls.Label.TextAnchorLeft, color), HeaderLineHeight);
     }
@@ -56,13 +57,17 @@ static class TextFactories
     }
 
     public static Layouts.IRowLayout AddColumnHeader(
-        this Layouts.IRowLayout rowLayout, Binding<string> text, double columnWidth, Binding<Color>? color = null)
+        this Layouts.IRowLayout rowLayout,
+        IReadonlyBinding<string> text,
+        double columnWidth,
+        IReadonlyBinding<Color>? color = null)
     {
         return rowLayout.AddLeft(
             Header(text, Controls.Label.TextAnchorCenter, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
     }
 
-    public static Label Label(Binding<string> text, Vector2d? textAnchor = null, Binding<Color>? color = null)
+    public static Label Label(
+        IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
     {
         var label = Label(text.Value, textAnchor, color?.Value);
         text.SourceUpdated += newText => label.Text = newText;
@@ -94,10 +99,10 @@ static class TextFactories
 
     public static Control ValueLabel(
         string leftText,
-        Binding<string> rightText,
+        IReadonlyBinding<string> rightText,
         double? verticalAnchor = null,
         Color? leftColor = null,
-        Binding<Color>? rightColor = null)
+        IReadonlyBinding<Color>? rightColor = null)
     {
         return new CompositeControl
         {
@@ -109,9 +114,9 @@ static class TextFactories
     public static Layouts.IColumnLayout AddValueLabel(
         this Layouts.IColumnLayout columnLayout,
         string leftText,
-        Binding<string> rightText,
+        IReadonlyBinding<string> rightText,
         Color? leftColor = null,
-        Binding<Color>? rightColor = null)
+        IReadonlyBinding<Color>? rightColor = null)
     {
         return columnLayout.Add(
             ValueLabel(leftText, rightText, leftColor: leftColor, rightColor: rightColor), LineHeight);
