@@ -1,6 +1,6 @@
 ﻿{
-	name: "Default UI Assets",
-	id:  "default-ui",
+	name: "Core UI Assets",
+	id:  "core-ui",
 	flags: [ "alwaysHidden" ],
 	dependencies: []
 }
