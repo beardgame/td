@@ -76,9 +76,11 @@ sealed class GameUI :
         mouseScaleProvider = dependencies.Resolve<IMouseScaleProvider>();
         var tooltipFactory = dependencies.Resolve<TooltipFactory>();
 
+        shortcutCapturer.AddLayer(GameUIController.Shortcuts);
+
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game);
-        CoreStats.Initialize(Game);
+        CoreStats.Initialize(Game, shortcutCapturer);
         GameStatusUI.Initialize(Game);
         PlayerStatusUI.Initialize(Game);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, tooltipFactory);
@@ -86,8 +88,6 @@ sealed class GameUI :
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;
         Game.Meta.Events.Subscribe<GameOverTriggered>(this);
-
-        shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
         FocusReset?.Invoke();
     }
