@@ -25,7 +25,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
     private Func<bool>? canSummonCurrentWaveNow;
 
     public string? WaveName { get; private set; }
-    public ResourceAmount? WaveResources { get; private set; }
 
     public string FactionName => faction.Name;
     public Color FactionColor => faction.Color;
@@ -56,7 +55,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
         currentWave = @event.WaveId;
         WaveName = @event.WaveName;
         waveSpawnStart = @event.SpawnStart;
-        WaveResources = @event.ResourceAmount;
         canSummonCurrentWaveNow = @event.CanSummonNow;
     }
 
@@ -81,7 +79,6 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
         currentWave = Id<WaveScript>.Invalid;
         WaveName = null;
         waveSpawnStart = null;
-        WaveResources = null;
         canSummonCurrentWaveNow = null;
     }
 

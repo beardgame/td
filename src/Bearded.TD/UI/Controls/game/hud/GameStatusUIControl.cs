@@ -11,7 +11,6 @@ sealed class GameStatusUIControl : CompositeControl
     private readonly Binding<string> resourcesAmount = new();
     private readonly Binding<string> waveNumber = new();
     private readonly Binding<string> timeUntilSpawn = new();
-    private readonly Binding<string> waveResources = new();
     private readonly Binding<bool> canSkipWaveTimer = new();
 
     public GameStatusUIControl(GameUIController gameUIController, GameStatusUI model)
@@ -32,10 +31,7 @@ sealed class GameStatusUIControl : CompositeControl
                 b => b
                     .WithLabel("Summon Wave")
                     .WithOnClick(model.SkipWaveTimer)
-                    .WithEnabled(canSkipWaveTimer))
-            .AddValueLabel(
-                "Resources this wave:",
-                waveResources, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor));
+                    .WithEnabled(canSkipWaveTimer));
         this.BuildLayout().ForContentBox().FillContent(content);
 
         model.StatusChanged += updateLabels;
@@ -57,8 +53,6 @@ sealed class GameStatusUIControl : CompositeControl
         waveNumber.SetFromSource(model.WaveName ?? "-");
         timeUntilSpawn.SetFromSource(
             model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
-        waveResources.SetFromSource(
-            model.WaveResources == null ? "-" : $"{model.WaveResources.Value.NumericValue}");
         canSkipWaveTimer.SetFromSource(model.CanSummonNow);
     }
 

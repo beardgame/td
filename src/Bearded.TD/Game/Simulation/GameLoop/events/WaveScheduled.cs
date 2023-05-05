@@ -12,6 +12,5 @@ readonly record struct WaveScheduled(
     Id<WaveScript> WaveId,
     string WaveName,
     Instant? SpawnStart,
-    ResourceAmount ResourceAmount,
     SpawnStartRequirementConsumer SpawnStartRequirementConsumer,
     Func<bool> CanSummonNow) : IGlobalEvent;

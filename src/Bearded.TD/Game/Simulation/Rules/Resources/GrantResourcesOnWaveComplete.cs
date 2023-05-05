@@ -8,10 +8,10 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Rules.Resources;
 
-[GameRule("grantResourcesOnStart")]
-sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParameters>
+[GameRule("grantResourcesOnWaveComplete")]
+sealed class GrantResourcesOnWaveComplete : GameRule<GrantResourcesOnWaveComplete.RuleParameters>
 {
-    public GrantResourcesOnStart(RuleParameters parameters) : base(parameters) { }
+    public GrantResourcesOnWaveComplete(RuleParameters parameters) : base(parameters) { }
 
     public override void Execute(GameRuleContext context)
     {
@@ -19,7 +19,7 @@ sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParamete
             new Listener(context.Logger, context.Factions.Find(Parameters.Faction), Parameters.Amount));
     }
 
-    private sealed class Listener : IListener<GameStarted>
+    private sealed class Listener : IListener<WaveEnded>
     {
         private readonly Logger logger;
         private readonly Faction faction;
@@ -32,16 +32,17 @@ sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParamete
             this.amount = amount;
         }
 
-        public void HandleEvent(GameStarted @event)
+        public void HandleEvent(WaveEnded @event)
         {
-            if (faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
+            if (@event.TargetFaction == faction &&
+                faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
             {
                 resources.ProvideResources(amount);
             }
             else
             {
                 logger.Debug?.Log(
-                    $"Tried providing resources at start of the game to {faction.ExternalId}, " +
+                    $"Tried providing resources at end of the wave to {faction.ExternalId}, " +
                     "but it doesn't have resources.");
             }
         }

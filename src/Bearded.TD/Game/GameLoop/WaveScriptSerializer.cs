@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -23,7 +22,6 @@ sealed class WaveScriptSerializer
     private Id<Faction> targetFaction;
     private double spawnStart;
     private double spawnDuration;
-    private int resourcesAwardedBySpawnPhase;
     private Id<SpawnLocation>[] spawnLocations = Array.Empty<Id<SpawnLocation>>();
     private readonly EnemySpawnScriptSerializer enemyScript = new();
     private Id<GameObject>[] spawnedUnitIds = Array.Empty<Id<GameObject>>();
@@ -38,7 +36,6 @@ sealed class WaveScriptSerializer
         targetFaction = waveScript.TargetFaction.Id;
         spawnStart = waveScript.SpawnStart?.NumericValue ?? -1;
         spawnDuration = waveScript.SpawnDuration.NumericValue;
-        resourcesAwardedBySpawnPhase = waveScript.ResourcesAwarded.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
         enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
         spawnedUnitIds = waveScript.SpawnedUnitIds.ToArray();
@@ -52,7 +49,6 @@ sealed class WaveScriptSerializer
             game.State.Factions.Resolve(targetFaction),
             spawnStart < 0 ? null : new Instant(spawnStart),
             new TimeSpan(spawnDuration),
-            new ResourceAmount(resourcesAwardedBySpawnPhase),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
             enemyScript.ToSpawnScript(game),
             spawnedUnitIds.ToImmutableArray());
@@ -65,7 +61,6 @@ sealed class WaveScriptSerializer
         stream.Serialize(ref targetFaction);
         stream.Serialize(ref spawnStart);
         stream.Serialize(ref spawnDuration);
-        stream.Serialize(ref resourcesAwardedBySpawnPhase);
         stream.SerializeArrayCount(ref spawnLocations);
         for (var i = 0; i < spawnLocations.Length; i++)
         {

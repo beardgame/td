@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Model;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -24,8 +23,6 @@ sealed class ChapterScheduler
     private int wavesSpawnedThisChapter;
 
     private ElementalTheme? lastChapterElements;
-
-    private ResourceAmount nextWaveResources = FirstWaveResources;
 
     public event VoidEventHandler? ChapterEnded;
 
@@ -117,10 +114,7 @@ sealed class ChapterScheduler
             currentChapter.ChapterNumber,
             waveNumber,
             new WaveEnemyComposition(waveValue, currentChapter.Elements),
-            nextWaveResources,
             waveNumber == 1 ? FirstDownTimeDuration : DownTimeDuration));
-
-        nextWaveResources = new ResourceAmount((int) (nextWaveResources.NumericValue * WaveResourcesMultiplier));
     }
 
     private void endChapter()

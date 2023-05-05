@@ -68,9 +68,6 @@ static partial class Constants
             public const double WaveValueErrorFactor = 0.1;
             public const double WaveValueLinearGrowth = 2500;
             public const double WaveValueExponentialGrowth = 1.03;
-
-            public static readonly ResourceAmount FirstWaveResources = 150.Resources();
-            public static readonly double WaveResourcesMultiplier = 1;
         }
 
         public static class Building

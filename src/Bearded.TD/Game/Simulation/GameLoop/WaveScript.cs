@@ -13,7 +13,6 @@ sealed record WaveScript(
     Faction TargetFaction,
     Instant? SpawnStart,
     TimeSpan SpawnDuration,
-    ResourceAmount ResourcesAwarded,
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript,
     ImmutableArray<Id<GameObject>> SpawnedUnitIds);

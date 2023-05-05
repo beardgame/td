@@ -91,7 +91,6 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
             targetFaction,
             requirements.DowntimeDuration == null ? null : game.Time + requirements.DowntimeDuration,
             spawnDuration,
-            requirements.Resources,
             spawnLocations,
             enemyScript,
             game.Meta.Ids.GetBatch<GameObject>(spawnLocations.Length * enemiesPerSpawn));

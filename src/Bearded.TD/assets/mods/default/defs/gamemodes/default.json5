@@ -42,6 +42,13 @@
             }
         },
         {
+            id: "grantResourcesOnWaveComplete",
+            parameters: {
+                faction: "players",
+                amount: 150,
+            }
+        },
+        {
             id: "unlockTechnology",
             parameters: {
                 faction: "players",

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Shared.Events;
@@ -83,7 +82,6 @@ sealed class WaveDirector
                     script.Id,
                     script.DisplayName,
                     script.SpawnStart,
-                    script.ResourcesAwarded,
                     outstandingSpawnStartRequirements.Add,
                     () => canSummonNow));
             phase = Phase.Downtime;
@@ -156,10 +154,6 @@ sealed class WaveDirector
             game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
             game.Meta.Events.Unsubscribe<EnemyKilled>(this);
             game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
-            if (script.TargetFaction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
-            {
-                resources.ProvideResources(script.ResourcesAwarded);
-            }
             phase = Phase.Completed;
         }
 

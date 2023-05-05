@@ -12,7 +12,6 @@ sealed partial class WaveScheduler
         int ChapterNumber,
         int WaveNumber,
         WaveEnemyComposition EnemyComposition,
-        ResourceAmount Resources,
         TimeSpan? DowntimeDuration);
 
     public sealed record WaveEnemyComposition(
