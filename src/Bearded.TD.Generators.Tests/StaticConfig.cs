@@ -18,7 +18,7 @@ namespace Bearded.TD.Generators.Tests
         public static void Initialize()
         {
             DiffTools.UseOrder(DiffTool.Rider, DiffTool.VisualStudioCode);
-            VerifySourceGenerators.Enable();
+            VerifySourceGenerators.Initialize();
         }
     }
 }
