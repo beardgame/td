@@ -160,6 +160,7 @@ public sealed class ComponentLifeCycleTests
     {
         var mock = new Mock<T>();
         mock.Setup(m => m.CreateModifiableInstance()).Returns(mock.Object);
+        mock.SetReturnsDefault((ITrigger) new EmptyTrigger());
         return mock.Object;
     }
 

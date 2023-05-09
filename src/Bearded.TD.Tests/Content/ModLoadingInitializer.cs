@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Factions;
@@ -15,6 +16,7 @@ namespace Bearded.TD.Tests.Content
             FactionBehaviorFactories.Initialize();
             GameRuleFactories.Initialize();
             NodeBehaviorFactories.Initialize();
+            TriggerFactories.Initialize();
         }
     }
 }
