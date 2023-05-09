@@ -42,8 +42,11 @@
             }
         },
         {
-            "id": "playSoundOnShoot",
-            "parameters": { "sound": "gunshot-punchy" }
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "shotProjectile",
+                sound: "gunshot-punchy",
+            }
         },
         {
             id: "shakeScreenOnFireWeapon",

@@ -18,9 +18,13 @@
       id: "spawnObjectOnLevelGain",
       parameters: { object: "building-gained-level-effect" },
     },
+
     {
-      id: "playSoundOnLevelGain",
-      parameters: { sound: "veterancy" },
+      id: "playSoundOnTrigger",
+      parameters: {
+        trigger: "levelGained",
+        sound: "veterancy",
+      },
     },
     {
       id: "turret",

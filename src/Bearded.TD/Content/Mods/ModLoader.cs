@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Bearded.TD.Audio;
+using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
@@ -130,6 +131,7 @@ static class ModLoader
                 new NodeTagConverter(),
                 new SocketShapeConverter(),
                 new TargetingModeConverter(),
+                new TriggerConverter(),
                 new UpgradeEffectConverter(),
                 new UpgradePrerequisitesConverter(),
                 GenericInterfaceConverter.From(typeof(IKeyFrameAnimation<>), typeof(KeyFrameAnimation<>))

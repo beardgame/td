@@ -40,8 +40,11 @@
             }
         },
         {
-            id: "playSoundOnShoot",
-            parameters: { sound: "bang-deep" },
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "shotProjectile",
+                sound: "bang-deep",
+            },
         },
         {
             id: "shakeScreenOnFireWeapon",

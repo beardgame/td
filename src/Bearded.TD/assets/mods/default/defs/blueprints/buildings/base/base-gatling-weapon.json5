@@ -50,8 +50,11 @@
             }
         },
         {
-            id: "playSoundOnShoot",
-            parameters: { sound: "gunshot-fast" },
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "shotProjectile",
+                sound: "gunshot-fast",
+            },
         },
         {
             id: "shakeScreenOnFireWeapon",

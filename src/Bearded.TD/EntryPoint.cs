@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.IO;
 using System.Threading;
+using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Factions;
@@ -51,6 +52,7 @@ static class EntryPoint
         FactionBehaviorFactories.Initialize();
         GameRuleFactories.Initialize();
         NodeBehaviorFactories.Initialize();
+        TriggerFactories.Initialize();
 
         logger.Info?.Log("");
         logger.Info?.Log("Creating game");
