@@ -14,7 +14,7 @@ sealed class PlaySoundOnTrigger : Component<PlaySoundOnTrigger.IParameters>
         ISoundEffect Sound { get; }
     }
 
-    private ISubscription? subscription;
+    private ITriggerSubscription? subscription;
 
     public PlaySoundOnTrigger(IParameters parameters) : base(parameters) { }
 

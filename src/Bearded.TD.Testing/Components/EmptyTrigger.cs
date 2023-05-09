@@ -4,5 +4,5 @@ namespace Bearded.TD.Testing.Components;
 
 sealed class EmptyTrigger : ITrigger
 {
-    public ISubscription Subscribe(ComponentEvents events, Action action) => new EmptySubscription();
+    public ITriggerSubscription Subscribe(ComponentEvents events, Action action) => new EmptyTriggerSubscription();
 }
