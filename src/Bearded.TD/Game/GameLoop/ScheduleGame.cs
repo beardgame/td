@@ -27,13 +27,15 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
                 commandDispatcher,
                 context.Seed,
                 context.Logger);
-            var chapterScheduler = new ChapterScheduler(waveScheduler, elements, context.Seed, context.Logger);
+            var chapterGenerator = new ChapterGenerator(elements, context.Seed);
+            var chapterDirector = new ChapterDirector(waveScheduler);
             var gameScheduler = new GameScheduler(
                 context.GameState,
                 commandDispatcher,
-                chapterScheduler,
+                chapterGenerator,
+                chapterDirector,
                 new GameScheduler.GameRequirements(chaptersPerGame, wavesPerChapter));
-            context.Events.Subscribe(new Listener(gameScheduler));
+            context.Events.Subscribe(new Listener(gameScheduler, waveScheduler));
         });
     }
 
@@ -51,15 +53,18 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     private sealed class Listener : IListener<GameStarted>
     {
         private readonly GameScheduler gameScheduler;
+        private readonly WaveScheduler waveScheduler;
 
-        public Listener(GameScheduler gameScheduler)
+        public Listener(GameScheduler gameScheduler, WaveScheduler waveScheduler)
         {
             this.gameScheduler = gameScheduler;
+            this.waveScheduler = waveScheduler;
         }
 
         public void HandleEvent(GameStarted @event)
         {
             gameScheduler.StartGame();
+            waveScheduler.OnGameStart();
         }
     }
 }

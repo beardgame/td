@@ -1,3 +1,5 @@
-﻿namespace Bearded.TD.Game.GameLoop;
+﻿using System.Collections.Immutable;
 
-readonly record struct ChapterRequirements(int ChapterNumber, int WaveCount);
+namespace Bearded.TD.Game.GameLoop;
+
+sealed record ChapterRequirements(int ChapterNumber, ImmutableArray<double> Waves);

@@ -64,7 +64,7 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         WaveEnded?.Invoke();
     }
 
-    public void StartWave(WaveRequirements requirements)
+    public void StartWave(WaveRequirements requirements, Action onComplete)
     {
         State.Satisfies(activeWave == null, "We only support one simultaneous wave right now");
 
@@ -77,6 +77,14 @@ sealed partial class WaveScheduler : IListener<WaveEnded>
         var script = createWaveScript(requirements);
         activeWave = script.Id;
         commandDispatcher.Dispatch(ExecuteWaveScript.Command(game, script));
+
+        WaveEnded += onWaveEnd;
+
+        void onWaveEnd()
+        {
+            onComplete();
+            WaveEnded -= onWaveEnd;
+        }
     }
 
     private WaveScript createWaveScript(WaveRequirements requirements)

@@ -1,3 +1,11 @@
-﻿namespace Bearded.TD.Game.GameLoop;
+﻿using System.Collections.Immutable;
 
-readonly record struct ChapterScript(int ChapterNumber, int WaveCount, ElementalTheme Elements);
+namespace Bearded.TD.Game.GameLoop;
+
+sealed record ChapterScript(
+    int ChapterNumber,
+    ImmutableArray<WaveDescription> Waves,
+    ElementalTheme Elements)
+{
+    public int WaveCount => Waves.Length;
+}

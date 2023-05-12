@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Linq;
+using static Bearded.TD.Constants.Game.WaveGeneration;
 
 namespace Bearded.TD.Game.GameLoop;
 
@@ -19,7 +21,17 @@ sealed class ChapterGenerator
 
     public ChapterScript GenerateChapter(ChapterRequirements requirements, ChapterScript? previousChapter)
     {
-        return new ChapterScript(requirements.ChapterNumber, requirements.WaveCount, chooseChapterElements(previousChapter));
+        return new ChapterScript(
+            requirements.ChapterNumber,
+            generateWaveDescriptions(requirements.Waves),
+            chooseChapterElements(previousChapter));
+    }
+
+    private ImmutableArray<WaveDescription> generateWaveDescriptions(ImmutableArray<double> waveThreats)
+    {
+        return waveThreats
+            .Select((threat, i) => new WaveDescription(threat, i == 0 ? FirstDownTimeDuration : DownTimeDuration))
+            .ToImmutableArray();
     }
 
     private ElementalTheme chooseChapterElements(ChapterScript? previousChapter)
