@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.15
+
+* Added a new tower: flame trap
+* Added explosive gas clouds that ignite when hit by fire damage
+* Towers can now be built in specific orientations
+* The current health of the Core is now always shown in the UI
+* There is now an always visible button to trigger the Core's EMP
+* The Core now shows its damage statistics
+* The escape key now more consistently closes open windows
+* Added a global 'E' shortcut to activate the EMP
+* Allowed selecting buildings from the action bar using number keys on the keyboard
+* Added a select box to choose a game mode in the lobby screen
+* Elements have been renamed to the more colloquial terms
+* The activation of spawn locations is now seeded
+* The revealing of new map nodes is now seeded
+* Bug fix: enemies are now once again slowed through varying lightning effects
+* Bug fix: progress bars are now rendered correctly when opening a window after the progress has already started
+* Bug fix: the game no longer crashes when attempting to batch enemies in later waves
+* Bug fix: it is no longer possible to interact with the game while the pause menu is open
+
 ## v0.14
 
 * Added a variety of enemies with different behaviours:
