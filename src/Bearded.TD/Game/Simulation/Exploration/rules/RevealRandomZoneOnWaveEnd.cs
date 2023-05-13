@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -17,18 +18,20 @@ sealed class RevealRandomZoneOnWaveEnd : GameRule
 {
     public override void Execute(GameRuleContext context)
     {
-        context.Events.Subscribe(new Listener(context.GameState, context.Dispatcher));
+        context.Events.Subscribe(new Listener(context.GameState, context.Dispatcher, context.Seed));
     }
 
     private sealed class Listener : IListener<WaveEnded>
     {
         private readonly GameState gameState;
         private readonly IDispatcher<GameInstance> dispatcher;
+        private readonly Random random;
 
-        public Listener(GameState gameState, IDispatcher<GameInstance> dispatcher)
+        public Listener(GameState gameState, IDispatcher<GameInstance> dispatcher, int seed)
         {
             this.gameState = gameState;
             this.dispatcher = dispatcher;
+            random = new Random(seed);
         }
 
         public void HandleEvent(WaveEnded @event)
@@ -63,7 +66,7 @@ sealed class RevealRandomZoneOnWaveEnd : GameRule
                 var explorableZonesInShell = shell.Where(explorableZones.Contains).ToImmutableArray();
                 if (!explorableZonesInShell.IsEmpty)
                 {
-                    return explorableZonesInShell.RandomElement();
+                    return explorableZonesInShell.RandomElement(random);
                 }
 
                 seenZones.UnionWith(shell);
