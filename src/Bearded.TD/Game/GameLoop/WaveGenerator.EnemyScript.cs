@@ -8,7 +8,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.GameLoop;
 
-sealed partial class WaveScheduler
+sealed partial class WaveGenerator
 {
     private const int minGroupSize = 7;
     private const int maxGroupSize = minGroupSize * 3;

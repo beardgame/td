@@ -12,7 +12,7 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.GameLoop;
 
-sealed partial class WaveScheduler
+sealed partial class WaveGenerator
 {
     // The minimum number of enemies the wave should support to allow an enemy to be used for the current wave.
     private const int minEnemiesCount = 12;

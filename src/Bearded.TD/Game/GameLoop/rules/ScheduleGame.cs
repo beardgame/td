@@ -20,13 +20,17 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
         {
             var (targetFaction, chaptersPerGame, wavesPerChapter, elements, enemies) = Parameters;
-            var waveScheduler = new WaveScheduler(
-                context.GameState,
-                context.Factions.Find(targetFaction),
+            var waveGenerator = new WaveGenerator(
+                context.GameState.Meta.Ids,
                 enemies.CastArray<ISpawnableEnemy>(),
-                commandDispatcher,
+                context.Blueprints.Modules.All,
                 context.Seed,
                 context.Logger);
+            var waveScheduler = new WaveScheduler(
+                context.GameState,
+                commandDispatcher,
+                waveGenerator,
+                context.Factions.Find(targetFaction));
             var chapterGenerator = new ChapterGenerator(elements, context.Seed);
             var chapterDirector = new ChapterDirector(waveScheduler);
             var gameScheduler = new GameScheduler(

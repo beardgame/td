@@ -1,5 +1,4 @@
 ﻿using Bearded.Utilities;
-using static Bearded.TD.Constants.Game.WaveGeneration;
 
 namespace Bearded.TD.Game.GameLoop;
 
@@ -59,12 +58,12 @@ sealed class ChapterDirector
             waveScheduler.StartWave(requirements, onWaveEnded);
         }
 
-        private WaveScheduler.WaveRequirements toRequirements(int waveNumber, WaveDescription waveDescription)
+        private WaveRequirements toRequirements(int waveNumber, WaveDescription waveDescription)
         {
-            return new WaveScheduler.WaveRequirements(
+            return new WaveRequirements(
                 script.ChapterNumber,
                 waveNumber,
-                new WaveScheduler.WaveEnemyComposition(waveDescription.TotalThreat, script.Elements),
+                new WaveEnemyComposition(waveDescription.TotalThreat, script.Elements),
                 waveDescription.DownTimeDuration);
         }
 

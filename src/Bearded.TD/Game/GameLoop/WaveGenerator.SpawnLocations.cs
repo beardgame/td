@@ -1,26 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.GameLoop;
 
-sealed partial class WaveScheduler
+sealed partial class WaveGenerator
 {
-    private ImmutableArray<SpawnLocation> chooseSpawnLocations(int enemyCount)
+    private ImmutableArray<SpawnLocation> chooseSpawnLocations(
+        int enemyCount, IEnumerable<SpawnLocation> availableSpawnLocations)
     {
-        var activeSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToList();
-        DebugAssert.State.Satisfies(activeSpawnLocations.Count > 0);
+        var activeSpawnLocations = availableSpawnLocations.ToImmutableArray();
+        State.Satisfies(activeSpawnLocations.Length > 0);
 
         var minSequentialSpawnTime = enemyCount * Constants.Game.WaveGeneration.MinTimeBetweenSpawns;
         var minSpawnPoints =
             MoreMath.CeilToInt(Constants.Game.WaveGeneration.EnemyTrainLength / (minSequentialSpawnTime * enemyCount));
-        var numSpawnPoints = activeSpawnLocations.Count <= minSpawnPoints
+        var numSpawnPoints = activeSpawnLocations.Length <= minSpawnPoints
             ? minSpawnPoints
-            : random.Next(minSpawnPoints, activeSpawnLocations.Count);
+            : random.Next(minSpawnPoints, activeSpawnLocations.Length);
         if (numSpawnPoints >= enemyCount / 3)
         {
             numSpawnPoints = Math.Max(1, enemyCount / 3);
