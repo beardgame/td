@@ -30,7 +30,8 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
                 context.GameState,
                 commandDispatcher,
                 waveGenerator,
-                context.Factions.Find(targetFaction));
+                context.Factions.Find(targetFaction),
+                context.Seed);
             var chapterGenerator = new ChapterGenerator(elements, context.Seed);
             var chapterDirector = new ChapterDirector(waveScheduler);
             var gameScheduler = new GameScheduler(

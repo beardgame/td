@@ -19,6 +19,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     private readonly WaveGenerator waveGenerator;
     private readonly Faction targetFaction;
+    private readonly Random random;
 
     private Id<WaveScript>? activeWave;
 
@@ -28,12 +29,14 @@ sealed class WaveScheduler : IListener<WaveEnded>
         GameState game,
         ICommandDispatcher<GameInstance> commandDispatcher,
         WaveGenerator waveGenerator,
-        Faction targetFaction)
+        Faction targetFaction,
+        int seed)
     {
         this.game = game;
         this.commandDispatcher = commandDispatcher;
         this.waveGenerator = waveGenerator;
         this.targetFaction = targetFaction;
+        random = new Random(seed);
     }
 
     public void OnGameStart()
@@ -48,7 +51,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
         var dormantSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => !s.IsAwake).ToImmutableArray();
         if (dormantSpawnLocations.Length > 0)
         {
-            commandDispatcher.Dispatch(WakeUpSpawnLocation.Command(dormantSpawnLocations.RandomElement()));
+            commandDispatcher.Dispatch(WakeUpSpawnLocation.Command(dormantSpawnLocations.RandomElement(random)));
         }
 
         var availableSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToImmutableArray();
