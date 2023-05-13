@@ -5,8 +5,8 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Exploration;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Units;
@@ -65,10 +65,7 @@ static class GameDebugCommands
         //       less pollution of objects escaping their respective abstraction layer.
         foreach (var gameObj in gameInstance.State.GameObjects)
         {
-            if (gameObj is GameObject)
-            {
-                gameObj.Delete();
-            }
+            gameObj.Delete();
         }
 
         var generator = TilemapGenerator.From(method, logger, gameInstance.LevelDebugMetadata);
@@ -194,13 +191,7 @@ static class GameDebugCommands
             return;
         }
 
-        var faction = gameInstance.Me.Faction;
-        while (faction != null && !faction.TryGetBehavior<FactionTechnology>(out _))
-        {
-            faction = faction.Parent;
-        }
-
-        if (faction == null)
+        if (findTechFaction(gameInstance) is not { } faction)
         {
             logger.Warning?.Log(
                 "Cannot add tech points: player is not part of a faction with technology management.");
@@ -209,6 +200,37 @@ static class GameDebugCommands
 
         gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantTechToken.Request(faction));
     });
+
+    [DebugCommand("game.alltech")]
+    private static void unlockAllTech(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+    {
+        if (p.Args.Length != 0)
+        {
+            logger.Warning?.Log("Usage: \"game.alltech\"");
+            return;
+        }
+
+        if (findTechFaction(gameInstance) is not { } faction)
+        {
+            logger.Warning?.Log(
+                "Cannot unlock tech: player is not part of a faction with technology management.");
+            return;
+        }
+
+        gameInstance.RequestDispatcher.Dispatch(
+            gameInstance.Me, ForceUnlockAllTechnologies.Request(gameInstance, faction));
+    });
+
+    private static Faction? findTechFaction(GameInstance gameInstance)
+    {
+        Faction? faction = gameInstance.Me.Faction;
+        while (faction != null && !faction.TryGetBehavior<FactionTechnology>(out _))
+        {
+            faction = faction.Parent;
+        }
+
+        return faction;
+    }
 
     private static void run(Logger logger, Action<GameInstance> command) =>
         DebugGameManager.Instance.RunCommandOrLog(logger, command);

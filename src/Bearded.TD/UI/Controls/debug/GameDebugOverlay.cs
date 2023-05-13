@@ -51,6 +51,7 @@ sealed class GameDebugOverlay : NavigationNode<Void>
             "game.resources 1000",
             "game.building.xp 2500",
             "game.building.level",
+            "game.alltech",
             "game.killall",
             "game.repairall",
             "game.revealmap",
