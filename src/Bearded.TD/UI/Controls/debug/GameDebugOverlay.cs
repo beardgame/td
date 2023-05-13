@@ -18,7 +18,7 @@ namespace Bearded.TD.UI.Controls;
 sealed class GameDebugOverlay : NavigationNode<Void>
 {
     private readonly LocalBool randomiseTilemapGenerationSeed = new("randomise seed");
-    private Logger logger;
+    private Logger logger = null!;
     private readonly List<Item> items = new();
 
     public ReadOnlyCollection<Item> Items { get; }
@@ -157,7 +157,7 @@ sealed class GameDebugOverlay : NavigationNode<Void>
         }
     }
 
-    public sealed class ParameterisedCommand : Command
+    private sealed class ParameterisedCommand : Command
     {
         private readonly Func<string> getParameters;
 
@@ -224,12 +224,13 @@ sealed class GameDebugOverlay : NavigationNode<Void>
             Set(Options[index]);
         }
     }
-    sealed class LocalBool : Item, IBoolSetting
+
+    private sealed class LocalBool : Item, IBoolSetting
     {
         public string Name { get; }
         public bool Value { get; private set; }
 
-        public event VoidEventHandler ValueChanged;
+        public event VoidEventHandler? ValueChanged;
 
         public LocalBool(string name)
         {
