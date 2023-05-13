@@ -1,7 +1,7 @@
 {
     id: "kinetic3-sniperTower",
     name: "Snipe!",
-    branch: "dynamics",
+    branch: "force",
     tier: "high",
     unlocks: [
         { type: "building", blueprint: "kinetic3-sniper" }

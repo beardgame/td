@@ -35,7 +35,7 @@ sealed class SplashDamageOnKilled : Component<SplashDamageOnKilled.IParameters>,
 
     public void HandleEvent(ObjectKilled @event)
     {
-        var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
+        var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Force);
 
         AreaOfEffect.Damage(
             Owner.Game,

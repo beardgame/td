@@ -8,22 +8,22 @@ static class TechnologyBranchExtensions
 {
     public static Element ToElement(this TechnologyBranch branch) => branch switch
     {
-        TechnologyBranch.Dynamics => Element.Dynamics,
-        TechnologyBranch.Combustion => Element.Combustion,
-        TechnologyBranch.Conductivity => Element.Conductivity,
-        TechnologyBranch.Photonics => Element.Photonics,
-        TechnologyBranch.Hydrology => Element.Hydrology,
+        TechnologyBranch.Force => Element.Force,
+        TechnologyBranch.Fire => Element.Fire,
+        TechnologyBranch.Lightning => Element.Lightning,
+        TechnologyBranch.Energy => Element.Energy,
+        TechnologyBranch.Water => Element.Water,
         TechnologyBranch.Alchemy => Element.Alchemy,
         _ => throw new ArgumentOutOfRangeException(nameof(branch), branch, null)
     };
 
     public static TechnologyBranch ToTechnologyBranch(this Element element) => element switch
     {
-        Element.Dynamics => TechnologyBranch.Dynamics,
-        Element.Combustion => TechnologyBranch.Combustion,
-        Element.Conductivity => TechnologyBranch.Conductivity,
-        Element.Photonics => TechnologyBranch.Photonics,
-        Element.Hydrology => TechnologyBranch.Hydrology,
+        Element.Force => TechnologyBranch.Force,
+        Element.Fire => TechnologyBranch.Fire,
+        Element.Lightning => TechnologyBranch.Lightning,
+        Element.Energy => TechnologyBranch.Energy,
+        Element.Water => TechnologyBranch.Water,
         Element.Alchemy => TechnologyBranch.Alchemy,
         _ => throw new ArgumentOutOfRangeException(nameof(element), element, null)
     };

@@ -1,7 +1,7 @@
 {
     id: "fire2-flameTrap",
     name: "Flame trap",
-    branch: "combustion",
+    branch: "fire",
     tier: "medium",
     unlocks: [
         { type: "building", blueprint: "fire2-flameTrap" }

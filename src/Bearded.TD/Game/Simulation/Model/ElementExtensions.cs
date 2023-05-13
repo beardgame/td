@@ -7,12 +7,12 @@ static class ElementExtensions
 {
     public static Color GetColor(this Element element) => element switch
     {
-        Element.Dynamics => DynamicsColor,
-        Element.Combustion => CombustionColor,
-        Element.Conductivity => ConductivityColor,
+        Element.Force => ForceColor,
+        Element.Fire => FireColor,
+        Element.Lightning => LightningColor,
         Element.Alchemy => AlchemyColor,
-        Element.Hydrology => HydrologyColor,
-        Element.Photonics => PhotonicsColor,
+        Element.Water => WaterColor,
+        Element.Energy => EnergyColor,
         _ => Color.Pink
     };
 }

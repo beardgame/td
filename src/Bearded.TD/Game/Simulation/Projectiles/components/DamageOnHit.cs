@@ -41,7 +41,7 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<TouchOb
         _ = Owner.TryGetProperty<UntypedDamage>(out var damage)
             && DamageExecutor.FromObject(Owner).TryDoDamage(
                 @event.Object,
-                (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
+                (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Force),
                 Hit.FromImpact(@event.Impact));
     }
 

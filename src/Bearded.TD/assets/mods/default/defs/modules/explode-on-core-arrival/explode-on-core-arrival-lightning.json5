@@ -1,6 +1,6 @@
 {
     id: "explode-on-core-arrival-lightning",
-    affinityElement: "conductivity",
+    affinityElement: "lightning",
     socketShape: "explodeOnCoreArrival",
     effects: [
         {
@@ -9,7 +9,7 @@
                 id: "damageBuildingOnStuck",
                 parameters: {
                     damage: 32,
-                    damageType: "electric",
+                    damageType: "lightning",
                     spawnObject: "default.medium-shockwave",
                 }
             }

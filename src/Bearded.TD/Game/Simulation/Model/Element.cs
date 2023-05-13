@@ -2,10 +2,10 @@ namespace Bearded.TD.Game.Simulation.Model;
 
 enum Element
 {
-    Dynamics,
-    Combustion,
-    Conductivity,
+    Force,
+    Fire,
+    Lightning,
     Alchemy,
-    Hydrology,
-    Photonics
+    Water,
+    Energy
 }

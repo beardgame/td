@@ -8,7 +8,7 @@
             parameters: {
                 id: "damageOnHit",
                 parameters: {
-                    damageType: "electric",
+                    damageType: "lightning",
                     fractionOfBaseDamage: 0.5
                 }
             },

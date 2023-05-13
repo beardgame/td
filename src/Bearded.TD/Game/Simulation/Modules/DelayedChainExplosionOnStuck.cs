@@ -88,7 +88,7 @@ sealed class DelayedChainExplosionOnStuck
             return;
         }
 
-        var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
+        var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Force);
         var incident = (targetBuilding.Position - Owner.Position).NormalizedSafe();
         var impact = new Impact(targetBuilding.Position, -incident, incident);
         var hit = Hit.FromAreaOfEffect(impact);

@@ -1,6 +1,6 @@
 ﻿{
   id: "dodge-on-hit-fire",
-  affinityElement: "combustion",
+  affinityElement: "fire",
   socketShape: "dodgeOnHit",
   effects: [
     {

@@ -1,6 +1,6 @@
 ﻿{
   id: "sprint-on-straights-kinetic",
-  affinityElement: "dynamics",
+  affinityElement: "force",
   socketShape: "sprintOnStraights",
   effects: [
     {

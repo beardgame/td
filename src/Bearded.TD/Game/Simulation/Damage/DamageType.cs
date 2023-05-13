@@ -4,9 +4,9 @@ public enum DamageType
 {
     DivineIntervention, // Used for cheats/debugging only
 
-    Kinetic,
+    Force,
     Fire,
-    Electric,
+    Lightning,
 
     Energy,
     Frost,

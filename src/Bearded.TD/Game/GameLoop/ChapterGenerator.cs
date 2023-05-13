@@ -15,7 +15,7 @@ sealed class ChapterGenerator
 
     public ChapterGenerator(ImmutableArray<Element> elements, int seed)
     {
-        this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Dynamics) : elements;
+        this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Force) : elements;
         random = new Random(seed);
     }
 
@@ -39,8 +39,8 @@ sealed class ChapterGenerator
         // TODO: this is super hardcoded and ugly; needs to be moved to a more generic system loaded from mod files
         if (previousChapter is not { } prevChapter)
         {
-            // Always start the first wave with dynamics and a random accent element. After that, everything goes.
-            return new ElementalTheme(Element.Dynamics, chooseAccentElement(Element.Dynamics));
+            // Always start the first wave with force and a random accent element. After that, everything goes.
+            return new ElementalTheme(Element.Force, chooseAccentElement(Element.Force));
         }
 
         const int maxAttempts = 5;

@@ -1,6 +1,6 @@
 ﻿{
   id: "dodge-on-hit-lightning",
-  affinityElement: "conductivity",
+  affinityElement: "lightning",
   socketShape: "dodgeOnHit",
   effects: [
     {

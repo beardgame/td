@@ -1,6 +1,6 @@
 {
     id: "explode-on-core-arrival-kinetic",
-    affinityElement: "dynamics",
+    affinityElement: "force",
     socketShape: "explodeOnCoreArrival",
     effects: [
         {
@@ -9,7 +9,7 @@
                 id: "damageBuildingOnStuck",
                 parameters: {
                     damage: 48,
-                    damageType: "kinetic",
+                    damageType: "force",
                     spawnObject: "default.medium-shockwave",
                 }
             }

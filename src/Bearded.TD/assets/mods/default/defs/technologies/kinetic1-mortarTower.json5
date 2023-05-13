@@ -1,7 +1,7 @@
 {
     id: "kinetic1-mortarTower",
     name: "Lob!",
-    branch: "dynamics",
+    branch: "force",
     tier: "low",
     unlocks: [
         { type: "building", blueprint: "kinetic1-mortar" }

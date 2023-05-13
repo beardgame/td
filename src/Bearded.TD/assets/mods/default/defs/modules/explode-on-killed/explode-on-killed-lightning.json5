@@ -1,6 +1,6 @@
 {
     id: "explode-on-killed-lightning",
-    affinityElement: "conductivity",
+    affinityElement: "lightning",
     socketShape: "explodeOnKilled",
     effects: [
         {
@@ -10,7 +10,7 @@
                 parameters: {
                     range: 2.5,
                     damage: 25,
-                    damageType: "electric",
+                    damageType: "lightning",
                 }
             }
         },

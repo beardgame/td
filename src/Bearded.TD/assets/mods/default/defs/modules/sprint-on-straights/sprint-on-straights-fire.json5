@@ -1,6 +1,6 @@
 ﻿{
   id: "sprint-on-straights-fire",
-  affinityElement: "combustion",
+  affinityElement: "fire",
   socketShape: "sprintOnStraights",
   effects: [
     {

@@ -30,7 +30,7 @@ sealed class TechnologyBlueprint
         return new Content.Models.TechnologyBlueprint(
             ModAwareId.FromNameInMod(Id, modMetadata),
             Name,
-            Branch ?? TechnologyBranch.Dynamics,
+            Branch ?? TechnologyBranch.Force,
             Tier.Value,
             Unlocks?
                 .Select(u => u.ToGameModel(resolvers.GameObjectResolver, resolvers.UpgradeResolver))

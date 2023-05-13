@@ -1,6 +1,6 @@
 {
     id: "explode-on-killed-kinetic",
-    affinityElement: "dynamics",
+    affinityElement: "force",
     socketShape: "explodeOnKilled",
     effects: [
         {

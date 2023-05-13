@@ -1,6 +1,6 @@
 ﻿{
   id: "dodge-on-hit-kinetic",
-  affinityElement: "dynamics",
+  affinityElement: "force",
   socketShape: "dodgeOnHit",
   effects: [
     {

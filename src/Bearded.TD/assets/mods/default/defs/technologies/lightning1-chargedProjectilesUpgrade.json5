@@ -1,7 +1,7 @@
 {
     id: "lightning1-incendiaryProjectilesUpgrade",
     name: "Charged projectiles",
-    branch: "conductivity",
+    branch: "lightning",
     tier: "low",
     unlocks: [
         { type: "upgrade", blueprint: "lightning1-chargedProjectiles" }

@@ -1,6 +1,6 @@
 ﻿{
   id: "sprint-on-straights-lightning",
-  affinityElement: "conductivity",
+  affinityElement: "lightning",
   socketShape: "sprintOnStraights",
   effects: [
     {

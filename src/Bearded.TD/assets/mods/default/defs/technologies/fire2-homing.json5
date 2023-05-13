@@ -1,7 +1,7 @@
 {
     id: "fire2-homing",
     name: "Homing projectiles",
-    branch: "combustion",
+    branch: "fire",
     tier: "medium",
     unlocks: [
         { type: "upgrade", blueprint: "fire2-homing" }

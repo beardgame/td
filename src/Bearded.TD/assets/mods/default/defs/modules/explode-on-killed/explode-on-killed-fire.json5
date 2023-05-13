@@ -1,6 +1,6 @@
 {
     id: "explode-on-killed-fire",
-    affinityElement: "combustion",
+    affinityElement: "fire",
     socketShape: "explodeOnKilled",
     effects: [
         {

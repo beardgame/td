@@ -8,11 +8,11 @@ static class DamageTypeExtensions
 {
     public static Element ToElement(this DamageType damageType) => damageType switch
     {
-        DamageType.Kinetic => Element.Dynamics,
-        DamageType.Fire => Element.Combustion,
-        DamageType.Electric => Element.Conductivity,
-        DamageType.Energy => Element.Photonics,
-        DamageType.Frost => Element.Hydrology,
+        DamageType.Force => Element.Force,
+        DamageType.Fire => Element.Fire,
+        DamageType.Lightning => Element.Lightning,
+        DamageType.Energy => Element.Energy,
+        DamageType.Frost => Element.Water,
         DamageType.Alchemy => Element.Alchemy,
         DamageType.DivineIntervention => throw new ArgumentOutOfRangeException(nameof(damageType), damageType, null),
         _ => throw new ArgumentOutOfRangeException(nameof(damageType), damageType, null)
@@ -20,12 +20,12 @@ static class DamageTypeExtensions
 
     public static DamageType ToDamageType(this Element element) => element switch
     {
-        Element.Dynamics => DamageType.Kinetic,
-        Element.Combustion => DamageType.Fire,
-        Element.Conductivity => DamageType.Electric,
+        Element.Force => DamageType.Force,
+        Element.Fire => DamageType.Fire,
+        Element.Lightning => DamageType.Lightning,
         Element.Alchemy => DamageType.Alchemy,
-        Element.Hydrology => DamageType.Frost,
-        Element.Photonics => DamageType.Energy,
+        Element.Water => DamageType.Frost,
+        Element.Energy => DamageType.Energy,
         _ => throw new ArgumentOutOfRangeException(nameof(element), element, null)
     };
 

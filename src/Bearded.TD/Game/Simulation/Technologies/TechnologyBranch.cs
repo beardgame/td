@@ -2,10 +2,10 @@ namespace Bearded.TD.Game.Simulation.Technologies;
 
 enum TechnologyBranch
 {
-    Dynamics,
-    Combustion,
-    Conductivity,
+    Force,
+    Fire,
+    Lightning,
     Alchemy,
-    Hydrology,
-    Photonics,
+    Water,
+    Energy,
 }

@@ -1,6 +1,6 @@
 {
     id: "explode-on-core-arrival-fire",
-    affinityElement: "combustion",
+    affinityElement: "fire",
     socketShape: "explodeOnCoreArrival",
     effects: [
         {
