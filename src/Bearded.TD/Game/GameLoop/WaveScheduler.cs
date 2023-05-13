@@ -52,9 +52,9 @@ sealed class WaveScheduler : IListener<WaveEnded>
         }
 
         var availableSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToImmutableArray();
-        var script = waveGenerator.GenerateWave(requirements, availableSpawnLocations, targetFaction, game.Time);
+        var script = waveGenerator.GenerateWave(requirements, availableSpawnLocations, targetFaction);
         activeWave = script.Id;
-        commandDispatcher.Dispatch(ExecuteWaveScript.Command(game, script));
+        commandDispatcher.Dispatch(ExecuteWaveScript.Command(game, script, game.Time));
 
         WaveEnded += onWaveEnd;
 

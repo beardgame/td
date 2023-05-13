@@ -11,7 +11,7 @@ sealed record WaveScript(
     Id<WaveScript> Id,
     string DisplayName,
     Faction TargetFaction,
-    Instant? SpawnStart,
+    TimeSpan? DowntimeDuration,
     TimeSpan SpawnDuration,
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript,

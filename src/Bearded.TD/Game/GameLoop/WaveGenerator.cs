@@ -9,7 +9,6 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.WaveGeneration;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -40,8 +39,7 @@ sealed partial class WaveGenerator
     public WaveScript GenerateWave(
         WaveRequirements requirements,
         IEnumerable<SpawnLocation> availableSpawnLocations,
-        Faction targetFaction,
-        Instant currentTime)
+        Faction targetFaction)
     {
         var (enemyForm, enemiesPerSpawn, spawnLocations, spawnDuration) =
             generateWaveParameters(requirements, availableSpawnLocations);
@@ -52,7 +50,7 @@ sealed partial class WaveGenerator
             ids.GetNext<WaveScript>(),
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
             targetFaction,
-            requirements.DowntimeDuration == null ? null : currentTime + requirements.DowntimeDuration,
+            requirements.DowntimeDuration,
             spawnDuration,
             spawnLocations,
             enemyScript,

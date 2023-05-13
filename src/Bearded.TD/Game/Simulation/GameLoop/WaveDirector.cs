@@ -23,9 +23,9 @@ sealed class WaveDirector
         this.game = game;
     }
 
-    public void ExecuteScript(WaveScript script)
+    public void ExecuteScript(WaveScript script, Instant start)
     {
-        var wave = new SingleWaveDirector(game, script);
+        var wave = new SingleWaveDirector(game, script, start);
         waves.Add(wave);
         wave.Start();
     }
@@ -65,11 +65,11 @@ sealed class WaveDirector
 
         public bool Deleted => phase == Phase.Completed;
 
-        public SingleWaveDirector(GameState game, WaveScript script)
+        public SingleWaveDirector(GameState game, WaveScript script, Instant start)
         {
             this.game = game;
             this.script = script;
-            actualSpawnStart = script.SpawnStart;
+            actualSpawnStart = script.DowntimeDuration == null ? null : start + script.DowntimeDuration;
         }
 
         public void Start()
@@ -81,7 +81,7 @@ sealed class WaveDirector
                 new WaveScheduled(
                     script.Id,
                     script.DisplayName,
-                    script.SpawnStart,
+                    actualSpawnStart,
                     outstandingSpawnStartRequirements.Add,
                     () => canSummonNow));
             phase = Phase.Downtime;

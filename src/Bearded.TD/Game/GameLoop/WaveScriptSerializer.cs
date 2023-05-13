@@ -9,7 +9,6 @@ using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
 using JetBrains.Annotations;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -34,7 +33,7 @@ sealed class WaveScriptSerializer
         id = waveScript.Id;
         displayName = waveScript.DisplayName;
         targetFaction = waveScript.TargetFaction.Id;
-        spawnStart = waveScript.SpawnStart?.NumericValue ?? -1;
+        spawnStart = waveScript.DowntimeDuration?.NumericValue ?? -1;
         spawnDuration = waveScript.SpawnDuration.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
         enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
@@ -47,7 +46,7 @@ sealed class WaveScriptSerializer
             id,
             displayName,
             game.State.Factions.Resolve(targetFaction),
-            spawnStart < 0 ? null : new Instant(spawnStart),
+            spawnStart < 0 ? null : new TimeSpan(spawnStart),
             new TimeSpan(spawnDuration),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
             enemyScript.ToSpawnScript(game),
