@@ -19,7 +19,7 @@ readonly struct Temperature : IMeasure1F
 
     public override int GetHashCode() => NumericValue.GetHashCode();
 
-    public override string ToString() => $"{NumericValue}°";
+    public override string ToString() => $"{NumericValue:F1}°";
 
     public static bool operator ==(Temperature left, Temperature right) => left.Equals(right);
 

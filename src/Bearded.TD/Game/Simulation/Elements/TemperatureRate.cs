@@ -37,7 +37,15 @@ readonly struct TemperatureRate
     public static bool operator >=(TemperatureRate left, TemperatureRate right) =>
         left.NumericValue >= right.NumericValue;
 
+    public static TemperatureRate operator +(TemperatureRate left, TemperatureRate right) =>
+        new(left.NumericValue + right.NumericValue);
+
+    public static TemperatureRate operator -(TemperatureRate left, TemperatureRate right) =>
+        new(left.NumericValue - right.NumericValue);
+
     public static TemperatureRate operator *(float scalar, TemperatureRate rate) => new(scalar * rate.NumericValue);
+
+    public static TemperatureRate operator *(TemperatureRate rate, float scalar) => scalar * rate;
 
     public static TemperatureDifference operator *(TimeSpan duration, TemperatureRate rate) =>
         new((float) (duration.NumericValue * rate.NumericValue));
