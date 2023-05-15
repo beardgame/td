@@ -2,9 +2,14 @@
     id: "fire2-flameTrap-weapon",
     components: [
         {
-            id: "targetEnemiesInRange",
+            id: "range",
             parameters: {
                 range: 3,
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
                 coneOfFire: 10,
             }
         },

@@ -3,10 +3,15 @@
     components: [
         { id: "tags", parameters: { tags: [ "gun" ] } },
         {
-            id: "targetEnemiesInRange",
+            id: "range",
             parameters: {
                 range: 6,
-                minimumRange: 2.5,
+                minimumRange: 2.5
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
                 coneOfFire: 3,
             }
         },

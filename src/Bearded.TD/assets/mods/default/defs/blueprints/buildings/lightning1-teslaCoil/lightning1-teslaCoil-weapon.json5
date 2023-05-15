@@ -2,9 +2,15 @@
     id: "lightning1-teslaCoil-weapon",
     components: [
         {
-            id: "targetEnemiesInRange",
+            id: "range",
             parameters: {
                 range: 3,
+                type: "floodfill"
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
             }
         },
         {

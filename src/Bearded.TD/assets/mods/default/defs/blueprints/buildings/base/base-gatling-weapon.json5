@@ -3,9 +3,14 @@
     components: [
         { id: "tags", parameters: { tags: [ "gun", "dynamicFireRate" ] } },
         {
-            id: "targetEnemiesInRange",
+            id: "range",
             parameters: {
                 range: 2.5,
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
                 coneOfFire: 10
             }
         },
