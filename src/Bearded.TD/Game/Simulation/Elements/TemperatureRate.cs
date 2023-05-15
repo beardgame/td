@@ -13,6 +13,30 @@ readonly struct TemperatureRate
         NumericValue = value;
     }
 
+    public bool Equals(TemperatureRate other) => NumericValue.Equals(other.NumericValue);
+
+    public override bool Equals(object? obj) => obj is TemperatureRate other && Equals(other);
+
+    public override int GetHashCode() => NumericValue.GetHashCode();
+
+    public override string ToString() => $"{NumericValue}°/s";
+
+    public static bool operator ==(TemperatureRate left, TemperatureRate right) => left.Equals(right);
+
+    public static bool operator !=(TemperatureRate left, TemperatureRate right) => !left.Equals(right);
+
+    public static bool operator <(TemperatureRate left, TemperatureRate right) =>
+        left.NumericValue < right.NumericValue;
+
+    public static bool operator <=(TemperatureRate left, TemperatureRate right) =>
+        left.NumericValue <= right.NumericValue;
+
+    public static bool operator >(TemperatureRate left, TemperatureRate right) =>
+        left.NumericValue > right.NumericValue;
+
+    public static bool operator >=(TemperatureRate left, TemperatureRate right) =>
+        left.NumericValue >= right.NumericValue;
+
     public static TemperatureRate operator *(float scalar, TemperatureRate rate) => new(scalar * rate.NumericValue);
 
     public static TemperatureDifference operator *(TimeSpan duration, TemperatureRate rate) =>
