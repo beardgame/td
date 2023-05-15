@@ -49,6 +49,7 @@ static class BuildingFactory
         building.AddComponent(new StaticFootprintTileNotifier(footprint));
         building.AddComponent(new StatisticCollector());
         building.AddComponent(new TemperatureProperty());
+        building.AddComponent(new TemperatureBar()); // not alphabetic, saves an event
         building.AddComponent(new TileBasedVisibility());
         building.AddComponent(new EventReceiver<TakeHit>());
 #if DEBUG

@@ -10,4 +10,7 @@ readonly struct TemperatureDifference
     {
         NumericValue = value;
     }
+
+    public static float operator /(TemperatureDifference d1, TemperatureDifference d2) =>
+        d1.NumericValue / d2.NumericValue;
 }

@@ -42,4 +42,7 @@ readonly struct Temperature : IMeasure1F
 
     public static Temperature operator -(Temperature t, TemperatureDifference diff) =>
         new(t.NumericValue - diff.NumericValue);
+
+    public static TemperatureDifference operator -(Temperature t1, Temperature t2) =>
+        new(t1.NumericValue - t2.NumericValue);
 }
