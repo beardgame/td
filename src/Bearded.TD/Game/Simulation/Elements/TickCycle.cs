@@ -26,7 +26,7 @@ sealed class TickCycle
 
         while (game.Time - lastTick >= TickDuration)
         {
-            var now = game.Time + TickDuration;
+            var now = lastTick.Value + TickDuration;
             doTick(now);
             lastTick = now;
         }
