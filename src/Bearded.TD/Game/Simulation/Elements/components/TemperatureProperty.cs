@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Elements.events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
@@ -24,9 +25,20 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
         tickCycle?.Update();
     }
 
-    private void applyTick(Instant _)
+    private void applyTick(Instant now)
     {
+        applyChanges(now);
         applyDecay();
+    }
+
+    private void applyChanges(Instant now)
+    {
+        var @event = new PreviewTemperatureTick(now, TemperatureRate.Zero);
+        Events.Preview(ref @event);
+        if (@event.Rate != TemperatureRate.Zero)
+        {
+            Value += @event.Rate * TickDuration;
+        }
     }
 
     private void applyDecay()
