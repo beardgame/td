@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using System.Drawing;
+using System.Linq;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
@@ -41,8 +43,15 @@ sealed class CoreRenderers
             ConsoleBackground.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
         primitiveShader!.UseOnRenderer(ConsoleBackgroundRenderer);
 
+        var supportedCharacters = Enumerable
+            // ACII
+            .Range(' ', '~' - ' ').Select(i => (char) i)
+            // Degree symbol
+            .Append('°')
+            .ToImmutableArray();
+
         var (consoleFontTextureData, consoleFont) = // used to be inconsolata
-            FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), 2);
+            FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), supportedCharacters, 2);
         // TODO: premultiply console font texture data!
         var consoleFontTexture = Texture.From(consoleFontTextureData, t =>
         {
@@ -57,7 +66,7 @@ sealed class CoreRenderers
         uvColorShader!.UseOnRenderer(ConsoleFontRenderer);
 
         var (uiFontTextureData, uiFont) = // used to be helveticaneue
-            FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), 2);
+            FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), supportedCharacters, 2);
         // TODO: premultiply console font texture data!
         var uiFontTexture = Texture.From(uiFontTextureData, t =>
         {
