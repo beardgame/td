@@ -1,9 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -18,52 +15,38 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 [Component("targetEnemiesInRange")]
 sealed partial class TargetEnemiesInRange
     : Component<TargetEnemiesInRange.IParameters>,
-        IWeaponRangeDrawer,
         ITargeter<IPositionable>,
         IWeaponAimer,
         IWeaponTrigger,
-        IWeaponRange,
-        IListener<DrawComponents>,
         IListener<TargetingModeChanged>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        [Modifiable(Type = AttributeType.Range)] Unit Range { get; }
-        Unit MinimumRange { get; }
         Angle? ConeOfFire { get; }
         [Modifiable(0.2)] TimeSpan NoTargetIdleInterval { get; }
-        [Modifiable(1)] TimeSpan ReCalculateTilesInRangeInterval { get; }
     }
 
-    private PassabilityLayer passabilityLayer = null!;
-    private TileRangeDrawer tileRangeDrawer = null!;
     private IWeaponState weapon = null!;
+    private IWeaponRange range = null!;
     private IProjectileEmitter? emitter;
 
     // mutable state
     private Instant endOfIdleTime;
-    private Instant nextTileInRangeRecalculationTime;
 
-    private Angle? currentMaxTurningAngle;
-    private Unit currentRange;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
-
     private readonly Positionable targetPosition = new();
     private GameObject? target;
     public IPositionable? Target => target == null ? null : targetPosition;
 
-    private bool skipDrawThisFrame;
-
     public bool TriggerPulled { get; private set; }
     public Direction2 AimDirection { get; private set; }
-
-    public Unit Range => currentRange;
 
     public TargetEnemiesInRange(IParameters parameters) : base(parameters) {}
 
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
+        ComponentDependencies.Depend<IWeaponRange>(Owner, Events, r => range = r);
         ComponentDependencies.Depend<IProjectileEmitter>(Owner, Events, e => emitter = e);
     }
 
@@ -73,18 +56,12 @@ sealed partial class TargetEnemiesInRange
 
         AimDirection = weapon.NeutralDirection;
 
-        passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
-        tileRangeDrawer = new TileRangeDrawer(
-            Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
-
-        Events.Subscribe<DrawComponents>(this);
-        Events.Subscribe<TargetingModeChanged>(this);
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe<DrawComponents>(this);
-        Events.Unsubscribe<TargetingModeChanged>(this);
+        Events.Unsubscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -110,7 +87,7 @@ sealed partial class TargetEnemiesInRange
 
     private void tryShootingAtTarget()
     {
-        ensureTilesInRangeUpToDate();
+        tilesInRange = range.GetTilesInRange();
         ensureTargetValid();
 
         if (target == null)

@@ -2,9 +2,14 @@
     id: "kinetic1-stomp-weapon",
     components: [
         {
+            id: "range",
+            parameters: {
+                range: 1.5,
+            }
+        },
+        {
             id: "targetEnemiesInRange",
             parameters: {
-                range: 1.5
             }
         },
         {
