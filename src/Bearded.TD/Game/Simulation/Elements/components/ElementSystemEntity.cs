@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Constants.Game.Elements;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Elements;
@@ -15,25 +14,20 @@ interface IElementSystemEntity
 sealed class ElementSystemEntity : Component, IElementSystemEntity
 {
     private readonly Dictionary<Type, IElementalPhenomenon.IScope> effectScopes = new();
-    private Instant? lastTick;
+    private TickCycle? tickCycle;
 
     protected override void OnAdded() { }
+
+    public override void Activate()
+    {
+        base.Activate();
+        tickCycle = new TickCycle(Owner.Game, applyTicks);
+    }
 
     public override void Update(TimeSpan elapsedTime)
     {
         if (effectScopes.Count == 0) return;
-        if (lastTick is null)
-        {
-            lastTick = Owner.Game.Time;
-            return;
-        }
-
-        while (Owner.Game.Time - lastTick >= TickDuration)
-        {
-            var now = Owner.Game.Time + TickDuration;
-            applyTicks(now);
-            lastTick = now;
-        }
+        tickCycle?.Update();
     }
 
     private void applyTicks(Instant now)

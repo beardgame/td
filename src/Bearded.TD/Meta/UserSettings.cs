@@ -55,6 +55,12 @@ sealed partial class UserSettings
     {
         [DiscoverableSelectSetting(DisplayName = "UI scale", Options = new object[] { 0.75f, 1f, 1.25f, 1.5f, 2f })]
         public float UIScale = 1f;
+
+        [DiscoverableBoolSetting(DisplayName = "Always show health bars")]
+        public bool AlwaysShowHealth = false;
+
+        [DiscoverableBoolSetting(DisplayName = "Always show temperature bars")]
+        public bool AlwaysShowTemperature = false;
     }
 
     public sealed class GraphicsSettings

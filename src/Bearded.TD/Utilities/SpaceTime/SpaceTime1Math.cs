@@ -1,3 +1,5 @@
+using System;
+
 namespace Bearded.TD.Utilities.SpaceTime;
 
 static class SpaceTime1Math
@@ -9,6 +11,8 @@ static class SpaceTime1Math
         left.NumericValue >= right.NumericValue ? left : right;
 
     public static T Clamp<T>(T val, T min, T max) where T : IMeasure1 => Min(Max(min, val), max);
+
+    public static int Sign<T>(T val) where T : IMeasure1 => Math.Sign(val.NumericValue);
 }
 
 static class SpaceTime1MathF
@@ -20,6 +24,8 @@ static class SpaceTime1MathF
         left.NumericValue >= right.NumericValue ? left : right;
 
     public static T Clamp<T>(T val, T min, T max) where T : IMeasure1F => Min(Max(min, val), max);
+
+    public static int Sign<T>(T val) where T : IMeasure1F => MathF.Sign(val.NumericValue);
 }
 
 static class DiscreteSpaceTime1Math
@@ -31,4 +37,6 @@ static class DiscreteSpaceTime1Math
         left.NumericValue >= right.NumericValue ? left : right;
 
     public static T Clamp<T>(T val, T min, T max) where T : IDiscreteMeasure1 => Min(Max(min, val), max);
+
+    public static int Sign<T>(T val) where T : IDiscreteMeasure1 => Math.Sign(val.NumericValue);
 }

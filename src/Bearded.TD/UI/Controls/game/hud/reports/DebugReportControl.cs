@@ -10,6 +10,7 @@ sealed class DebugReportControl : ReportControl
     private readonly IDebugReport report;
 
     private readonly Binding<string> id = new();
+    private readonly Binding<string> temperature = new();
 
     public override double Height { get; }
 
@@ -20,13 +21,15 @@ sealed class DebugReportControl : ReportControl
         Add(new BackgroundBox(Color.Purple * 0.5f));
         var column = this.BuildFixedColumn();
         column
-            .AddValueLabel("Object id", id);
+            .AddValueLabel("Object id", id)
+            .AddValueLabel("Temperature", temperature);
         Height = column.Height;
     }
 
     public override void Update()
     {
         id.SetFromSource(report.Id);
+        temperature.SetFromSource(report.Temperature);
     }
 
     public override void Dispose() {}

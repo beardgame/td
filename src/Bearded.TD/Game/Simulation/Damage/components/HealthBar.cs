@@ -3,6 +3,7 @@ using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -40,7 +41,7 @@ sealed class HealthBar : Component, IListener<DrawComponents>
 
         // ReSharper disable once CompareOfFloatsByEqualityOperator
         // given the implementation of current/total, this is guaranteed by IEEE754
-        if (p == 1)
+        if (p == 1 && !UserSettings.Instance.UI.AlwaysShowHealth)
             return;
 
         var healthColor = Color.FromHSVA(Interpolate.Lerp(Color.Red.Hue, Color.Green.Hue, p), .8f, .8f);
