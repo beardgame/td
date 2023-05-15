@@ -1,16 +1,17 @@
 {
-    id: "gas-cave",
+    id: "ore-cave",
     behaviors: [
+        { id: "setTiles", parameters: { type: "wall" } },
+        { id: "selectRandom", parameters: { percentage: 0.8 } },
         { id: "setTiles", parameters: { type: "floor" } },
-        { id: "selectRandom", parameters: { percentage: 0.2 } },
-        { id: "setTiles", parameters: { type: "crevice" } },
         {
             id: "spawnGameObject",
             parameters: {
-                blueprint: "gas-pocket",
+                count: 4,
+                blueprint: "ore-vein",
                 placement: "randomTile",
                 alignment: "randomlyInTile",
-                z: 0.5
+                z: 0.01
             }
         }
     ]

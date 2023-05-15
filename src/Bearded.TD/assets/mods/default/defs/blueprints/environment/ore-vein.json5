@@ -1,0 +1,16 @@
+﻿{
+  id: "ore-vein",
+  components: [
+    { id: "currentTileNotifier" },
+    { id: "physicalTilePresence" },
+    { id: "conductive" },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "default.particle.ore-veins",
+        color: "FFC0C0C0",
+        size: 1.5,
+      }
+    },
+  ]
+}

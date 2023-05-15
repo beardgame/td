@@ -24,8 +24,11 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
     public override void Generate(NodeGenerationContext context)
     {
-        var location = getLocation(context);
-        context.Content.PlaceGameObject(Parameters.Blueprint, location, Direction2.Zero);
+        foreach (var _ in Enumerable.Range(0, Parameters.Count ?? 1))
+        {
+            var location = getLocation(context);
+            context.Content.PlaceGameObject(Parameters.Blueprint, location, Direction2.Zero);
+        }
     }
 
     private Position3 getLocation(NodeGenerationContext context)
@@ -70,7 +73,7 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
     [UsedImplicitly]
     public sealed record BehaviorParameters(
-        IGameObjectBlueprint Blueprint, PlacementMode Placement, AlignmentMode Alignment, Unit Z);
+        IGameObjectBlueprint Blueprint, PlacementMode Placement, AlignmentMode Alignment, Unit Z, int? Count);
 
     public enum PlacementMode
     {
