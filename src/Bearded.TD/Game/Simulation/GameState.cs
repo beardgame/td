@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -49,6 +50,7 @@ sealed class GameState
     public FluidLayer FluidLayer { get; }
     public ObjectLayer PhysicsLayer { get; }
     public TargetLayer TargetLayer { get; }
+    public ConductiveLayer ConductiveLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
@@ -75,6 +77,7 @@ sealed class GameState
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
         PhysicsLayer = new PhysicsLayer();
         TargetLayer = new TargetLayer();
+        ConductiveLayer = new ConductiveLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
