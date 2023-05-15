@@ -31,13 +31,13 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
 
     private void applyDecay()
     {
-        if (Value > Temperature.Zero)
+        if (Value > AmbientTemperature)
         {
-            Value = SpaceTime1MathF.Max(Temperature.Zero, Value - TickDuration * TemperatureDecayRate);
+            Value = SpaceTime1MathF.Max(AmbientTemperature, Value - TickDuration * TemperatureDecayRate);
         }
-        if (Value < Temperature.Zero)
+        if (Value < AmbientTemperature)
         {
-            Value = SpaceTime1MathF.Min(Temperature.Zero, Value + TickDuration * TemperatureDecayRate);
+            Value = SpaceTime1MathF.Min(AmbientTemperature, Value + TickDuration * TemperatureDecayRate);
         }
     }
 }
