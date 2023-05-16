@@ -14,6 +14,7 @@ readonly record struct Capsule(Position3 Point1, Position3 Point2, Unit Radius)
         var pb = Point2.NumericValue;
         var ra = Radius.NumericValue;
 
+        // source: https://iquilezles.org/articles/intersectors/
         var ba = pb - pa;
         var oa = ro - pa;
         var baba = Vector3.Dot(ba, ba);
