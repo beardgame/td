@@ -93,6 +93,14 @@
             parameters: { sound: "wave-complete" },
         },
         {
+            id: "loopGlobalSound",
+            parameters: { sound: "ambience-loop" },
+        },
+        {
+            id: "loopGlobalSoundDuringWaves",
+            parameters: { sound: "drums" },
+        },
+        {
             id: "contributeNodes",
             parameters: {
                 nodes: [
