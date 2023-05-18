@@ -1,3 +1,4 @@
 {
     id: "wave-start",
+    gain: 0.5,
 }
