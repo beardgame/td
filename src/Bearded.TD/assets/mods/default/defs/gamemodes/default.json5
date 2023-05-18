@@ -105,7 +105,8 @@
             parameters: {
                 nodes: [
                     { id: "default.base", fixedNumber: 1 },
-                    { id: "default.gas-cave", fixedNumber: 2 },
+                    { id: "default.gas-cave", weight: 0.4, minNumber: 2 },
+                    { id: "default.ore-cave", weight: 0.4, minNumber: 2 },
                     { nodes: [
                         { id: "default.empty", weight: 1 },
                         { id: "default.ring", weight: 1, minNumber: 1 },
