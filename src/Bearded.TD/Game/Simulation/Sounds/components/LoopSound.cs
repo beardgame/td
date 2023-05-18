@@ -30,7 +30,7 @@ sealed class LoopSound : Component<LoopSound.IParameters>, IListener<ObjectDelet
 
     private void startSound()
     {
-        soundLoop = Owner.Game.Meta.SoundScape.LoopSoundAt(Parameters.Sound.Sound, Owner.Position);
+        soundLoop = Owner.Game.Meta.SoundScape.LoopSoundAt(Parameters.Sound, Owner.Position);
     }
 
     public void HandleEvent(ObjectDeleting @event)

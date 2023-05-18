@@ -9,6 +9,7 @@ namespace Bearded.TD.Content.Serialization.Models;
 sealed class SoundEffect : IConvertsTo<Content.Models.SoundEffect, (FileInfo, SoundLoader)>
 {
     public string? Id { get; set; }
+    public float? Gain { get; set; }
     public PitchRange? PitchRange { get; set; }
 
     public Content.Models.SoundEffect ToGameModel(ModMetadata modMetadata, (FileInfo, SoundLoader) resolvers)

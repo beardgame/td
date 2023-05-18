@@ -41,35 +41,46 @@ sealed class SoundScape : ISoundScape
         ALListener.Position = position.NumericValue;
     }
 
-    public void PlayGlobalSound(ISound sound)
+    public void PlayGlobalSound(ISound sound, float? gain)
     {
         if (!sourcePool.TryGetSource(out var source))
         {
             return;
         }
 
-        playSound(source, sound, Position3.Zero, positionIsRelative: true);
+        playSound(source, sound, Position3.Zero, gain: gain, positionIsRelative: true);
     }
 
-    public void PlaySoundAt(ISound sound, Position3 position, float? pitch)
+    public void PlaySoundAt(ISound sound, Position3 position, float? gain, float? pitch)
     {
         if (!sourcePool.TryGetSource(out var source))
         {
             return;
         }
 
-        playSound(source, sound, position, pitch: pitch);
+        playSound(source, sound, position, gain: gain, pitch: pitch);
     }
 
-    public ISoundLoop LoopSoundAt(ISound sound, Position3 position)
+    public ISoundLoop LoopGlobalSound(ISound sound, float? gain)
     {
         if (!sourcePool.TryGetSource(out var source))
         {
             return new NoOpSoundLoop();
         }
 
-        var instance = playSound(source, sound, position, looping: true);
+        var instance = playSound(source, sound, Position3.Zero, gain: gain, positionIsRelative: true, looping: true);
         return new SoundLoop(this, instance);
+    }
+
+    public IPositionedSoundLoop LoopSoundAt(ISound sound, Position3 position, float? gain)
+    {
+        if (!sourcePool.TryGetSource(out var source))
+        {
+            return new NoOpSoundLoop();
+        }
+
+        var instance = playSound(source, sound, position, gain: gain, looping: true);
+        return new PositionedSoundLoop(this, instance);
     }
 
     private SoundInstance playSound(
@@ -77,10 +88,11 @@ sealed class SoundScape : ISoundScape
         ISound sound,
         Position3 position,
         bool looping = false,
+        float? gain = null,
         float? pitch = null,
         bool positionIsRelative = false)
     {
-        configureSource(source, position, looping, pitch, positionIsRelative);
+        configureSource(source, position, looping, gain, pitch, positionIsRelative);
 
         var buffer = sound.ToBuffer();
         source.QueueBuffer(buffer);
@@ -92,16 +104,18 @@ sealed class SoundScape : ISoundScape
     }
 
     private static void configureSource(
-        Source source, Position3 position, bool looping, float? pitch, bool positionIsRelative)
+        Source source, Position3 position, bool looping, float? gain, float? pitch, bool positionIsRelative)
     {
         source.Position = position.NumericValue;
         source.PositionIsRelative = positionIsRelative;
         source.Looping = looping;
+        source.Gain = gain ?? 1;
         source.Pitch = pitch ?? 1;
     }
 
     public void Dispose()
     {
+        soundInstances.Clear();
         sourcePool.Dispose();
     }
 
@@ -111,26 +125,31 @@ sealed class SoundScape : ISoundScape
         return new SoundScape(sourcePool);
     }
 
-    private sealed class SoundLoop : ISoundLoop
+    private class SoundLoop : ISoundLoop
     {
         private readonly SoundScape soundScape;
-        private readonly SoundInstance sound;
+        protected SoundInstance Sound { get; }
 
         public SoundLoop(SoundScape soundScape, SoundInstance sound)
         {
             this.soundScape = soundScape;
-            this.sound = sound;
-        }
-
-        public void MoveTo(Position3 position)
-        {
-            sound.Source.Position = position.NumericValue;
+            Sound = sound;
         }
 
         public void Stop()
         {
-            sound.Source.Stop();
-            soundScape.disposeSound(sound);
+            Sound.Source.Stop();
+            soundScape.disposeSound(Sound);
+        }
+    }
+
+    private sealed class PositionedSoundLoop : SoundLoop, IPositionedSoundLoop
+    {
+        public PositionedSoundLoop(SoundScape soundScape, SoundInstance sound) : base(soundScape, sound) { }
+
+        public void MoveTo(Position3 position)
+        {
+            Sound.Source.Position = position.NumericValue;
         }
     }
 

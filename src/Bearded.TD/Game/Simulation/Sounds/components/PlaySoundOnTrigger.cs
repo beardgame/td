@@ -27,8 +27,7 @@ sealed class PlaySoundOnTrigger : Component<PlaySoundOnTrigger.IParameters>
 
     private void playSound()
     {
-        Owner.Game.Meta.SoundScape.PlaySoundAt(
-            Parameters.Sound.Sound, Owner.Position, Parameters.Sound.PitchRange.ChooseRandomPitch());
+        Owner.Game.Meta.SoundScape.PlaySoundAt(Parameters.Sound, Owner.Position);
     }
 
     public override void OnRemoved()

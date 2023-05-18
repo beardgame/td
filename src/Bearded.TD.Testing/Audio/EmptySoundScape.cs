@@ -9,11 +9,13 @@ sealed class EmptySoundScape : ISoundScape
 
     public void SetListenerPosition(Position3 position) {}
 
-    public void PlayGlobalSound(ISound sound) {}
+    public void PlayGlobalSound(ISound sound, float? gain) {}
 
-    public void PlaySoundAt(ISound sound, Position3 position, float? pitch) {}
+    public void PlaySoundAt(ISound sound, Position3 position, float? gain, float? pitch) {}
 
-    public ISoundLoop LoopSoundAt(ISound sound, Position3 position) => new NoOpSoundLoop();
+    public ISoundLoop LoopGlobalSound(ISound sound, float? gain) => new NoOpSoundLoop();
+
+    public IPositionedSoundLoop LoopSoundAt(ISound sound, Position3 position, float? gain) => new NoOpSoundLoop();
 
     public void Dispose() {}
 }

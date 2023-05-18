@@ -16,7 +16,7 @@ sealed class LoopSoundWhileShooting : Component<LoopSoundWhileShooting.IParamete
         ISoundEffect Sound { get; }
     }
 
-    private ISoundLoop? soundLoop;
+    private IPositionedSoundLoop? soundLoop;
     private IWeaponTrigger? trigger;
 
     public LoopSoundWhileShooting(IParameters parameters) : base(parameters) { }
@@ -43,7 +43,7 @@ sealed class LoopSoundWhileShooting : Component<LoopSoundWhileShooting.IParamete
         soundLoop?.MoveTo(Owner.Position);
 
         var triggerActive = trigger?.TriggerPulled ?? false;
-        var soundActive = soundLoop is { };
+        var soundActive = soundLoop is not null;
 
         switch (triggerActive, soundActive)
         {
@@ -59,7 +59,7 @@ sealed class LoopSoundWhileShooting : Component<LoopSoundWhileShooting.IParamete
     private void startSound()
     {
         State.Satisfies(soundLoop is null);
-        soundLoop = Owner.Game.Meta.SoundScape.LoopSoundAt(Parameters.Sound.Sound, Owner.Position);
+        soundLoop = Owner.Game.Meta.SoundScape.LoopSoundAt(Parameters.Sound, Owner.Position);
     }
 
     private void stopSound()

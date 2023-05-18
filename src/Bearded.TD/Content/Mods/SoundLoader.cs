@@ -23,6 +23,7 @@ sealed class SoundLoader
         return new SoundEffect(
             ModAwareId.FromNameInMod(jsonModel.Id ?? throw new InvalidDataException("Missing ID"), meta),
             Sound.FromWav(wavFile.FullName),
+            jsonModel.Gain ?? 1,
             jsonModel.PitchRange ?? PitchRange.One);
     }
 }

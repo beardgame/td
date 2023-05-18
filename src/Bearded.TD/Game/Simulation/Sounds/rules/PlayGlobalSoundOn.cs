@@ -32,7 +32,7 @@ abstract class PlayGlobalSoundOn<TParameters, TEvent> : GameRule<TParameters>
         public void HandleEvent(TEvent @event)
         {
             var soundEffect = getSoundEffect();
-            soundScape.PlayGlobalSound(soundEffect.Sound);
+            soundScape.PlayGlobalSound(soundEffect);
         }
     }
 }

@@ -21,7 +21,7 @@ sealed class PlaySoundOnActivate : Component<PlaySoundOnActivate.IParameters>
 
     public override void Activate()
     {
-        Owner.Game.Meta.SoundScape.PlaySoundAt(Parameters.Sound.Sound, Owner.Position);
+        Owner.Game.Meta.SoundScape.PlaySoundAt(Parameters.Sound, Owner.Position);
     }
 
     public override void Update(TimeSpan elapsedTime)
