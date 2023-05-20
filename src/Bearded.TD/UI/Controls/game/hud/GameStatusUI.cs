@@ -2,6 +2,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
@@ -20,7 +21,7 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
     private Faction faction = null!;
     private FactionResources? resources;
 
-    private Id<WaveScript> currentWave;
+    private Id<Wave> currentWave;
     private Instant? waveSpawnStart;
     private Func<bool>? canSummonCurrentWaveNow;
 
@@ -76,7 +77,7 @@ sealed class GameStatusUI : IListener<WaveScheduled>, IListener<WaveStarted>, IL
             return;
         }
 
-        currentWave = Id<WaveScript>.Invalid;
+        currentWave = Id<Wave>.Invalid;
         WaveName = null;
         waveSpawnStart = null;
         canSummonCurrentWaveNow = null;

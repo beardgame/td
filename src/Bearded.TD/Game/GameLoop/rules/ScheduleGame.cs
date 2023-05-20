@@ -21,13 +21,13 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         {
             var (targetFaction, chaptersPerGame, wavesPerChapter, elements, enemies) = Parameters;
             var waveGenerator = new WaveGenerator(
-                context.GameState.Meta.Ids,
                 enemies.CastArray<ISpawnableEnemy>(),
                 context.Blueprints.Modules.All,
                 context.Seed,
                 context.Logger);
             var waveScheduler = new WaveScheduler(
                 context.GameState,
+                context.GameState.Meta.Ids,
                 commandDispatcher,
                 waveGenerator,
                 context.Factions.Find(targetFaction),

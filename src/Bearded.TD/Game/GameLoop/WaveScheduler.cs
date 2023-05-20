@@ -5,7 +5,9 @@ using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -16,23 +18,26 @@ namespace Bearded.TD.Game.GameLoop;
 sealed class WaveScheduler : IListener<WaveEnded>
 {
     private readonly GameState game;
+    private readonly IdManager ids;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     private readonly WaveGenerator waveGenerator;
     private readonly Faction targetFaction;
     private readonly Random random;
 
-    private Id<WaveScript>? activeWave;
+    private Wave? activeWave;
 
     public event VoidEventHandler? WaveEnded;
 
     public WaveScheduler(
         GameState game,
+        IdManager ids,
         ICommandDispatcher<GameInstance> commandDispatcher,
         WaveGenerator waveGenerator,
         Faction targetFaction,
         int seed)
     {
         this.game = game;
+        this.ids = ids;
         this.commandDispatcher = commandDispatcher;
         this.waveGenerator = waveGenerator;
         this.targetFaction = targetFaction;
@@ -56,8 +61,10 @@ sealed class WaveScheduler : IListener<WaveEnded>
 
         var availableSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToImmutableArray();
         var script = waveGenerator.GenerateWave(requirements, availableSpawnLocations, targetFaction);
-        activeWave = script.Id;
-        commandDispatcher.Dispatch(ExecuteWaveScript.Command(game, script, game.Time));
+        var spawnedObjectIds = ids.GetBatch<GameObject>(script.EnemyScript.SpawnEvents.Length);
+        var wave = new Wave(ids.GetNext<Wave>(), script, spawnedObjectIds, game.Time);
+        activeWave = wave;
+        commandDispatcher.Dispatch(ExecuteWave.Command(game, wave));
 
         WaveEnded += onWaveEnd;
 
@@ -70,7 +77,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
 
     public void HandleEvent(WaveEnded @event)
     {
-        if (@event.WaveId != activeWave)
+        if (@event.WaveId != activeWave?.Id)
         {
             return;
         }

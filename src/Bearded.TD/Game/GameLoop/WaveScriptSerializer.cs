@@ -16,46 +16,39 @@ namespace Bearded.TD.Game.GameLoop;
 
 sealed class WaveScriptSerializer
 {
-    private Id<WaveScript> id;
     private string displayName = "";
     private Id<Faction> targetFaction;
     private double spawnStart;
     private double spawnDuration;
     private Id<SpawnLocation>[] spawnLocations = Array.Empty<Id<SpawnLocation>>();
     private readonly EnemySpawnScriptSerializer enemyScript = new();
-    private Id<GameObject>[] spawnedUnitIds = Array.Empty<Id<GameObject>>();
 
     [UsedImplicitly]
     public WaveScriptSerializer() {}
 
     public WaveScriptSerializer(WaveScript waveScript)
     {
-        id = waveScript.Id;
         displayName = waveScript.DisplayName;
         targetFaction = waveScript.TargetFaction.Id;
         spawnStart = waveScript.DowntimeDuration?.NumericValue ?? -1;
         spawnDuration = waveScript.SpawnDuration.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
         enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
-        spawnedUnitIds = waveScript.SpawnedUnitIds.ToArray();
     }
 
     public WaveScript ToWaveScript(GameInstance game)
     {
         return new WaveScript(
-            id,
             displayName,
             game.State.Factions.Resolve(targetFaction),
             spawnStart < 0 ? null : new TimeSpan(spawnStart),
             new TimeSpan(spawnDuration),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
-            enemyScript.ToSpawnScript(game),
-            spawnedUnitIds.ToImmutableArray());
+            enemyScript.ToSpawnScript(game));
     }
 
     public void Serialize(INetBufferStream stream)
     {
-        stream.Serialize(ref id);
         stream.Serialize(ref displayName);
         stream.Serialize(ref targetFaction);
         stream.Serialize(ref spawnStart);
@@ -66,11 +59,6 @@ sealed class WaveScriptSerializer
             stream.Serialize(ref spawnLocations[i]);
         }
         enemyScript.Serialize(stream);
-        stream.SerializeArrayCount(ref spawnedUnitIds);
-        for (var i = 0; i < spawnedUnitIds.Length; i++)
-        {
-            stream.Serialize(ref spawnedUnitIds[i]);
-        }
     }
 
     private sealed class EnemySpawnScriptSerializer

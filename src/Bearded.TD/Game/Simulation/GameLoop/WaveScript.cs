@@ -8,11 +8,9 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
 sealed record WaveScript(
-    Id<WaveScript> Id,
     string DisplayName,
     Faction TargetFaction,
     TimeSpan? DowntimeDuration,
     TimeSpan SpawnDuration,
     ImmutableArray<SpawnLocation> SpawnLocations,
-    EnemySpawnScript EnemyScript,
-    ImmutableArray<Id<GameObject>> SpawnedUnitIds);
+    EnemySpawnScript EnemyScript);

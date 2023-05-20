@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
@@ -23,11 +24,11 @@ sealed class WaveDirector
         this.game = game;
     }
 
-    public void ExecuteScript(WaveScript script, Instant start)
+    public void ExecuteWave(Wave wave)
     {
-        var wave = new SingleWaveDirector(game, script, start);
-        waves.Add(wave);
-        wave.Start();
+        var waveDirector = new SingleWaveDirector(game, wave);
+        waves.Add(waveDirector);
+        waveDirector.Start();
     }
 
     public void Update()
@@ -51,7 +52,7 @@ sealed class WaveDirector
         }
 
         private readonly GameState game;
-        private readonly WaveScript script;
+        private readonly Wave wave;
         private readonly Queue<EnemySpawn> spawnQueue = new();
         private readonly HashSet<GameObject> spawnedUnits = new();
         private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
@@ -59,17 +60,19 @@ sealed class WaveDirector
         private Phase phase;
 
         private Instant? actualSpawnStart;
-        private Instant? actualSpawnEnd => actualSpawnStart + script.SpawnDuration;
+        private Instant? actualSpawnEnd => actualSpawnStart + wave.Script.SpawnDuration;
 
         private bool canSummonNow => phase == Phase.Downtime && outstandingSpawnStartRequirements.Count == 0;
 
         public bool Deleted => phase == Phase.Completed;
 
-        public SingleWaveDirector(GameState game, WaveScript script, Instant start)
+        public SingleWaveDirector(GameState game, Wave wave)
         {
             this.game = game;
-            this.script = script;
-            actualSpawnStart = script.DowntimeDuration == null ? null : start + script.DowntimeDuration;
+            this.wave = wave;
+            actualSpawnStart = wave.Script.DowntimeDuration == null
+                ? null
+                : wave.DowntimeStart + wave.Script.DowntimeDuration;
         }
 
         public void Start()
@@ -79,29 +82,29 @@ sealed class WaveDirector
             game.Meta.Events.Subscribe<WaveTimerSkipRequested>(this);
             game.Meta.Events.Send(
                 new WaveScheduled(
-                    script.Id,
-                    script.DisplayName,
+                    wave.Id,
+                    wave.Script.DisplayName,
                     actualSpawnStart,
                     outstandingSpawnStartRequirements.Add,
                     () => canSummonNow));
             phase = Phase.Downtime;
-            foreach (var location in script.SpawnLocations)
+            foreach (var location in wave.Script.SpawnLocations)
             {
                 location.UpdateSpawnTile();
-                location.AssignWave(script.Id);
+                location.AssignWave(wave.Id);
             }
         }
 
         private void fillSpawnQueue()
         {
             var idIndex = 0;
-            foreach (var spawnEvent in script.EnemyScript.SpawnEvents)
+            foreach (var spawnEvent in wave.Script.EnemyScript.SpawnEvents)
             {
-                foreach (var loc in script.SpawnLocations)
+                foreach (var loc in wave.Script.SpawnLocations)
                 {
                     spawnQueue.Enqueue(
                         new EnemySpawn(
-                            script.SpawnedUnitIds[idIndex++],
+                            wave.SpawnedObjectIds[idIndex++],
                             spawnEvent.EnemyForm,
                             loc,
                             spawnEvent.TimeOffset));
@@ -151,7 +154,7 @@ sealed class WaveDirector
 
         private void finishWave()
         {
-            game.Meta.Events.Send(new WaveEnded(script.Id, script.TargetFaction));
+            game.Meta.Events.Send(new WaveEnded(wave.Id, wave.Script.TargetFaction));
             game.Meta.Events.Unsubscribe<EnemyKilled>(this);
             game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
             phase = Phase.Completed;
@@ -173,7 +176,7 @@ sealed class WaveDirector
         private void startSpawningPhase()
         {
             phase = Phase.Spawning;
-            game.Meta.Events.Send(new WaveStarted(script.Id, script.DisplayName));
+            game.Meta.Events.Send(new WaveStarted(wave.Id, wave.Script.DisplayName));
             updateSpawnQueue();
         }
 

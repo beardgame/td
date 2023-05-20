@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -20,7 +21,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     private const double buildingPenalty = 1_000;
 
     private readonly Tile tile;
-    private readonly HashSet<Id<WaveScript>> assignedWaves = new();
+    private readonly HashSet<Id<Wave>> assignedWaves = new();
     private PassabilityLayer passability = null!;
     private VisibilityLayer visibility = null!;
     private BuildingLayer buildings = null!;
@@ -143,7 +144,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
         return null;
     }
 
-    public void AssignWave(Id<WaveScript> wave)
+    public void AssignWave(Id<Wave> wave)
     {
         State.Satisfies(IsAwake);
         assignedWaves.Add(wave);
