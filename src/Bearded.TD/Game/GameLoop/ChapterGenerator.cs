@@ -11,20 +11,23 @@ namespace Bearded.TD.Game.GameLoop;
 sealed class ChapterGenerator
 {
     private readonly ImmutableArray<Element> elements;
-    private readonly Random random;
+    private readonly int seed;
 
     public ChapterGenerator(ImmutableArray<Element> elements, int seed)
     {
         this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Force) : elements;
-        random = new Random(seed);
+        this.seed = seed;
     }
 
     public ChapterScript GenerateChapter(ChapterRequirements requirements, ChapterScript? previousChapter)
     {
+        // Ensure that a change in requirements always leads to a (very) different outcome.
+        var random = new Random(seed ^ requirements.GetHashCode());
+
         return new ChapterScript(
             requirements.ChapterNumber,
             generateWaveDescriptions(requirements.Waves),
-            chooseChapterElements(previousChapter));
+            chooseChapterElements(previousChapter, random));
     }
 
     private ImmutableArray<WaveDescription> generateWaveDescriptions(ImmutableArray<double> waveThreats)
@@ -34,13 +37,13 @@ sealed class ChapterGenerator
             .ToImmutableArray();
     }
 
-    private ElementalTheme chooseChapterElements(ChapterScript? previousChapter)
+    private ElementalTheme chooseChapterElements(ChapterScript? previousChapter, Random random)
     {
         // TODO: this is super hardcoded and ugly; needs to be moved to a more generic system loaded from mod files
         if (previousChapter is not { } prevChapter)
         {
             // Always start the first wave with force and a random accent element. After that, everything goes.
-            return new ElementalTheme(Element.Force, chooseAccentElement(Element.Force));
+            return new ElementalTheme(Element.Force, chooseAccentElement(Element.Force, random));
         }
 
         const int maxAttempts = 5;
@@ -48,7 +51,7 @@ sealed class ChapterGenerator
         for (var i = 0; i < maxAttempts; i++)
         {
             var primaryElement = elements.RandomElement(random);
-            candidate = new ElementalTheme(primaryElement, chooseAccentElement(primaryElement));
+            candidate = new ElementalTheme(primaryElement, chooseAccentElement(primaryElement, random));
             if (candidate.PrimaryElement != prevChapter.Elements.PrimaryElement &&
                 candidate.AccentElement != prevChapter.Elements.AccentElement)
             {
@@ -59,7 +62,7 @@ sealed class ChapterGenerator
         return candidate!;
     }
 
-    private Element chooseAccentElement(Element primaryElement)
+    private Element chooseAccentElement(Element primaryElement, Random random)
     {
         var otherElements = elements.WhereNot(e => e == primaryElement).ToImmutableArray();
         return otherElements.IsEmpty ? primaryElement : otherElements.RandomElement(random);
