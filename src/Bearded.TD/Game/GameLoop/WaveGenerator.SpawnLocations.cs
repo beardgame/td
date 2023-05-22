@@ -11,7 +11,7 @@ namespace Bearded.TD.Game.GameLoop;
 sealed partial class WaveGenerator
 {
     private ImmutableArray<SpawnLocation> chooseSpawnLocations(
-        int enemyCount, IEnumerable<SpawnLocation> availableSpawnLocations)
+        int enemyCount, IEnumerable<SpawnLocation> availableSpawnLocations, Random random)
     {
         var activeSpawnLocations = availableSpawnLocations.ToImmutableArray();
         State.Satisfies(activeSpawnLocations.Length > 0);

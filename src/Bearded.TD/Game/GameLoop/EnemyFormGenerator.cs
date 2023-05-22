@@ -19,25 +19,26 @@ sealed class EnemyFormGenerator
 {
     private readonly ILookup<SocketShape, IModule> modulesBySocket;
 
-    private readonly Random random;
     private readonly Logger logger;
 
-    public EnemyFormGenerator(IEnumerable<IModule> modules, Random random, Logger logger)
+    public EnemyFormGenerator(IEnumerable<IModule> modules, Logger logger)
     {
         modulesBySocket = modules.ToLookup(m => m.SocketShape);
-        this.random = random;
         this.logger = logger;
     }
 
     public bool TryGenerateEnemyForm(
-        IGameObjectBlueprint blueprint, Requirements requirements, [NotNullWhen(true)] out EnemyForm? form)
+        IGameObjectBlueprint blueprint,
+        Requirements requirements,
+        Random random,
+        [NotNullWhen(true)] out EnemyForm? form)
     {
         var instantiatedEnemy = EnemyUnitFactory.Create(Id<GameObject>.Invalid, blueprint, Tile.Origin);
         var sockets = instantiatedEnemy.GetComponents<ISocket>();
         // assumption: if you have multiple sockets of the same shape, they will all receive the same module
         var shapes = sockets.Select(s => s.Shape).Distinct();
 
-        var maybeAssignedModules = assignModulesToShapes(shapes, requirements);
+        var maybeAssignedModules = assignModulesToShapes(shapes, requirements, random);
         if (maybeAssignedModules is null)
         {
             form = default;
@@ -53,12 +54,12 @@ sealed class EnemyFormGenerator
     }
 
     private ImmutableDictionary<SocketShape, IModule>? assignModulesToShapes(
-        IEnumerable<SocketShape> shapes, Requirements requirements)
+        IEnumerable<SocketShape> shapes, Requirements requirements, Random random)
     {
         var builder = ImmutableDictionary.CreateBuilder<SocketShape, IModule>();
         foreach (var s in shapes)
         {
-            var moduleMaybe = chooseAppropriateModule(modulesBySocket[s], requirements);
+            var moduleMaybe = chooseAppropriateModule(modulesBySocket[s], requirements, random);
             if (moduleMaybe is null)
             {
                 return null;
@@ -69,7 +70,7 @@ sealed class EnemyFormGenerator
         return builder.ToImmutable();
     }
 
-    private IModule? chooseAppropriateModule(IEnumerable<IModule> modules, Requirements requirements)
+    private IModule? chooseAppropriateModule(IEnumerable<IModule> modules, Requirements requirements, Random random)
     {
         var appropriateModules =
             modules.Where(m => m.AffinityElement == requirements.AffinityElement).ToImmutableArray();

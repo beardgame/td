@@ -5,8 +5,6 @@ using System.Diagnostics;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using static Bearded.TD.Constants.Game.WaveGeneration;
@@ -17,7 +15,7 @@ namespace Bearded.TD.Game.GameLoop;
 sealed partial class WaveGenerator
 {
     private readonly ImmutableArray<ISpawnableEnemy> spawnableEnemies;
-    private readonly Random random;
+    private readonly int seed;
     private readonly Logger logger;
     private readonly EnemyFormGenerator enemyFormGenerator;
 
@@ -28,9 +26,9 @@ sealed partial class WaveGenerator
         Logger logger)
     {
         this.spawnableEnemies = spawnableEnemies;
-        random = new Random(seed);
         this.logger = logger;
-        enemyFormGenerator = new EnemyFormGenerator(modules, random, logger);
+        this.seed = seed;
+        enemyFormGenerator = new EnemyFormGenerator(modules, logger);
     }
 
     public WaveScript GenerateWave(
@@ -38,10 +36,12 @@ sealed partial class WaveGenerator
         IEnumerable<SpawnLocation> availableSpawnLocations,
         Faction targetFaction)
     {
+        // Ensure that a change in requirements always leads to a (very) different outcome.
+        var random = new Random(seed ^ requirements.GetHashCode());
         var (enemyForm, enemiesPerSpawn, spawnLocations, spawnDuration) =
-            generateWaveParameters(requirements, availableSpawnLocations);
+            generateWaveParameters(requirements, availableSpawnLocations, random);
 
-        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration, enemyForm);
+        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration, enemyForm, random);
 
         return new WaveScript(
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
@@ -53,7 +53,7 @@ sealed partial class WaveGenerator
     }
 
     private WaveParameters generateWaveParameters(
-        WaveRequirements requirements, IEnumerable<SpawnLocation> availableSpawnLocations)
+        WaveRequirements requirements, IEnumerable<SpawnLocation> availableSpawnLocations, Random random)
     {
         logger.Debug?.Log($"Wave parameters requested with threat {requirements.EnemyComposition.TotalThreat}");
         var sw = Stopwatch.StartNew();
@@ -61,9 +61,9 @@ sealed partial class WaveGenerator
         var (minWaveValue, maxWaveValue) = totalThreatRange(requirements);
         var element = requirements.EnemyComposition.Elements.PrimaryElement;
 
-        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(element, minWaveValue, maxWaveValue);
+        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(element, minWaveValue, maxWaveValue, random);
 
-        var spawnLocations = chooseSpawnLocations(enemyCount, availableSpawnLocations);
+        var spawnLocations = chooseSpawnLocations(enemyCount, availableSpawnLocations, random);
         var spawnLocationCount = spawnLocations.Length;
 
         var enemiesPerSpawn = MoreMath.CeilToInt((double) enemyCount / spawnLocationCount);

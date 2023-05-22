@@ -17,15 +17,16 @@ sealed partial class WaveGenerator
     // The minimum number of enemies the wave should support to allow an enemy to be used for the current wave.
     private const int minEnemiesCount = 12;
 
-    private EnemiesToSpawn chooseEnemy(Element element, double minWaveValue, double maxWaveValue)
+    private EnemiesToSpawn chooseEnemy(Element element, double minWaveValue, double maxWaveValue, Random random)
     {
         var eligibleEnemies = filteredEligibleEnemies(maxWaveValue);
-        var blueprint = selectBlueprint(eligibleEnemies);
+        var blueprint = selectBlueprint(eligibleEnemies, random);
         var blueprintThreat = blueprint.GetThreat();
         if (!enemyFormGenerator.TryGenerateEnemyForm(
-                blueprint, new EnemyFormGenerator.Requirements(element), out var enemyForm))
+                blueprint, new EnemyFormGenerator.Requirements(element), random, out var enemyForm))
         {
-            // TODO: this can happen, just not in the default mod right now
+            // TODO: this can happen if there are enemies that don't have modules for all possible elements;
+            //       the default mod just doesn't have this situation right now
             throw new InvalidOperationException();
         }
 
@@ -49,7 +50,7 @@ sealed partial class WaveGenerator
         return eligibleEnemies;
     }
 
-    private IGameObjectBlueprint selectBlueprint(IReadOnlyList<ISpawnableEnemy> enemies)
+    private IGameObjectBlueprint selectBlueprint(IReadOnlyList<ISpawnableEnemy> enemies, Random random)
     {
         var probabilities = new double[enemies.Count + 1];
         foreach (var (enemy, i) in enemies.Indexed())

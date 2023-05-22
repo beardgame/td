@@ -14,9 +14,9 @@ sealed partial class WaveGenerator
     private const int maxGroupSize = minGroupSize * 3;
     private const double targetDensity = 0.6;
 
-    private EnemySpawnScript toEnemyScript(int enemyCount, TimeSpan waveDuration, EnemyForm enemyForm)
+    private EnemySpawnScript toEnemyScript(int enemyCount, TimeSpan waveDuration, EnemyForm enemyForm, Random random)
     {
-        var groupCount = enemyCount < minGroupSize * 2 ? 1 : determineGroupCount(enemyCount);
+        var groupCount = enemyCount < minGroupSize * 2 ? 1 : determineGroupCount(enemyCount, random);
         if (groupCount == 1)
         {
             return new EnemySpawnScript(
@@ -30,7 +30,7 @@ sealed partial class WaveGenerator
             spawnEventsBatchedInDuration(batchSizes, waveDuration, enemyForm).ToImmutableArray());
     }
 
-    private int determineGroupCount(int enemyCount)
+    private int determineGroupCount(int enemyCount, Random random)
     {
         var minGroupsNeeded = enemyCount / maxGroupSize + (enemyCount % maxGroupSize == 0 ? 0 : 1);
         var maxGroups = enemyCount / minGroupSize;
