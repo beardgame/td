@@ -10,5 +10,10 @@ static class UniqueIds
     public static Id<T> NextUniqueId<T>() => idManager.GetNext<T>();
 
     public static ExternalId<T> NextUniqueExternalId<T>(string prefix = "id") =>
-        ExternalId<T>.FromLiteral($"{prefix}{idManager.GetNext<T>().Value}");
+        ExternalId<T>.FromLiteral(NextUniquePrefixedString<T>(prefix));
+
+    public static ModAwareId NextUniqueModAwareId(string modName = "default", string prefix = "blueprint") =>
+        ModAwareId.FromFullySpecified($"{modName}.{NextUniquePrefixedString<ModAwareId>(prefix)}");
+
+    public static string NextUniquePrefixedString<TKey>(string prefix) => $"{prefix}{idManager.GetNext<TKey>().Value}";
 }
