@@ -30,7 +30,7 @@ sealed class WaveExecutor : IListener<WaveEnded>
     {
         subscribeEventsIfNeeded();
 
-        var spawnedObjectIds = idManager.GetBatch<GameObject>(script.EnemyScript.SpawnEvents.Length);
+        var spawnedObjectIds = idManager.GetBatch<GameObject>(script.EnemySpawnCount);
         var wave = new Wave(idManager.GetNext<Wave>(), script, spawnedObjectIds, game.Time);
         activeWaves.Add(wave.Id, onComplete);
 
