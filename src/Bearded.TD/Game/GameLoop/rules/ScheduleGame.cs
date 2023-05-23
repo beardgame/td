@@ -25,13 +25,15 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
                 context.Blueprints.Modules.All,
                 context.Seed,
                 context.Logger);
+            var spawnLocationActivator = new SpawnLocationActivator(context.GameState, commandDispatcher, context.Seed);
             var waveScheduler = new WaveScheduler(
                 context.GameState,
                 context.GameState.Meta.Ids,
                 commandDispatcher,
                 waveGenerator,
                 context.Factions.Find(targetFaction),
-                context.Seed);
+                context.Seed,
+                spawnLocationActivator);
             var chapterGenerator = new ChapterGenerator(elements, context.Seed);
             var chapterDirector = new ChapterDirector(waveScheduler);
             var gameScheduler = new GameScheduler(

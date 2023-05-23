@@ -20,6 +20,7 @@ sealed class WaveScheduler : IListener<WaveEnded>
     private readonly GameState game;
     private readonly IdManager ids;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
+    private readonly SpawnLocationActivator spawnLocationActivator;
     private readonly WaveGenerator waveGenerator;
     private readonly Faction targetFaction;
     private readonly Random random;
@@ -34,13 +35,15 @@ sealed class WaveScheduler : IListener<WaveEnded>
         ICommandDispatcher<GameInstance> commandDispatcher,
         WaveGenerator waveGenerator,
         Faction targetFaction,
-        int seed)
+        int seed,
+        SpawnLocationActivator spawnLocationActivator)
     {
         this.game = game;
         this.ids = ids;
         this.commandDispatcher = commandDispatcher;
         this.waveGenerator = waveGenerator;
         this.targetFaction = targetFaction;
+        this.spawnLocationActivator = spawnLocationActivator;
         random = new Random(seed);
     }
 
@@ -53,13 +56,9 @@ sealed class WaveScheduler : IListener<WaveEnded>
     {
         State.Satisfies(activeWave == null, "We only support one simultaneous wave right now");
 
-        var dormantSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => !s.IsAwake).ToImmutableArray();
-        if (dormantSpawnLocations.Length > 0)
-        {
-            commandDispatcher.Dispatch(WakeUpSpawnLocation.Command(dormantSpawnLocations.RandomElement(random)));
-        }
+        spawnLocationActivator.WakeSpawnLocation();
+        var availableSpawnLocations = spawnLocationActivator.GatherAvailableSpawnLocations();
 
-        var availableSpawnLocations = game.Enumerate<SpawnLocation>().Where(s => s.IsAwake).ToImmutableArray();
         var script = waveGenerator.GenerateWave(requirements, availableSpawnLocations, targetFaction);
         var spawnedObjectIds = ids.GetBatch<GameObject>(script.EnemyScript.SpawnEvents.Length);
         var wave = new Wave(ids.GetNext<Wave>(), script, spawnedObjectIds, game.Time);
