@@ -15,6 +15,7 @@ namespace Bearded.TD.Game.GameLoop;
 sealed partial class WaveGenerator
 {
     private readonly ImmutableArray<ISpawnableEnemy> spawnableEnemies;
+    private readonly Faction targetFaction;
     private readonly int seed;
     private readonly Logger logger;
     private readonly EnemyFormGenerator enemyFormGenerator;
@@ -22,10 +23,12 @@ sealed partial class WaveGenerator
     public WaveGenerator(
         ImmutableArray<ISpawnableEnemy> spawnableEnemies,
         IEnumerable<IModule> modules,
+        Faction targetFaction,
         int seed,
         Logger logger)
     {
         this.spawnableEnemies = spawnableEnemies;
+        this.targetFaction = targetFaction;
         this.logger = logger;
         this.seed = seed;
         enemyFormGenerator = new EnemyFormGenerator(modules, logger);
@@ -33,8 +36,7 @@ sealed partial class WaveGenerator
 
     public WaveScript GenerateWave(
         WaveRequirements requirements,
-        IEnumerable<SpawnLocation> availableSpawnLocations,
-        Faction targetFaction)
+        IEnumerable<SpawnLocation> availableSpawnLocations)
     {
         // Ensure that a change in requirements always leads to a (very) different outcome.
         var random = new Random(seed ^ requirements.GetHashCode());

@@ -43,12 +43,12 @@ public sealed class WaveGeneratorTests
     public void WaveGenerationIsDeterministicGivenSeed(
         int seed, NonNegativeInt primaryElement, NonNegativeInt accentElement)
     {
-        var gen = new WaveGenerator(enemies, modules, seed, logger);
+        var gen = new WaveGenerator(enemies, modules, faction, seed, logger);
         var elementalTheme = new ElementalTheme(toElement(primaryElement), toElement(accentElement));
         var requirements = new WaveRequirements(1, 1, new WaveEnemyComposition(200, elementalTheme), null);
 
-        var script1 = gen.GenerateWave(requirements, spawnLocations, faction);
-        var script2 = gen.GenerateWave(requirements, spawnLocations, faction);
+        var script1 = gen.GenerateWave(requirements, spawnLocations);
+        var script2 = gen.GenerateWave(requirements, spawnLocations);
 
         script1.Should().BeEquivalentTo(script2);
     }

@@ -20,29 +20,23 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
         {
             var (targetFaction, chaptersPerGame, wavesPerChapter, elements, enemies) = Parameters;
+            var spawnLocationActivator = new SpawnLocationActivator(context.GameState, commandDispatcher, context.Seed);
             var waveGenerator = new WaveGenerator(
                 enemies.CastArray<ISpawnableEnemy>(),
                 context.Blueprints.Modules.All,
-                context.Seed,
-                context.Logger);
-            var spawnLocationActivator = new SpawnLocationActivator(context.GameState, commandDispatcher, context.Seed);
-            var waveScheduler = new WaveScheduler(
-                context.GameState,
-                context.GameState.Meta.Ids,
-                commandDispatcher,
-                waveGenerator,
                 context.Factions.Find(targetFaction),
                 context.Seed,
-                spawnLocationActivator);
+                context.Logger);
+            var waveExecutor = new WaveExecutor(context.GameState, context.Ids, commandDispatcher);
             var chapterGenerator = new ChapterGenerator(elements, context.Seed);
-            var chapterDirector = new ChapterDirector(waveScheduler);
+            var chapterExecutor = new ChapterExecutor(spawnLocationActivator, waveGenerator, waveExecutor);
             var gameScheduler = new GameScheduler(
                 context.GameState,
                 commandDispatcher,
                 chapterGenerator,
-                chapterDirector,
+                chapterExecutor,
                 new GameScheduler.GameRequirements(chaptersPerGame, wavesPerChapter));
-            context.Events.Subscribe(new Listener(gameScheduler, waveScheduler));
+            context.Events.Subscribe(new Listener(gameScheduler));
         });
     }
 
@@ -60,18 +54,15 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     private sealed class Listener : IListener<GameStarted>
     {
         private readonly GameScheduler gameScheduler;
-        private readonly WaveScheduler waveScheduler;
 
-        public Listener(GameScheduler gameScheduler, WaveScheduler waveScheduler)
+        public Listener(GameScheduler gameScheduler)
         {
             this.gameScheduler = gameScheduler;
-            this.waveScheduler = waveScheduler;
         }
 
         public void HandleEvent(GameStarted @event)
         {
             gameScheduler.StartGame();
-            waveScheduler.OnGameStart();
         }
     }
 }

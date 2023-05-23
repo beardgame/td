@@ -14,7 +14,7 @@ sealed class GameScheduler
     private readonly GameState game;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
     private readonly ChapterGenerator chapterGenerator;
-    private readonly ChapterDirector chapterDirector;
+    private readonly ChapterExecutor chapterExecutor;
     private readonly GameRequirements gameRequirements;
 
     private bool gameStarted;
@@ -25,13 +25,13 @@ sealed class GameScheduler
         GameState game,
         ICommandDispatcher<GameInstance> commandDispatcher,
         ChapterGenerator chapterGenerator,
-        ChapterDirector chapterDirector,
+        ChapterExecutor chapterExecutor,
         GameRequirements gameRequirements)
     {
         this.game = game;
         this.commandDispatcher = commandDispatcher;
         this.chapterGenerator = chapterGenerator;
-        this.chapterDirector = chapterDirector;
+        this.chapterExecutor = chapterExecutor;
         this.gameRequirements = gameRequirements;
     }
 
@@ -68,7 +68,7 @@ sealed class GameScheduler
         var requirements = new ChapterRequirements(chapterNumber, waveThreats(chapterNumber));
         var script = chapterGenerator.GenerateChapter(requirements, previousChapter);
         previousChapter = script;
-        chapterDirector.ExecuteScript(script, onChapterEnded);
+        chapterExecutor.ExecuteScript(script, onChapterEnded);
     }
 
     private ImmutableArray<double> waveThreats(int chapterNumber)
