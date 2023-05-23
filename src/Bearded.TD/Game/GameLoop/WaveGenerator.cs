@@ -43,7 +43,7 @@ sealed partial class WaveGenerator
         var (enemyForm, enemiesPerSpawn, spawnLocations, spawnDuration) =
             generateWaveParameters(requirements, availableSpawnLocations, random);
 
-        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration, enemyForm, random);
+        var enemyScript = toEnemyScript(enemiesPerSpawn, spawnDuration, enemyForm, spawnLocations, random);
 
         return new WaveScript(
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",

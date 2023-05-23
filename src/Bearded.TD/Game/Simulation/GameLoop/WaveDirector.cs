@@ -100,15 +100,12 @@ sealed class WaveDirector
             var idIndex = 0;
             foreach (var spawnEvent in wave.Script.EnemyScript.SpawnEvents)
             {
-                foreach (var loc in wave.Script.SpawnLocations)
-                {
-                    spawnQueue.Enqueue(
-                        new EnemySpawn(
-                            wave.SpawnedObjectIds[idIndex++],
-                            spawnEvent.EnemyForm,
-                            loc,
-                            spawnEvent.TimeOffset));
-                }
+                spawnQueue.Enqueue(
+                    new EnemySpawn(
+                        wave.SpawnedObjectIds[idIndex++],
+                        spawnEvent.EnemyForm,
+                        spawnEvent.SpawnLocation,
+                        spawnEvent.TimeOffset));
             }
         }
 

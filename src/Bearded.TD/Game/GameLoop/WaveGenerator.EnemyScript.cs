@@ -14,19 +14,38 @@ sealed partial class WaveGenerator
     private const int maxGroupSize = minGroupSize * 3;
     private const double targetDensity = 0.6;
 
-    private EnemySpawnScript toEnemyScript(int enemyCount, TimeSpan waveDuration, EnemyForm enemyForm, Random random)
+    private EnemySpawnScript toEnemyScript(
+        int enemyCount,
+        TimeSpan waveDuration,
+        EnemyForm enemyForm,
+        IEnumerable<SpawnLocation> spawnLocations,
+        Random random)
+    {
+        var enumeratedSpawnLocations = spawnLocations.ToImmutableArray();
+        var times = toEnemyTimes(enemyCount, waveDuration, enemyForm, random);
+        return new EnemySpawnScript(
+            times.SpawnTimes.SelectMany(_ => enumeratedSpawnLocations,
+                    (time, location) => new EnemySpawnScript.EnemySpawnEvent(location, time.TimeOffset, time.EnemyForm))
+                .ToImmutableArray());
+    }
+
+    private EnemySpawnTimes toEnemyTimes(
+        int enemyCount,
+        TimeSpan waveDuration,
+        EnemyForm enemyForm,
+        Random random)
     {
         var groupCount = enemyCount < minGroupSize * 2 ? 1 : determineGroupCount(enemyCount, random);
         if (groupCount == 1)
         {
-            return new EnemySpawnScript(
+            return new EnemySpawnTimes(
                 spawnEventsSpreadUniformlyInDuration(enemyCount, TimeSpan.Zero, waveDuration, enemyForm)
                     .ToImmutableArray());
         }
 
         var batchSizes = determineBatchSizes(enemyCount, groupCount);
 
-        return new EnemySpawnScript(
+        return new EnemySpawnTimes(
             spawnEventsBatchedInDuration(batchSizes, waveDuration, enemyForm).ToImmutableArray());
     }
 
@@ -48,7 +67,7 @@ sealed partial class WaveGenerator
             .ToImmutableArray();
     }
 
-    private IEnumerable<EnemySpawnScript.EnemySpawnEvent> spawnEventsBatchedInDuration(
+    private ImmutableArray<EnemySpawnTimes.EnemySpawnTime> spawnEventsBatchedInDuration(
         IList<int> batchSizes, TimeSpan duration, EnemyForm enemyForm)
     {
         if (batchSizes.Count < 2)
@@ -60,7 +79,7 @@ sealed partial class WaveGenerator
         var totalTimeForEnemies = duration * targetDensity;
         var timePerEnemy = totalTimeForEnemies / (totalEnemies - batchSizes.Count);
         var individualBreakDuration = duration * (1 - targetDensity) / (batchSizes.Count - 1);
-        var result = ImmutableArray.CreateBuilder<EnemySpawnScript.EnemySpawnEvent>(totalEnemies);
+        var result = ImmutableArray.CreateBuilder<EnemySpawnTimes.EnemySpawnTime>(totalEnemies);
         var idx = 0;
 
         for (var i = 0; i < batchSizes.Count; i++)
@@ -79,11 +98,14 @@ sealed partial class WaveGenerator
         return result.MoveToImmutable();
     }
 
-    private static IEnumerable<EnemySpawnScript.EnemySpawnEvent> spawnEventsSpreadUniformlyInDuration(
-        int count, TimeSpan additionalOffset, TimeSpan duration, EnemyForm enemyForm)
+    private static IEnumerable<EnemySpawnTimes.EnemySpawnTime> spawnEventsSpreadUniformlyInDuration(
+        int count,
+        TimeSpan additionalOffset,
+        TimeSpan duration,
+        EnemyForm enemyForm)
     {
         return offsetsSpreadUniformlyInDuration(count, additionalOffset, duration)
-            .Select(offset => new EnemySpawnScript.EnemySpawnEvent(offset, enemyForm));
+            .Select(offset => new EnemySpawnTimes.EnemySpawnTime(offset, enemyForm));
     }
 
     private static IEnumerable<TimeSpan> offsetsSpreadUniformlyInDuration(

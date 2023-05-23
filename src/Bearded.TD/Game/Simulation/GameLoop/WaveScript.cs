@@ -12,5 +12,5 @@ sealed record WaveScript(
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript)
 {
-    public int EnemySpawnCount => SpawnLocations.Length * EnemyScript.SpawnEvents.Length;
+    public int EnemyCount => EnemyScript.SpawnEvents.Length;
 }

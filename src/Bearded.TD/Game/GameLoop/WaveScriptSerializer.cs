@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
 using JetBrains.Annotations;
@@ -90,6 +89,7 @@ sealed class WaveScriptSerializer
 
     private sealed class EnemySpawnEventSerializer
     {
+        private Id<SpawnLocation> spawnLocation;
         private TimeSpan time;
         private readonly EnemyFormSerializer enemyForm = new();
 
@@ -98,6 +98,7 @@ sealed class WaveScriptSerializer
 
         public EnemySpawnEventSerializer(EnemySpawnScript.EnemySpawnEvent spawnEvent)
         {
+            spawnLocation = spawnEvent.SpawnLocation.Id;
             time = spawnEvent.TimeOffset;
             enemyForm = new EnemyFormSerializer(spawnEvent.EnemyForm);
         }
@@ -109,7 +110,7 @@ sealed class WaveScriptSerializer
         }
 
         public EnemySpawnScript.EnemySpawnEvent ToSpawnEvent(GameInstance game) =>
-            new(time, enemyForm.ToEnemyForm(game));
+            new(game.State.Find(spawnLocation), time, enemyForm.ToEnemyForm(game));
     }
 
     private sealed class EnemyFormSerializer
