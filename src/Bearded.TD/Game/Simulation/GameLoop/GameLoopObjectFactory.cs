@@ -15,13 +15,17 @@ static class GameLoopObjectFactory
         return obj;
     }
 
-    public static GameObject CreateSpawnIndicator(GameObject owner, Tile tile)
+    public static GameObject CreateSpawnIndicator(
+        GameObject owner, Tile tile, out IFutureEnemySpawnIndicator futureEnemySpawnIndicator)
     {
         var blueprint = owner.Game.Meta.Blueprints.GameObjects[ModAwareId.ForDefaultMod("spawnIndicator")];
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(
             blueprint, owner, Level.GetPosition(tile).WithZ(0.U()));
 
-        obj.AddComponent(new SpawnIndicator(tile));
+        var spawnIndicator = new SpawnIndicator(tile);
+        obj.AddComponent(spawnIndicator);
+
+        futureEnemySpawnIndicator = spawnIndicator;
         return obj;
     }
 

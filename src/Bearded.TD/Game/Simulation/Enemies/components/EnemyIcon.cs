@@ -52,6 +52,6 @@ sealed class EnemyIcon : Component<EnemyIcon.IParameters>, IListener<DrawCompone
 
     public SpriteDrawInfo<UVColorVertex, Color> MakeIconSprite(GameState game)
     {
-        return SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Icon);
+        return SpriteDrawInfo.ForUVColor(game, Parameters.Icon);
     }
 }

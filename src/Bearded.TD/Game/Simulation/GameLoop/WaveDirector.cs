@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -88,10 +89,11 @@ sealed class WaveDirector
                     outstandingSpawnStartRequirements.Add,
                     () => canSummonNow));
             phase = Phase.Downtime;
+            var spawnsByLocation = wave.Script.EnemyScript.SpawnEvents.ToLookup(e => e.SpawnLocation, e => e.EnemyForm);
             foreach (var location in wave.Script.SpawnLocations)
             {
                 location.UpdateSpawnTile();
-                location.AssignWave(wave.Id);
+                location.AssignWave(wave.Id, spawnsByLocation[location]);
             }
         }
 
@@ -188,6 +190,7 @@ sealed class WaveDirector
                     EnemyFactory.Create(spawn.UnitId, spawn.EnemyForm, spawn.SpawnLocation.SpawnTile);
                 game.Add(unit);
                 spawnedUnits.Add(unit);
+                spawn.SpawnLocation.OnEnemySpawned(spawn.EnemyForm);
             }
         }
 

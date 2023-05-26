@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
@@ -25,7 +26,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     private PassabilityLayer passability = null!;
     private VisibilityLayer visibility = null!;
     private BuildingLayer buildings = null!;
-    private GameObject? placeholder;
+    private SpawnPlaceholder? placeholder;
 
     public Id<SpawnLocation> Id { get; }
     public Tile SpawnTile { get; private set; }
@@ -144,7 +145,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
         return null;
     }
 
-    public void AssignWave(Id<Wave> wave)
+    public void AssignWave(Id<Wave> wave, IEnumerable<EnemyForm> enemies)
     {
         State.Satisfies(IsAwake);
         assignedWaves.Add(wave);
@@ -153,13 +154,24 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
         {
             createSpawnPlaceholder();
         }
+
+        foreach (var group in enemies.GroupBy(form => form))
+        {
+            placeholder!.FutureEnemySpawns.AddFutureEnemySpawn(group.Key, group.Count());
+        }
     }
 
     private void createSpawnPlaceholder()
     {
         State.Satisfies(placeholder == null);
-        placeholder = GameLoopObjectFactory.CreateSpawnIndicator(Owner, SpawnTile);
-        Owner.Game.Add(placeholder);
+        var placeholderObj = GameLoopObjectFactory.CreateSpawnIndicator(Owner, SpawnTile, out var futureEnemySpawns);
+        Owner.Game.Add(placeholderObj);
+        placeholder = new SpawnPlaceholder(placeholderObj, futureEnemySpawns);
+    }
+
+    public void OnEnemySpawned(EnemyForm form)
+    {
+        placeholder?.FutureEnemySpawns.FulfilFutureEnemySpawn(form);
     }
 
     public void HandleEvent(WaveEnded @event)
@@ -171,9 +183,11 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
             return;
         }
 
-        placeholder?.Delete();
+        placeholder?.GameObject.Delete();
         placeholder = null;
     }
 
     public override void Update(TimeSpan elapsedTime) {}
+
+    private sealed record SpawnPlaceholder(GameObject GameObject, IFutureEnemySpawnIndicator FutureEnemySpawns);
 }
