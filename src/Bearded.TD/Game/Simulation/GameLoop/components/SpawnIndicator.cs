@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop;
 
 sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemySpawnIndicator
 {
-    private static readonly Difference3 iconOffsetFromObject = new(0.5f, 0, 0.1f);
+    private static readonly Difference3 iconOffsetFromObject = new(0.6f, 0, 0.1f);
     private static readonly Difference3 offsetBetweenIcons = new(0, 0.5f, 0);
     private static readonly Difference3 offsetToText = new(0.25f, 0, 0);
     private const float iconSize = 0.5f;
@@ -95,14 +95,16 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
 
         var drawer = @event.Drawer;
         var font = @event.Core.InGameConsoleFont.With(fontHeight: fontSize, alignHorizontal: 0, alignVertical: 0.5f);
+        var anchor =
+            Owner.Position + iconOffsetFromObject - 0.5f * (futureSpawnsWithIcons.Length - 1) * offsetBetweenIcons;
 
         for (var i = 0; i < futureSpawnsWithIcons.Length; i++)
         {
             var icon = futureSpawnsWithIcons[i].Icon!.Value;
-            var anchor = Owner.Position + iconOffsetFromObject + i * offsetBetweenIcons;
+            var pos = anchor + i * offsetBetweenIcons;
 
-            drawer.DrawSprite(icon.Sprite, anchor.NumericValue, iconSize, 0, icon.Color);
-            font.DrawLine(icon.Color, (anchor + offsetToText).NumericValue, $"{futureSpawnsWithIcons[i].Amount}");
+            drawer.DrawSprite(icon.Sprite, pos.NumericValue, iconSize, 0, icon.Color);
+            font.DrawLine(icon.Color, (pos + offsetToText).NumericValue, $"{futureSpawnsWithIcons[i].Amount}");
         }
     }
 
