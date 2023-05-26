@@ -32,14 +32,10 @@
         {
             type: "component",
             parameters: {
-                id: "sprite",
+                id: "enemyIcon",
                 parameters: {
-                    sprite: "enemies.suicide-enemy",
-                    size: 0.3,
-                    heightOffset: 0.1,
-                    offset: [-0.25, -0.25],
-                    direction: 0,
-                    color: "ffdda0dd",
+                    icon: "enemies.suicide-enemy",
+                    element: "lightning",
                 }
             }
         }

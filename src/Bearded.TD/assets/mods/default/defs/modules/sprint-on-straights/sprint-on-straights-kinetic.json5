@@ -37,16 +37,12 @@
     {
       type: "component",
       parameters: {
-        id: "sprite",
+        id: "enemyIcon",
         parameters: {
-          sprite: "enemies.sprinting-enemy",
-          size: 0.3,
-          heightOffset: 0.1,
-          offset: [-0.25, -0.25],
-          direction: 0,
-          color: "ffd3d3d3",
+          icon: "enemies.sprinting-enemy",
+          element: "force",
         }
       }
-    }
+    },
   ],
 }

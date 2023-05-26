@@ -8,6 +8,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Elements;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Sounds;
 using Bearded.TD.Game.Simulation.Weapons;
@@ -35,6 +36,7 @@ public sealed class ComponentLifeCycleTests
     // Components that access assets in OnActivate.
     private static readonly ImmutableHashSet<Type> assetAccessingBlueprints = ImmutableHashSet.Create(
         typeof(AnimatedSprite), // Attempts to instantiate a sprite on activate.
+        typeof(EnemyIcon), // Attempts to instantiate a sprite on activate.
         typeof(LoopSound), // Attempts to play a sound on activate.
         typeof(MuzzleFlash), // Attempts to instantiate a sprite on activate.
         typeof(ParticleSystem), // Attempts to instantiate a sprite on activate.
