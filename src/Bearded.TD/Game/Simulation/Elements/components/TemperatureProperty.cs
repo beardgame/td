@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Elements.events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities.SpaceTime;
@@ -11,6 +12,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
 {
     public Temperature Value { get; private set; }
     private TickCycle? tickCycle;
+    private IBreakageReceipt? breakage;
 
     protected override void OnAdded() { }
 
@@ -29,6 +31,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
     {
         applyChanges(now);
         applyDecay();
+        updateBreakage();
     }
 
     private void applyChanges(Instant now)
@@ -50,6 +53,23 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
         if (Value < AmbientTemperature)
         {
             Value = SpaceTime1MathF.Min(AmbientTemperature, Value + TickDuration * TemperatureDecayRate);
+        }
+    }
+
+    private void updateBreakage()
+    {
+        if (breakage is { } receipt && Value <= MaxNormalTemperature)
+        {
+            receipt.Repair();
+            breakage = null;
+        }
+
+        if (breakage is null &&
+            Value > MaxShownTemperature &&
+            Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
+        {
+            breakage = breakageHandler.BreakObject();
+            Events.Send(new ObjectOverheated());
         }
     }
 }
