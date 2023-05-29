@@ -10,7 +10,7 @@ static partial class Stunned
 {
     private sealed class Scope : ElementalPhenomenonScopeBase<Effect>
     {
-        private ISabotageReceipt? receipt;
+        private IBreakageReceipt? receipt;
         private LightningShocks? sparks;
 
         protected override bool TryChooseEffect(out Effect effect)
@@ -35,12 +35,12 @@ static partial class Stunned
                 throw new InvalidOperationException("Cannot start effect that was already started.");
             }
 
-            if (!target.TryGetSingleComponent<ISabotageHandler>(out var sabotageHandler))
+            if (!target.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
             {
                 return;
             }
 
-            receipt = sabotageHandler.SabotageObject();
+            receipt = breakageHandler.BreakObject();
             sparks = new LightningShocks();
             target.AddComponent(sparks);
         }

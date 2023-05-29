@@ -15,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed class BuildingStateManager : Component,
         IBuildingStateProvider,
-        ISabotageHandler,
+        IBreakageHandler,
         IListener<ConstructionFinished>,
         IListener<ConstructionStarted>,
         IListener<ObjectKilled>,
@@ -26,7 +26,7 @@ sealed class BuildingStateManager : Component,
 {
     private readonly BuildingState state = new();
     private IHealth? health;
-    private ISabotageReceipt? ruinedSabotage;
+    private IBreakageReceipt? ruinedBreakage;
     private bool ruinPrevented;
 
     public IBuildingState State { get; }
@@ -59,7 +59,7 @@ sealed class BuildingStateManager : Component,
         Events.Preview(ref ruinState);
         if (ruinState.IsRuined && !ruinPrevented)
         {
-            ruinedSabotage = SabotageObject();
+            ruinedBreakage = BreakObject();
         }
     }
 
@@ -85,14 +85,14 @@ sealed class BuildingStateManager : Component,
 
     public void HandleEvent(ObjectRepaired @event)
     {
-        ruinedSabotage?.Repair();
-        ruinedSabotage = null;
+        ruinedBreakage?.Repair();
+        ruinedBreakage = null;
     }
 
     public void HandleEvent(ObjectRuined @event)
     {
         if (ruinPrevented) return;
-        ruinedSabotage ??= SabotageObject();
+        ruinedBreakage ??= BreakObject();
     }
 
     public void HandleEvent(PreventPlayerHealthChanges @event)
@@ -102,16 +102,16 @@ sealed class BuildingStateManager : Component,
 
     public void HandleEvent(PreventRuin @event)
     {
-        ruinedSabotage?.Repair();
-        ruinedSabotage = null;
+        ruinedBreakage?.Repair();
+        ruinedBreakage = null;
         ruinPrevented = true;
     }
 
-    public ISabotageReceipt SabotageObject()
+    public IBreakageReceipt BreakObject()
     {
-        var sabotage = new ActiveSabotage(state);
-        state.ActiveSabotages.Add(sabotage);
-        return sabotage;
+        var breakage = new ActiveBreakage(state);
+        state.ActiveBreakages.Add(breakage);
+        return breakage;
     }
 
     private void materialize()
@@ -124,7 +124,7 @@ sealed class BuildingStateManager : Component,
     public override void Update(TimeSpan elapsedTime)
     {
         if (state.IsCompleted &&
-            ruinedSabotage == null &&
+            ruinedBreakage == null &&
             !ruinPrevented &&
             (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
@@ -152,18 +152,18 @@ sealed class BuildingStateManager : Component,
         }
     }
 
-    private sealed class ActiveSabotage : ISabotageReceipt
+    private sealed class ActiveBreakage : IBreakageReceipt
     {
         private readonly BuildingState mutableState;
 
-        public ActiveSabotage(BuildingState mutableState)
+        public ActiveBreakage(BuildingState mutableState)
         {
             this.mutableState = mutableState;
         }
 
         public void Repair()
         {
-            mutableState.ActiveSabotages.Remove(this);
+            mutableState.ActiveBreakages.Remove(this);
         }
     }
 }

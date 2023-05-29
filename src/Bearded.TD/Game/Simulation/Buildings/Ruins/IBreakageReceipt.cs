@@ -1,6 +1,6 @@
 namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
-interface ISabotageReceipt
+interface IBreakageReceipt
 {
     void Repair();
 }

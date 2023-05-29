@@ -9,7 +9,7 @@ sealed partial class BuildingUpgradeManager
     private sealed class IncompleteUpgrade : IncompleteWork, IIncompleteUpgrade
     {
         private readonly BuildingUpgradeManager manager;
-        private ISabotageReceipt? sabotageReceipt;
+        private IBreakageReceipt? breakageReceipt;
 
         public IPermanentUpgrade Upgrade { get; }
         public double PercentageComplete { get; private set; }
@@ -32,10 +32,10 @@ sealed partial class BuildingUpgradeManager
 
         public override void OnStart()
         {
-            if (sabotageReceipt == null
-                && manager.Owner.TryGetSingleComponent<ISabotageHandler>(out var sabotageHandler))
+            if (breakageReceipt == null
+                && manager.Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
             {
-                sabotageReceipt = sabotageHandler.SabotageObject();
+                breakageReceipt = breakageHandler.BreakObject();
             }
         }
 
@@ -47,7 +47,7 @@ sealed partial class BuildingUpgradeManager
         public override void OnComplete()
         {
             manager.onUpgradeCompleted(this);
-            sabotageReceipt?.Repair();
+            breakageReceipt?.Repair();
         }
 
         public override void OnCancel()

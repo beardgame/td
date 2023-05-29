@@ -12,11 +12,11 @@ sealed class BuildingState : IBuildingState
     public bool IsGhost => false;
     public bool IsMaterialized { get; set; }
     public bool IsCompleted { get; set; }
-    public bool IsFunctional => IsCompleted && ActiveSabotages.Count == 0 && !IsDead;
+    public bool IsFunctional => IsCompleted && ActiveBreakages.Count == 0 && !IsDead;
 
     // Mutable state
     public SelectionState SelectionState { get; set; }
-    public List<ISabotageReceipt> ActiveSabotages { get; } = new();
+    public List<IBreakageReceipt> ActiveBreakages { get; } = new();
     public bool IsDead { get; set; }
     public bool AcceptsPlayerHealthChanges { get; set; } = true;
 
