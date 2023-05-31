@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Elements.events;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
@@ -13,6 +14,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
     public Temperature Value { get; private set; }
     private TickCycle? tickCycle;
     private IBreakageReceipt? breakage;
+    private ITilePresenceListener? tilePresenceListener;
 
     protected override void OnAdded() { }
 
@@ -20,11 +22,18 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
     {
         base.Activate();
         tickCycle = new TickCycle(Owner.Game, applyTick);
+        tilePresenceListener = Owner.TrackTilePresenceInLayer(Owner.Game.TemperatureLayer);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
         tickCycle?.Update();
+    }
+
+    public override void OnRemoved()
+    {
+        tilePresenceListener?.Detach();
+        base.OnRemoved();
     }
 
     private void applyTick(Instant now)

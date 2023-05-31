@@ -12,9 +12,7 @@ sealed class Targetable : Component
     public override void Activate()
     {
         base.Activate();
-        Owner.GetTilePresence().ObserveChanges(
-            addedTile => Owner.Game.TargetLayer.AddObjectToTile(Owner, addedTile),
-            removedTile => Owner.Game.TargetLayer.RemoveObjectFromTile(Owner, removedTile));
+        Owner.TrackTilePresenceInLayer(Owner.Game.TargetLayer);
     }
 
     public override void Update(TimeSpan elapsedTime) { }

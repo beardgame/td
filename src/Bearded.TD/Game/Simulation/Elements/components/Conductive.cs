@@ -12,9 +12,7 @@ sealed class Conductive : Component
     public override void Activate()
     {
         base.Activate();
-        Owner.GetTilePresence().ObserveChanges(
-            addedTile => Owner.Game.ConductiveLayer.AddObjectToTile(Owner, addedTile),
-            removedTile => Owner.Game.ConductiveLayer.RemoveObjectFromTile(Owner, removedTile));
+        Owner.TrackTilePresenceInLayer(Owner.Game.ConductiveLayer);
     }
 
     public override void Update(TimeSpan elapsedTime) { }
