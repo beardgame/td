@@ -12,9 +12,7 @@ sealed class PhysicalTilePresence : Component
     public override void Activate()
     {
         base.Activate();
-        Owner.GetTilePresence().ObserveChanges(
-            addedTile => Owner.Game.PhysicsLayer.AddObjectToTile(Owner, addedTile),
-            removedTile => Owner.Game.PhysicsLayer.RemoveObjectFromTile(Owner, removedTile));
+        Owner.TrackTilePresenceInLayer(Owner.Game.PhysicsLayer);
     }
 
     public override void Update(TimeSpan elapsedTime) {}

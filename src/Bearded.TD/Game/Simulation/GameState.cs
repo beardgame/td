@@ -48,9 +48,10 @@ sealed class GameState
 
     public GeometryLayer GeometryLayer { get; }
     public FluidLayer FluidLayer { get; }
-    public ObjectLayer PhysicsLayer { get; }
+    public PhysicsLayer PhysicsLayer { get; }
     public TargetLayer TargetLayer { get; }
     public ConductiveLayer ConductiveLayer { get; }
+    public TemperatureLayer TemperatureLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityManager PassabilityManager { get; }
@@ -78,6 +79,7 @@ sealed class GameState
         PhysicsLayer = new PhysicsLayer();
         TargetLayer = new TargetLayer();
         ConductiveLayer = new ConductiveLayer();
+        TemperatureLayer = new TemperatureLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
         SelectionLayer = new SelectionLayer();
         PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);

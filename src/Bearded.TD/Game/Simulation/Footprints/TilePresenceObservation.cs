@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Simulation.Footprints;
@@ -74,6 +76,20 @@ static class TilePresenceObservation
         var observer = new TilePresenceChangesObserver(onAdded, onRemoved);
         observer.Initialize(tilePresence);
         return observer;
+    }
+
+    public static ITilePresenceListener TrackTilePresenceInLayer<T>(this GameObject obj, T layer)
+        where T : ObjectLayer
+    {
+        return TrackInLayer(obj.GetTilePresence(), obj, layer);
+    }
+
+    public static ITilePresenceListener TrackInLayer<T>(this ITilePresence tilePresence, GameObject obj, T layer)
+        where T : ObjectLayer
+    {
+        return ObserveChanges(tilePresence,
+            onAdded: tile => layer.AddObjectToTile(obj, tile),
+            onRemoved: tile => layer.RemoveObjectFromTile(obj, tile));
     }
 
     private sealed class TilePresenceChangesObserver : ITilePresenceListener

@@ -34,7 +34,11 @@ static class AreaOfEffect
 
     public static IEnumerable<ObjectInRange> FindObjects(GameState game, Position3 center, Unit range)
     {
-        var objects = game.PhysicsLayer;
+        return FindObjectsInLayer(game.PhysicsLayer, center, range);
+    }
+
+    public static IEnumerable<ObjectInRange> FindObjectsInLayer(ObjectLayer layer, Position3 center, Unit range)
+    {
         var rangeSquared = range.Squared;
 
         // Returns only tiles with their centre in the circle with the given range.
@@ -42,7 +46,7 @@ static class AreaOfEffect
         // of range.
         var tiles = Level.TilesWithCenterInCircle(center.XY(), range);
 
-        foreach (var obj in tiles.SelectMany(objects.GetObjectsOnTile))
+        foreach (var obj in tiles.SelectMany(layer.GetObjectsOnTile))
         {
             var difference = obj.Position - center;
 

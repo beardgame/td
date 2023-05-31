@@ -41,6 +41,9 @@ readonly struct TemperatureDifference
     public static bool operator >=(TemperatureDifference left, TemperatureDifference right) =>
         left.NumericValue >= right.NumericValue;
 
+    public static TemperatureDifference operator +(TemperatureDifference left, TemperatureDifference right) =>
+        new(left.NumericValue + right.NumericValue);
+
     public static float operator /(TemperatureDifference d1, TemperatureDifference d2) =>
         d1.NumericValue / d2.NumericValue;
 

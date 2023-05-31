@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Elements.events;
+using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
@@ -8,11 +9,13 @@ using static Bearded.TD.Constants.Game.Elements;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("temperature")]
-sealed class TemperatureProperty : Component, IProperty<Temperature>
+sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatureEventReceiver
 {
     public Temperature Value { get; private set; }
     private TickCycle? tickCycle;
     private IBreakageReceipt? breakage;
+    private ITilePresenceListener? tilePresenceListener;
+    private TemperatureDifference queuedTemperatureChange;
 
     protected override void OnAdded() { }
 
@@ -20,11 +23,18 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
     {
         base.Activate();
         tickCycle = new TickCycle(Owner.Game, applyTick);
+        tilePresenceListener = Owner.TrackTilePresenceInLayer(Owner.Game.TemperatureLayer);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
         tickCycle?.Update();
+    }
+
+    public override void OnRemoved()
+    {
+        tilePresenceListener?.Detach();
+        base.OnRemoved();
     }
 
     private void applyTick(Instant now)
@@ -42,6 +52,9 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
         {
             Value += @event.Rate * TickDuration;
         }
+
+        Value += queuedTemperatureChange;
+        queuedTemperatureChange = TemperatureDifference.Zero;
     }
 
     private void applyDecay()
@@ -69,7 +82,11 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
-            Events.Send(new ObjectOverheated());
         }
+    }
+
+    public void ApplyImmediateTemperatureChange(TemperatureDifference difference)
+    {
+        queuedTemperatureChange += difference;
     }
 }
