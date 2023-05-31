@@ -26,7 +26,7 @@ static class EnemyUnitFactory
         }
         var radius =
             ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + PiOver2) / Pi * 0.6f).U();
-        unit.AddComponent(new SphereCollider(new SphereColliderParametersTemplate(radius, true)));
+        unit.AddComponent(new CapsuleCollider(new CapsuleColliderParametersTemplate(radius, radius * 2, true)));
 
         unit.AddComponent(new DamageAttributor());
         unit.AddComponent(new DamageSource());
