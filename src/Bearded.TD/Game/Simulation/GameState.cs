@@ -48,7 +48,7 @@ sealed class GameState
 
     public GeometryLayer GeometryLayer { get; }
     public FluidLayer FluidLayer { get; }
-    public ObjectLayer PhysicsLayer { get; }
+    public PhysicsLayer PhysicsLayer { get; }
     public TargetLayer TargetLayer { get; }
     public ConductiveLayer ConductiveLayer { get; }
     public BuildingLayer BuildingLayer { get; }

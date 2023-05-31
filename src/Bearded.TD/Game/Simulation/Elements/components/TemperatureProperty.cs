@@ -69,7 +69,6 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
-            Events.Send(new ObjectOverheated());
         }
     }
 }
