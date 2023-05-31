@@ -43,7 +43,7 @@ sealed class ChapterGenerator
         if (previousChapter is not { } prevChapter)
         {
             // Always start the first wave with force and a random accent element. After that, everything goes.
-            const Element firstChapterElement = Element.Fire;
+            const Element firstChapterElement = Element.Force;
             return new ElementalTheme(firstChapterElement, chooseAccentElement(firstChapterElement, random));
         }
 
