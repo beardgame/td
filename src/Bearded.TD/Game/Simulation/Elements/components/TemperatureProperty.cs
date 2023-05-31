@@ -9,12 +9,13 @@ using static Bearded.TD.Constants.Game.Elements;
 namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("temperature")]
-sealed class TemperatureProperty : Component, IProperty<Temperature>
+sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatureEventReceiver
 {
     public Temperature Value { get; private set; }
     private TickCycle? tickCycle;
     private IBreakageReceipt? breakage;
     private ITilePresenceListener? tilePresenceListener;
+    private TemperatureDifference queuedTemperatureChange;
 
     protected override void OnAdded() { }
 
@@ -51,6 +52,9 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
         {
             Value += @event.Rate * TickDuration;
         }
+
+        Value += queuedTemperatureChange;
+        queuedTemperatureChange = TemperatureDifference.Zero;
     }
 
     private void applyDecay()
@@ -79,5 +83,10 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>
         {
             breakage = breakageHandler.BreakObject();
         }
+    }
+
+    public void ApplyImmediateTemperatureChange(TemperatureDifference difference)
+    {
+        queuedTemperatureChange += difference;
     }
 }
