@@ -7,6 +7,7 @@ using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing.Animation;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
@@ -120,6 +121,7 @@ static class ModLoader
                 new SpaceTime1Converter<UntypedDamagePerSecond>(d => new UntypedDamagePerSecond(d.HitPoints())),
                 new SpaceTime2Converter<PitchRange>((from, to) => new PitchRange(from, to)),
                 new SpaceTime3Converter<Velocity3>((x, y, z) => new Velocity3(x, y, z)),
+                new SpaceTime1Converter<TemperatureDifference>(d => new TemperatureDifference(d)),
                 new ColorConverter(),
                 BehaviorConverterFactory.ForBaseComponents(),
                 BehaviorConverterFactory.ForFactionBehaviors(),

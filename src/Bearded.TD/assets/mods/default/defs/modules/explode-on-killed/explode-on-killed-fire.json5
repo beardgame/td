@@ -28,6 +28,17 @@
         {
             type: "component",
             parameters: {
+                id: "changeTemperatureInRangeOnTrigger",
+                parameters: {
+                    trigger: "objectKilled",
+                    range: 2.5,
+                    temperatureDifference: 20,
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
                 id: "spawnObjectOnKilled",
                 parameters: {
                     object: "default.enemyExplosion"

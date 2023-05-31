@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
@@ -13,7 +14,7 @@ static class SpaceTimeTypes
     [ConvertsAttribute]
     public static AttributeConverter<Acceleration> AccelerationConverter =
         new(d => new Acceleration((float) d), a => a.NumericValue);
-    
+
     [ConvertsAttribute]
     public static AttributeConverter<Angle> AngleConverter =
         new(d => Angle.FromDegrees((float) d), a => a.Degrees);
@@ -61,6 +62,10 @@ static class SpaceTimeTypes
     [ConvertsAttribute]
     public static AttributeConverter<Speed> SpeedConverter =
         new(d => new Speed((float) d), s => s.NumericValue);
+
+    [ConvertsAttribute]
+    public static AttributeConverter<TemperatureDifference> TemperatureDifferenceConverter =
+        new(d => new TemperatureDifference((float) d), td => td.NumericValue);
 
     [ConvertsAttribute]
     public static AttributeConverter<TimeSpan> TimeSpanConverter =
