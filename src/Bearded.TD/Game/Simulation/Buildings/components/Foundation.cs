@@ -139,7 +139,7 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
         if ((height - neighborHeight).Squared > Constants.Game.Navigation.MaxWalkableHeightDifference.Squared)
             return;
 
-        var neighborFoundation = Owner.Game.BuildingLayer[neighbor]
+        var neighborFoundation = Owner.Game.BuildingLayer.GetObjectsOnTile(neighbor)
             .Select(b => b.GetComponents<IFoundation>().FirstOrDefault())
             .FirstOrDefault(f => f != null);
 

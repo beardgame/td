@@ -64,7 +64,10 @@ sealed class DefaultTileOccupancy : Component,
 
     private void addToBuildingLayer()
     {
-        Owner.Game.BuildingLayer.AddBuilding(Owner);
+        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
+        {
+            Owner.Game.BuildingLayer.AddObjectToTile(Owner, tile);
+        }
     }
 
     private void tryReplacingExistingPlaceholders()
@@ -78,7 +81,7 @@ sealed class DefaultTileOccupancy : Component,
 
         foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
         {
-            var buildings = Owner.Game.BuildingLayer[tile]
+            var buildings = Owner.Game.BuildingLayer.GetObjectsOnTile(tile)
                 .Where(building => building != Owner && selector(building));
 
             var rs = buildings.Select(building => building.GetComponents<CanBeBuiltOn>().Single());
@@ -94,7 +97,10 @@ sealed class DefaultTileOccupancy : Component,
 
     private void deleteFromBuildingLayer()
     {
-        Owner.Game.BuildingLayer.RemoveBuilding(Owner);
+        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
+        {
+            Owner.Game.BuildingLayer.RemoveObjectFromTile(Owner, tile);
+        }
     }
 
     private bool isGhost()
@@ -135,13 +141,13 @@ sealed class DefaultTileOccupancy : Component,
 
     private static bool tileContainsNoBuildingOrReplaceableBuilding(GameState game, Tile tile)
     {
-        return game.BuildingLayer[tile].All(b => b.TryGetSingleComponent<CanBeBuiltOn>(out _));
+        return game.BuildingLayer.GetObjectsOnTile(tile).All(b => b.TryGetSingleComponent<CanBeBuiltOn>(out _));
     }
 
     private static ResourceAmount totalRefundsForReplacing(GameState game, IEnumerable<Tile> tiles)
     {
         var buildingsToReplace = tiles
-            .SelectMany(t => game.BuildingLayer[t])
+            .SelectMany(t => game.BuildingLayer.GetObjectsOnTile(t))
             .Distinct();
         return buildingsToReplace
             .Select(obj => obj.TotalResourcesInvested().GetValueOrDefault(ResourceAmount.Zero))
