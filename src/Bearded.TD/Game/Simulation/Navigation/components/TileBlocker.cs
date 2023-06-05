@@ -10,7 +10,10 @@ sealed class TileBlocker : Component, IListener<ObjectDeleting>
 {
     private ITilePresenceListener? tileBlockerLayerPresence;
 
-    protected override void OnAdded() { }
+    protected override void OnAdded()
+    {
+        Events.Subscribe(this);
+    }
 
     public override void Activate()
     {
