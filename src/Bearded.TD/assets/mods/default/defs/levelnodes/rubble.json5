@@ -1,0 +1,17 @@
+{
+    id: "rubble",
+    behaviors: [
+        { id: "setTiles", parameters: { type: "floor" } },
+        { id: "selectRandom", parameters: { percentage: 0.2 } },
+        { id: "setTiles", parameters: { type: "floor" } },
+        {
+            id: "spawnGameObject",
+            parameters: {
+                blueprint: "rubble",
+                placement: "allFromSelection",
+                rotation: "randomDirection",
+                z: 0.01
+            }
+        }
+    ]
+}

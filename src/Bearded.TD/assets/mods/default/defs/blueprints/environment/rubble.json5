@@ -1,0 +1,15 @@
+{
+    id: "rubble",
+    components: [
+        { id: "currentTileNotifier" },
+        { id: "tileBlocker" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.rubble.0",
+                color: "FFC0C0C0",
+                size: 0.75,
+            }
+        },
+    ]
+}

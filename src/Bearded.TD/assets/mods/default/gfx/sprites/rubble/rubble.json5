@@ -1,0 +1,9 @@
+﻿{
+    id: "rubble",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}
