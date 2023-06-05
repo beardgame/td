@@ -1,10 +1,9 @@
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.World;
+namespace Bearded.TD.Game.Simulation.Footprints;
 
 [Component("currentTileNotifier")]
 sealed class CurrentTileNotifier : Component , IListener<ObjectDeleting>
