@@ -21,12 +21,6 @@
             }
         },
         {
-            id: "markTargetsInRange",
-            parameters: {
-                range: 3,
-            }
-        },
-        {
             id: "arcEmitter",
             parameters: {
                 arc: "lightning1-teslaCoil-arc",
