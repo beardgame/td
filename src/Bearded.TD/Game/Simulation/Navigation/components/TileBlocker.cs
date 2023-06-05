@@ -25,6 +25,7 @@ sealed class TileBlocker : Component, IListener<ObjectDeleting>
     public override void OnRemoved()
     {
         detachFromTileBlockerLayer();
+        Events.Unsubscribe(this);
         base.OnRemoved();
     }
 
