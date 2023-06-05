@@ -33,14 +33,6 @@ sealed class BuildingLayer
         {
             getList(tile).Remove(building);
         }
-
-        // TODO: why is this event sent here? looks like something the building should take care of itself
-        // alternatively the event is badly named, since it's only purpose (at time of writing) is to update
-        // the pathfinder (and the opposite event should also be sent from this class in that case)
-        if (building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State is { IsMaterialized: true })
-        {
-            events.Send(new BuildingDestroyed(building));
-        }
     }
 
     public bool HasMaterializedBuilding(Tile tile)
