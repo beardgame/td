@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Navigation;
 
 sealed class PassabilityObserver
-    : IListener<TileTypeChanged>, IListener<BuildingConstructionStarted>, IListener<BuildingDestroyed>
+    : IListener<TileTypeChanged>, IListener<TileBlockerAdded>, IListener<TileBlockerRemoved>
 {
     private static readonly Dictionary<TileType, Passabilities>
         passabilityByTileType = new()
@@ -23,24 +20,24 @@ sealed class PassabilityObserver
             { TileType.Wall, Passabilities.None },
             { TileType.Crevice, ~Passabilities.WalkingUnit & ~Passabilities.Bulldozer }
         };
-    private static readonly Passabilities passabilityInBuilding = ~Passabilities.WalkingUnit;
+    private static readonly Passabilities passabilityInTileBlocker = ~Passabilities.WalkingUnit;
 
     private readonly GlobalGameEvents events;
     private readonly GeometryLayer geometryLayer;
-    private readonly BuildingLayer buildingLayer;
+    private readonly TileBlockerLayer tileBlockerLayer;
 
     private readonly Dictionary<Passability, PassabilityLayer> passabilityLayers;
 
     public PassabilityObserver(
-        GlobalGameEvents events, Level level, GeometryLayer geometryLayer, BuildingLayer buildingLayer)
+        GlobalGameEvents events, Level level, GeometryLayer geometryLayer, TileBlockerLayer tileBlockerLayer)
     {
         this.events = events;
         this.geometryLayer = geometryLayer;
-        this.buildingLayer = buildingLayer;
+        this.tileBlockerLayer = tileBlockerLayer;
 
         events.Subscribe<TileTypeChanged>(this);
-        events.Subscribe<BuildingConstructionStarted>(this);
-        events.Subscribe<BuildingDestroyed>(this);
+        events.Subscribe<TileBlockerAdded>(this);
+        events.Subscribe<TileBlockerRemoved>(this);
 
         passabilityLayers = ((Passability[]) Enum.GetValues(typeof(Passability)))
             .ToDictionary(
@@ -70,16 +67,14 @@ sealed class PassabilityObserver
 
     public void HandleEvent(TileTypeChanged @event) => updatePassabilityForTile(@event.Tile);
 
-    public void HandleEvent(BuildingConstructionStarted @event)
-        => @event.Building.GetTilePresence().OccupiedTiles.ForEach(updatePassabilityForTile);
+    public void HandleEvent(TileBlockerAdded @event) => updatePassabilityForTile(@event.Tile);
 
-    public void HandleEvent(BuildingDestroyed @event)
-        => @event.Building.GetTilePresence().OccupiedTiles.ForEach(updatePassabilityForTile);
+    public void HandleEvent(TileBlockerRemoved @event) => updatePassabilityForTile(@event.Tile);
 
     private void updatePassabilityForTile(Tile tile)
     {
         var type = geometryLayer[tile].Type;
-        var hasBuilding = buildingLayer.HasMaterializedBuilding(tile);
+        var hasTileBlocker = tileBlockerLayer.IsTileBlocked(tile);
 
         var hasChangedPassability = false;
 
@@ -87,9 +82,9 @@ sealed class PassabilityObserver
         {
             var passabilityFlags = passability.AsFlags();
             var isTypePassable = (passabilityFlags & passabilityByTileType[type]) != Passabilities.None;
-            var isBuildingPassable
-                = !hasBuilding || (passabilityFlags & passabilityInBuilding) != Passabilities.None;
-            hasChangedPassability |= layer.HandleTilePassabilityChanged(tile, isTypePassable && isBuildingPassable);
+            var isBlockerPassable
+                = !hasTileBlocker || (passabilityFlags & passabilityInTileBlocker) != Passabilities.None;
+            hasChangedPassability |= layer.HandleTilePassabilityChanged(tile, isTypePassable && isBlockerPassable);
         }
 
         if (hasChangedPassability)

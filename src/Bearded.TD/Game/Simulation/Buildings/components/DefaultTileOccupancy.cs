@@ -16,8 +16,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("defaultTileOccupancy")]
-sealed class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Materialized>
+sealed class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Materialized>,
+    IListener<ObjectDeleting>
 {
+    private bool isMaterialized;
+
     protected override void OnAdded() { }
 
     public override void Activate()
@@ -27,13 +30,34 @@ sealed class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IList
 
         tryReplacingExistingPlaceholders();
         addToBuildingLayer();
-        Events.Subscribe(this);
-        Owner.Deleting += deleteFromBuildingLayer;
+        Events.Subscribe<Materialized>(this);
+        Events.Subscribe<ObjectDeleting>(this);
     }
 
     public void HandleEvent(Materialized @event)
     {
         tryReplacingExistingBuildings(_ => true);
+        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
+        {
+            Owner.Game.TileBlockerLayer.AddTileBlocker(Owner, tile);
+        }
+
+        isMaterialized = true;
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        deleteFromBuildingLayer();
+
+        if (!isMaterialized)
+        {
+            return;
+        }
+
+        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
+        {
+            Owner.Game.TileBlockerLayer.RemoveTileBlocker(Owner, tile);
+        }
     }
 
     private void addToBuildingLayer()
@@ -76,9 +100,7 @@ sealed class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IList
         return Owner.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State.IsGhost ?? false;
     }
 
-    public override void Update(TimeSpan elapsedTime)
-    {
-    }
+    public override void Update(TimeSpan elapsedTime) { }
 
     public Result CanBuild(Parameters parameters)
     {

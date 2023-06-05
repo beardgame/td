@@ -52,6 +52,7 @@ sealed class GameState
     public TargetLayer TargetLayer { get; }
     public ConductiveLayer ConductiveLayer { get; }
     public TemperatureLayer TemperatureLayer { get; }
+    public TileBlockerLayer TileBlockerLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public SelectionLayer SelectionLayer { get; }
     public PassabilityObserver PassabilityObserver { get; }
@@ -80,9 +81,10 @@ sealed class GameState
         TargetLayer = new TargetLayer();
         ConductiveLayer = new ConductiveLayer();
         TemperatureLayer = new TemperatureLayer();
+        TileBlockerLayer = new TileBlockerLayer(Meta.Events);
         BuildingLayer = new BuildingLayer(Meta.Events);
         SelectionLayer = new SelectionLayer();
-        PassabilityObserver = new PassabilityObserver(Meta.Events, Level, GeometryLayer, BuildingLayer);
+        PassabilityObserver = new PassabilityObserver(Meta.Events, Level, GeometryLayer, TileBlockerLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
         VisibilityLayer = new VisibilityLayer(Meta.Events, ZoneLayer);
         Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityObserver.GetLayer(Passability.WalkingUnit));
