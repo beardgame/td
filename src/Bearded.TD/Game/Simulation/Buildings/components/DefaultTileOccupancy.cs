@@ -16,7 +16,9 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("defaultTileOccupancy")]
-sealed class DefaultTileOccupancy : Component, IBuildBuildingPrecondition, IListener<Materialized>,
+sealed class DefaultTileOccupancy : Component,
+    IBuildBuildingPrecondition,
+    IListener<Materialized>,
     IListener<ObjectDeleting>
 {
     private bool isMaterialized;
