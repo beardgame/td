@@ -16,6 +16,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
+// TODO: this class does too much, and should be split further:
+// - The actual implementation of IBuildBuildingPrecondition is completely isolated from the rest of this class, and can
+//   therefore be moved.
+// - Tracking in the building layer (which is somewhat coupled with adding the TileBlocker component on materialize) is
+//   somewhat separate
+// - Doing the actual replacing on materialize is somewhat related to the build precondition (since now we actually need
+//   to execute on what we promised), but there may be a more elegant solution to that.
 [Component("defaultTileOccupancy")]
 sealed class DefaultTileOccupancy : Component,
     IBuildBuildingPrecondition,
