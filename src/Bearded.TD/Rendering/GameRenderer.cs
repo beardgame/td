@@ -144,7 +144,7 @@ sealed class GameRenderer
     {
         const float lineWidth = HexagonSide * 0.1f;
 
-        var passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
+        var passabilityLayer = game.State.PassabilityObserver.GetLayer(Passability.WalkingUnit);
 
         foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
         {

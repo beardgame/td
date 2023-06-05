@@ -2,24 +2,10 @@
 
 namespace Bearded.TD.Game.Simulation.Navigation;
 
-struct TilePassability
+readonly record struct TilePassability(bool IsPassable, Directions PassableDirections)
 {
-    public bool IsPassable { get; }
-    public Directions PassableDirections { get; }
+    public TilePassability WithPassability(bool isPassable) => this with { IsPassable = isPassable };
 
-    public TilePassability(bool isPassable, Directions passableDirections)
-    {
-        IsPassable = isPassable;
-        PassableDirections = passableDirections;
-    }
-
-    public TilePassability WithPassability(bool isPassable)
-    {
-        return new TilePassability(isPassable, PassableDirections);
-    }
-
-    public TilePassability WithPassableDirections(Directions passableDirections)
-    {
-        return new TilePassability(IsPassable, passableDirections);
-    }
+    public TilePassability WithPassableDirections(Directions passableDirections) =>
+        this with { PassableDirections = passableDirections };
 }

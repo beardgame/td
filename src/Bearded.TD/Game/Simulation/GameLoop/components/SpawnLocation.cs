@@ -50,7 +50,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
         Owner.Game.ListAs(this);
         Owner.Game.Meta.Events.Subscribe(this);
 
-        passability = Owner.Game.PassabilityManager.GetLayer(Passability.Bulldozer);
+        passability = Owner.Game.PassabilityObserver.GetLayer(Passability.Bulldozer);
         visibility = Owner.Game.VisibilityLayer;
         buildings = Owner.Game.BuildingLayer;
     }

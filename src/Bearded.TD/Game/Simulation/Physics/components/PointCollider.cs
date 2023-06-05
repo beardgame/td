@@ -28,7 +28,7 @@ sealed class PointCollider : Component, IPreviewListener<PreviewMove>
         var ray = new Ray3(start, step);
 
         var rayCast = Owner.Game.Level.CastPiercingRayAgainstObjects(
-            ray, Owner.Game.PhysicsLayer, Owner.Game.PassabilityManager.GetLayer(Passability.Projectile));
+            ray, Owner.Game.PhysicsLayer, Owner.Game.PassabilityObserver.GetLayer(Passability.Projectile));
 
         foreach (var (result, _, point, obj, lastStep, normal, tile) in rayCast)
         {

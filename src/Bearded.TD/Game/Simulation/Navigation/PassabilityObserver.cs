@@ -12,7 +12,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Navigation;
 
-sealed class PassabilityManager
+sealed class PassabilityObserver
     : IListener<TileTypeChanged>, IListener<BuildingConstructionStarted>, IListener<BuildingDestroyed>
 {
     private static readonly Dictionary<TileType, Passabilities>
@@ -31,7 +31,7 @@ sealed class PassabilityManager
 
     private readonly Dictionary<Passability, PassabilityLayer> passabilityLayers;
 
-    public PassabilityManager(
+    public PassabilityObserver(
         GlobalGameEvents events, Level level, GeometryLayer geometryLayer, BuildingLayer buildingLayer)
     {
         this.events = events;

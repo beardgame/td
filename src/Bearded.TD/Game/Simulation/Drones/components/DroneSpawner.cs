@@ -68,7 +68,7 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
         if (factionProvider?.Faction is { } faction &&
             faction.SharesBehaviorWith<ShareDrones>(@event.Faction) &&
             this.TryFulfillRequest(
-                Owner.Game.PassabilityManager.GetLayer(Passability.Drone), @event.Request, out var preview))
+                Owner.Game.PassabilityObserver.GetLayer(Passability.Drone), @event.Request, out var preview))
         {
             @event = @event.OfferAlternative(preview);
         }

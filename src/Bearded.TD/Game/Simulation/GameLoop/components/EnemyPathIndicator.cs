@@ -41,7 +41,7 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
         base.Activate();
 
         tileWalker = new TileWalker(this, Owner.Game.Level, startTile);
-        passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
+        passabilityLayer = Owner.Game.PassabilityObserver.GetLayer(Passability.WalkingUnit);
 
         var sprite = Owner.Game.Meta.Blueprints.Sprites[ModAwareId.ForDefaultMod("particle")].GetSprite("circle-soft");
         drawer = new TrailDrawer(Owner.Game, sprite);

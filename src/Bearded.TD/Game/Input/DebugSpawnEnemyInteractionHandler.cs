@@ -22,7 +22,7 @@ sealed class DebugSpawnEnemyInteractionHandler : InteractionHandler
         if (cursor.Click.Hit)
             cursor.CurrentFootprint.OccupiedTiles
                 .Where(t => Game.State.Level.IsValid(t)
-                    && Game.State.PassabilityManager.GetLayer(Passability.WalkingUnit)[t].IsPassable)
+                    && Game.State.PassabilityObserver.GetLayer(Passability.WalkingUnit)[t].IsPassable)
                 .ForEach(tile => Game.State.Meta.Dispatcher.RunOnlyOnServer(
                     SpawnUnit.Command,
                     Game.State,

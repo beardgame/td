@@ -45,7 +45,7 @@ sealed class HeightRenderer
     {
         level = game.State.Level;
         geometryLayer = game.State.GeometryLayer;
-        passabilityLayer = game.State.PassabilityManager.GetLayer(Passability.WalkingUnit);
+        passabilityLayer = game.State.PassabilityObserver.GetLayer(Passability.WalkingUnit);
         splatSeedOffset = game.GameSettings.Seed;
 
         heightmap.ResolutionChanged += () => isHeightmapGenerated = false;

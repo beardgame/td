@@ -37,7 +37,7 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
     public override void Activate()
     {
         base.Activate();
-        passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
+        passabilityLayer = Owner.Game.PassabilityObserver.GetLayer(Passability.WalkingUnit);
     }
 
     public override void Update(TimeSpan elapsedTime)

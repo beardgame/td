@@ -69,7 +69,7 @@ sealed class TeleportRandomlyOnTakeHit
     {
         Owner.Sync(() =>
         {
-            var passability = Owner.Game.PassabilityManager.GetLayer(Passability.WalkingUnit);
+            var passability = Owner.Game.PassabilityObserver.GetLayer(Passability.WalkingUnit);
 
             var maxTileRadius = MoreMath.CeilToInt(Parameters.MaxDistance.NumericValue + 1);
 

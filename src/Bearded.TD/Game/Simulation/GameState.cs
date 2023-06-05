@@ -54,7 +54,7 @@ sealed class GameState
     public TemperatureLayer TemperatureLayer { get; }
     public BuildingLayer BuildingLayer { get; }
     public SelectionLayer SelectionLayer { get; }
-    public PassabilityManager PassabilityManager { get; }
+    public PassabilityObserver PassabilityObserver { get; }
     public ZoneLayer ZoneLayer { get; }
     public VisibilityLayer VisibilityLayer { get; }
 
@@ -82,10 +82,10 @@ sealed class GameState
         TemperatureLayer = new TemperatureLayer();
         BuildingLayer = new BuildingLayer(Meta.Events);
         SelectionLayer = new SelectionLayer();
-        PassabilityManager = new PassabilityManager(Meta.Events, Level, GeometryLayer, BuildingLayer);
+        PassabilityObserver = new PassabilityObserver(Meta.Events, Level, GeometryLayer, BuildingLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
         VisibilityLayer = new VisibilityLayer(Meta.Events, ZoneLayer);
-        Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityManager.GetLayer(Passability.WalkingUnit));
+        Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityObserver.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
         WaveDirector = new WaveDirector(this);

@@ -40,7 +40,7 @@ sealed class MarkTargetsInRange
     {
         base.Activate();
 
-        passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
+        passabilityLayer = Owner.Game.PassabilityObserver.GetLayer(Passability.Projectile);
         targetLayer = Owner.Game.TargetLayer;
     }
 

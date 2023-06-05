@@ -71,7 +71,7 @@ sealed class Range :
 
     public override void Activate()
     {
-        passabilityLayer = Owner.Game.PassabilityManager.GetLayer(Passability.Projectile);
+        passabilityLayer = Owner.Game.PassabilityObserver.GetLayer(Passability.Projectile);
 
         tileRangeDrawer = new TileRangeDrawer(
             Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
