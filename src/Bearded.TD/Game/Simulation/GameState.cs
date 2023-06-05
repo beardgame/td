@@ -82,7 +82,7 @@ sealed class GameState
         ConductiveLayer = new ConductiveLayer();
         TemperatureLayer = new TemperatureLayer();
         TileBlockerLayer = new TileBlockerLayer(Meta.Events);
-        BuildingLayer = new BuildingLayer(Meta.Events);
+        BuildingLayer = new BuildingLayer();
         SelectionLayer = new SelectionLayer();
         PassabilityObserver = new PassabilityObserver(Meta.Events, Level, GeometryLayer, TileBlockerLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);

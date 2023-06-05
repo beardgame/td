@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
@@ -11,13 +10,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed class BuildingLayer
 {
-    private readonly GlobalGameEvents events;
     private readonly Dictionary<Tile, List<GameObject>> buildingLookup = new();
-
-    public BuildingLayer(GlobalGameEvents events)
-    {
-        this.events = events;
-    }
 
     public void AddBuilding(GameObject building)
     {
@@ -35,16 +28,13 @@ sealed class BuildingLayer
         }
     }
 
-    public bool HasMaterializedBuilding(Tile tile)
-    {
-        return buildingsAt(tile).Any(b => getStateFor(b) is { IsMaterialized: true });
-    }
+    public bool HasMaterializedBuilding(Tile tile) => buildingsAt(tile).Any(isMaterialized);
 
     public bool TryGetMaterializedBuilding(Tile tile, [NotNullWhen(true)] out GameObject? building)
     {
         foreach (var candidate in buildingsAt(tile))
         {
-            if (getStateFor(candidate) is { IsMaterialized: true })
+            if (isMaterialized(candidate))
             {
                 building = candidate;
                 return true;
@@ -62,8 +52,8 @@ sealed class BuildingLayer
 
     private List<GameObject> getList(Tile tile) => buildingLookup.GetValueOrInsertNewDefaultFor(tile);
 
-    private static IBuildingState? getStateFor(GameObject building)
-    {
-        return building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
-    }
+    private static bool isMaterialized(GameObject building) => getStateFor(building) is { IsMaterialized: true };
+
+    private static IBuildingState? getStateFor(GameObject building) =>
+        building.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State;
 }
