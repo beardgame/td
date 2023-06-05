@@ -8,32 +8,32 @@ namespace Bearded.TD.Game.Simulation.Navigation;
 [Component("tileBlocker")]
 sealed class TileBlocker : Component, IListener<ObjectDeleting>
 {
-    private ITilePresenceListener? tilePresenceListener;
+    private ITilePresenceListener? tileBlockerLayerPresence;
 
     protected override void OnAdded() { }
 
     public override void Activate()
     {
-        tilePresenceListener = Owner.GetTilePresence().ObserveChanges(
+        tileBlockerLayerPresence = Owner.GetTilePresence().ObserveChanges(
             onAdded: tile => Owner.Game.TileBlockerLayer.AddTileBlocker(Owner, tile),
             onRemoved: tile => Owner.Game.TileBlockerLayer.RemoveTileBlocker(Owner, tile));
     }
 
     public override void OnRemoved()
     {
-        detachTileListener();
+        detachFromTileBlockerLayer();
         base.OnRemoved();
     }
 
     public void HandleEvent(ObjectDeleting @event)
     {
-        detachTileListener();
+        detachFromTileBlockerLayer();
     }
 
-    private void detachTileListener()
+    private void detachFromTileBlockerLayer()
     {
-        tilePresenceListener?.Detach();
-        tilePresenceListener = null;
+        tileBlockerLayerPresence?.Detach();
+        tileBlockerLayerPresence = null;
     }
 
     public override void Update(TimeSpan elapsedTime) { }

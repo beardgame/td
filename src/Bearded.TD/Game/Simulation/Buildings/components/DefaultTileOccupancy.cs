@@ -22,6 +22,8 @@ sealed class DefaultTileOccupancy : Component,
     IListener<Materialized>,
     IListener<ObjectDeleting>
 {
+    private ITilePresenceListener? buildingLayerPresence;
+
     protected override void OnAdded() { }
 
     public override void Activate()
@@ -30,7 +32,7 @@ sealed class DefaultTileOccupancy : Component,
             return;
 
         tryReplacingExistingPlaceholders();
-        addToBuildingLayer();
+        buildingLayerPresence = Owner.TrackTilePresenceInLayer(Owner.Game.BuildingLayer);
         Events.Subscribe<Materialized>(this);
         Events.Subscribe<ObjectDeleting>(this);
     }
@@ -43,15 +45,8 @@ sealed class DefaultTileOccupancy : Component,
 
     public void HandleEvent(ObjectDeleting @event)
     {
-        deleteFromBuildingLayer();
-    }
-
-    private void addToBuildingLayer()
-    {
-        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
-        {
-            Owner.Game.BuildingLayer.AddObjectToTile(Owner, tile);
-        }
+        buildingLayerPresence?.Detach();
+        buildingLayerPresence = null;
     }
 
     private void tryReplacingExistingPlaceholders()
@@ -79,18 +74,7 @@ sealed class DefaultTileOccupancy : Component,
         replacers.ForEach(r => r.Replace());
     }
 
-    private void deleteFromBuildingLayer()
-    {
-        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
-        {
-            Owner.Game.BuildingLayer.RemoveObjectFromTile(Owner, tile);
-        }
-    }
-
-    private bool isGhost()
-    {
-        return Owner.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State.IsGhost ?? false;
-    }
+    private bool isGhost() => Owner.GetComponents<IBuildingStateProvider>().SingleOrDefault()?.State.IsGhost ?? false;
 
     public override void Update(TimeSpan elapsedTime) { }
 
