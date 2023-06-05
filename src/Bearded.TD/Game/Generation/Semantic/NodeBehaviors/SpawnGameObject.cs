@@ -16,6 +16,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 
 using static SpawnGameObject.AlignmentMode;
 using static SpawnGameObject.PlacementMode;
+using static SpawnGameObject.RotationMode;
 
 [NodeBehavior("spawnGameObject")]
 sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
@@ -24,30 +25,53 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
     public override void Generate(NodeGenerationContext context)
     {
-        foreach (var _ in Enumerable.Range(0, Parameters.Count ?? 1))
+        foreach (var location in getLocations(context))
         {
-            var location = getLocation(context);
-            context.Content.PlaceGameObject(Parameters.Blueprint, location, Direction2.Zero);
+            var direction = getDirection(context);
+            context.Content.PlaceGameObject(Parameters.Blueprint, location, direction);
         }
     }
 
-    private Position3 getLocation(NodeGenerationContext context)
+    private IEnumerable<Position3> getLocations(NodeGenerationContext context)
     {
-        var tile = Parameters.Placement switch
+        return getTiles(context).Select(tile => getPositionWithinTile(tile, context));
+    }
+
+    private IEnumerable<Tile> getTiles(NodeGenerationContext context)
+    {
+        return Parameters.Placement switch
         {
-            FirstFromSelection => context.Tiles.Selection.Count > 0
-                ? context.Tiles.Selection.First()
-                : Level.GetTile(context.NodeData.Circles[0].Center),
+            FirstFromSelection => single(
+                context.Tiles.Selection.Count > 0
+                    ? context.Tiles.Selection.First()
+                    : Level.GetTile(context.NodeData.Circles[0].Center)),
 
-            AwayFromConnections => validTiles(context)
-                .MaxBy(t => context.NodeData.Connections.Sum(c => c.DistanceTo(t))),
+            AllFromSelection => context.Tiles.Selection,
 
-            RandomTile => Extensions.RandomElement(context.Tiles.Selection, context.Random),
+            AwayFromConnections => single(
+                validTiles(context)
+                    .MaxBy(t => context.NodeData.Connections.Sum(c => c.DistanceTo(t)))),
+
+            RandomTile => multiple(
+                () => Extensions.RandomElement(context.Tiles.Selection, context.Random)),
 
             _ => throw new ArgumentOutOfRangeException($"Unhandled placement mode: {Parameters.Placement}")
         };
+    }
 
-        return getPositionWithinTile(tile, context);
+    private static IEnumerable<Tile> single(Tile tile) => Extensions.Yield(tile);
+
+    private IEnumerable<Tile> multiple(Func<Tile> tileSelector) =>
+        Enumerable.Range(0, Parameters.Count ?? 1).Select(_ => tileSelector());
+
+    private Direction2 getDirection(NodeGenerationContext context)
+    {
+        return Parameters.Rotation switch
+        {
+            FixedDirection => Direction2.Zero,
+            RandomDirection => Direction2.FromDegrees(context.Random.NextSingle() * 360),
+            _ => throw new ArgumentOutOfRangeException($"Unhandled rotation mode: {Parameters.Rotation}")
+        };
     }
 
     private IEnumerable<Tile> validTiles(NodeGenerationContext context)
@@ -73,11 +97,17 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
 
     [UsedImplicitly]
     public sealed record BehaviorParameters(
-        IGameObjectBlueprint Blueprint, PlacementMode Placement, AlignmentMode Alignment, Unit Z, int? Count);
+        IGameObjectBlueprint Blueprint,
+        PlacementMode Placement,
+        AlignmentMode Alignment,
+        RotationMode Rotation,
+        Unit Z,
+        int? Count);
 
     public enum PlacementMode
     {
         FirstFromSelection = 0,
+        AllFromSelection,
         AwayFromConnections,
         RandomTile,
     }
@@ -86,5 +116,11 @@ sealed class SpawnGameObject : NodeBehavior<SpawnGameObject.BehaviorParameters>
     {
         CenterOfTile = 0,
         RandomlyInTile,
+    }
+
+    public enum RotationMode
+    {
+        FixedDirection = 0,
+        RandomDirection,
     }
 }
