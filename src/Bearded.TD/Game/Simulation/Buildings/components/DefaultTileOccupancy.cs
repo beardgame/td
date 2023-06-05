@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
@@ -21,8 +22,6 @@ sealed class DefaultTileOccupancy : Component,
     IListener<Materialized>,
     IListener<ObjectDeleting>
 {
-    private bool isMaterialized;
-
     protected override void OnAdded() { }
 
     public override void Activate()
@@ -39,27 +38,12 @@ sealed class DefaultTileOccupancy : Component,
     public void HandleEvent(Materialized @event)
     {
         tryReplacingExistingBuildings(_ => true);
-        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
-        {
-            Owner.Game.TileBlockerLayer.AddTileBlocker(Owner, tile);
-        }
-
-        isMaterialized = true;
+        Owner.AddComponent(new TileBlocker());
     }
 
     public void HandleEvent(ObjectDeleting @event)
     {
         deleteFromBuildingLayer();
-
-        if (!isMaterialized)
-        {
-            return;
-        }
-
-        foreach (var tile in Owner.GetTilePresence().OccupiedTiles)
-        {
-            Owner.Game.TileBlockerLayer.RemoveTileBlocker(Owner, tile);
-        }
     }
 
     private void addToBuildingLayer()
