@@ -3,7 +3,7 @@
     components: [
         { id: "name", parameters: { name: "Tesla coil" } },
         { id: "cost", parameters: { resources: 50 } },
-        { id: "footprint", parameters: { group: "single" } },
+        { id: "footprint", parameters: { footprint: "single" } },
         { id: "footprintTransformation" },
         { id: "defaultTileOccupancy" },
         { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },

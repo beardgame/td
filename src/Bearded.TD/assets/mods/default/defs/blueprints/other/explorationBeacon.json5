@@ -10,6 +10,6 @@
         drawGroup: "IgnoreDepth"
       }
     },
-    { id: "footprint", parameters: { group: "seven" } }
+    { id: "footprint", parameters: { footprint: "seven" } }
   ]
 }

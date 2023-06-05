@@ -17,10 +17,10 @@ sealed class ObjectFootprint : Component<ObjectFootprint.IParameters>, IObjectFo
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        public Footprint Group { get; }
+        public Footprint Footprint { get; }
     }
 
-    Footprint IObjectFootprint.Footprint => Parameters.Group;
+    Footprint IObjectFootprint.Footprint => Parameters.Footprint;
 
     public ObjectFootprint(IParameters parameters) : base(parameters)
     {
@@ -36,6 +36,6 @@ sealed class ObjectFootprint : Component<ObjectFootprint.IParameters>, IObjectFo
 
     public Result CanBuild(Parameters parameters)
     {
-        return Result.FromBool(Parameters.Group == parameters.Footprint.Footprint);
+        return Result.FromBool(Parameters.Footprint == parameters.Footprint.Footprint);
     }
 }
