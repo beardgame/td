@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.16
+
+* Added background sound that changes dynamically based on the phase of the game
+* Buildings now keep track of their temperature
+  * Buildings in overdrive slowly accumulate temperature
+  * Fire explosions cause nearby buildings to heat up
+  * Buildings slowly cool off to the equilibrium over time
+  * Buildings that reach a temperature that is too high are disabled until they cool off enough
+  * Removed the damage over time from the overdrive
+* New options:
+  * Always show health bar
+  * Always show temperature gauge
+* Changed enemy colliders to improve the accuracy of towers
+* Show the icons of the enemies that will spawn each wave
+* Added rubble to level generation
+* Added metal ore veins to level generation
+* Rebalanced the volume of some sound effects
+* Bug fix: enemy generation now deterministically depends on the seed
+
 ## v0.15
 
 * Added a new tower: flame trap
