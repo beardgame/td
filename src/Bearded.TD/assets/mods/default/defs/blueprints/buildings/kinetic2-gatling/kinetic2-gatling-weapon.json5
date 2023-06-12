@@ -37,6 +37,13 @@
             }
         },
         {
+            id: "weaponJamming",
+            parameters: {
+                probabilityPerShot: 0.01,
+                duration: 3,
+            }
+        },
+        {
             id: "projectileEmitter",
             parameters: {
                 projectile: "kinetic2-gatling-shell",
@@ -60,6 +67,13 @@
                 trigger: "shotProjectile",
                 sound: "gunshot-fast",
             },
+        },
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "weaponMisfired",
+                sound: "gunshot-empty"
+            }
         },
         {
             id: "shakeScreenOnFireWeapon",
