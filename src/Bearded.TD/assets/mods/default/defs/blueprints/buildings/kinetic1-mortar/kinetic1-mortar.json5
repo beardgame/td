@@ -12,7 +12,7 @@
     { id: "autoRepair", parameters: { } },
     { id: "gainXpOnDamage" },
     { id: "veterancy" },
-    { id: "upgradeSlots", parameters : { additionalSlotTriggers : [ "levelGained" ] } },
+    { id: "upgradeSlots", parameters : { initialSlots: 1, additionalSlotTriggers : [ "levelGained" ] } },
     { id: "passiveVeterancyBonus", parameters : { } },
     { id: "upgradePips" },
     { id: "damageNumbers" },
