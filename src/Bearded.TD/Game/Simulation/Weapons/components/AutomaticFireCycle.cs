@@ -54,6 +54,15 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
 
     private void fireWeapon()
     {
-        Events.Send(new FireWeapon(Parameters.DamagePerSecond / Parameters.FireRate));
+        var preview = new PreviewFireWeapon(Parameters.DamagePerSecond / Parameters.FireRate, false);
+        Events.Preview(ref preview);
+        if (preview.IsCancelled)
+        {
+            Events.Send(new WeaponMisfired());
+        }
+        else
+        {
+            Events.Send(new FireWeapon(Parameters.DamagePerSecond / Parameters.FireRate));
+        }
     }
 }
