@@ -14,7 +14,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     public interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(0.02)]
-        public float ProbabilityPerShot { get; }
+        public double ProbabilityPerShot { get; }
 
         [Modifiable(4)]
         public TimeSpan Duration { get; }
@@ -26,7 +26,16 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
 
     protected override void OnAdded() { }
 
-    public override void Activate() { }
+    public override void Activate()
+    {
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
+        base.OnRemoved();
+    }
 
     public void Jam(TimeSpan duration)
     {
@@ -49,7 +58,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
 
     private void maybeJamWeapon(ICommandDispatcher<GameInstance> dispatcher)
     {
-        var shouldJam = activeJam is not null && StaticRandom.Bool(Parameters.ProbabilityPerShot);
+        var shouldJam = activeJam is null && StaticRandom.Bool(Parameters.ProbabilityPerShot);
         if (!shouldJam) return;
         dispatcher.Dispatch(JamWeapon.Command(Owner, Parameters.Duration));
     }
