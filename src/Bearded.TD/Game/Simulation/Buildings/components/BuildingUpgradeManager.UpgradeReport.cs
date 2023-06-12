@@ -30,13 +30,14 @@ sealed partial class BuildingUpgradeManager
 
         public IUpgradeReportInstance CreateInstance(GameInstance game)
         {
-            return new UpgradeReportInstance(source.Owner, source, game);
+            return new UpgradeReportInstance(source.Owner, source, source.upgradeSlots, game);
         }
 
         private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>
         {
             private readonly GameObject subject;
             private readonly IBuildingUpgradeManager upgradeManager;
+            private readonly IUpgradeSlots? upgradeSlots;
             private readonly GameInstance game;
             private readonly GlobalGameEvents events;
             private readonly Faction playerFaction;
@@ -46,19 +47,25 @@ sealed partial class BuildingUpgradeManager
 
             public IReadOnlyCollection<IUpgradeReportInstance.IUpgradeModel> Upgrades { get; }
             public IReadOnlyCollection<IPermanentUpgrade> AvailableUpgrades { get; }
-            public int OccupiedUpgradeSlots => upgradeManager.UpgradeSlotsOccupied;
-            public int UnlockedUpgradeSlots => upgradeManager.UpgradeSlotsUnlocked;
+            public int OccupiedUpgradeSlots =>
+                upgradeSlots == null ? 0 : upgradeSlots.FilledSlotsCount + upgradeSlots.ReservedSlotsCount;
+            public int UnlockedUpgradeSlots => upgradeSlots?.TotalSlotsCount ?? 0;
 
             public bool CanPlayerUpgradeBuilding =>
-                upgradeManager.HasAvailableSlot && upgradeManager.CanBeUpgradedBy(playerFaction);
+                upgradeSlots is { HasAvailableSlot: true } && upgradeManager.CanBeUpgradedBy(playerFaction);
 
             public event VoidEventHandler? UpgradesUpdated;
             public event VoidEventHandler? AvailableUpgradesUpdated;
 
-            public UpgradeReportInstance(GameObject subject, IBuildingUpgradeManager upgradeManager, GameInstance game)
+            public UpgradeReportInstance(
+                GameObject subject,
+                IBuildingUpgradeManager upgradeManager,
+                IUpgradeSlots? upgradeSlots,
+                GameInstance game)
             {
                 this.subject = subject;
                 this.upgradeManager = upgradeManager;
+                this.upgradeSlots = upgradeSlots;
                 this.game = game;
                 events = game.Meta.Events;
                 playerFaction = game.Me.Faction;

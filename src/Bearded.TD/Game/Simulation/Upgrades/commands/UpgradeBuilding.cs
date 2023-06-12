@@ -37,12 +37,13 @@ static class UpgradeBuilding
             {
                 return false;
             }
-            if (building.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is not { } upgradeManager)
+            if (building.GetComponents<IUpgradeSlots>().SingleOrDefault() is not { } upgradeSlots ||
+                building.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is not { } upgradeManager)
             {
                 return false;
             }
             return technology.IsUpgradeUnlocked(upgrade)
-                && upgradeManager.HasAvailableSlot
+                && upgradeSlots.HasAvailableSlot
                 && upgradeManager.CanApplyUpgrade(upgrade)
                 && upgradeManager.CanBeUpgradedBy(actor.Faction);
         }

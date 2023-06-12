@@ -13,11 +13,11 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 [Component("upgradePips")]
 sealed class UpgradePips : Component, IListener<DrawComponents>
 {
-    private IBuildingUpgradeManager? buildingUpgrades;
+    private IUpgradeSlots? upgradeSlots;
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IBuildingUpgradeManager>(Owner, Events, m => buildingUpgrades = m);
+        ComponentDependencies.Depend<IUpgradeSlots>(Owner, Events, slots => upgradeSlots = slots);
 
         Events.Subscribe(this);
     }
@@ -36,15 +36,15 @@ sealed class UpgradePips : Component, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
-        if (buildingUpgrades == null)
+        if (upgradeSlots == null)
         {
             return;
         }
 
-        var halfPipCount = buildingUpgrades.UpgradesInProgress.Count;
-        var fullPipCount = buildingUpgrades.UpgradeSlotsOccupied - halfPipCount;
-        var emptyPipCount = buildingUpgrades.UpgradeSlotsUnlocked - buildingUpgrades.UpgradeSlotsOccupied;
-        var totalPipCount = emptyPipCount + halfPipCount + fullPipCount;
+        var halfPipCount = upgradeSlots.ReservedSlotsCount;
+        var fullPipCount = upgradeSlots.FilledSlotsCount;
+        var totalPipCount = upgradeSlots.TotalSlotsCount;
+        var emptyPipCount = totalPipCount - fullPipCount - halfPipCount;
 
         if (totalPipCount == 0)
         {

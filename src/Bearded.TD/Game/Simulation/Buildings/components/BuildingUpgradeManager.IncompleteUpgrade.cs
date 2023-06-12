@@ -9,14 +9,17 @@ sealed partial class BuildingUpgradeManager
     private sealed class IncompleteUpgrade : IncompleteWork, IIncompleteUpgrade
     {
         private readonly BuildingUpgradeManager manager;
+        private readonly IUpgradeSlotReservation slotReservation;
         private IBreakageReceipt? breakageReceipt;
 
         public IPermanentUpgrade Upgrade { get; }
         public double PercentageComplete { get; private set; }
 
-        public IncompleteUpgrade(BuildingUpgradeManager manager, IPermanentUpgrade upgrade)
+        public IncompleteUpgrade(
+            BuildingUpgradeManager manager, IPermanentUpgrade upgrade, IUpgradeSlotReservation slotReservation)
         {
             this.manager = manager;
+            this.slotReservation = slotReservation;
             Upgrade = upgrade;
         }
 
@@ -48,6 +51,7 @@ sealed partial class BuildingUpgradeManager
         {
             manager.onUpgradeCompleted(this);
             breakageReceipt?.Repair();
+            slotReservation.Fill();
         }
 
         public override void OnCancel()
