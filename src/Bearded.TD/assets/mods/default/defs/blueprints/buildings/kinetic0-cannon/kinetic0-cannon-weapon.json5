@@ -31,7 +31,7 @@
         {
             id: "weaponJamming",
             parameters: {
-                probabilityPerShot: 0.04,
+                probabilityPerShot: 0.008,
                 duration: 3,
             }
         },
