@@ -16,7 +16,7 @@ sealed class FloodFillRanger : IRanger
     public ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IWeaponState weapon,
+        Tile origin,
         Unit minimumRange,
         Unit maximumRange)
     {
@@ -29,9 +29,8 @@ sealed class FloodFillRanger : IRanger
         toExpand.Clear();
         result.Clear();
 
-        var originTile = Level.GetTile(weapon.Position);
-        seen.Add(originTile);
-        toExpand.Enqueue((originTile, 0));
+        seen.Add(origin);
+        toExpand.Enqueue((origin, 0));
 
         while (toExpand.Count > 0)
         {

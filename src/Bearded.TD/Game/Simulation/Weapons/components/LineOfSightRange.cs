@@ -10,10 +10,17 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 
 sealed class LineOfSightRanger : IRanger
 {
+    private readonly IWeaponState weapon;
+
+    public LineOfSightRanger(IWeaponState weapon)
+    {
+        this.weapon = weapon;
+    }
+
     public ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IWeaponState weapon,
+        Tile origin,
         Unit minimumRange,
         Unit maximumRange)
     {

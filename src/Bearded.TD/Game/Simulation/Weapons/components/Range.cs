@@ -30,7 +30,7 @@ sealed class Range :
         Default = LineOfSight,
     }
 
-    private readonly IRanger ranger;
+    private IRanger ranger = null!;
     private IWeaponState weapon = null!;
     private PassabilityLayer passabilityLayer = null!;
     private TileRangeDrawer tileRangeDrawer = null!;
@@ -56,17 +56,20 @@ sealed class Range :
 
     public Range(IParameters parameters) : base(parameters)
     {
-        ranger = parameters.Type switch
-        {
-            Type.LineOfSight => new LineOfSightRanger(),
-            Type.FloodFill => new FloodFillRanger(),
-            _ => throw new ArgumentOutOfRangeException(),
-        };
     }
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
+        ComponentDependencies.Depend<IWeaponState>(Owner, Events, c =>
+        {
+            weapon = c;
+            ranger = Parameters.Type switch
+            {
+                Type.LineOfSight => new LineOfSightRanger(weapon),
+                Type.FloodFill => new FloodFillRanger(),
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+        });
     }
 
     public override void Activate()
@@ -109,9 +112,10 @@ sealed class Range :
     {
         currentMaxTurningAngle = weapon.MaximumTurningAngle;
         currentRange = Parameters.Range;
+        var tile = Level.GetTile(weapon.Position);
 
         tilesInRange = ranger.GetTilesInRange(
-            Owner.Game, passabilityLayer, weapon, Parameters.MinimumRange, Parameters.Range
+            Owner.Game, passabilityLayer, tile, Parameters.MinimumRange, Parameters.Range
             );
 
         nextTileInRangeRecalculationTime = Owner.Game.Time + Parameters.ReCalculateTilesInRangeInterval;

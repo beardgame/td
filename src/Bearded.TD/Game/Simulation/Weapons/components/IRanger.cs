@@ -10,7 +10,7 @@ internal interface IRanger
     ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IWeaponState weapon,
+        Tile origin,
         Unit minimumRange,
         Unit maximumRange);
 }
