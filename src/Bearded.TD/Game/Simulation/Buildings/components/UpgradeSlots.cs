@@ -30,8 +30,11 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
     public override void Activate()
     {
         TotalSlotsCount = Parameters.InitialSlots;
-        triggerSubscriptions.AddRange(
-            Parameters.AdditionalSlotTriggers.Select(trigger => trigger.Subscribe(Events, unlockSlot)));
+        if (!Parameters.AdditionalSlotTriggers.IsDefault)
+        {
+            triggerSubscriptions.AddRange(
+                Parameters.AdditionalSlotTriggers.Select(trigger => trigger.Subscribe(Events, unlockSlot)));
+        }
     }
 
     public override void OnRemoved()
