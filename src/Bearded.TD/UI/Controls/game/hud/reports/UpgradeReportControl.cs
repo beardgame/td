@@ -1,11 +1,15 @@
 using System.Collections.Immutable;
+using Bearded.TD.Game;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(IUpgradeReport), ReportType.Upgrades)]
 sealed partial class UpgradeReportControl : ReportControl
 {
     public override double Height => 200;
@@ -21,9 +25,9 @@ sealed partial class UpgradeReportControl : ReportControl
     private readonly Binding<string> slots = new();
     private readonly Binding<bool> canUpgrade = new();
 
-    public UpgradeReportControl(IUpgradeReportInstance reportInstance, ControlContainer controlContainer)
+    public UpgradeReportControl(GameInstance game, IUpgradeReport report)
     {
-        this.reportInstance = reportInstance;
+        this.reportInstance = report.CreateInstance(game);
         this.controlContainer = controlContainer;
         reportInstance.UpgradesUpdated += updateUpgradesFromReport;
 

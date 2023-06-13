@@ -1,10 +1,14 @@
 using Bearded.Graphics;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Debug;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(IDebugReport), ReportType.Debug)]
 sealed class DebugReportControl : ReportControl
 {
     private readonly IDebugReport report;

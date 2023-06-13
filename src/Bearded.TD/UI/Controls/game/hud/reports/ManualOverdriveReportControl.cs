@@ -1,11 +1,14 @@
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Reports;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
+[ReportsOn(typeof(IManualOverdriveReport), ReportType.ManualControl)]
 sealed class ManualOverdriveReportControl : ReportControl
 {
     private readonly GameInstance game;
