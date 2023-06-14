@@ -54,21 +54,21 @@ static class ArcTree
         UntypedDamage damage,
         TimeSpan lifeTime)
     {
-        var context = setupContext(game, source, arcSource);
+        var state = setupState(game, source, arcSource);
 
-        hitInitialTargets(context, arcSource, tilesInRange);
+        hitInitialTargets(state, arcSource, tilesInRange);
 
-        while (context.TryGetContinuation(out var continuation))
+        while (state.TryGetContinuation(out var continuation))
         {
-            var targets = findTargetsFromContinuation(context, continuation);
-            hitTargets(context, continuation, targets);
+            var targets = findTargetsFromContinuation(state, continuation);
+            hitTargets(state, continuation, targets);
         }
 
         // TODO: how should damage scale with different hit patterns
         // variables: bounces, branches, total hits, (distance? nah)
         // arcSource, as well as modifiers likely want to affect this
         // could also return a list of hits, and let the caller decide for more flexibility (except YAGNI)
-        foreach (var hit in context.Arcs)
+        foreach (var hit in state.Arcs)
         {
             arc(source, hit);
         }
@@ -80,9 +80,9 @@ static class ArcTree
         // and create actual arc object
     }
 
-    private static Context setupContext(GameState game, GameObject? source, IArcSource arcSource)
+    private static State setupState(GameState game, GameObject? source, IArcSource arcSource)
     {
-        var context = new Context(
+        var state = new State(
             game,
             game.PassabilityObserver.GetLayer(Passability.Projectile),
             new HashSet<GameObject>(),
@@ -90,36 +90,36 @@ static class ArcTree
             new FloodFillRanger());
 
         if (source != null)
-            context.BlackList.Add(source);
+            state.BlackList.Add(source);
 
-        return context;
+        return state;
     }
 
-    private static void hitInitialTargets(Context context, IArcSource arcSource, ImmutableArray<Tile> tilesInRange)
+    private static void hitInitialTargets(State state, IArcSource arcSource, ImmutableArray<Tile> tilesInRange)
     {
         var initialContinuation = arcSource.GetInitialArcParametersWithoutModifiers();
-        appleArcModifiers(context, ref initialContinuation);
+        appleArcModifiers(state, ref initialContinuation);
 
-        var initialTargets = findTargetsInArea(context, initialContinuation.Branches, tilesInRange);
-        hitTargets(context, initialContinuation, initialTargets);
+        var initialTargets = findTargetsInArea(state, initialContinuation.Branches, tilesInRange);
+        hitTargets(state, initialContinuation, initialTargets);
     }
 
-    private static void hitTargets(Context context, ArcContinuation previousContinuation, List<GameObject> targets)
+    private static void hitTargets(State state, ArcContinuation previousContinuation, List<GameObject> targets)
     {
         foreach (var target in targets)
         {
-            context.BlackList.Add(target);
-            var continuation = continueArc(context, target, previousContinuation);
+            state.BlackList.Add(target);
+            var continuation = continueArc(state, target, previousContinuation);
 
             if (continuation is { BouncesLeft: > 0, Branches: > 0 })
-                context.Continue(continuation);
+                state.Continue(continuation);
 
             var hit = new ArcHit(previousContinuation.Source, target, continuation);
-            context.Hit(hit);
+            state.Hit(hit);
         }
     }
 
-    private sealed record Context(
+    private sealed record State(
         GameState Game,
         PassabilityLayer Passability,
         HashSet<GameObject> BlackList,
@@ -141,36 +141,36 @@ static class ArcTree
     }
 
     private static List<GameObject> findTargetsFromContinuation(
-        Context context, ArcContinuation continuation)
+        State state, ArcContinuation continuation)
     {
         var origin = Level.GetTile(continuation.Source.Position);
 
-        var tiles = context.Ranger.GetTilesInRange(
-            context.Game, context.Passability, origin, 0.U(), continuation.MaxBounceDistance.U());
+        var tiles = state.Ranger.GetTilesInRange(
+            state.Game, state.Passability, origin, 0.U(), continuation.MaxBounceDistance.U());
 
-        var targets = findTargetsInArea(context, continuation.Branches, tiles);
+        var targets = findTargetsInArea(state, continuation.Branches, tiles);
 
         return targets;
     }
 
     private static List<GameObject> findTargetsInArea(
-        Context context, int maxCount, ImmutableArray<Tile> tiles)
+        State state, int maxCount, ImmutableArray<Tile> tiles)
     {
         var targets = tiles
             .SelectMany(newTargetsOnTileWithPossibleDuplicates)
             .Distinct()
-            .RandomSubset(maxCount, context.Random);
+            .RandomSubset(maxCount, state.Random);
 
         return targets;
 
         IEnumerable<GameObject> newTargetsOnTileWithPossibleDuplicates(Tile tile)
             => Enumerable.Concat(
-                    context.Game.TargetLayer.GetObjectsOnTile(tile),
-                    context.Game.ConductiveLayer.GetObjectsOnTile(tile))
-                .WhereNot(context.BlackList.Contains);
+                    state.Game.TargetLayer.GetObjectsOnTile(tile),
+                    state.Game.ConductiveLayer.GetObjectsOnTile(tile))
+                .WhereNot(state.BlackList.Contains);
     }
 
-    private static ArcContinuation continueArc(Context context, GameObject source, ArcContinuation previousContinuation)
+    private static ArcContinuation continueArc(State state, GameObject source, ArcContinuation previousContinuation)
     {
         var continuation = new ArcContinuation(
             source,
@@ -179,7 +179,7 @@ static class ArcTree
             previousContinuation.Branches,
             previousContinuation.MaxBounceDistance);
 
-        appleArcModifiers(context, ref continuation);
+        appleArcModifiers(state, ref continuation);
 
         foreach (var conductive in source.GetComponents<IConductive>())
         {
@@ -189,9 +189,9 @@ static class ArcTree
         return continuation;
     }
 
-    private static void appleArcModifiers(Context context, ref ArcContinuation continuation)
+    private static void appleArcModifiers(State state, ref ArcContinuation continuation)
     {
-        foreach (var modifier in context.ArcModifiers)
+        foreach (var modifier in state.ArcModifiers)
         {
             modifier.Modify(ref continuation);
         }
