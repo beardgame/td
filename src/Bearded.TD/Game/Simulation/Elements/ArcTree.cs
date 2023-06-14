@@ -157,19 +157,17 @@ static class ArcTree
         Context context, int maxCount, ImmutableArray<Tile> tiles)
     {
         var targets = tiles
-            .SelectMany(newTargetsOnTileWithPossibleDuplicates())
+            .SelectMany(newTargetsOnTileWithPossibleDuplicates)
             .Distinct()
             .RandomSubset(maxCount, context.Random);
 
         return targets;
 
-        Func<Tile, IEnumerable<GameObject>> newTargetsOnTileWithPossibleDuplicates()
-        {
-            return t => Enumerable.Concat(
-                    context.Game.TargetLayer.GetObjectsOnTile(t),
-                    context.Game.ConductiveLayer.GetObjectsOnTile(t))
+        IEnumerable<GameObject> newTargetsOnTileWithPossibleDuplicates(Tile tile)
+            => Enumerable.Concat(
+                    context.Game.TargetLayer.GetObjectsOnTile(tile),
+                    context.Game.ConductiveLayer.GetObjectsOnTile(tile))
                 .WhereNot(context.BlackList.Contains);
-        }
     }
 
     private static ArcContinuation continueArc(Context context, GameObject source, ArcContinuation previousContinuation)
