@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 
 interface IConductive
 {
-    void Conduct(ref ArcTree.ArcContinuation arc);
+    void Conduct(ref ArcTree.Continuation arc);
 }
 
 [Component("conductive")]
@@ -23,7 +23,7 @@ sealed class Conductive : Component, IConductive
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public void Conduct(ref ArcTree.ArcContinuation arc)
+    public void Conduct(ref ArcTree.Continuation arc)
     {
         arc = arc with
         {
