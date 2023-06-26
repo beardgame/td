@@ -28,6 +28,7 @@ sealed class ArcRenderer : Component<ArcRenderer.IParameters>, IListener<DrawCom
         Unit Size { get; }
     }
 
+    private GameObject source = null!;
     private GameObject target = null!;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
@@ -41,6 +42,10 @@ sealed class ArcRenderer : Component<ArcRenderer.IParameters>, IListener<DrawCom
     public override void Activate()
     {
         base.Activate();
+
+        source = Owner.TryGetSingleComponent<IProperty<Source>>(out var sourceProperty)
+            ? sourceProperty.Value.Object
+            : Owner.Parent ?? Owner;
 
         if (!Owner.TryGetSingleComponent<IProperty<Target>>(out var targetProperty))
         {
@@ -57,7 +62,7 @@ sealed class ArcRenderer : Component<ArcRenderer.IParameters>, IListener<DrawCom
     {
         var baseHeight = sprite.Sprite.SpriteParameters.BaseSize.Y;
         var halfDrawWidth = baseHeight * Parameters.Size.NumericValue;
-        var from = Owner.Position;
+        var from = source.Position;
         var to = target.Position;
         var diff = (to - from).XY();
         var directionV = diff.NumericValue.Normalized();

@@ -8,11 +8,13 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 readonly record struct OptionalProjectileProperties(IPositionable? TargetPosition, GameObject? Target);
 
+readonly record struct Source(GameObject Object);
 readonly record struct Target(GameObject Object);
 readonly record struct TargetPosition(IPositionable Target);
 
 static class ProjectilePropertyExtensions
 {
+    public static Source AsSource(this GameObject obj) => new(obj);
     public static Target AsTarget(this GameObject obj) => new(obj);
     public static TargetPosition AsTargetPosition(this IPositionable obj) => new(obj);
 }
