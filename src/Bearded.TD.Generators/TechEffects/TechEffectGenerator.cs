@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,6 +27,8 @@ namespace Bearded.TD.Generators.TechEffects
 //                 Debugger.Launch();
 //             }
 // #endif
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
             var convertsAttributeFields =
                 SyntaxProviders.FieldsWithAttribute(context.SyntaxProvider, convertsAttributeFullName);
