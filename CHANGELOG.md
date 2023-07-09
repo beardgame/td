@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17
+
+* Tesla tower now shoots arcs that may bounce or split
+* Make changes to Force towers
+  * Force towers start with a free upgrade slot
+  * Force towers may jam every now and then, disabling the tower for a short amount of time
+
 ## v0.16
 
 * Added background sound that changes dynamically based on the phase of the game
