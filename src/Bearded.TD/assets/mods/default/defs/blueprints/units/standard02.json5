@@ -14,6 +14,7 @@
         { id: "health", parameters: { maxHealth: 200 } },
         { id: "threat", parameters:  { threat: 240 } },
         { id: "damageBuildings", parameters: { damage: 12, attackRate: 0.5 } },
+        { id: "archetype", parameters: { value: "elite" } },
 
         { id: "groundLockedMovement" },
         { id: "accelerateToBase", parameters: { acceleration: 5 } },
