@@ -14,20 +14,24 @@ sealed class GameRuleContext
     public GameState GameState { get; }
     public GlobalGameEvents Events { get; }
     public ReadOnlyCollection<Player> Players { get; }
+    public int Seed { get; }
     public Blueprints Blueprints { get; }
-    public GameSettings GameSettings => GameState.GameSettings;
     public IGameFactions Factions => GameState.Factions;
     public IDispatcher<GameInstance> Dispatcher => GameState.Meta.Dispatcher;
     public IdManager Ids => GameState.Meta.Ids;
-    public int Seed => GameSettings.Seed;
 
     public GameRuleContext(
-        GameState gameState, GlobalGameEvents events, ReadOnlyCollection<Player> players, Blueprints blueprints)
+        GameState gameState,
+        GlobalGameEvents events,
+        ReadOnlyCollection<Player> players,
+        Blueprints blueprints,
+        int seed)
     {
         Logger = gameState.Meta.Logger;
         GameState = gameState;
         Events = events;
         Players = players;
         Blueprints = blueprints;
+        Seed = seed;
     }
 }
