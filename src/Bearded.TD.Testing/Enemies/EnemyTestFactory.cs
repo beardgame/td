@@ -3,6 +3,7 @@ using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Units;
+using static Bearded.TD.Game.Simulation.Enemies.Archetype;
 using static Bearded.TD.Testing.UniqueIds;
 using GameObjectBlueprint = Bearded.TD.Content.Models.GameObjectBlueprint;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
@@ -25,6 +26,7 @@ static class EnemyTestFactory
                 socketShapes.Select(socketComponent)
                     .Append(healthComponent())
                     .Append(threatComponent(10))
+                    .Append(archetypeComponent(Elite))
                     .ToImmutableArray()), 1);
     }
 
@@ -43,6 +45,15 @@ static class EnemyTestFactory
         {
             Id = "threat",
             Parameters = new ThreatParametersTemplate(threat)
+        };
+    }
+
+    private static IComponent archetypeComponent(Archetype archetype)
+    {
+        return new Content.Serialization.Models.Component<ArchetypeProperty.IParameters>
+        {
+            Id = "archetype",
+            Parameters = new ArchetypePropertyParametersTemplate(archetype)
         };
     }
 
