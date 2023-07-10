@@ -60,10 +60,12 @@ sealed partial class WaveGenerator
         logger.Debug?.Log($"Wave parameters requested with threat {requirements.EnemyComposition.TotalThreat}");
         var sw = Stopwatch.StartNew();
 
-        var (minWaveValue, maxWaveValue) = totalThreatRange(requirements);
         var element = requirements.EnemyComposition.Elements.PrimaryElement;
 
-        var (blueprint, blueprintThreat, enemyCount) = chooseEnemy(element, minWaveValue, maxWaveValue, random);
+        var (blueprint, blueprintThreat, enemyCount) =
+            chooseEnemy(
+                new WaveStructure.FormStructure(element, Archetype.Elite, requirements.EnemyComposition.TotalThreat),
+                random);
 
         var spawnLocations = chooseSpawnLocations(enemyCount, availableSpawnLocations, random);
         var spawnLocationCount = spawnLocations.Length;
@@ -91,15 +93,6 @@ sealed partial class WaveGenerator
         int EnemiesPerSpawn,
         ImmutableArray<SpawnLocation> SpawnLocations,
         TimeSpan SpawnDuration);
-
-    private static (double minThreat, double maxThreat) totalThreatRange(WaveRequirements requirements)
-    {
-        var requestedThreat = requirements.EnemyComposition.TotalThreat;
-        var allowedValueError = requestedThreat * WaveValueErrorFactor;
-        var minWaveValue = requestedThreat - allowedValueError;
-        var maxWaveValue = requestedThreat + allowedValueError;
-        return (minWaveValue, maxWaveValue);
-    }
 
     private static void optimizeForRequestedThreat(
         WaveRequirements requirements, int spawnLocationCount, float blueprintThreat, ref int enemiesPerSpawn)
