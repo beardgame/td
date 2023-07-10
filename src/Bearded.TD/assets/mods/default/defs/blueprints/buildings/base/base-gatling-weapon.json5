@@ -72,9 +72,9 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "buildings2.gatling-turret",
+                sprite: "buildings.gatling-turret",
                 colorMode: "faction",
-                shader: "building-no-normal",
+                shader: "building",
                 drawGroup: "building",
                 size: 0.6
             }

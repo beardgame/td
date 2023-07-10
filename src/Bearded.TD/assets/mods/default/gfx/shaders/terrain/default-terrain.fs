@@ -18,11 +18,13 @@ out vec4 outRGBA;
 out vec4 outNormal;
 out vec4 outDepth;
 
+const float uvScale = 0.2;
+
 void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
     int textureIndex = 0;
 
-    vec2 uv = position.xz;
+    vec2 uv = position.xz * uvScale;
     uv.x = uv.x * -sign(surfaceNormal.y);
 
     vec3 zTransform = surfaceNormal;
@@ -47,7 +49,7 @@ void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
 {
     int textureIndex = 0;
 
-    vec2 uv = position.yz;
+    vec2 uv = position.yz * uvScale;
     uv.x = uv.x * sign(surfaceNormal.x);
 
     vec3 zTransform = surfaceNormal;
@@ -72,13 +74,20 @@ void getWallColor(vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallN
 {
     vec3 xColor, yColor;
     vec3 xNormal, yNormal;
+    
+    if(position.z > 0)
+    {
+        position.z *= 2;
+    }
+    position.z += sin(position.y * 0.2) * sin(position.x * 0.2) * 1;
+    
 
     getWallXComponent(position, normal, xColor, xNormal);
     getWallYComponent(position, normal, yColor, yNormal);
 
     float xness = clamp(abs(normal.x / normal.y), 0, 1);
 
-    xness = smoothstep(0.3, 0.7, xness);
+    //xness = smoothstep(0.3, 0.7, xness);
 
     wallColor = mix(xColor, yColor, xness);
     wallNormal = mix(xNormal, yNormal, xness);
@@ -89,8 +98,8 @@ void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out v
     int rockIndex = 1;
     int sandIndex = 2;
 
-    vec2 uvR = position.xy / 2;
-    vec2 uvS = position.xy / 1.4;
+    vec2 uvR = position.xy * uvScale;
+    vec2 uvS = position.xy * uvScale;
     // distortion needs to be accounted for with normals
     // + vec2(0, sin(position.x * 0.2) * 2);
 
@@ -180,7 +189,7 @@ void main()
         // properties of point on cutout sphere
         fPosition = camPosition + camToFragment * f;
         fNormal = -cutoutCenterToFragmentNormalised;
-        fColor = vec4(fColor.rgb * 0.75, fColor.a);
+        fColor = vec4(fColor.rgb, fColor.a);
 
         if (heightScale < 0 && fragmentPosition.z > limit)
         {
@@ -199,7 +208,7 @@ void main()
     vec3 floorColor, floorNormal;
     getFloorColor(fPosition, fNormal, floorColor, floorNormal);
 
-    float flatness = smoothstep(0.75, 1, fNormal.z);
+    float flatness = smoothstep(0.3, 0.5, fNormal.z);
 
     vec3 diffuse, normal;
 

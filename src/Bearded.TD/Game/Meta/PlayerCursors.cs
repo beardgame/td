@@ -18,7 +18,7 @@ namespace Bearded.TD.Game.Meta;
 
 sealed class PlayerCursors
 {
-    private const float playerCursorLightHeight = 2;
+    private const float playerCursorLightHeight = 1;
     private const float playerCursorLightRadius = 5;
 
     private const float otherCursorLightHeight = 1;
@@ -166,7 +166,7 @@ sealed class PlayerCursors
         drawers.PointLight.Draw(
             game.PlayerInput.CursorPosition.NumericValue.WithZ(playerCursorLightHeight),
             radius: playerCursorLightRadius,
-            color: Color.White * 0.4f
+            color: Color.White * 1f
         );
 
         foreach (var (player, cursor) in cursors)
