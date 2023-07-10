@@ -2,6 +2,7 @@
     id: "rubble",
     components: [
         { id: "currentTileNotifier" },
+        { id: "tileBasedVisibility" },
         { id: "tileBlocker" },
         {
             id: "sprite",

@@ -6,6 +6,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Exploration;
 
+[Component("tileBasedVisibility")]
 sealed class TileBasedVisibility : Component, IVisibility
 {
     private ITilePresence? tilePresence;

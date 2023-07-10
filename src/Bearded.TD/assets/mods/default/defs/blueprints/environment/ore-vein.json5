@@ -3,6 +3,7 @@
   components: [
     { id: "currentTileNotifier" },
     { id: "physicalTilePresence" },
+    { id: "tileBasedVisibility" },
     { id: "conductive" },
     {
       id: "sprite",
