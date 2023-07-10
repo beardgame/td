@@ -63,9 +63,11 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "default.particle.halo",
+                sprite: "buildings.steam-hammer",
                 colorMode: "faction",
-                size: 0.3
+                shader: "building",
+                drawGroup: "building",
+                size: 1.2
             }
         }
     ]

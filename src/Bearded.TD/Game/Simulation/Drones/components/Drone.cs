@@ -1,6 +1,7 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Drones;
@@ -29,7 +30,10 @@ sealed class Drone : Component, ITileWalkerOwner
     {
         if (walker == null) return;
         walker.Update(elapsedTime, Constants.Game.Drones.Speed);
-        Owner.Position = walker.Position.WithZ(Constants.Game.Drones.FlyingHeight);
+
+        var newPosition = walker.Position.WithZ(Constants.Game.Drones.FlyingHeight);
+        Owner.Direction = Direction2.Of((newPosition - Owner.Position).NumericValue.Xy);
+        Owner.Position = newPosition;
     }
 
     public void Cancel()

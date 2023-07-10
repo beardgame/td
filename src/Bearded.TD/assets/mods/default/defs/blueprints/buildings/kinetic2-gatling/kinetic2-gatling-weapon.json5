@@ -48,7 +48,7 @@
             parameters: {
                 projectile: "kinetic2-gatling-shell",
                 muzzleSpeed: 15,
-                muzzleOffset: [0.7, 0.1],
+                muzzleOffset: [0.65, -0.07],
                 spread: 3
             }
         },
@@ -86,9 +86,9 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "buildings2.gatling-turret",
+                sprite: "buildings.gatling-turret",
                 colorMode: "faction",
-                shader: "building-no-normal",
+                shader: "building",
                 drawGroup: "building",
                 size: 1.2
             }

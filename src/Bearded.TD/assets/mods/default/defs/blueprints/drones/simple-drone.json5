@@ -4,10 +4,12 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "default.particle.halo",
+                sprite: "buildings.fuel-drone",
                 colorMode: "faction",
-                size: 0.3,
-            },
-        },
+                shader: "building",
+                drawGroup: "building",
+                size: 0.6
+            }
+        }
     ],
 }
