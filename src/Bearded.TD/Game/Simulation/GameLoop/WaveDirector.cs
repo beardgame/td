@@ -61,7 +61,6 @@ sealed class WaveDirector
         private Phase phase;
 
         private Instant? actualSpawnStart;
-        private Instant? actualSpawnEnd => actualSpawnStart + wave.Script.SpawnDuration;
 
         private bool canSummonNow => phase == Phase.Downtime && outstandingSpawnStartRequirements.Count == 0;
 
@@ -133,7 +132,6 @@ sealed class WaveDirector
                     updateSpawnQueue();
                     if (spawnQueue.Count == 0)
                     {
-                        State.Satisfies(game.Time >= actualSpawnEnd);
                         phase = Phase.FinishOff;
                     }
                     break;

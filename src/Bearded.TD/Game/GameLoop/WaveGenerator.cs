@@ -49,7 +49,6 @@ sealed partial class WaveGenerator
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
             targetFaction,
             requirements.DowntimeDuration,
-            spawnDuration,
             spawnLocations,
             enemyScript);
     }
