@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Utilities.Collections;
@@ -8,19 +9,25 @@ namespace Bearded.TD.Utilities.Collections;
 sealed class ProportionalEnumerable<T> : IEnumerable<T>
 {
     private readonly IReadOnlyDictionary<T, int> targetCounts;
+    private readonly IReadOnlyDictionary<T, int> initialCounts;
 
     public ProportionalEnumerable(IReadOnlyDictionary<T, int> targetCounts)
+        : this(targetCounts, ImmutableDictionary<T, int>.Empty) { }
+
+    public ProportionalEnumerable(IReadOnlyDictionary<T, int> targetCounts, IReadOnlyDictionary<T, int> initialCounts)
     {
         this.targetCounts = targetCounts;
+        this.initialCounts = initialCounts;
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IEnumerator<T> GetEnumerator() => new ProportionalEnumerator(targetCounts);
+    public IEnumerator<T> GetEnumerator() => new ProportionalEnumerator(targetCounts, initialCounts);
 
     private sealed class ProportionalEnumerator : IEnumerator<T>
     {
         private readonly IReadOnlyDictionary<T, int> targetCounts;
+        private readonly IReadOnlyDictionary<T, int> initialCounts;
         private readonly Dictionary<T, int> actualCounts = new();
         private readonly StaticPriorityQueue<ProportionalEnumeratorKey, T> priorityQueue = new();
 
@@ -28,9 +35,11 @@ sealed class ProportionalEnumerable<T> : IEnumerable<T>
 
         object IEnumerator.Current => Current;
 
-        public ProportionalEnumerator(IReadOnlyDictionary<T, int> targetCounts)
+        public ProportionalEnumerator(
+            IReadOnlyDictionary<T, int> targetCounts, IReadOnlyDictionary<T, int> initialCounts)
         {
             this.targetCounts = targetCounts;
+            this.initialCounts = initialCounts;
             Reset();
         }
 
@@ -40,6 +49,12 @@ sealed class ProportionalEnumerable<T> : IEnumerable<T>
             priorityQueue.Clear();
             foreach (var (obj, targetCount) in targetCounts)
             {
+                var initialCount = initialCounts.GetValueOrDefault(obj, 0);
+                actualCounts[obj] = initialCount;
+                if (initialCount >= targetCount)
+                {
+                    continue;
+                }
                 var priority = new ProportionalEnumeratorKey(targetCount, targetCount);
                 priorityQueue.Enqueue(priority, obj);
             }
