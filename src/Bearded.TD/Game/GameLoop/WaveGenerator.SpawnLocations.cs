@@ -1,33 +1,42 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Linq;
-using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.GameLoop;
 
 sealed partial class WaveGenerator
 {
-    private ImmutableArray<SpawnLocation> chooseSpawnLocations(
-        int enemyCount, IEnumerable<SpawnLocation> availableSpawnLocations, Random random)
+    private static ILookup<RoutineComposition, SpawnLocation> assignSpawnLocations(
+        IEnumerable<SpawnLocation> spawnLocations, IEnumerable<RoutineComposition> routineCompositions, Random random)
     {
-        var activeSpawnLocations = availableSpawnLocations.ToImmutableArray();
-        State.Satisfies(activeSpawnLocations.Length > 0);
+        var shuffledSpawnLocations = spawnLocations.Shuffled(random);
+        var routineCompositionsArray = routineCompositions.ToImmutableArray();
 
-        var minSequentialSpawnTime = enemyCount * Constants.Game.WaveGeneration.MinTimeBetweenSpawns;
-        var minSpawnPoints =
-            MoreMath.CeilToInt(Constants.Game.WaveGeneration.EnemyTrainLength / (minSequentialSpawnTime * enemyCount));
-        var numSpawnPoints = activeSpawnLocations.Length <= minSpawnPoints
-            ? minSpawnPoints
-            : random.Next(minSpawnPoints, activeSpawnLocations.Length);
-        if (numSpawnPoints >= enemyCount / 3)
+        if (routineCompositionsArray.Length > shuffledSpawnLocations.Count)
         {
-            numSpawnPoints = Math.Max(1, enemyCount / 3);
+            throw new InvalidOperationException(
+                "Cannot generate a wave with more routines than available spawn locations.");
         }
 
-        var spawnLocations = activeSpawnLocations.RandomSubset(numSpawnPoints, random).ToImmutableArray();
-        return spawnLocations;
+        // Use a proportional enumerable to assign any spawn locations after assigning each routine the first one based
+        // on proportional error.
+        var additionalRequestDict =
+            routineCompositionsArray.ToImmutableDictionary(comp => comp, comp => comp.RequestedSpawnLocationCount);
+        var alreadyAssignedDict =
+            routineCompositionsArray.ToImmutableDictionary(comp => comp, _ => 1);
+        var requestEnumerable =
+            new ProportionalEnumerable<RoutineComposition>(additionalRequestDict, alreadyAssignedDict);
+
+        // We first iterate over the routine compositions once to zip it with the spawn locations, assigning a random
+        // spawn location to each. Then we use the proportional enumerable to assign spawn locations to routines until
+        // we either run out of routines or spawn locations.
+        return routineCompositionsArray
+            .Concat(requestEnumerable)
+            .Zip(shuffledSpawnLocations)
+            .ToLookup(tuple => tuple.First, tuple => tuple.Second);
     }
 }

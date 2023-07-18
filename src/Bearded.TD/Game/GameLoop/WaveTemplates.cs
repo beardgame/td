@@ -13,12 +13,6 @@ static class WaveTemplates
             batch(1,
                 form(1, PrimaryElement, Champion))));
 
-    public static readonly ScriptTemplate ChampionMinionMix = script(
-        routine(1,
-            batch(1,
-                form(0.8, PrimaryElement, Champion),
-                form(0.2, AccentElement, Minion))));
-
     private static ScriptTemplate script(params RoutineTemplate[] routines)
     {
         return new ScriptTemplate(routines.ToImmutableArray());

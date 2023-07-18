@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
-using JetBrains.Annotations;
 using static Bearded.TD.Constants.Game.WaveGeneration;
 using static Bearded.TD.Game.GameLoop.WaveStructure;
 
@@ -15,14 +14,11 @@ namespace Bearded.TD.Game.GameLoop;
 
 sealed partial class WaveGenerator
 {
-    private EnemiesToSpawn chooseEnemy(FormStructure structure, Random random)
+    private EnemyForm chooseEnemy(FormStructure structure, Random random)
     {
         var eligibleEnemies = filteredEligibleEnemies(structure);
-        var enemyForm = generateFormWithRetries(
+        return generateFormWithRetries(
             eligibleEnemies, new EnemyFormGenerator.Requirements(structure.Element), 5, random);
-        var blueprintThreat = enemyForm.Blueprint.GetThreat();
-        var enemyCount = chooseSpawnCount(blueprintThreat, structure.TotalThreat, random);
-        return new EnemiesToSpawn(enemyForm, blueprintThreat, enemyCount);
     }
 
     private ImmutableArray<ISpawnableEnemy> filteredEligibleEnemies(FormStructure structure)
@@ -86,30 +82,4 @@ sealed partial class WaveGenerator
         var selectedEnemy = result >= 0 ? enemies[result] : enemies[~result - 1];
         return selectedEnemy.Blueprint;
     }
-
-    private static int chooseSpawnCount(double blueprintThreat, double requestedThreat, Random random)
-    {
-        var (minWaveValue, maxWaveValue) = totalThreatRange(requestedThreat);
-        var (minEnemies, maxEnemies) = enemyCountRange(minWaveValue, blueprintThreat, maxWaveValue);
-        return maxEnemies <= minEnemies ? minEnemies : random.Next(minEnemies, maxEnemies + 1);
-    }
-
-    private static (double minThreat, double maxThreat) totalThreatRange(double requestedThreat)
-    {
-        var allowedValueError = requestedThreat * WaveValueErrorFactor;
-        var minWaveValue = requestedThreat - allowedValueError;
-        var maxWaveValue = requestedThreat + allowedValueError;
-        return (minWaveValue, maxWaveValue);
-    }
-
-    private static (int minEnemies, int maxEnemies) enemyCountRange(
-        double minWaveValue, double blueprintThreat, double maxWaveValue)
-    {
-        var minEnemies = MoreMath.CeilToInt(minWaveValue / blueprintThreat);
-        var maxEnemies = MoreMath.FloorToInt(maxWaveValue / blueprintThreat);
-        return (minEnemies, maxEnemies);
-    }
-
-    [UsedImplicitly] // type is deconstructed
-    private record struct EnemiesToSpawn(EnemyForm EnemyForm, float Threat, int SpawnCount);
 }
