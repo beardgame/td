@@ -5,7 +5,7 @@ using Lidgren.Network;
 
 namespace Bearded.TD.Networking;
 
-class ClientNetworkInterface : NetworkInterface
+sealed class ClientNetworkInterface : NetworkInterface
 {
     private readonly NetClient client;
 

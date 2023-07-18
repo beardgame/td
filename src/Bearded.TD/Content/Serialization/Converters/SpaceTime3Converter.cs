@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
-class SpaceTime3Converter<T> : JsonConverterBase<T>
+sealed class SpaceTime3Converter<T> : JsonConverterBase<T>
 {
     private readonly Func<float, float, float, T> convert;
 

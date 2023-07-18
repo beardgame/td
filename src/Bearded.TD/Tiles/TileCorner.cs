@@ -22,6 +22,7 @@ readonly struct TileCorner : IEquatable<TileCorner>
             Direction.Left => new(tile.Neighbor(Direction.DownLeft), Corner.Up),
             Direction.DownLeft => new(tile.Neighbor(Direction.DownLeft), Corner.UpRight),
             Direction.DownRight => new(tile.Neighbor(Direction.DownRight), Corner.Up),
+            // ReSharper disable once PatternIsRedundant
             Direction.Unknown or _ =>
                 throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };

@@ -67,7 +67,7 @@ sealed class DeterministicNodeChooser
         var flexibleNodes = nodes
             .Where(n => n.Number is NodeGroup.RandomizedNumber)
             .Select(n => new NodeAllocationQuotient(
-                n, (NodeGroup.RandomizedNumber) n.Number, result.ContainsKey(n) ? result[n] : 0))
+                n, (NodeGroup.RandomizedNumber) n.Number, result.GetValueOrDefault(n, 0)))
             .ToList();
 
         var allFlexibleNodes = flexibleNodes.ToImmutableArray();

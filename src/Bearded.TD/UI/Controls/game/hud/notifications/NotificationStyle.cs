@@ -15,19 +15,15 @@ record struct NotificationStyle(NotificationStyle.NotificationBackgroundColor Ba
         Background = () => BackgroundBox.DefaultColor
     };
 
-    public static readonly NotificationStyle Action = Default with
-    {
-        Background = () => Constants.Game.GameUI.ActionBackgroundColor
-    };
+    public static readonly NotificationStyle Action =
+        new(Background: () => Constants.Game.GameUI.ActionBackgroundColor);
 
-    public static NotificationStyle ImmediateAction(ITimeSource timeSource) => Default with
-    {
-        Background = flashingBackground(
+    public static NotificationStyle ImmediateAction(ITimeSource timeSource) => new(
+        Background: flashingBackground(
             Constants.Game.GameUI.ActionBackgroundColor,
             Constants.Game.GameUI.UrgentBackgroundColor,
             1.S(),
-            timeSource)
-    };
+            timeSource));
 
     private static NotificationBackgroundColor flashingBackground(
         Color firstColor, Color secondColor, TimeSpan flashDuration, ITimeSource timeSource) =>

@@ -5,7 +5,7 @@ interface IWeaponDisabledReason
     bool IsResolved { get; }
 }
 
-public class WeaponDisabledReason : IWeaponDisabledReason
+public sealed class WeaponDisabledReason : IWeaponDisabledReason
 {
     public bool IsResolved { get; private set; }
 

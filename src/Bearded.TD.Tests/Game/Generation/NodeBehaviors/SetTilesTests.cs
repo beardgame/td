@@ -4,7 +4,6 @@ using Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using FsCheck;
 using FsCheck.Xunit;
 
 namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors

@@ -99,10 +99,10 @@ namespace Bearded.TD.MasterServer
 
         private void registerLobby(Proto.RegisterLobbyRequest request, IPEndPoint endpoint)
         {
-            if (lobbiesById.ContainsKey(request.Lobby.Id))
+            if (lobbiesById.TryGetValue(request.Lobby.Id, out var value))
             {
                 logger.Debug?.Log($"Received heartbeat for lobby {request.Lobby.Id}.");
-                lobbiesById[request.Lobby.Id].Heartbeat();
+                value.Heartbeat();
                 return;
             }
 

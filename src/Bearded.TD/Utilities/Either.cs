@@ -12,7 +12,7 @@ abstract class Either<TLeft, TRight>
     public static implicit operator Either<TLeft, TRight>(TLeft left) => new Left(left);
     public static implicit operator Either<TLeft, TRight>(TRight right) => new Right(right);
 
-    class Left : Either<TLeft, TRight>
+    sealed class Left : Either<TLeft, TRight>
     {
         private readonly TLeft left;
         public Left(TLeft left) => this.left = left;
@@ -20,7 +20,7 @@ abstract class Either<TLeft, TRight>
         public override void Match(Action<TLeft> onLeft, Action<TRight> _) => onLeft(left);
     }
 
-    class Right : Either<TLeft, TRight>
+    sealed class Right : Either<TLeft, TRight>
     {
         private readonly TRight right;
         public Right(TRight right) => this.right = right;

@@ -14,7 +14,7 @@ sealed class SoundBlueprintLoader : BaseBlueprintLoader<ISoundEffect, SoundEffec
 
     public SoundBlueprintLoader(BlueprintLoadingContext context) : base(context)
     {
-        loader = new SoundLoader(context.Context, context.Meta);
+        loader = new SoundLoader(context.Meta);
     }
 
     protected override (FileInfo, SoundLoader) GetDependencyResolvers(FileInfo file)

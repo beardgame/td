@@ -23,7 +23,7 @@ using static Graphics.Pipelines.Context.DepthMode;
 using static Pipeline;
 using static Pipeline<DeferredRenderer.RenderState>;
 
-class DeferredRenderer
+sealed class DeferredRenderer
 {
     private static readonly SpriteDrawGroup[] solidLevelDrawGroups = { SolidLevelDetails };
     private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };

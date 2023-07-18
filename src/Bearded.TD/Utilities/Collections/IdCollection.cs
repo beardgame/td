@@ -6,7 +6,7 @@ using Bearded.Utilities.Collections;
 
 namespace Bearded.TD.Utilities.Collections;
 
-class IdCollection<T> where T : IIdable<T>
+sealed class IdCollection<T> where T : IIdable<T>
 {
     private readonly List<T> objects = new List<T>();
     private readonly IdDictionary<T> objectsById = new IdDictionary<T>();

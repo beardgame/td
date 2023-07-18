@@ -27,7 +27,7 @@ sealed class PlayerStatusUIControl : CompositeControl
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
-    private class PlayerListItemSource : IListItemSource
+    private sealed class PlayerListItemSource : IListItemSource
     {
         private readonly ReadOnlyCollection<PlayerStatusUI.PlayerModel> players;
 
@@ -45,7 +45,7 @@ sealed class PlayerStatusUIControl : CompositeControl
         public void DestroyItemControlAt(int index, Control control) {}
     }
 
-    private class PlayerListRow : CompositeControl
+    private sealed class PlayerListRow : CompositeControl
     {
         public PlayerListRow(PlayerStatusUI.PlayerModel player)
         {

@@ -49,7 +49,7 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
         }
     }
 
-    private class CameraController : ICameraController
+    private sealed class CameraController : ICameraController
     {
         private readonly GameCameraController controller;
         private readonly IManualControlReport report;

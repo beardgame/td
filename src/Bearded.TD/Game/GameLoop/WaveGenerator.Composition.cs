@@ -12,6 +12,7 @@ namespace Bearded.TD.Game.GameLoop;
 
 sealed partial class WaveGenerator
 {
+    [UsedImplicitly] // honestly not sure why, but Rider isn't picking up the access, even though there are usages
     private record struct RoutineComposition(ImmutableArray<BatchComposition> Batches, int RequestedSpawnLocationCount);
 
     private record struct BatchComposition(ImmutableArray<GeneratedForm> Forms);

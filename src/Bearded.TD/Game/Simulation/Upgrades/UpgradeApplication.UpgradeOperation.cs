@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Immutable;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
@@ -87,21 +86,5 @@ static partial class UpgradeApplication
             rollback(state);
             isCommitted = false;
         }
-    }
-
-    private static IUpgradeEffectOperation compose(IUpgradeEffectOperation left, IUpgradeEffectOperation right)
-    {
-        return new UpgradeEffectOperation<Void>(
-            () =>
-            {
-                left.Commit();
-                right.Commit();
-                return default;
-            },
-            _ =>
-            {
-                left.Rollback();
-                right.Rollback();
-            });
     }
 }

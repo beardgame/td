@@ -34,7 +34,7 @@ sealed class ShaderLoader
         return new Shader(ModAwareId.FromNameInMod(jsonModel.Id, meta), shaderProgram);
     }
 
-    private class ShaderCompiler
+    private sealed class ShaderCompiler
     {
         private readonly ModMetadata meta;
         private readonly DirectoryInfo directory;

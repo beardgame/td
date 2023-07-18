@@ -61,6 +61,7 @@ sealed class NormalMapGenerator
                 (byte)rgb.X,
                 (byte)rgb.Y,
                 (byte)rgb.Z,
+                // ReSharper disable once RedundantArgumentDefaultValue
                 255);
         });
     }

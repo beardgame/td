@@ -4,7 +4,7 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
-class UIDebugOverlay : UpdateableNavigationNode<Void>
+sealed class UIDebugOverlay : UpdateableNavigationNode<Void>
 {
 
     public override void Update(UpdateEventArgs args)

@@ -2,7 +2,7 @@ using System;
 
 namespace Bearded.TD.Meta;
 
-class SettingOptionsAttribute : Attribute
+sealed class SettingOptionsAttribute : Attribute
 {
     public object[] Options { get; }
 

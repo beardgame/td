@@ -4,7 +4,7 @@ using MaterialJson = Bearded.TD.Content.Serialization.Models.Material;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-class MaterialBlueprintLoader : BaseBlueprintLoader<Material, MaterialJson, (FileInfo, MaterialLoader)>
+sealed class MaterialBlueprintLoader : BaseBlueprintLoader<Material, MaterialJson, (FileInfo, MaterialLoader)>
 {
     private readonly MaterialLoader materialLoader;
 

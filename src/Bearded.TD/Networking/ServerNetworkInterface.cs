@@ -3,7 +3,7 @@ using Lidgren.Network;
 
 namespace Bearded.TD.Networking;
 
-class ServerNetworkInterface : NetworkInterface
+sealed class ServerNetworkInterface : NetworkInterface
 {
     private readonly NetServer server;
 

@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Tiles;
 using FluentAssertions;
-using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
 

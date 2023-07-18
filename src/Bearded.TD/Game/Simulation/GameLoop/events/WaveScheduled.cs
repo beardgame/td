@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Events;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

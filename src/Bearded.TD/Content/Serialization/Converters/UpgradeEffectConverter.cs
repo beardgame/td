@@ -90,8 +90,10 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             Multiply = 3,
         }
 
+#pragma warning disable CS0649
         public AttributeType AttributeType;
         public ModificationMode Mode = ModificationMode.Unknown;
         public double Value;
+#pragma warning restore CS0649
     }
 }

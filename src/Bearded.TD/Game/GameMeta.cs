@@ -42,7 +42,7 @@ sealed class GameMeta
         Dispatcher = dispatcher;
         Ids = ids;
         SpriteRenderers = spriteRenderers;
-        SoundScape = soundScape;;
+        SoundScape = soundScape;
     }
 
     public void SetBlueprints(Blueprints blueprints)

@@ -78,7 +78,7 @@ sealed class HeightmapToLevelRenderer
     {
         var visibleArea = getCameraFrustumBounds();
 
-        var gridDimensions = getGridDimensionsFor(visibleArea);
+        var gridDimensions = getGridDimensionsFor();
 
         renderLevelGrid(visibleArea, gridDimensions);
     }
@@ -124,7 +124,7 @@ sealed class HeightmapToLevelRenderer
         }
     }
 
-    private GridDimensions getGridDimensionsFor(Rectangle cameraFrustumBounds)
+    private GridDimensions getGridDimensionsFor()
     {
         // ensure minimum level of detail based on graphics settings
         var (cellColumnsHalf, cellRowsHalf) = getMinimumGridDimensions();
@@ -147,6 +147,7 @@ sealed class HeightmapToLevelRenderer
         };
     }
 
+    /*
     private int getGridSubdivision(Rectangle cameraFrustumBounds, float baseScale)
     {
         var gridCellArea = gridMeshBuilder.TilingX.X * gridMeshBuilder.TilingY.Y * baseScale.Squared();
@@ -164,6 +165,7 @@ sealed class HeightmapToLevelRenderer
 
         return gridSubdivisionAsPowerOf2;
     }
+    */
 
     private (int CellColumnsHalf, int CellRowsHalf) getMinimumGridDimensions()
     {

@@ -8,7 +8,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.World.Fluids;
 
-class Fluid
+sealed class Fluid
 {
     private const float viscosity = 3;
     private const float maxFlowFraction = 1f / 6f;

@@ -4,7 +4,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Content.Mods;
 
-class GameObjectProxyBlueprintResolver : ModAwareDependencyResolver<IGameObjectBlueprint>
+sealed class GameObjectProxyBlueprintResolver : ModAwareDependencyResolver<IGameObjectBlueprint>
 {
     private List<GameObjectBlueprintProxy> currentProxies = new List<GameObjectBlueprintProxy>();
 
