@@ -37,8 +37,7 @@ sealed partial class WaveGenerator
         // Ensure that a change in requirements always leads to a (very) different outcome.
         var random = new Random(seed ^ requirements.GetHashCode());
 
-        var enemyScript = generateScript(
-            FromTemplate(WaveTemplates.Legacy, requirements.EnemyComposition), availableSpawnLocations, random);
+        var enemyScript = generateScript(requirements.Structure, availableSpawnLocations, random);
         var spawnLocations = enemyScript.SpawnEvents.Select(e => e.SpawnLocation).Distinct().ToImmutableArray();
 
         return new WaveScript(

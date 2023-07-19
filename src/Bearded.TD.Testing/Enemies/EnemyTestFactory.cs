@@ -3,7 +3,6 @@ using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Units;
-using static Bearded.TD.Game.Simulation.Enemies.Archetype;
 using static Bearded.TD.Testing.UniqueIds;
 using GameObjectBlueprint = Bearded.TD.Content.Models.GameObjectBlueprint;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
@@ -12,13 +11,13 @@ namespace Bearded.TD.Testing.Enemies;
 
 static class EnemyTestFactory
 {
-    public static ISpawnableEnemy CreateSpawnableEnemyWithUniqueSocket(out SocketShape socketShape)
+    public static ISpawnableEnemy CreateSpawnableEnemyWithUniqueSocket(Archetype archetype, out SocketShape socketShape)
     {
         socketShape = SocketShape.FromLiteral(NextUniquePrefixedString<SocketShape>("shape"));
-        return CreateSpawnableEnemy(socketShape);
+        return CreateSpawnableEnemy(archetype, socketShape);
     }
 
-    public static ISpawnableEnemy CreateSpawnableEnemy(params SocketShape[] socketShapes)
+    public static ISpawnableEnemy CreateSpawnableEnemy(Archetype archetype, params SocketShape[] socketShapes)
     {
         return new ScheduleGame.SpawnableEnemy(
             new GameObjectBlueprint(
@@ -26,7 +25,7 @@ static class EnemyTestFactory
                 socketShapes.Select(socketComponent)
                     .Append(healthComponent())
                     .Append(threatComponent(10))
-                    .Append(archetypeComponent(Elite))
+                    .Append(archetypeComponent(archetype))
                     .ToImmutableArray()), 1);
     }
 

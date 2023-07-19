@@ -32,7 +32,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     public Tile SpawnTile { get; private set; }
     public bool IsAwake { get; private set; }
 
-    public bool Deleted => Owner.Deleted;
+    public bool Deleted => Owner?.Deleted ?? false;
 
     public SpawnLocation(Id<SpawnLocation> id, Tile tile)
     {
@@ -190,4 +190,9 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
     public override void Update(TimeSpan elapsedTime) {}
 
     private sealed record SpawnPlaceholder(GameObject GameObject, IFutureEnemySpawnIndicator FutureEnemySpawns);
+
+    public override string ToString()
+    {
+        return $"Spawn location {Id.Value} @{tile} (@{SpawnTile})";
+    }
 }
