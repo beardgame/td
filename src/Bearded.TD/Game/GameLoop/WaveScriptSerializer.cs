@@ -18,7 +18,6 @@ sealed class WaveScriptSerializer
     private string displayName = "";
     private Id<Faction> targetFaction;
     private double spawnStart;
-    private double spawnDuration;
     private Id<SpawnLocation>[] spawnLocations = Array.Empty<Id<SpawnLocation>>();
     private readonly EnemySpawnScriptSerializer enemyScript = new();
 
@@ -30,7 +29,6 @@ sealed class WaveScriptSerializer
         displayName = waveScript.DisplayName;
         targetFaction = waveScript.TargetFaction.Id;
         spawnStart = waveScript.DowntimeDuration?.NumericValue ?? -1;
-        spawnDuration = waveScript.SpawnDuration.NumericValue;
         spawnLocations = waveScript.SpawnLocations.Select(loc => loc.Id).ToArray();
         enemyScript = new EnemySpawnScriptSerializer(waveScript.EnemyScript);
     }
@@ -41,7 +39,6 @@ sealed class WaveScriptSerializer
             displayName,
             game.State.Factions.Resolve(targetFaction),
             spawnStart < 0 ? null : new TimeSpan(spawnStart),
-            new TimeSpan(spawnDuration),
             spawnLocations.Select(loc => game.State.Find(loc)).ToImmutableArray(),
             enemyScript.ToSpawnScript(game));
     }
@@ -51,7 +48,6 @@ sealed class WaveScriptSerializer
         stream.Serialize(ref displayName);
         stream.Serialize(ref targetFaction);
         stream.Serialize(ref spawnStart);
-        stream.Serialize(ref spawnDuration);
         stream.SerializeArrayCount(ref spawnLocations);
         for (var i = 0; i < spawnLocations.Length; i++)
         {

@@ -8,7 +8,7 @@ enum SpringBehavior
     Pull,
 }
 
-record Spring(FeatureCircle Circle1, FeatureCircle Circle2, SpringBehavior Behavior,
+sealed record Spring(FeatureCircle Circle1, FeatureCircle Circle2, SpringBehavior Behavior,
     float ForceMultiplier = 1, Unit Overlap = default)
 {
     public Unit TargetDistance => Circle1.Circle.Radius + Circle2.Circle.Radius - Overlap;

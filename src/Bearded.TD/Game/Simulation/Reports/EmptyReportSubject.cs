@@ -11,5 +11,7 @@ sealed class EmptyReportSubject : IReportSubject
     public Faction? Faction => null;
 
     public IReadOnlyCollection<IReport> Reports => ImmutableArray<IReport>.Empty;
+#pragma warning disable CS0067
     public event VoidEventHandler? ReportsUpdated;
+#pragma warning restore CS0067
 }

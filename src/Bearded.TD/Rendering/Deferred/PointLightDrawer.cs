@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred;
 
-class PointLightDrawer
+sealed class PointLightDrawer
 {
     private readonly ShapeDrawer3<PointLightVertex, (Vector3, float, Color, float)> drawer;
 

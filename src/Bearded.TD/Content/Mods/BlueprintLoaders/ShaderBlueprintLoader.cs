@@ -4,7 +4,7 @@ using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-class ShaderBlueprintLoader : BaseBlueprintLoader<Shader, ShaderJson, (FileInfo, ShaderLoader)>
+sealed class ShaderBlueprintLoader : BaseBlueprintLoader<Shader, ShaderJson, (FileInfo, ShaderLoader)>
 {
     private readonly ShaderLoader shaderLoader;
 

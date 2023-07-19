@@ -11,7 +11,7 @@ sealed class SelectTag : NodeBehavior<SelectTag.BehaviorParameters>
     private readonly Predicate<double> valuePassesThreshold;
     private readonly string tag;
 
-    public record BehaviorParameters(double Threshold, string? Tag, CompareMode Mode);
+    public sealed record BehaviorParameters(double Threshold, string? Tag, CompareMode Mode);
 
     public enum CompareMode
     {

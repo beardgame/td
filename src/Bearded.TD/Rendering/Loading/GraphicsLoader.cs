@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Bearded.Graphics.ImageSharp;
@@ -17,7 +18,7 @@ using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Rendering.Loading;
 
-class GraphicsLoader : IGraphicsLoader
+sealed class GraphicsLoader : IGraphicsLoader
 {
     // TODO: use mod specific shader managers (tricky bit: hot reload)
     private readonly ShaderManager shaderManager;
@@ -31,9 +32,12 @@ class GraphicsLoader : IGraphicsLoader
         this.logger = logger;
     }
 
-    public ISpriteSetImplementation CreateSpriteSet(IEnumerable<Sampler> samplers,
-        IEnumerable<SpriteBitmaps> sprites, string id)
+    public ISpriteSetImplementation CreateSpriteSet(
+        IEnumerable<Sampler> samplers, IEnumerable<SpriteBitmaps> sprites, string id)
     {
+        // Avoid multiple enumeration
+        var samplerArray = samplers.ToImmutableArray();
+
         var spriteRectangles = sprites.Select(rectangleWithBitmaps).ToList();
         if (spriteRectangles.Count == 0)
         {
@@ -44,7 +48,7 @@ class GraphicsLoader : IGraphicsLoader
         var packedSprites = BinPacking.Pack(spriteRectangles);
 
         var usedSamplers = packedSprites.Rectangles.SelectMany(r => r.Value.BitmapsBySampler.Keys).Distinct().ToList();
-        var unusedSamplersCount = samplers.Select(s => s.Name).Except(usedSamplers).Count();
+        var unusedSamplersCount = samplerArray.Select(s => s.Name).Except(usedSamplers).Count();
 
         if (unusedSamplersCount > 0)
             logger.Warning?.Log($"Sprite set specifies {unusedSamplersCount} samplers it does not use");
@@ -61,7 +65,7 @@ class GraphicsLoader : IGraphicsLoader
             }
         }
 
-        return builder.Build(glActions, transformationsBySampler(samplers));
+        return builder.Build(glActions, transformationsBySampler(samplerArray));
 
         static Dictionary<string, IEnumerable<ITextureTransformation>> transformationsBySampler(
             IEnumerable<Sampler> samplers)

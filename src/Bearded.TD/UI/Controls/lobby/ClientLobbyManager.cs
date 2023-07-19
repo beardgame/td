@@ -3,7 +3,7 @@ using Bearded.TD.Networking;
 
 namespace Bearded.TD.UI.Controls;
 
-class ClientLobbyManager : LobbyManager
+sealed class ClientLobbyManager : LobbyManager
 {
     public override bool CanChangeGameSettings => false;
         

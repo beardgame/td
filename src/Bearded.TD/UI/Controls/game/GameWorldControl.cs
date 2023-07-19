@@ -13,7 +13,6 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
 {
     private readonly GameInstance game;
     private readonly GameRenderer renderer;
-    private readonly ITimeSource renderTime;
 
     private Matrix4 viewMatrix;
     public override Matrix4 ViewMatrix => viewMatrix;
@@ -32,7 +31,6 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
     {
         this.game = game;
         renderer = new GameRenderer(game, renderContext, time);
-        renderTime = time;
         UserSettings.SettingsChanged += userSettingsChanged;
         IsClickThrough = false;
     }

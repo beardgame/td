@@ -96,7 +96,7 @@ sealed class Ruined
 
     public void PreviewEvent(ref FindObjectRuinState @event)
     {
-        @event = @event with { IsRuined = true };
+        @event = new FindObjectRuinState(IsRuined: true);
     }
 
     public override void Update(TimeSpan elapsedTime)

@@ -56,7 +56,7 @@ sealed class PlayerStatusUI
         PlayersChanged?.Invoke();
     }
 
-    public class PlayerModel
+    public sealed class PlayerModel
     {
         public Id<Player> Id { get; }
         public string Name { get; }

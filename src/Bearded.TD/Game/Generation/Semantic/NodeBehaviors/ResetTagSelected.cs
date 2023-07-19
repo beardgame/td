@@ -5,7 +5,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 [NodeBehavior("resetTagSelected")]
 sealed class ResetTagSelected : NodeBehavior<ResetTagSelected.BehaviorParameters>
 {
-    public record BehaviorParameters(string? Tag, double Value = 0);
+    public sealed record BehaviorParameters(string? Tag, double Value = 0);
 
     public ResetTagSelected(BehaviorParameters parameters) : base(parameters) { }
 

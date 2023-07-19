@@ -14,7 +14,7 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace Bearded.TD.Rendering.Loading;
 
-class PackedSpriteSetBuilder
+sealed class PackedSpriteSetBuilder
 {
     private readonly int width;
     private readonly int height;

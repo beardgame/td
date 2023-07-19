@@ -16,7 +16,7 @@ abstract class DataMessageHandler : INetworkMessageHandler
     public abstract void Handle(NetIncomingMessage message);
 }
 
-class ServerDataMessageHandler : DataMessageHandler
+sealed class ServerDataMessageHandler : DataMessageHandler
 {
     private readonly GameInstance game;
     private readonly Logger logger;
@@ -44,7 +44,7 @@ class ServerDataMessageHandler : DataMessageHandler
     }
 }
 
-class ClientDataMessageHandler : DataMessageHandler
+sealed class ClientDataMessageHandler : DataMessageHandler
 {
     private readonly GameInstance game;
     private readonly Logger logger;

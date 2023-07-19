@@ -3,7 +3,7 @@ using Lidgren.Network;
 
 namespace Bearded.TD.Networking.MasterServer;
 
-class ClientMasterServer : MasterServer
+sealed class ClientMasterServer : MasterServer
 {
 	public ClientMasterServer(NetClient client) : base(client) { }
 

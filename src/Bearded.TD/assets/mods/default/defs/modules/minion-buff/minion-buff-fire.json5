@@ -1,0 +1,25 @@
+{
+    id: "minion-buff-fire",
+    affinityElement: "fire",
+    socketShape: "minionBuff",
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "damage",
+                mode: "multiply",
+                value: 2,
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.swarm-enemy",
+                    element: "fire",
+                }
+            }
+        }
+    ],
+}

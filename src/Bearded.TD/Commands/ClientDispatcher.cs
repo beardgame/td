@@ -1,3 +1,3 @@
 ﻿namespace Bearded.TD.Commands;
 
-class ClientDispatcher<TObject> : BaseClientDispatcher<TObject> { }
+sealed class ClientDispatcher<TObject> : BaseClientDispatcher<TObject> { }

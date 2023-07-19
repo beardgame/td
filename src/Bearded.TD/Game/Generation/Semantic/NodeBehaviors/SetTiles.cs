@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 [NodeBehavior("setTiles")]
 sealed class SetTiles : NodeBehavior<SetTiles.BehaviorParameters>
 {
-    public record BehaviorParameters(TileType Type);
+    public sealed record BehaviorParameters(TileType Type);
 
     public SetTiles(BehaviorParameters parameters) : base(parameters) { }
 

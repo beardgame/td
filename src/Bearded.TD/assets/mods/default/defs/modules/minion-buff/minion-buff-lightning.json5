@@ -1,0 +1,33 @@
+{
+    id: "minion-buff-lightning",
+    affinityElement: "lightning",
+    socketShape: "minionBuff",
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "movementSpeed",
+                mode: "multiply",
+                value: 1.6,
+            }
+        },
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "fireRate",
+                mode: "multiply",
+                value: 1.75,
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.swarm-enemy",
+                    element: "lightning",
+                }
+            }
+        }
+    ],
+}

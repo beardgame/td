@@ -30,7 +30,7 @@ static class FormFactories
         return columnLayout;
     }
 
-    public class Builder
+    public sealed class Builder
     {
         private bool isDense;
         private bool isScrollable;

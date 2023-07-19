@@ -5,7 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls;
 
-class AutoCompletingTextInput : TextInput
+sealed class AutoCompletingTextInput : TextInput
 {
     private readonly Func<string, string> autoCompletionProvider;
 

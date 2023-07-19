@@ -15,7 +15,7 @@ using static Bearded.TD.Tiles.Level;
 
 namespace Bearded.TD.Rendering.Deferred;
 
-class FluidGeometry
+sealed class FluidGeometry
 {
     private static readonly Vector2 rightVector = Direction.Right.Vector();
     private static readonly Vector2 upRightVector = Direction.UpRight.Vector();

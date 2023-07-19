@@ -18,7 +18,7 @@ class CommandAttribute : Attribute
 }
 
 [AttributeUsage(AttributeTargets.Method)]
-class DebugCommandAttribute : CommandAttribute
+sealed class DebugCommandAttribute : CommandAttribute
 {
     public DebugCommandAttribute(string name, string? parameterCompletion = null)
         : base(name, parameterCompletion)

@@ -1,6 +1,6 @@
 namespace Bearded.TD.Game.Simulation.World.Fluids;
 
-class FluidLayer
+sealed class FluidLayer
 {
     private readonly GameState gameState;
     public Fluid Water { get; }

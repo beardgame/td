@@ -1,0 +1,45 @@
+{
+    id: "resistant-swarm-enemy",
+    components: [
+        { id: "name", parameters: { name: "Swarm enemy" } },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.particle.orb-soft",
+                color: "cff4d1",
+                size: 0.2,
+                heightOffset: 0.1
+            }
+        },
+        { id: "health", parameters: { maxHealth: 50 } },
+        { id: "threat", parameters:  { threat: 120 } },
+        { id: "damageBuildings", parameters: { damage: 1, attackRate: 1 } },
+
+        { id: "archetype", parameters: { value: "minion" } },
+        { id: "socket", parameters: { shape: "minionBuff" } },
+        {
+            id: "resistanceContributions",
+            parameters: {
+                factors: {
+                    minionBuff: 0.9
+                }
+            }
+        },
+
+        { id: "groundLockedMovement" },
+        { id: "accelerateToBase", parameters: { acceleration: 5 } },
+        { id: "drag", parameters: { amount: 2 } },
+        {
+            id: "tileCollider",
+            parameters: {
+                withWalls: true,
+                withCrevices: true,
+                withBuildings: true
+            }
+        },
+        { id: "elasticCollision", parameters:  { normal: 0.5, tangent: 1 }},
+        { id: "softMutualUnitCollider" },
+        { id: "spawnObjectOnKilled", parameters:  { object: "default.enemyExplosion" } },
+        { id: "spawnObjectOnTakeHit", parameters: { object: "default.enemyHit", scaleFromDamage: 0.1 }},
+    ]
+}

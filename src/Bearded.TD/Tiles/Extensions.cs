@@ -43,16 +43,6 @@ static class Extensions
         Direction.DownRight,
     };
 
-    private static readonly Orientation[] orientations =
-    {
-        Orientation.Right,
-        Orientation.UpRight,
-        Orientation.UpLeft,
-        Orientation.Left,
-        Orientation.DownLeft,
-        Orientation.DownRight,
-    };
-
     private static readonly Vector2[] corners =
         Enumerable.Range(0, 7)
             .Select(i =>

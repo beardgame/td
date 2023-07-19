@@ -5,7 +5,7 @@ namespace Bearded.TD.Utilities.Console;
 
 [AttributeUsage(AttributeTargets.Method)]
 [MeansImplicitUse]
-class CommandParameterCompletionAttribute : Attribute
+sealed class CommandParameterCompletionAttribute : Attribute
 {
     public string Name { get; }
 

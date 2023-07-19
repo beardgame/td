@@ -13,7 +13,6 @@ sealed class LoopGlobalSound : GameRule<LoopGlobalSound.RuleParameters>, IListen
     public LoopGlobalSound(RuleParameters parameters) : base(parameters) { }
 
     private ISoundScape? soundScape;
-    private ISoundLoop? loop;
 
     public override void Execute(GameRuleContext context)
     {
@@ -23,6 +22,6 @@ sealed class LoopGlobalSound : GameRule<LoopGlobalSound.RuleParameters>, IListen
 
     public void HandleEvent(GameStarted @event)
     {
-        loop = soundScape?.LoopGlobalSound(Parameters.Sound);
+        soundScape?.LoopGlobalSound(Parameters.Sound);
     }
 }

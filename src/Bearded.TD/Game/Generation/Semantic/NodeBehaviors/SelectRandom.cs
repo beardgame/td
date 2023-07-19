@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 [NodeBehavior("selectRandom")]
 sealed class SelectRandom : NodeBehavior<SelectRandom.BehaviourParameters>
 {
-    public record BehaviourParameters(double Percentage);
+    public sealed record BehaviourParameters(double Percentage);
 
     public SelectRandom(BehaviourParameters parameters) : base(parameters) { }
 

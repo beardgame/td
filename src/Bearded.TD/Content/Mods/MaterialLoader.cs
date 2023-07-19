@@ -8,7 +8,7 @@ using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Content.Mods;
 
-class MaterialLoader
+sealed class MaterialLoader
 {
     private readonly ModLoadingContext context;
 

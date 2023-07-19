@@ -6,7 +6,7 @@ using Bearded.TD.Networking;
 
 namespace Bearded.TD.UI.Controls;
 
-class ClientLoadingManager : LoadingManager
+sealed class ClientLoadingManager : LoadingManager
 {
     public ClientLoadingManager(GameInstance game, NetworkInterface networkInterface)
         : base(game, networkInterface) { }

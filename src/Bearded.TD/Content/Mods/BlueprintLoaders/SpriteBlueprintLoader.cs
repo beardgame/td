@@ -5,7 +5,7 @@ using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-class SpriteBlueprintLoader : BaseBlueprintLoader<SpriteSet, SpriteSetJson, (FileInfo, SpriteSetLoader)>
+sealed class SpriteBlueprintLoader : BaseBlueprintLoader<SpriteSet, SpriteSetJson, (FileInfo, SpriteSetLoader)>
 {
     private readonly SpriteSetLoader loader;
 

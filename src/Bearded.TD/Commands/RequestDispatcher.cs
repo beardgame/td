@@ -9,7 +9,7 @@ interface IRequestDispatcher<TActor, TObject>
     void Dispatch(TActor actor, IRequest<TActor, TObject> request);
 }
 
-class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
+sealed class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
 {
     private readonly ClientNetworkInterface network;
 
@@ -38,7 +38,7 @@ class ClientRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObj
     }
 }
 
-class ServerRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
+sealed class ServerRequestDispatcher<TActor, TObject> : IRequestDispatcher<TActor, TObject>
 {
     private readonly ICommandDispatcher<TObject> commandDispatcher;
 

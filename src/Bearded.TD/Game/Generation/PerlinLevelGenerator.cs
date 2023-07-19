@@ -65,7 +65,7 @@ sealed class PerlinLevelGenerator : ILevelGenerator
             yield return cmd;
     }
 
-    private class Generator
+    private sealed class Generator
     {
         private readonly int radius;
         private readonly Tilemap<TileType> typeTilemap;
@@ -477,7 +477,7 @@ sealed class PerlinLevelGenerator : ILevelGenerator
         private int maxTargetCreviceSize => (int) Math.Sqrt(typeTilemap.Radius) * 3;
     }
 
-    private class PerlinSourcemapGenerator
+    private sealed class PerlinSourcemapGenerator
     {
         private readonly Random random;
         private readonly Vector2[] vectors;

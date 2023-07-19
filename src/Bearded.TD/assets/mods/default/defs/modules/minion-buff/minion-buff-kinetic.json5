@@ -1,0 +1,25 @@
+{
+    id: "minion-buff-kinetic",
+    affinityElement: "force",
+    socketShape: "minionBuff",
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "health",
+                mode: "multiply",
+                value: 1.4,
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.swarm-enemy",
+                    element: "force",
+                }
+            }
+        }
+    ],
+}

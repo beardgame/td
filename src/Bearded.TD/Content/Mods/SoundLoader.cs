@@ -7,12 +7,10 @@ namespace Bearded.TD.Content.Mods;
 
 sealed class SoundLoader
 {
-    private readonly ModLoadingContext context;
     private readonly ModMetadata meta;
 
-    public SoundLoader(ModLoadingContext context, ModMetadata meta)
+    public SoundLoader(ModMetadata meta)
     {
-        this.context = context;
         this.meta = meta;
     }
 

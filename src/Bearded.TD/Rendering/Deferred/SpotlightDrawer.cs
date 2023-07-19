@@ -7,7 +7,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred;
 
-class SpotlightDrawer
+sealed class SpotlightDrawer
 {
     private readonly struct Parameters
     {

@@ -92,7 +92,7 @@ static class Tilemap
     }
 }
 
-public class Tilemap<TValue> : IEnumerable<Tile>
+public sealed class Tilemap<TValue> : IEnumerable<Tile>
 {
     public int Radius { get; }
     private readonly TValue[,] tiles;

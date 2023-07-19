@@ -26,7 +26,7 @@ sealed class LobbyListControl : CompositeControl
             .FillContent(list);
     }
 
-    private class LobbyListItemSource : IListItemSource
+    private sealed class LobbyListItemSource : IListItemSource
     {
         private readonly LobbyList lobbyList;
 

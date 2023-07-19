@@ -8,7 +8,6 @@ sealed record WaveScript(
     string DisplayName,
     Faction TargetFaction,
     TimeSpan? DowntimeDuration,
-    TimeSpan SpawnDuration,
     ImmutableArray<SpawnLocation> SpawnLocations,
     EnemySpawnScript EnemyScript)
 {
