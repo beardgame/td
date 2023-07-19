@@ -16,6 +16,9 @@ class PointLight : Component<PointLight.IPointLightParameters>, IListener<DrawCo
         Unit Radius { get; }
 
         Unit Height { get; }
+
+        [Modifiable(1)]
+        float Intensity { get; }
     }
 
     public PointLight(IPointLightParameters parameters) : base(parameters)
@@ -45,7 +48,8 @@ class PointLight : Component<PointLight.IPointLightParameters>, IListener<DrawCo
         e.Core.PointLight.Draw(
             position,
             Parameters.Radius.NumericValue,
-            Parameters.Color
+            Parameters.Color,
+            Parameters.Intensity
         );
     }
 }

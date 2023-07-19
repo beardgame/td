@@ -14,24 +14,28 @@ readonly struct PointLightVertex : IVertexData
     private readonly Vector3 vertexLightPosition;
     private readonly float vertexLightRadiusSquared;
     private readonly Color vertexLightColor;
+    private readonly float intensity;
 
     public PointLightVertex(
         Vector3 vertexPosition,
         Vector3 vertexLightPosition,
         float vertexLightRadiusSquared,
-        Color vertexLightColor)
+        Color vertexLightColor,
+        float intensity)
     {
         this.vertexPosition = vertexPosition;
         this.vertexLightPosition = vertexLightPosition;
         this.vertexLightRadiusSquared = vertexLightRadiusSquared;
         this.vertexLightColor = vertexLightColor;
+        this.intensity = intensity;
     }
 
     private static readonly VertexAttribute[] vertexAttributes = MakeAttributeArray(
         MakeAttributeTemplate<Vector3>("vertexPosition"),
         MakeAttributeTemplate<Vector3>("vertexLightPosition"),
         MakeAttributeTemplate<float>("vertexLightRadiusSquared"),
-        MakeAttributeTemplate<Color>("vertexLightColor")
+        MakeAttributeTemplate<Color>("vertexLightColor"),
+        MakeAttributeTemplate<float>("intensity")
     );
 
     VertexAttribute[] IVertexData.VertexAttributes => vertexAttributes;
