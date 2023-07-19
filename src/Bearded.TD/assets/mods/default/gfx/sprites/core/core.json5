@@ -1,0 +1,13 @@
+﻿{
+  id: "core",
+  textureSamplers:
+  [
+    {
+      sampler: "diffuse"
+    },
+    {
+      sampler: "normal",
+      suffix: "-normal",
+    }
+  ]
+}

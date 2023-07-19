@@ -1,0 +1,9 @@
+﻿{
+    id: "core-effects",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}

@@ -5,7 +5,6 @@
     { id: "cost", parameters: { resources: 1 } },
     { id: "footprint", parameters: { footprint: "seven" } },
     { id: "footprintTransformation" },
-    { id: "foundation", parameters: { sprites: "foundations" } },
     { id: "health", parameters: { maxHealth: 1000 } },
     { id: "sink" },
     { id: "defaultTileOccupancy" },
@@ -18,6 +17,37 @@
 
     { id: "coreStats" },
     { id: "emergencyEMP", parameters: { object: "emergencyEMP" }},
+
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "core-effects.core",
+        color: "FFFFFFFF",
+        size: 3,
+        heightOffset: 0.1
+      }
+    },
+
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "core.core-shell",
+        colorMode: "faction",
+        shader: "building",
+        drawGroup: "building",
+        size: 3,
+        heightOffset: 0.2,
+      }
+    },
+    {
+      id: "pointlight",
+      parameters: {
+        color: "FFAAAAFF",
+        radius: 2.5,
+        height: 0.4,
+        intensity: 1.5,
+      }
+    },
 
     {
       id: "turret",
@@ -48,6 +78,6 @@
         neutralDirection: 240,
         offset: [-0.5, -0.866]
       }
-    }
+    },
   ]
 }
