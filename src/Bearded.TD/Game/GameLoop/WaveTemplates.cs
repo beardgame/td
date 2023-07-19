@@ -11,7 +11,7 @@ static class WaveTemplates
     public static readonly ScriptTemplate Legacy = script(
         routine(1,
             batch(1,
-                form(1, PrimaryElement, Champion))));
+                form(1, PrimaryElement, Elite))));
 
     private static ScriptTemplate script(params RoutineTemplate[] routines)
     {

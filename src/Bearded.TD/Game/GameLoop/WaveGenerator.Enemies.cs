@@ -30,7 +30,7 @@ sealed partial class WaveGenerator
             var threat = blueprint.GetThreat();
             var archetype = blueprint.GetArchetype();
             var minEnemies = minEnemiesForArchetype(archetype);
-            return minEnemies * threat <= maxTotalValue;
+            return archetype == structure.Archetype && minEnemies * threat <= maxTotalValue;
         }).ToImmutableArray();
         if (eligibleEnemies.Length == 0)
         {
@@ -43,8 +43,8 @@ sealed partial class WaveGenerator
     private static int minEnemiesForArchetype(Archetype archetype) => archetype switch
     {
         Archetype.Minion => 24,
-        Archetype.Elite => 4,
-        Archetype.Champion => 1,
+        Archetype.Elite => 6,
+        Archetype.Champion => 2,
         Archetype.Boss => 1,
         _ => throw new ArgumentOutOfRangeException(nameof(archetype), archetype, null)
     };
