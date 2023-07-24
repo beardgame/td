@@ -14,45 +14,20 @@ using Bearded.TD.Game.Simulation.World;
 
 namespace Bearded.TD.Game;
 
-sealed class Blueprints
+sealed record Blueprints(
+    ReadonlyBlueprintCollection<Shader> Shaders,
+    ReadonlyBlueprintCollection<Material> Materials,
+    ReadonlyBlueprintCollection<SpriteSet> Sprites,
+    ReadonlyBlueprintCollection<ISoundEffect> SoundEffects,
+    ReadonlyBlueprintCollection<IFootprint> Footprints,
+    ReadonlyBlueprintCollection<IGameObjectBlueprint> GameObjects,
+    ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades,
+    ReadonlyBlueprintCollection<IModule> Modules,
+    ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies,
+    ReadonlyBlueprintCollection<INodeBlueprint> LevelNodes,
+    ReadonlyBlueprintCollection<IBiome> Biomes,
+    ReadonlyBlueprintCollection<IGameModeBlueprint> GameModes)
 {
-    public ReadonlyBlueprintCollection<Shader> Shaders { get; }
-    public ReadonlyBlueprintCollection<Material> Materials { get; }
-    public ReadonlyBlueprintCollection<SpriteSet> Sprites { get; }
-    public ReadonlyBlueprintCollection<ISoundEffect> SoundEffects { get; }
-    public ReadonlyBlueprintCollection<IFootprint> Footprints { get; }
-    public ReadonlyBlueprintCollection<IGameObjectBlueprint> GameObjects { get; }
-    public ReadonlyBlueprintCollection<IPermanentUpgrade> Upgrades { get; }
-    public ReadonlyBlueprintCollection<IModule> Modules { get; }
-    public ReadonlyBlueprintCollection<ITechnologyBlueprint> Technologies { get; }
-    public ReadonlyBlueprintCollection<INodeBlueprint> LevelNodes { get; }
-    public ReadonlyBlueprintCollection<IGameModeBlueprint> GameModes { get; }
-
-    public Blueprints(ReadonlyBlueprintCollection<Shader> shaders,
-        ReadonlyBlueprintCollection<Material> materials,
-        ReadonlyBlueprintCollection<SpriteSet> sprites,
-        ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
-        ReadonlyBlueprintCollection<IFootprint> footprints,
-        ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
-        ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
-        ReadonlyBlueprintCollection<IModule> modules,
-        ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
-        ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
-        ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes)
-    {
-        Shaders = shaders;
-        Materials = materials;
-        Sprites = sprites;
-        SoundEffects = soundEffects;
-        Footprints = footprints;
-        GameObjects = gameObjects;
-        Upgrades = upgrades;
-        Modules = modules;
-        Technologies = technologies;
-        LevelNodes = levelNodes;
-        GameModes = gameModes;
-    }
-
     public static Blueprints Merge(IEnumerable<Blueprints> blueprints)
     {
         var list = blueprints as IList<Blueprints> ?? blueprints.ToList();
@@ -67,6 +42,7 @@ sealed class Blueprints
             flatten(list, b => b.Modules),
             flatten(list, b => b.Technologies),
             flatten(list, b => b.LevelNodes),
+            flatten(list, b => b.Biomes),
             flatten(list, b => b.GameModes)
         );
     }

@@ -32,6 +32,7 @@ sealed class Mod
         ReadonlyBlueprintCollection<IModule> modules,
         ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
         ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
+        ReadonlyBlueprintCollection<IBiome> biomes,
         ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes,
         IDictionary<ModAwareId, UpgradeTag> tags)
     {
@@ -48,6 +49,7 @@ sealed class Mod
             modules,
             technologies,
             levelNodes,
+            biomes,
             gameModes);
         Tags = tags;
     }

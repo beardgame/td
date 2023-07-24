@@ -7,6 +7,7 @@ using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
@@ -41,9 +42,10 @@ sealed class PhysicalTilemapGenerator
         addFeatureAreaMetadata(arrangedFeaturesWithAreas);
         addFeatureTileMetadata(featuresWithTiles);
 
+        var biomes = new Tilemap<IBiome>(radius, _ => Biomes.Default);
         // TODO: these will be generated (and possibly entirely replaced) somewhere above later
         var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
-        CommandFactory tilemapCommand = game => FillTilemap.Command(game, tilemap, drawInfos);
+        CommandFactory tilemapCommand = game => FillTilemap.Command(game, tilemap, biomes, drawInfos);
 
         return ImmutableArray.Create(tilemapCommand, zoneCommand).Concat(levelCommands);
     }

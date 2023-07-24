@@ -103,6 +103,11 @@ sealed class GameRenderer
             drawDebugVisibility();
         }
 
+        if (settings.Biomes)
+        {
+            drawDebugBiomes();
+        }
+
         if (settings.LevelGeometry)
         {
             drawDebugLevelGeometry();
@@ -202,6 +207,19 @@ sealed class GameRenderer
 
             var xyz = Level.GetPosition(tile).NumericValue;
             shapeDrawer.FillCircle(xyz, HexagonSide, color * a, 6);
+        }
+    }
+
+    private void drawDebugBiomes()
+    {
+        const float a = 0.1f;
+
+        var biomeLayer = game.State.BiomeLayer;
+
+        foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
+        {
+            var xyz = Level.GetPosition(tile).NumericValue;
+            shapeDrawer.FillCircle(xyz, HexagonSide, biomeLayer[tile].OverlayColor * a, 6);
         }
     }
 
