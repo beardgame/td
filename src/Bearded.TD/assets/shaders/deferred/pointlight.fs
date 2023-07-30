@@ -37,6 +37,34 @@ float dither(vec2 xy)
     return fract(dot(xy, vec2(36, 7) / 16.0f));
 }
 
+float getShadowUmbraFactor(vec2 uv, vec3 fragmentPosition, vec3 vectorToLight)
+{
+    int samples = 5 + int(lightRadiusSquared);
+    vec2 uvAccum = uv;
+    vec2 uvStep = (lightCenterUV - uv) / (samples + 1);
+    float zLimitAccum = fragmentPosition.z;
+    float zLimitStep = vectorToLight.z / (samples + 1);
+    float shadowUmbraFactor = 1;
+    for (int i = 0; i < samples; i++)
+    {
+        uvAccum += uvStep;
+        zLimitAccum += zLimitStep;
+
+        float z = getFragmentPositionFromDepth(uvAccum).z;
+
+        if (z > zLimitAccum)
+        {
+            float shadowDistance = abs(z - zLimitAccum) * 10;
+            if (shadowDistance > 1)
+                discard;
+
+            shadowUmbraFactor = min(shadowUmbraFactor, 1 - shadowDistance);
+        }
+    }
+    
+    return shadowUmbraFactor;
+}
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution;
@@ -63,28 +91,7 @@ void main()
 
     vec3 rgb = lightColor.rgb * lightColor.a * (a * f);
 
-    int samples = 5 + int(lightRadiusSquared);
-    vec2 uvAccum = uv;
-    vec2 uvStep = (lightCenterUV - uv) / (samples + 1);
-    float zLimitAccum = fragmentPosition.z;
-    float zLimitStep = vectorToLight.z / (samples + 1);
-    float shadowUmbraFactor = 1;
-    for (int i = 0; i < samples; i++)
-    {
-        uvAccum += uvStep;
-        zLimitAccum += zLimitStep;
-
-        float z = getFragmentPositionFromDepth(uvAccum).z;
-
-        if (z > zLimitAccum)
-        {
-            float shadowDistance = abs(z - zLimitAccum) * 10;
-            if (shadowDistance > 1)
-                discard;
-
-            shadowUmbraFactor = min(shadowUmbraFactor, 1 - shadowDistance);
-        }
-    }
+    float shadowUmbraFactor = getShadowUmbraFactor(uv, fragmentPosition, vectorToLight);
 
     outRGB = vec4(rgb, 0) * shadowUmbraFactor;
 
