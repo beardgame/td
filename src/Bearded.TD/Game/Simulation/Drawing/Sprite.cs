@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -33,10 +34,12 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
         Unit HeightOffset { get; }
         Difference2 Offset { get; }
         Direction2? Direction { get; }
+        Angle? RandomRotationStep { get; }
     }
 
 
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
+    private Angle rotationOffset;
 
     public Sprite(IParameters parameters) : base(parameters)
     {
@@ -48,6 +51,13 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
             Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+
+        if (Parameters.RandomRotationStep is { } step)
+        {
+            var angle = StaticRandom.Float(360);
+            var remainder = angle % step.Degrees;
+            rotationOffset = Angle.FromDegrees(angle - remainder);
+        }
 
         Events.Subscribe(this);
     }
@@ -64,7 +74,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     public void HandleEvent(DrawComponents e)
     {
         var color = GetColor(Owner, Parameters.ColorMode, Parameters.Color);
-        var direction = Parameters.Direction ?? Owner.Direction;
+        var direction = (Parameters.Direction ?? Owner.Direction) + rotationOffset;
 
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
