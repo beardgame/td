@@ -30,10 +30,12 @@ public sealed class WaveGeneratorTests
         logger = new Logger();
         faction = FactionTestFactory.CreateFaction();
         enemies = ImmutableArray.Create(
-            EnemyTestFactory.CreateSpawnableEnemyWithUniqueSocket(out var socketShape1),
-            EnemyTestFactory.CreateSpawnableEnemyWithUniqueSocket(out var socketShape2));
+            EnemyTestFactory.CreateSpawnableEnemyWithUniqueSocket(Archetype.Elite, out var socketShape1),
+            EnemyTestFactory.CreateSpawnableEnemyWithUniqueSocket(Archetype.Elite, out var socketShape2),
+            EnemyTestFactory.CreateSpawnableEnemyWithUniqueSocket(Archetype.Minion, out var socketShape3));
         modules = ModuleTestFactory.CreateModulesForAllElements(socketShape1)
-            .Concat(ModuleTestFactory.CreateModulesForAllElements(socketShape2)).ToImmutableArray();
+            .Concat(ModuleTestFactory.CreateModulesForAllElements(socketShape2))
+            .Concat(ModuleTestFactory.CreateModulesForAllElements(socketShape3)).ToImmutableArray();
         spawnLocations = Enumerable.Range(0, 5)
             .Select(_ => new SpawnLocation(UniqueIds.NextUniqueId<SpawnLocation>(), Tile.Origin))
             .ToImmutableArray();
@@ -45,12 +47,18 @@ public sealed class WaveGeneratorTests
     {
         var gen = new WaveGenerator(enemies, modules, faction, seed, logger);
         var elementalTheme = new ElementalTheme(toElement(primaryElement), toElement(accentElement));
-        var requirements = new WaveRequirements(1, 1, new WaveEnemyComposition(200, elementalTheme), null);
+        var requirements = new WaveRequirements(
+            1,
+            1,
+            WaveStructure.FromTemplate(
+                WaveTemplates.PrimaryEliteMinionMixWithAccentEliteBatch,
+                new WaveEnemyComposition(1000, elementalTheme)),
+            null);
 
         var script1 = gen.GenerateWave(requirements, spawnLocations);
         var script2 = gen.GenerateWave(requirements, spawnLocations);
 
-        script1.Should().BeEquivalentTo(script2);
+        script1.Should().BeEquivalentTo(script2, options => options.WithStrictOrderingFor(script => script.EnemyScript.SpawnEvents));
     }
 
     private static Element toElement(NonNegativeInt i) => (Element) (i.Get % Enum.GetValues<Element>().Length);

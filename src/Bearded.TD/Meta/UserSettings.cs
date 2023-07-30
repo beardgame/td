@@ -94,6 +94,7 @@ sealed partial class UserSettings
         public bool Zones = false;
         public bool Visibility = false;
         public bool LevelMetadata = false;
+        public bool Biomes = false;
         public bool LevelGeometry = false;
         public bool LevelGeometryShowHeights = false;
         public bool LevelGeometryLabels = false;

@@ -47,6 +47,7 @@ sealed class GameState
     public IdManager GamePlayIds { get; } = new();
 
     public GeometryLayer GeometryLayer { get; }
+    public BiomeLayer BiomeLayer { get; }
     public FluidLayer FluidLayer { get; }
     public PhysicsLayer PhysicsLayer { get; }
     public TargetLayer TargetLayer { get; }
@@ -76,6 +77,7 @@ sealed class GameState
         Level = new Level(GameSettings.LevelSize);
 
         GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
+        BiomeLayer = new BiomeLayer(GameSettings.LevelSize);
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);
         PhysicsLayer = new PhysicsLayer();
         TargetLayer = new TargetLayer();

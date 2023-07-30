@@ -12,9 +12,10 @@ sealed class EmptyLevelGenerator : ILevelGenerator
     {
         var tilemap = new Tilemap<TileGeometry>(parameters.Radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
 
+        var biomes = new Tilemap<IBiome>(tilemap.Radius, _ => Biomes.Default);
         var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
 
-        yield return game => FillTilemap.Command(game, tilemap, drawInfos);
+        yield return game => FillTilemap.Command(game, tilemap, biomes, drawInfos);
 
         foreach (var cmd in LegacySpawnLocationPlacer.SpawnLocations(parameters.Radius))
             yield return cmd;

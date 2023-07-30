@@ -15,7 +15,8 @@ sealed class TilemapGenerator
     public (Tilemap<TileGeometry> Tilemap, ImmutableArray<CommandFactory> Commands) GenerateTilemap(
         int radius, IEnumerable<TiledFeature> features, Random random)
     {
-        var tilemap = new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Wall, 1, Unit.Zero));
+        var tilemap =
+            new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Wall, 1, Unit.Zero));
         var commandAccumulator = new LevelGenerationCommandAccumulator();
 
         foreach (var feature in features)

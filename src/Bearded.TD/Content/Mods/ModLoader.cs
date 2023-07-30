@@ -5,6 +5,7 @@ using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.Elements;
@@ -69,6 +70,7 @@ static class ModLoader
             var modules = new ModuleBlueprintLoader(loadingContext).LoadBlueprints();
             var technologies = new TechnologyBlueprintLoader(loadingContext, gameObjects, upgrades).LoadBlueprints();
             var levelNodes = new NodeBlueprintLoader(loadingContext).LoadBlueprints();
+            var biomes = ReadonlyBlueprintCollection.Empty;
             var gameModes = new GameModeBlueprintLoader(loadingContext).LoadBlueprints();
 
             context.Profiler.FinishLoading();
@@ -88,6 +90,7 @@ static class ModLoader
                 modules,
                 technologies,
                 levelNodes,
+                biomes,
                 gameModes,
                 tags.GetForCurrentMod());
         }

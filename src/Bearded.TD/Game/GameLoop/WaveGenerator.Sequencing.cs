@@ -45,7 +45,11 @@ sealed partial class WaveGenerator
         // TODO: optimize counts (do we want to optimize on the routine level? may not be necessary)
         var totalSpawnCount = batchComposition.Forms.Sum(form => form.SpawnCount);
         var batchCount = determineBatchCount(totalSpawnCount, random);
-        return generateBatchSequences(countsPerLocation, batchCount, random);
+        return generateBatchSequences(
+            batchComposition.Forms.Select(form => form.EnemyForm),
+            countsPerLocation,
+            batchCount,
+            random);
     }
 
     private static int determineBatchCount(int enemyCount, Random random)
@@ -57,7 +61,10 @@ sealed partial class WaveGenerator
     }
 
     private static ImmutableArray<BatchSequence> generateBatchSequences(
-        ImmutableDictionary<EnemyForm, int> formCounts, int batchCount, Random random)
+        IEnumerable<EnemyForm> enemyForms,
+        IReadOnlyDictionary<EnemyForm, int> countsByForm,
+        int batchCount,
+        Random random)
     {
         var builder = new List<EnemyForm>[batchCount];
 
@@ -67,8 +74,9 @@ sealed partial class WaveGenerator
         }
 
         var n = 0;
-        foreach (var (form, count) in formCounts)
+        foreach (var form in enemyForms)
         {
+            var count = countsByForm.GetValueOrDefault(form, 0);
             for (var i = 0; i < count; i++, n++)
             {
                 builder[n % batchCount].Add(form);

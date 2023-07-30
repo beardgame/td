@@ -34,7 +34,8 @@ sealed partial class WaveGenerator
         }).ToImmutableArray();
         if (eligibleEnemies.Length == 0)
         {
-            throw new InvalidOperationException("Could not find an enemy with a low enough threat to spawn.");
+            throw new InvalidOperationException(
+                "Could not find an enemy with correct archetype or a low enough threat to spawn.");
         }
 
         return eligibleEnemies;
@@ -42,7 +43,7 @@ sealed partial class WaveGenerator
 
     private static int minEnemiesForArchetype(Archetype archetype) => archetype switch
     {
-        Archetype.Minion => 24,
+        Archetype.Minion => 12,
         Archetype.Elite => 6,
         Archetype.Champion => 2,
         Archetype.Boss => 1,

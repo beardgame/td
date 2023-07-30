@@ -76,10 +76,13 @@ sealed class ChapterExecutor
 
         private WaveRequirements toRequirements(int waveNumber, WaveDescription waveDescription)
         {
+            var structure = WaveStructure.FromTemplate(
+                WaveTemplates.Chapter[(waveNumber - 1) % WaveTemplates.Chapter.Length],
+                new WaveEnemyComposition(waveDescription.TotalThreat, script.Elements));
             return new WaveRequirements(
                 script.ChapterNumber,
                 waveNumber,
-                new WaveEnemyComposition(waveDescription.TotalThreat, script.Elements),
+                structure,
                 waveDescription.DownTimeDuration);
         }
 
