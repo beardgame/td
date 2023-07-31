@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Commands;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Loading;
 using Bearded.Utilities;
@@ -37,16 +36,8 @@ sealed class GameStateBuilder
         var gameMode = game.Blueprints.GameModes[gameModeId];
         yield return ApplyGameRules.Command(game, gameMode, seed);
 
-        var nodeAccumulator = new AccumulateNodeGroups.Accumulator();
-        game.Meta.Events.Send(new AccumulateNodeGroups(nodeAccumulator));
-
-        var levelGenerationParameters = new LevelGenerationParameters(
-            gameSettings.LevelSize,
-            nodeAccumulator.ToNodes(),
-            // TODO: this should be a collection of biomes accumulated somehow
-            game.Blueprints.Biomes[ModAwareId.ForDefaultMod("default")]);
-        var levelGenerationCommands = levelGenerator.Generate(
-            levelGenerationParameters, seed);
+        var levelGenerationParameters = LevelGenerationParametersFactory.Create(game);
+        var levelGenerationCommands = levelGenerator.Generate(levelGenerationParameters, seed);
 
         foreach (var commandFactory in levelGenerationCommands)
         {

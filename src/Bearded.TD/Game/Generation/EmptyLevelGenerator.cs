@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
@@ -12,7 +13,7 @@ sealed class EmptyLevelGenerator : ILevelGenerator
     {
         var tilemap = new Tilemap<TileGeometry>(parameters.Radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
 
-        var biomes = new Tilemap<IBiome>(tilemap.Radius, _ => parameters.Biome);
+        var biomes = new Tilemap<IBiome>(tilemap.Radius, _ => parameters.Biomes.First());
         var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
 
         yield return game => FillTilemap.Command(game, tilemap, biomes, drawInfos);

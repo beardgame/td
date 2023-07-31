@@ -40,6 +40,14 @@
                     { id: "default.spawner", weight: 0.5 }
                 ]
             }
+        },
+        {
+            id: "contributeBiomes",
+            parameters: {
+                biomes: [
+                    "default.default",
+                ]
+            }
         }
     ]
 }

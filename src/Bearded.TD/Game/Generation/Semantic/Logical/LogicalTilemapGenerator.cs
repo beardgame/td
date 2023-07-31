@@ -50,7 +50,7 @@ sealed class LogicalTilemapGenerator
     public LogicalTilemap Generate(LevelGenerationParameters parameters, Random random)
     {
         var logicalTilemap =
-            generateInitialTilemap(parameters.Radius, parameters.Nodes, parameters.Biome, new Settings(), random);
+            generateInitialTilemap(parameters.Radius, parameters.Nodes, parameters.Biomes, new Settings(), random);
 
         logicalTilemap = optimizer.Optimize(logicalTilemap, random);
 
@@ -58,7 +58,7 @@ sealed class LogicalTilemapGenerator
     }
 
     private LogicalTilemap generateInitialTilemap(
-        int radius, NodeGroup nodes, IBiome biome, Settings settings, Random random)
+        int radius, NodeGroup nodes, IEnumerable<IBiome> biomes, Settings settings, Random random)
     {
         var (areaPerNode, nodeFillRatio, creviceToNodeRatio) = settings;
         var totalArea = Tilemap.TileCountForRadius(radius);
@@ -68,7 +68,7 @@ sealed class LogicalTilemapGenerator
 
         var nodesToPutDown = new DeterministicNodeChooser(logger).ChooseNodes(nodes, nodeCount).ToList();
         var tilemap = generateInitialNodes(tilemapRadius, nodesToPutDown, random);
-        var biomeMap = new Tilemap<IBiome>(tilemapRadius, _ => biome);
+        var biomeMap = new Tilemap<IBiome>(tilemapRadius, _ => biomes.First());
 
         var creviceCount = MoreMath.FloorToInt(creviceToNodeRatio * nodeCount);
         var macroFeatures = generateInitialMacroFeatures(tilemapRadius, creviceCount, random);

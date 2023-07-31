@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Rules;
 using Bearded.TD.Shared.Events;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Generation;
 
@@ -23,5 +24,6 @@ sealed class ContributesNodes : GameRule<ContributesNodes.RuleParameters>, IList
         }
     }
 
-    public sealed record RuleParameters(List<NodeGroup> Nodes);
+    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
+    public sealed record RuleParameters(ImmutableArray<NodeGroup> Nodes);
 }
