@@ -70,6 +70,7 @@ sealed class FitnessTestContext : INodeFitnessContext
 
     public PlacedNode this[Tile tile] => new(
         nodes.GetValueOrDefault(tile),
+        default,
         connections.GetValueOrDefault(tile),
         ImmutableDictionary<Direction, MacroFeature>.Empty);
 
