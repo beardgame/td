@@ -66,9 +66,11 @@ sealed class LogicalTilemapGenerator
 
         var tilemapRadius = lowestRadiusFittingTileCount(nodeCount);
 
-        var nodesToPutDown = new DeterministicNodeChooser(logger).ChooseNodes(nodes, nodeCount).ToList();
+        var nodesToPutDown = new DeterministicNodeChooser(logger).ChooseNodes(nodes, nodeCount).ToImmutableArray();
         var tilemap = generateInitialNodes(tilemapRadius, nodesToPutDown, random);
-        var biomeMap = new Tilemap<IBiome>(tilemapRadius, _ => biomes.First());
+
+        var biomesToPutDown = chooseBiomes(biomes, nodeCount).ToImmutableArray();
+        var biomeMap = generateInitialBiomes(tilemap, biomesToPutDown, random);
 
         var creviceCount = MoreMath.FloorToInt(creviceToNodeRatio * nodeCount);
         var macroFeatures = generateInitialMacroFeatures(tilemapRadius, creviceCount, random);
@@ -78,6 +80,19 @@ sealed class LogicalTilemapGenerator
         invertRandomConnectionForEveryTile(logicalTilemap, random);
 
         return logicalTilemap;
+    }
+
+    private static int lowestRadiusFittingTileCount(int nodeCount)
+    {
+        var logicalTileMapRadius = 1;
+        var logicalTiles = 7;
+        while (logicalTiles < nodeCount)
+        {
+            logicalTileMapRadius++;
+            logicalTiles = Tilemap.TileCountForRadius(logicalTileMapRadius);
+        }
+
+        return logicalTileMapRadius;
     }
 
     private static Tilemap<Node?> generateInitialNodes(
@@ -93,19 +108,6 @@ sealed class LogicalTilemapGenerator
         }
 
         return tilemap;
-    }
-
-    private static int lowestRadiusFittingTileCount(int nodeCount)
-    {
-        var logicalTileMapRadius = 1;
-        var logicalTiles = 7;
-        while (logicalTiles < nodeCount)
-        {
-            logicalTileMapRadius++;
-            logicalTiles = Tilemap.TileCountForRadius(logicalTileMapRadius);
-        }
-
-        return logicalTileMapRadius;
     }
 
     private static IEnumerable<Tile> chooseTilesThatShouldHaveNodes(
@@ -130,6 +132,34 @@ sealed class LogicalTilemapGenerator
             });
 
         return interior.Concat(partialOuterRing);
+    }
+
+    private static IEnumerable<IBiome> chooseBiomes(IEnumerable<IBiome> availableBiomes, int nodeCount)
+    {
+        var array = availableBiomes.ToImmutableArray();
+        for (var i = 0; i < nodeCount; i++)
+        {
+            yield return array[i % array.Length];
+        }
+    }
+
+    private static Tilemap<IBiome?> generateInitialBiomes(
+        Tilemap<Node?> tilemap, IEnumerable<IBiome> biomes, Random random)
+    {
+        var shuffledBiomes = biomes.Shuffled(random).ToImmutableArray();
+        var result = new Tilemap<IBiome?>(tilemap.Radius);
+        var i = 0;
+        foreach (var tile in tilemap)
+        {
+            if (tilemap[tile] is null)
+            {
+                continue;
+            }
+
+            result[tile] = shuffledBiomes[i++];
+        }
+
+        return result;
     }
 
     private static Dictionary<TileEdge, MacroFeature> generateInitialMacroFeatures(
