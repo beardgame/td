@@ -1,4 +1,3 @@
-using System;
 using Bearded.UI.EventArgs;
 
 namespace Bearded.TD;
