@@ -7,7 +7,6 @@ static partial class Constants
 {
     public static class Input
     {
-        // TODO: cannot make instances of modifier keys for comparison currently
-        public static readonly Predicate<ModifierKeys> DebugForceModifier = keys => keys.Alt;
+        public static readonly ModifierKeys DebugForceModifier = ModifierKeys.None.WithAlt();
     }
 }

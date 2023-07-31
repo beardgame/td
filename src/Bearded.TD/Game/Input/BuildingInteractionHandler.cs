@@ -34,7 +34,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
         ghostTileOccupation?.SetFootprint(footprint);
         if (cursor.Click.Hit)
         {
-            if (Constants.Input.DebugForceModifier(cursor.ModifierKeys))
+            if (Constants.Input.DebugForceModifier.IsSupersetOf(cursor.ModifierKeys))
             {
                 Game.Request(ForceBuildBuilding.Request, faction, blueprint, footprint);
             }
