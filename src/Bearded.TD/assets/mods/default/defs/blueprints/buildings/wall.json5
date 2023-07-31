@@ -29,11 +29,23 @@
     {
       id: "sprite",
       parameters: {
-        sprite: "buildings3.cannon-base",
+        sprite: "buildings.tank-trap-bottom",
         colorMode: "faction",
         shader: "building",
         drawGroup: "building",
-        heightOffset: 0.1
+        heightOffset: 0.03,
+        size: 1.2,
+      }
+    },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "buildings.tank-trap-top",
+        colorMode: "faction",
+        shader: "building",
+        drawGroup: "building",
+        heightOffset: 0.1,
+        size: 1.2,
       }
     },
     { id: "spawnObjectOnBuildingPlaced", parameters: { object: "wall-placed-effect"} },
