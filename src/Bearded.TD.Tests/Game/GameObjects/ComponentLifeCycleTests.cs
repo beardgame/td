@@ -30,6 +30,7 @@ public sealed class ComponentLifeCycleTests
         typeof(HitTargetOnActivate), // Expects a target property to always be present.
         typeof(ProjectileEmitter), // Attempts to instantiate a blueprint on added.
         typeof(SpawnObjectOnBuildingPlaced), // Expects building state to always be present.
+        typeof(ThrowOnActivate), // The whole point is to prevent part of the lifecycle.
         typeof(Turret) // Attempts to instantiate a blueprint on added.
     );
 

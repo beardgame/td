@@ -7,9 +7,6 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Model;
-using Bearded.TD.Game.Simulation.Units;
-using Bearded.TD.Tiles;
-using Bearded.Utilities;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Linq;
 
@@ -33,7 +30,7 @@ sealed class EnemyFormGenerator
         Random random,
         [NotNullWhen(true)] out EnemyForm? form)
     {
-        var instantiatedEnemy = EnemyUnitFactory.Create(Id<GameObject>.Invalid, blueprint, Tile.Origin);
+        var instantiatedEnemy = EnemyFactory.CreateTemplate(blueprint);
         var sockets = instantiatedEnemy.GetComponents<ISocket>();
         // assumption: if you have multiple sockets of the same shape, they will all receive the same module
         var shapes = sockets.Select(s => s.Shape).Distinct();
