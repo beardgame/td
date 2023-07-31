@@ -159,6 +159,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
             initializeParticles();
 
         var geometry = Owner.Game.GeometryLayer;
+        var level = Owner.Game.Level;
 
         var gravity = Constants.Game.Physics.Gravity3 * Parameters.GravityFactor;
         for (var i = 0; i < particles.Length; i++)
@@ -168,7 +169,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
             if (Parameters.CollideWithLevel)
             {
-                collideWithLevel(geometry, ref p, ref v, elapsedTime);
+                collideWithLevel(geometry, level, ref p, ref v, elapsedTime);
             }
             else
             {
@@ -181,7 +182,12 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         }
     }
 
-    private void collideWithLevel(GeometryLayer geometry, ref Position3 p, ref Velocity3 v, TimeSpan elapsedTime)
+    private void collideWithLevel(
+        GeometryLayer geometry,
+        Level level,
+        ref Position3 p,
+        ref Velocity3 v,
+        TimeSpan elapsedTime)
     {
         var step = v * elapsedTime;
 
@@ -193,6 +199,9 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
         while (true)
         {
+            if (!level.IsValid(tile))
+                break;
+
             var info = geometry[tile];
             var tileType = info.Geometry.Type;
 
