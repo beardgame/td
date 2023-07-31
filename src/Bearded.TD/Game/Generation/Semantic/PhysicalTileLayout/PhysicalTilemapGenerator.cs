@@ -7,7 +7,6 @@ using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
