@@ -49,4 +49,13 @@ static class LogicalTilemapMutations
                 tilemap, e => tilemap.SwapNodes(e.AdjacentTiles), random);
         }
     }
+
+    public sealed class SwapBiomes : ILogicalTilemapMutation
+    {
+        public bool TryMutate(LogicalTilemap tilemap, Random random)
+        {
+            return LogicalTilemapOptimizationMutator.TryCallOnConnectedTilesWithBlueprint(
+                tilemap, e => tilemap.SwapBiomes(e.AdjacentTiles), random);
+        }
+    }
 }

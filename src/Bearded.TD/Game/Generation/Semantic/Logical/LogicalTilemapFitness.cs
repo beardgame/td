@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 
@@ -18,6 +19,7 @@ static class LogicalTilemapFitness
     public static FF ConnectedComponentsCount { get; } = new ConnectedComponents();
     public static FF DisconnectedCrevices { get; } = new ConnectedCrevices();
     public static FF ConnectedTrianglesCount { get; } = new ConnectedTriangles();
+    public static FF BiomeComponentCount { get; } = new DisconnectedBiomes();
 
     public static FF NodeBehaviorFitness { get; } = new NodeBehavior();
 
@@ -198,6 +200,52 @@ static class LogicalTilemapFitness
                 }
             }
         }
+    }
 
+    private sealed class DisconnectedBiomes : FF
+    {
+        public override string Name => "Disconnected biomes";
+
+        protected override double CalculateFitness(LogicalTilemap tilemap)
+        {
+            var componentCounts = componentCountsByBiome(tilemap);
+            var totalExcessComponents = componentCounts.Sum(kvp => kvp.Value - 1);
+
+            return totalExcessComponents * 200;
+        }
+
+        private static ImmutableDictionary<IBiome, int> componentCountsByBiome(LogicalTilemap tilemap)
+        {
+            var result = ImmutableDictionary.CreateBuilder<IBiome, int>();
+            var seen = new HashSet<Tile>();
+
+            foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius))
+            {
+                if (seen.Contains(tile) || tilemap[tile].Biome == null)
+                {
+                    continue;
+                }
+
+                var biome = tilemap[tile].Biome;
+                fillFrom(tile, biome);
+                result[biome] = result.GetValueOrDefault(biome) + 1;
+            }
+
+            return result.ToImmutable();
+
+            void fillFrom(Tile tile, IBiome biome)
+            {
+                if (tilemap[tile].Biome != biome || !seen.Add(tile))
+                {
+                    return;
+                }
+
+                var node = tilemap[tile];
+                foreach (var direction in node.ConnectedTo.Enumerate())
+                {
+                    fillFrom(tile.Neighbor(direction), biome);
+                }
+            }
+        }
     }
 }

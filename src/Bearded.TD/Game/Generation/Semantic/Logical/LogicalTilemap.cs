@@ -87,6 +87,17 @@ sealed class LogicalTilemap : INodeFitnessContext
         tiles[tile2] = node2 with {Node = node1.Node};
     }
 
+    public void SwapBiomes((Tile, Tile) tilePair) => SwapBiomes(tilePair.Item1, tilePair.Item2);
+
+    public void SwapBiomes(Tile tile1, Tile tile2)
+    {
+        var node1 = tiles[tile1];
+        var node2 = tiles[tile2];
+
+        tiles[tile1] = node1 with {Biome = node2.Biome};
+        tiles[tile2] = node2 with {Biome = node1.Biome};
+    }
+
     public void SwitchMacroFeatures(Tile tile, Direction direction1, Direction direction2)
     {
         var edge1 = TileEdge.From(tile, direction1);

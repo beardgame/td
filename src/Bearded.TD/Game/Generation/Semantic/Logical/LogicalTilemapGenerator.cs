@@ -28,7 +28,8 @@ sealed class LogicalTilemapGenerator
         ImmutableArray.Create<ILogicalTilemapMutation>(
             new SwapMacroFeatures(),
             new ToggleConnection(),
-            new SwapNodes());
+            new SwapNodes(),
+            new SwapBiomes());
 
     private static readonly FitnessFunction<LogicalTilemap> fitnessFunction = FitnessFunction.From(
         LogicalTilemapFitness.ConnectedComponentsCount,
@@ -36,7 +37,8 @@ sealed class LogicalTilemapGenerator
         LogicalTilemapFitness.ConnectedTrianglesCount,
         LogicalTilemapFitness.NodeBehaviorFitness,
         LogicalTilemapFitness.ConnectionDegreeHistogramDifference(
-            new[] {0, /*1*/ 0.15, /*2*/ 0.2, /*3*/ 0.45, /*4*/ 0.2, 0, 0})
+            new[] {0, /*1*/ 0.15, /*2*/ 0.2, /*3*/ 0.45, /*4*/ 0.2, 0, 0}),
+        LogicalTilemapFitness.BiomeComponentCount
     );
 
     private readonly LogicalTilemapOptimizer optimizer;
