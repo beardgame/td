@@ -35,6 +35,8 @@ sealed class PhysicalTilemapGenerator
 
         var featuresWithTiles = new FeatureTileAssigner(radius).AssignFeatures(arrangedFeaturesWithAreas);
 
+        var biomeTilemap = new BiomeTileAssigner(radius).AssignBiomes(featuresWithTiles);
+
         var (tilemap, levelCommands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
 
         var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles, tilemap);
@@ -42,10 +44,9 @@ sealed class PhysicalTilemapGenerator
         addFeatureAreaMetadata(arrangedFeaturesWithAreas);
         addFeatureTileMetadata(featuresWithTiles);
 
-        var biomes = new Tilemap<IBiome>(radius, _ => Biomes.Default);
         // TODO: these will be generated (and possibly entirely replaced) somewhere above later
         var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
-        CommandFactory tilemapCommand = game => FillTilemap.Command(game, tilemap, biomes, drawInfos);
+        CommandFactory tilemapCommand = game => FillTilemap.Command(game, tilemap, biomeTilemap, drawInfos);
 
         return ImmutableArray.Create(tilemapCommand, zoneCommand).Concat(levelCommands);
     }

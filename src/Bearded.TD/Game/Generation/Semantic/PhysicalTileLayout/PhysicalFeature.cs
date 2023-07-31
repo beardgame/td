@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
@@ -23,7 +24,7 @@ abstract record PhysicalFeature
             Enumerable.Range(0, Circles.Length).Select(i => new FeatureCircle(this, i));
     };
 
-    public sealed record Node(Features.Node Blueprint, ImmutableArray<Circle> Circles)
+    public sealed record Node(Features.Node Blueprint, IBiome Biome, ImmutableArray<Circle> Circles)
         : WithCircles(Circles);
 
     public sealed record Connection(FeatureCircle From, FeatureCircle To, Unit Radius)

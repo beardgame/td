@@ -42,7 +42,13 @@ sealed class PhysicalFeatureGenerator
         {
             var node = logicalTilemap[tile];
             if (node.Blueprint == null)
+            {
                 continue;
+            }
+            if (node.Biome == null)
+            {
+                throw new InvalidOperationException("All nodes should have a biome assigned");
+            }
 
             var center = Position2.Zero + Level.GetPosition(tile).NumericValue * defaultNodeRadius * 2;
 
@@ -56,7 +62,7 @@ sealed class PhysicalFeatureGenerator
 
             var circle = new Circle(center, nodeSizeRadius * random.NextFloat(0.75f, 1.2f));
 
-            var n = new PhysicalFeature.Node(node.Blueprint, ImmutableArray.Create(circle));
+            var n = new PhysicalFeature.Node(node.Blueprint, node.Biome, ImmutableArray.Create(circle));
 
             nodes.Add(tile, n);
         }

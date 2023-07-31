@@ -12,7 +12,7 @@ sealed class EmptyLevelGenerator : ILevelGenerator
     {
         var tilemap = new Tilemap<TileGeometry>(parameters.Radius, _ => new TileGeometry(TileType.Floor, 1, Unit.Zero));
 
-        var biomes = new Tilemap<IBiome>(tilemap.Radius, _ => Biomes.Default);
+        var biomes = new Tilemap<IBiome>(tilemap.Radius, _ => parameters.Biome);
         var drawInfos = TileDrawInfo.DrawInfosFromTypes(tilemap);
 
         yield return game => FillTilemap.Command(game, tilemap, biomes, drawInfos);

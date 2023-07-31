@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Generation.Semantic.Logical;
@@ -9,7 +10,7 @@ namespace Bearded.TD.Game.Generation.Semantic.Logical;
 sealed class LogicalTilemap : INodeFitnessContext
 {
     private sealed record TileNode(
-            Node? Node, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
+            Node? Node, IBiome? Biome, EdgeFeatures Right, EdgeFeatures UpRight, EdgeFeatures UpLeft)
         : IModifiableTileEdges<TileNode, EdgeFeatures>
     {
         public TileNode WithRight(EdgeFeatures data) => this with {Right = data};
@@ -19,6 +20,7 @@ sealed class LogicalTilemap : INodeFitnessContext
 
     public static LogicalTilemap From(
         Tilemap<Node?> nodes,
+        Tilemap<IBiome> biomes,
         IReadOnlyDictionary<TileEdge, MacroFeature> macroFeatures)
     {
         var tiles = new Tilemap<TileNode>(
@@ -26,9 +28,11 @@ sealed class LogicalTilemap : INodeFitnessContext
             tile =>
             {
                 var node = nodes.IsValidTile(tile) ? nodes[tile] : null;
+                var biome = biomes.IsValidTile(tile) ? biomes[tile] : null;
 
                 return new TileNode(
                     node,
+                    biome,
                     edgeFeatures(tile, Direction.Right),
                     edgeFeatures(tile, Direction.UpRight),
                     edgeFeatures(tile, Direction.UpLeft));
@@ -55,6 +59,7 @@ sealed class LogicalTilemap : INodeFitnessContext
     public PlacedNode this[Tile tile] =>
         new(
             tiles[tile].Node,
+            tiles[tile].Biome,
             Extensions.Directions
                 .Where(d => this[tile.Edge(d)].IsConnected)
                 .Aggregate(Directions.None, (directions, direction) => directions.And(direction)),

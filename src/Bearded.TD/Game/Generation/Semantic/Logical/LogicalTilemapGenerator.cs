@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
+using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
@@ -48,14 +49,16 @@ sealed class LogicalTilemapGenerator
 
     public LogicalTilemap Generate(LevelGenerationParameters parameters, Random random)
     {
-        var logicalTilemap = generateInitialTilemap(parameters.Radius, parameters.Nodes, new Settings(), random);
+        var logicalTilemap =
+            generateInitialTilemap(parameters.Radius, parameters.Nodes, parameters.Biome, new Settings(), random);
 
         logicalTilemap = optimizer.Optimize(logicalTilemap, random);
 
         return logicalTilemap;
     }
 
-    private LogicalTilemap generateInitialTilemap(int radius, NodeGroup nodes, Settings settings, Random random)
+    private LogicalTilemap generateInitialTilemap(
+        int radius, NodeGroup nodes, IBiome biome, Settings settings, Random random)
     {
         var (areaPerNode, nodeFillRatio, creviceToNodeRatio) = settings;
         var totalArea = Tilemap.TileCountForRadius(radius);
@@ -65,11 +68,12 @@ sealed class LogicalTilemapGenerator
 
         var nodesToPutDown = new DeterministicNodeChooser(logger).ChooseNodes(nodes, nodeCount).ToList();
         var tilemap = generateInitialNodes(tilemapRadius, nodesToPutDown, random);
+        var biomeMap = new Tilemap<IBiome>(tilemapRadius, _ => biome);
 
         var creviceCount = MoreMath.FloorToInt(creviceToNodeRatio * nodeCount);
         var macroFeatures = generateInitialMacroFeatures(tilemapRadius, creviceCount, random);
 
-        var logicalTilemap = LogicalTilemap.From(tilemap, macroFeatures);
+        var logicalTilemap = LogicalTilemap.From(tilemap, biomeMap, macroFeatures);
 
         invertRandomConnectionForEveryTile(logicalTilemap, random);
 
