@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.18
+
+* Replaced level textures
+* Added Core sprite
+* Added sprites for Stomp and refueling drone
+* Replaced existing tower sprites: Wall, Tesla Coil, Gatling
+* Added tower foundations
+* New enemy generation algorithm
+  * Waves may now spawn multiple types of enemies, mixing them in various ways
+  * Added swarm enemies
+  * Added accent elements to chapters
+
 ## v0.17
 
 * Tesla tower now shoots arcs that may bounce or split
