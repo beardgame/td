@@ -12,6 +12,13 @@
                 rotation: "randomDirection",
                 z: 0.01
             }
+        },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "blocker"
+            }
         }
     ]
 }

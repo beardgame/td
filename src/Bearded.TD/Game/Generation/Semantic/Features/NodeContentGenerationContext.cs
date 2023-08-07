@@ -63,7 +63,7 @@ sealed class NodeContentGenerationContext
         commandAccumulator.PlaceGameObject(blueprint, position, direction);
     }
 
-    public void PlaceProp(Tile tile, PropPurpose purpose)
+    public void PlacePropHint(Tile tile, PropPurpose purpose)
     {
         if (!tiles.Contains(tile))
         {
