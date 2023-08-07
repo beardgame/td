@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Commands;
+using Bearded.TD.Game.Generation.Semantic.Props;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -60,5 +61,14 @@ sealed class NodeContentGenerationContext
         }
 
         commandAccumulator.PlaceGameObject(blueprint, position, direction);
+    }
+
+    public void PlaceProp(Tile tile, PropPurpose purpose)
+    {
+        if (!tiles.Contains(tile))
+        {
+            throw new ArgumentException("May not write to position outside node.", nameof(tile));
+        }
+
     }
 }

@@ -36,7 +36,8 @@ sealed class PhysicalTilemapGenerator
 
         var biomeTilemap = new BiomeTileAssigner(radius).AssignBiomes(featuresWithTiles);
 
-        var (tilemap, levelCommands) = new TilemapGenerator().GenerateTilemap(radius, featuresWithTiles, random);
+        var (tilemap, levelCommands) =
+            TilemapGenerator.GenerateTilemap(radius, featuresWithTiles, biomeTilemap, random);
 
         var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles, tilemap);
 
