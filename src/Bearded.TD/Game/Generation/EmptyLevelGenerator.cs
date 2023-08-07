@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Commands;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -18,7 +19,17 @@ sealed class EmptyLevelGenerator : ILevelGenerator
 
         yield return game => FillTilemap.Command(game, tilemap, biomes, drawInfos);
 
-        foreach (var cmd in LegacySpawnLocationPlacer.SpawnLocations(parameters.Radius))
+        foreach (var cmd in spawnLocationCommands(parameters.Radius))
             yield return cmd;
+    }
+
+    private static IEnumerable<CommandFactory> spawnLocationCommands(int radius)
+    {
+        return
+            from dir in Directions.All.Enumerate()
+            where dir != Direction.Unknown
+            select Tile.Origin + dir.Step() * radius into tile
+            select (CommandFactory)
+                (game => CreateSpawnLocation.Command(game, game.Ids.GetNext<SpawnLocation>(), tile));
     }
 }
