@@ -247,7 +247,7 @@ sealed class HeightmapToLevelRenderer
                 context.Settings.FarPlaneDistance,
                 heightmap.RadiusUniform,
                 heightmap.PixelSizeUVUniform,
-                heightmap.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
+                heightmap.GetMapTextureUniform("heightmap", TextureUnit.Texture0),
                 context.Settings.CameraPosition,
                 heightScaleUniform,
                 heightOffsetUniform,

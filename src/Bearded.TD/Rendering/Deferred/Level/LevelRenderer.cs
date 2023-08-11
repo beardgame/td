@@ -11,6 +11,7 @@ namespace Bearded.TD.Rendering.Deferred.Level;
 sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevealed>
 {
     public Heightmap Heightmap { get; }
+    private readonly BiomeMap biomeMap;
     private readonly HeightRenderer heightRenderer;
     private readonly VisibilityRenderer visibilityRenderer;
     private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
@@ -19,6 +20,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         GameInstance game, RenderContext context, Material material, ITimeSource time)
     {
         Heightmap = new Heightmap(game);
+        biomeMap = new BiomeMap(game);
         heightRenderer = new HeightRenderer(game, context, Heightmap);
         visibilityRenderer = new VisibilityRenderer(game, Heightmap, time);
         heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, Heightmap);
@@ -61,6 +63,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
     public void CleanUp()
     {
         Heightmap.Dispose();
+        biomeMap.Dispose();
         heightRenderer.CleanUp();
         visibilityRenderer.Dispose();
         heightmapToLevelRenderer.CleanUp();
