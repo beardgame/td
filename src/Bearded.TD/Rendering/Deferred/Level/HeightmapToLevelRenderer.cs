@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.ImageSharp;
@@ -35,6 +36,8 @@ sealed class HeightmapToLevelRenderer
     private readonly RhombusGridMesh gridMeshBuilder;
     private readonly IRenderer gridRenderer;
 
+    private readonly List<Texture> textures = new();
+
     private float gridScaleSetting;
 
     public HeightmapToLevelRenderer(
@@ -53,6 +56,8 @@ sealed class HeightmapToLevelRenderer
     {
         gridMeshBuilder.Dispose();
         gridRenderer.Dispose();
+        foreach (var t in textures)
+            t.Dispose();
     }
 
     public void Resize(float scale)
@@ -249,11 +254,16 @@ sealed class HeightmapToLevelRenderer
                 gridOffsetUniform,
                 gridScaleUniform
             }.Concat(material.Textures.Select(
-                (t, i) => new TextureUniform(
-                    t.UniformName,
-                    TextureUnit.Texture0 + i + 1,
-                    Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap())
-                ))));
+                (t, i) =>
+                {
+                    var texture = Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap());
+                    textures.Add(texture);
+                    return new TextureUniform(
+                        t.UniformName,
+                        TextureUnit.Texture0 + i + 1,
+                        texture
+                    );
+                })));
 
         material.Shader.RendererShader.UseOnRenderer(renderer);
 

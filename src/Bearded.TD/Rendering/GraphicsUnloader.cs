@@ -2,7 +2,6 @@ using System.Linq;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Utilities.Collections;
-using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering;
 

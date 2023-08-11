@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
@@ -33,6 +34,7 @@ sealed class FluidGeometry
     // TODO: use a non-indexed mesh builder instead?
     private readonly ExpandingIndexedTrianglesMeshBuilder<FluidVertex> meshBuilder
         = new();
+    private readonly List<Texture> textures = new();
 
     private readonly IRenderer renderer;
 
@@ -56,11 +58,16 @@ sealed class FluidGeometry
                 context.Settings.CameraPosition,
                 context.DeferredRenderer.DepthBuffer,
             }.Concat(material.Textures.Select(
-                (t, i) => new TextureUniform(
-                    t.UniformName,
-                    TextureUnit.Texture0 + i,
-                    Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap())
-                    ))
+                (t, i) =>
+                {
+                    var texture = Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap());
+                    textures.Add(texture);
+                    return new TextureUniform(
+                        t.UniformName,
+                        TextureUnit.Texture0 + i,
+                        texture
+                    );
+                })
             )
         );
         material.Shader.RendererShader.UseOnRenderer(renderer);
@@ -199,5 +206,7 @@ sealed class FluidGeometry
     {
         meshBuilder.Dispose();
         renderer.Dispose();
+        foreach (var t in textures)
+            t.Dispose();
     }
 }
