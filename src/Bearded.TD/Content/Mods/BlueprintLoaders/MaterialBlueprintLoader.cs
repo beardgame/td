@@ -13,7 +13,7 @@ sealed class MaterialBlueprintLoader : BaseBlueprintLoader<Material, MaterialJso
     public MaterialBlueprintLoader(BlueprintLoadingContext context)
         : base(context)
     {
-        materialLoader = new MaterialLoader(context.Context);
+        materialLoader = new MaterialLoader();
     }
 
     protected override (FileInfo, MaterialLoader) GetDependencyResolvers(FileInfo file)

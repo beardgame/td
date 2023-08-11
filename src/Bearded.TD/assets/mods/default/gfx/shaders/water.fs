@@ -2,7 +2,7 @@
 
 uniform sampler2D depthBuffer;
 
-uniform sampler2DArray noiseTexture;
+uniform sampler2D noiseTexture;
 
 uniform vec3 cameraPosition;
 uniform float time;
@@ -40,10 +40,10 @@ float getCaustics(vec3 geometryPosition, vec2 flow, float contrast, float timeOf
     uv += flow * t;
 
     vec4 noise1 = texture(noiseTexture,
-        vec3((uv + offset) * 0.25, 0)
+        (uv + offset) * 0.25
         );
     vec4 noise2 = texture(noiseTexture,
-        vec3((uv.yx + offset * 1.5) * 0.235, 0)
+        (uv.yx + offset * 1.5) * 0.235
         );
 
    	float n1 = max(0, 1 - abs(noise1.x - 0.5) * contrast);

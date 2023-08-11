@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.World;
@@ -52,10 +54,13 @@ sealed class FluidGeometry
                 context.Settings.FarPlaneUnitX,
                 context.Settings.FarPlaneUnitY,
                 context.Settings.CameraPosition,
-                context.DeferredRenderer.DepthBuffer
-            }.Concat(material.ArrayTextures.Select(
-                // TODO: find out why the below ! are needed?
-                (t, i) => new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i, t.Texture!))
+                context.DeferredRenderer.DepthBuffer,
+            }.Concat(material.Textures.Select(
+                (t, i) => new TextureUniform(
+                    t.UniformName,
+                    TextureUnit.Texture0 + i,
+                    Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap())
+                    ))
             )
         );
         material.Shader.RendererShader.UseOnRenderer(renderer);

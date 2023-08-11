@@ -1,7 +1,11 @@
 #version 150
 
-uniform sampler2DArray diffuseTextures;
-uniform sampler2DArray normalTextures;
+uniform sampler2D diffuseFloor;
+uniform sampler2D diffuseCrossSection;
+uniform sampler2D diffuseWall;
+uniform sampler2D normalFloor;
+uniform sampler2D normalCrossSection;
+uniform sampler2D normalWall;
 
 uniform float farPlaneDistance;
 uniform vec3 cameraPosition;
@@ -22,8 +26,6 @@ const float uvScale = 0.2;
 
 void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
-    int textureIndex = 0;
-
     vec2 uv = position.xz * uvScale;
     uv.x = uv.x * -sign(surfaceNormal.y);
 
@@ -32,9 +34,9 @@ void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     vec3 xTransform = normalize(cross(upVector, zTransform));
     vec3 yTransform = cross(xTransform, zTransform);
 
-    vec3 rgb = texture(diffuseTextures, vec3(uv, textureIndex)).rgb;
+    vec3 rgb = texture(diffuseWall, uv).rgb;
 
-    vec3 textureNormal = texture(normalTextures, vec3(uv, textureIndex))
+    vec3 textureNormal = texture(normalWall, uv)
         .xyz * 2 - 1;
 
     vec3 n = textureNormal.x * xTransform
@@ -47,8 +49,6 @@ void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
 
 void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
-    int textureIndex = 0;
-
     vec2 uv = position.yz * uvScale;
     uv.x = uv.x * sign(surfaceNormal.x);
 
@@ -57,9 +57,9 @@ void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     vec3 xTransform = normalize(cross(upVector, zTransform));
     vec3 yTransform = cross(xTransform, zTransform);
 
-    vec3 rgb = texture(diffuseTextures, vec3(uv, textureIndex)).rgb;
+    vec3 rgb = texture(diffuseWall, uv).rgb;
 
-    vec3 textureNormal = texture(normalTextures, vec3(uv, textureIndex))
+    vec3 textureNormal = texture(normalWall, uv)
         .xyz * 2 - 1;
 
     vec3 n = textureNormal.x * xTransform
@@ -85,8 +85,9 @@ void getWallColor(vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallN
     getWallXComponent(position, normal, xColor, xNormal);
     getWallYComponent(position, normal, yColor, yNormal);
 
+    // TODO: this is not symetrical!
     float xness = clamp(abs(normal.x / normal.y), 0, 1);
-
+    
     //xness = smoothstep(0.3, 0.7, xness);
 
     wallColor = mix(xColor, yColor, xness);
@@ -95,22 +96,19 @@ void getWallColor(vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallN
 
 void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out vec3 floorNormal)
 {
-    int rockIndex = 1;
-    int sandIndex = 2;
-
     vec2 uvR = position.xy * uvScale;
     vec2 uvS = position.xy * uvScale;
     // distortion needs to be accounted for with normals
     // + vec2(0, sin(position.x * 0.2) * 2);
 
-    vec3 rock = texture(diffuseTextures, vec3(uvR, rockIndex)).rgb;
-    vec3 sand = texture(diffuseTextures, vec3(uvS, sandIndex)).rgb;
+    vec3 rock = texture(diffuseCrossSection, uvR).rgb;
+    vec3 sand = texture(diffuseFloor, uvS).rgb;
 
     float rockiness = clamp((position.z - 0.5) * 20, 0, 1);
 
     floorColor = mix(sand, rock - 0.25, rockiness);
-    vec3 rockN = texture(normalTextures, vec3(uvR, rockIndex)).rgb * 2 - 1;
-    vec3 sandN = texture(normalTextures, vec3(uvS, sandIndex)).rgb * 2 - 1;
+    vec3 rockN = texture(normalCrossSection, uvR).rgb * 2 - 1;
+    vec3 sandN = texture(normalFloor, uvS).rgb * 2 - 1;
 
     vec3 textureNormal = normalize(mix(sandN, rockN, rockiness));
 

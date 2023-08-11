@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
@@ -246,8 +248,12 @@ sealed class HeightmapToLevelRenderer
                 heightOffsetUniform,
                 gridOffsetUniform,
                 gridScaleUniform
-            }.Concat(material.ArrayTextures.Select((t, i) =>
-                new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i + 1, t.Texture!))));
+            }.Concat(material.Textures.Select(
+                (t, i) => new TextureUniform(
+                    t.UniformName,
+                    TextureUnit.Texture0 + i + 1,
+                    Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap())
+                ))));
 
         material.Shader.RendererShader.UseOnRenderer(renderer);
 

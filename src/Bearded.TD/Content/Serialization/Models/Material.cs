@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bearded.Graphics.ImageSharp;
 using Bearded.TD.Content.Mods;
 using JetBrains.Annotations;
 
@@ -13,7 +14,7 @@ sealed class Material : IConvertsTo<Content.Models.Material, (FileInfo, Material
 
     public Content.Models.Shader? Shader { get; set; }
 
-    public List<NamedTextureFileArray>? TextureArrays { get; set; }
+    public List<NamedTextureFile>? Textures { get; set; }
 
     public Content.Models.Material ToGameModel(ModMetadata modMetadata, (FileInfo, MaterialLoader) resolvers)
     {
@@ -21,18 +22,13 @@ sealed class Material : IConvertsTo<Content.Models.Material, (FileInfo, Material
         _ = Shader ?? throw new InvalidDataException($"{nameof(Shader)} must be non-null");
 
         var (file, loader) = resolvers;
-        var textures = (TextureArrays ?? Enumerable.Empty<NamedTextureFileArray>())
-            .Select(array => (array.Name, loader.CreateArrayTexture(file, array.Files ?? Enumerable.Empty<string>())))
+        var textures = (Textures ?? Enumerable.Empty<NamedTextureFile>())
+            .Select(t => (Name: t.Sampler, loader.LoadTextureImage(file, t.File)))
             .ToList().AsReadOnly();
 
         return new Content.Models.Material(ModAwareId.FromNameInMod(Id, modMetadata), Shader, textures);
     }
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class NamedTextureFileArray
-    {
-        public string? Name { get; set; }
-
-        public List<string>? Files { get; set; }
-    }
+    public record NamedTextureFile(string Sampler, string File);
 }

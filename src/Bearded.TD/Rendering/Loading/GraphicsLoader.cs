@@ -140,15 +140,4 @@ sealed class GraphicsLoader : IGraphicsLoader
             return new ShaderFile(data.Type, data.Filepath, data.FriendlyName);
         }
     }
-
-    public ArrayTexture CreateArrayTexture(List<Image> layers)
-    {
-        return glActions.Run(() =>
-        {
-            var textureData = ArrayTextureData
-                .From(layers.Select(ImageTextureData.From));
-            var texture = ArrayTexture.From(textureData, t => t.GenerateMipmap());
-            return texture;
-        }).Result;
-    }
 }
