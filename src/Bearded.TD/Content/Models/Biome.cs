@@ -8,10 +8,12 @@ sealed class Biome : IBiome
 {
     public ModAwareId Id { get; }
     public Color OverlayColor { get; }
+    public Material Material { get; }
 
-    public Biome(ModAwareId id, Color overlayColor)
+    public Biome(ModAwareId id, Color overlayColor, Material material)
     {
         Id = id;
         OverlayColor = overlayColor;
+        Material = material;
     }
 }

@@ -30,6 +30,7 @@ sealed class CoreShaders
             "deferred/pointlight",
             "deferred/spotlight",
             "terrain-base",
+            "biome-base",
         }.ForEach(name => shaders.RegisterRendererShaderFromAllShadersWithName(name));
     }
 

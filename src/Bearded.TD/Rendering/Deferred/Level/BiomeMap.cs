@@ -1,14 +1,20 @@
-﻿using Bearded.TD.Game;
+﻿using Bearded.Graphics.Pipelines;
+using Bearded.Graphics.Pipelines.Context;
+using Bearded.TD.Game;
+using Bearded.Utilities;
 using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 
-internal sealed class BiomeMap : LevelTextureMap
+sealed class BiomeMap : LevelTextureMap
 {
     public BiomeMap(GameInstance game)
-        : base(game, "biomeMap",
+        : base(game, "biomemap",
             //
             PixelInternalFormat.R8)
     {
     }
+
+    public IPipeline<Void> DrawBiomeIndex(IPipeline<Void> pipeline)
+        => DrawWithMask(pipeline, ColorMask.DrawRed);
 }

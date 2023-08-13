@@ -11,19 +11,23 @@ namespace Bearded.TD.Rendering.Deferred.Level;
 sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevealed>
 {
     public Heightmap Heightmap { get; }
+    private readonly BiomeMaterials biomeMaterials;
     private readonly BiomeMap biomeMap;
     private readonly HeightRenderer heightRenderer;
     private readonly VisibilityRenderer visibilityRenderer;
+    private readonly BiomeRenderer biomeRenderer;
     private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
 
-    public LevelRenderer(
-        GameInstance game, RenderContext context, Material material, ITimeSource time)
+    public LevelRenderer(GameInstance game, RenderContext context, Shader levelShader, ITimeSource time)
     {
         Heightmap = new Heightmap(game);
-        biomeMap = new BiomeMap(game);
         heightRenderer = new HeightRenderer(game, context, Heightmap);
         visibilityRenderer = new VisibilityRenderer(game, Heightmap, time);
-        heightmapToLevelRenderer = new HeightmapToLevelRenderer(game, context, material, Heightmap);
+        biomeMap = new BiomeMap(game);
+        biomeMaterials = new BiomeMaterials(game);
+        biomeRenderer = new BiomeRenderer(game, biomeMap, biomeMaterials, context);
+        heightmapToLevelRenderer = new HeightmapToLevelRenderer(
+            game, context, Heightmap, biomeMap, biomeMaterials, levelShader);
 
         resizeIfNeeded();
         game.Meta.Events.Subscribe<TileDrawInfoChanged>(this);
@@ -45,6 +49,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         resizeIfNeeded();
         heightRenderer.Render();
         visibilityRenderer.Render();
+        biomeRenderer.Render();
     }
 
     private void resizeIfNeeded()
@@ -52,6 +57,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         var settings = UserSettings.Instance.Graphics;
 
         Heightmap.SetScale(settings.TerrainHeightmapResolution);
+        biomeMap.SetScale(settings.BiomeMapResolution);
         heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
     }
 
@@ -66,6 +72,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         biomeMap.Dispose();
         heightRenderer.CleanUp();
         visibilityRenderer.Dispose();
+        biomeRenderer.Dispose();
         heightmapToLevelRenderer.CleanUp();
     }
 }

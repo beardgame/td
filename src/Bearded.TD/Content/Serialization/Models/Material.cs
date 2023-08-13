@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bearded.Graphics.ImageSharp;
 using Bearded.TD.Content.Mods;
 using JetBrains.Annotations;
 

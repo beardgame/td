@@ -68,6 +68,9 @@ sealed partial class UserSettings
         [DiscoverableSelectSetting(DisplayName = "Super sampling", Options = new object[] { 1f, 2f, 4f, 8f })]
         public float SuperSample = 1f;
 
+        [DiscoverableSelectSetting(DisplayName = "Biome map resolution", Options = new object[] { 2f, 5f, 10f })]
+        public float BiomeMapResolution = 5;
+
         [DiscoverableSelectSetting(DisplayName = "Heightmap resolution", Options = new object[] { 10f, 20f, 40f })]
         public float TerrainHeightmapResolution = 10;
 

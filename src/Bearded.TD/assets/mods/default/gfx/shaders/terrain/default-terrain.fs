@@ -1,17 +1,20 @@
 #version 150
 
-uniform sampler2D diffuseFloor;
-uniform sampler2D diffuseCrossSection;
-uniform sampler2D diffuseWall;
-uniform sampler2D normalFloor;
-uniform sampler2D normalCrossSection;
-uniform sampler2D normalWall;
+uniform sampler2D biomemap;
+
+uniform sampler2DArray diffuseFloor;
+uniform sampler2DArray diffuseCrossSection;
+uniform sampler2DArray diffuseWall;
+uniform sampler2DArray normalFloor;
+uniform sampler2DArray normalCrossSection;
+uniform sampler2DArray normalWall;
 
 uniform float farPlaneDistance;
 uniform vec3 cameraPosition;
 
 uniform mat4 view;
 
+uniform float heightmapRadius;
 uniform float heightScale;
 
 in vec3 fragmentPosition;
@@ -24,7 +27,7 @@ out vec4 outDepth;
 
 const float uvScale = 0.2;
 
-void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
+void getWallXComponent(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
     vec2 uv = position.xz * uvScale;
     uv.x = uv.x * -sign(surfaceNormal.y);
@@ -34,9 +37,9 @@ void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     vec3 xTransform = normalize(cross(upVector, zTransform));
     vec3 yTransform = cross(xTransform, zTransform);
 
-    vec3 rgb = texture(diffuseWall, uv).rgb;
+    vec3 rgb = texture(diffuseWall, vec3(uv, biomeId)).rgb;
 
-    vec3 textureNormal = texture(normalWall, uv)
+    vec3 textureNormal = texture(normalWall, vec3(uv, biomeId))
         .xyz * 2 - 1;
 
     vec3 n = textureNormal.x * xTransform
@@ -47,7 +50,7 @@ void getWallXComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     wallNormal = n;
 }
 
-void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
+void getWallYComponent(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
     vec2 uv = position.yz * uvScale;
     uv.x = uv.x * sign(surfaceNormal.x);
@@ -57,9 +60,9 @@ void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     vec3 xTransform = normalize(cross(upVector, zTransform));
     vec3 yTransform = cross(xTransform, zTransform);
 
-    vec3 rgb = texture(diffuseWall, uv).rgb;
+    vec3 rgb = texture(diffuseWall, vec3(uv, biomeId)).rgb;
 
-    vec3 textureNormal = texture(normalWall, uv)
+    vec3 textureNormal = texture(normalWall, vec3(uv, biomeId))
         .xyz * 2 - 1;
 
     vec3 n = textureNormal.x * xTransform
@@ -70,7 +73,7 @@ void getWallYComponent(vec3 position, vec3 surfaceNormal, out vec3 wallColor, ou
     wallNormal = n;
 }
 
-void getWallColor(vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallNormal)
+void getWallColor(uint biomeId, vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallNormal)
 {
     vec3 xColor, yColor;
     vec3 xNormal, yNormal;
@@ -81,9 +84,8 @@ void getWallColor(vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallN
     }
     position.z += sin(position.y * 0.2) * sin(position.x * 0.2) * 1;
     
-
-    getWallXComponent(position, normal, xColor, xNormal);
-    getWallYComponent(position, normal, yColor, yNormal);
+    getWallXComponent(biomeId, position, normal, xColor, xNormal);
+    getWallYComponent(biomeId, position, normal, yColor, yNormal);
 
     // TODO: this is not symetrical!
     float xness = clamp(abs(normal.x / normal.y), 0, 1);
@@ -94,21 +96,21 @@ void getWallColor(vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallN
     wallNormal = mix(xNormal, yNormal, xness);
 }
 
-void getFloorColor(vec3 position, vec3 surfaceNormal, out vec3 floorColor, out vec3 floorNormal)
+void getFloorColor(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 floorColor, out vec3 floorNormal)
 {
     vec2 uvR = position.xy * uvScale;
     vec2 uvS = position.xy * uvScale;
     // distortion needs to be accounted for with normals
     // + vec2(0, sin(position.x * 0.2) * 2);
 
-    vec3 rock = texture(diffuseCrossSection, uvR).rgb;
-    vec3 sand = texture(diffuseFloor, uvS).rgb;
+    vec3 rock = texture(diffuseCrossSection, vec3(uvR, biomeId)).rgb;
+    vec3 sand = texture(diffuseFloor, vec3(uvS, biomeId)).rgb;
 
     float rockiness = clamp((position.z - 0.5) * 20, 0, 1);
 
     floorColor = mix(sand, rock - 0.25, rockiness);
-    vec3 rockN = texture(normalCrossSection, uvR).rgb * 2 - 1;
-    vec3 sandN = texture(normalFloor, uvS).rgb * 2 - 1;
+    vec3 rockN = texture(normalCrossSection, vec3(uvR, biomeId)).rgb * 2 - 1;
+    vec3 sandN = texture(normalFloor, vec3(uvS, biomeId)).rgb * 2 - 1;
 
     vec3 textureNormal = normalize(mix(sandN, rockN, rockiness));
 
@@ -199,12 +201,17 @@ void main()
             }
         }
     }
+    
+    vec2 biomeMapUV =
+        fPosition.xy / heightmapRadius // -1..1
+        * 0.5 + 0.5; // 0..1
+    uint biomeId = uint(round(texture(biomemap, biomeMapUV).r * 255));
 
     vec3 wallColor, wallNormal;
-    getWallColor(fPosition, fNormal, wallColor, wallNormal);
+    getWallColor(biomeId, fPosition, fNormal, wallColor, wallNormal);
 
     vec3 floorColor, floorNormal;
-    getFloorColor(fPosition, fNormal, floorColor, floorNormal);
+    getFloorColor(biomeId, fPosition, fNormal, floorColor, floorNormal);
 
     float flatness = smoothstep(0.3, 0.5, fNormal.z);
 

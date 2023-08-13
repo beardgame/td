@@ -52,10 +52,10 @@ sealed class GameRenderer
         drawers = renderContext.Drawers;
 
         // TODO: this should not stay hardcoded forever
-        var levelMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("default")];
+        var levelShader = game.Blueprints.Shaders[ModAwareId.ForDefaultMod("gpu-terrain-tessellated")];
         var waterMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("water")];
 
-        levelRenderer = new LevelRenderer(game, renderContext, levelMaterial, time);
+        levelRenderer = new LevelRenderer(game, renderContext, levelShader, time);
 
         waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
 
