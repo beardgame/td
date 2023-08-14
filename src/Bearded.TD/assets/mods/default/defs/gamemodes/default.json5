@@ -133,6 +133,19 @@
                     "default.yellow"
                 ]
             }
+        },
+        {
+            id: "contributePropRule",
+            parameters: {
+                selector: {
+                    purpose: "blocker"
+                },
+                solution: {
+                    blueprints: [ "default.rubble" ],
+                    rotation: "randomDirection",
+                    z: 0.01
+                }
+            }
         }
     ]
 }
