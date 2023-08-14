@@ -3,6 +3,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Generation.Semantic.Props;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
@@ -35,9 +37,13 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
                     .RandomSubset(connectionCount, random).ToImmutableArray();
 
             var context = NodeGenerationContext.Create(
-                subjectTilemap, area,
-                ImmutableArray<Circle>.Empty, connections,
-                new LevelGenerationCommandAccumulator(), random
+                subjectTilemap,
+                area,
+                ImmutableArray<Circle>.Empty,
+                connections,
+                new LevelGenerationCommandAccumulator(),
+                new Accumulator<PropHint>(),
+                random
             );
 
             return new GenerationTestContext(subjectTilemap, expectedTilemap, context);

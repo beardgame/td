@@ -4,6 +4,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Props;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.World;
@@ -16,13 +17,16 @@ namespace Bearded.TD.Game.Generation.Semantic.Features;
 sealed class NodeContentGenerationContext
 {
     private readonly LevelGenerationCommandAccumulator commandAccumulator;
+    private readonly Accumulator<PropHint> propHintAccumulator;
     private readonly IArea tiles;
 
     public IArea BuildingTiles { get; private set; } = Area.Empty();
 
-    public NodeContentGenerationContext(LevelGenerationCommandAccumulator commandAccumulator, IArea tiles)
+    public NodeContentGenerationContext(
+        LevelGenerationCommandAccumulator commandAccumulator, Accumulator<PropHint> propHintAccumulator, IArea tiles)
     {
         this.commandAccumulator = commandAccumulator;
+        this.propHintAccumulator = propHintAccumulator;
         this.tiles = tiles;
     }
 
@@ -70,5 +74,6 @@ sealed class NodeContentGenerationContext
             throw new ArgumentException("May not write to position outside node.", nameof(tile));
         }
 
+        propHintAccumulator.Contribute(new PropHint(tile, purpose));
     }
 }

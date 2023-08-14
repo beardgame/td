@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Generation.Semantic.Commands;
+using Bearded.TD.Game.Generation.Semantic.Props;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.SpaceTime;
@@ -21,13 +23,14 @@ sealed record NodeGenerationContext(
         ImmutableArray<Circle> circles,
         ImmutableArray<Tile> connections,
         LevelGenerationCommandAccumulator commandAccumulator,
+        Accumulator<PropHint> propHintAccumulator,
         Random random)
     {
         return new NodeGenerationContext(
             random,
             new NodeGenerationData(circles, connections),
             new NodeTileGenerationContext(tilemap, tiles),
-            new NodeContentGenerationContext(commandAccumulator, tiles)
+            new NodeContentGenerationContext(commandAccumulator, propHintAccumulator, tiles)
         );
     }
 }

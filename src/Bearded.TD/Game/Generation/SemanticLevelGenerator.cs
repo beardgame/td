@@ -42,7 +42,7 @@ sealed class SemanticLevelGenerator : ILevelGenerator
         // todo: adopt this into LogicalTilemapGenerator?
         drawLogicalNodes(logicalTilemap, nodeRadius);
 
-        var commands = new PhysicalTilemapGenerator(metadata, nodeRadius)
+        var commands = new PhysicalTilemapGenerator(metadata, nodeRadius, parameters.PropRules, logger)
             .Generate(logicalTilemap, random, radius);
 
         logger.Debug?.Log($"Finished generating tilemap in {timer.Elapsed.TotalMilliseconds}ms");

@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.IO;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Game.Generation.Semantic.Props;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 
@@ -19,7 +20,11 @@ static class LevelGenerationParametersFactory
         game.Meta.Events.Send(new AccumulateBiomes(biomeAccumulator));
         var biomes = biomeAccumulator.Consume(all => all.ToImmutableArray());
 
-        return new LevelGenerationParameters(game.GameSettings.LevelSize, nodes, biomes);
+        var propRuleAccumulator = new Accumulator<IPropRule>();
+        game.Meta.Events.Send(new AccumulatePropRules(propRuleAccumulator));
+        var propRules = propRuleAccumulator.Consume(all => all.ToImmutableArray());
+
+        return new LevelGenerationParameters(game.GameSettings.LevelSize, nodes, biomes, propRules);
     }
 
     private static NodeGroup toNodeGroup(IEnumerable<NodeGroup> nodeGroups)

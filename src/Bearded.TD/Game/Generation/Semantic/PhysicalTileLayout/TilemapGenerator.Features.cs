@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.TD.Game.Generation.Semantic.Props;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -15,6 +17,7 @@ static partial class TilemapGenerator
         int radius,
         IEnumerable<TiledFeature> features,
         LevelGenerationCommandAccumulator commandAccumulator,
+        Accumulator<PropHint> propHintAccumulator,
         Random random)
     {
         var tilemap =
@@ -25,7 +28,7 @@ static partial class TilemapGenerator
             switch (feature)
             {
                 case TiledFeature.Node node:
-                    generateNode(feature, tilemap, node, commandAccumulator, random);
+                    generateNode(feature, tilemap, node, commandAccumulator, propHintAccumulator, random);
                     break;
                 case (PhysicalFeature.Connection, _):
                     generateConnection(feature, tilemap);
@@ -42,14 +45,19 @@ static partial class TilemapGenerator
     }
 
     private static void generateNode(
-        TiledFeature feature, Tilemap<TileGeometry> tilemap, TiledFeature.Node node,
-        LevelGenerationCommandAccumulator commandAccumulator, Random random)
+        TiledFeature feature,
+        Tilemap<TileGeometry> tilemap,
+        TiledFeature.Node node,
+        LevelGenerationCommandAccumulator commandAccumulator,
+        Accumulator<PropHint> propHintAccumulator,
+        Random random)
     {
         var context = NodeGenerationContext.Create(tilemap,
             feature.Tiles,
             node.NodeFeature.Circles,
             node.Connections,
             commandAccumulator,
+            propHintAccumulator,
             random);
         foreach (var behavior in node.NodeFeature.Blueprint.Behaviors)
         {

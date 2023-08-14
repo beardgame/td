@@ -2,4 +2,4 @@
 
 namespace Bearded.TD.Game.Generation.Semantic.Props;
 
-readonly record struct PropHint(Tile Tile, PropPurpose Purpose);
+sealed record PropHint(Tile Tile, PropPurpose Purpose);

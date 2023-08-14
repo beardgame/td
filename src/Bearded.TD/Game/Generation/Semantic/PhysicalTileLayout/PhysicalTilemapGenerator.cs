@@ -6,8 +6,10 @@ using Bearded.Graphics;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Logical;
+using Bearded.TD.Game.Generation.Semantic.Props;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Debug.LevelDebugMetadata;
 
@@ -17,11 +19,16 @@ sealed class PhysicalTilemapGenerator
 {
     private readonly LevelDebugMetadata metadata;
     private readonly Unit defaultNodeRadius;
+    private readonly IEnumerable<IPropRule> propRules;
+    private readonly Logger logger;
 
-    public PhysicalTilemapGenerator(LevelDebugMetadata metadata, Unit defaultNodeRadius)
+    public PhysicalTilemapGenerator(
+        LevelDebugMetadata metadata, Unit defaultNodeRadius, IEnumerable<IPropRule> propRules, Logger logger)
     {
         this.metadata = metadata;
         this.defaultNodeRadius = defaultNodeRadius;
+        this.propRules = propRules;
+        this.logger = logger;
     }
 
     public IEnumerable<CommandFactory> Generate(
@@ -37,7 +44,7 @@ sealed class PhysicalTilemapGenerator
         var biomeTilemap = new BiomeTileAssigner(radius).AssignBiomes(featuresWithTiles);
 
         var (tilemap, levelCommands) =
-            TilemapGenerator.GenerateTilemap(radius, featuresWithTiles, biomeTilemap, random);
+            TilemapGenerator.GenerateTilemap(radius, featuresWithTiles, biomeTilemap, propRules, logger, random);
 
         var zoneCommand = new ZoneGenerator().GenerateZones(featuresWithTiles, tilemap);
 
