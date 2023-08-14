@@ -1,4 +1,5 @@
 ﻿{
   id: "fishy",
   overlayColor: "lightSalmon",
+  material: "default"
 }

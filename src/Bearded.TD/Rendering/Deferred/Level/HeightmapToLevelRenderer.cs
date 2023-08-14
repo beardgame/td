@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
@@ -20,9 +23,9 @@ namespace Bearded.TD.Rendering.Deferred.Level;
 
 sealed class HeightmapToLevelRenderer
 {
+    private readonly Shader shader;
 
     private readonly CoreRenderSettings renderSettings;
-    private readonly Material material;
     private readonly int tileMapWidth;
 
     private readonly FloatUniform heightScaleUniform = new("heightScale");
@@ -35,16 +38,15 @@ sealed class HeightmapToLevelRenderer
 
     private float gridScaleSetting;
 
-    public HeightmapToLevelRenderer(
-        GameInstance game, RenderContext context, Material material,
-        Heightmap heightmap)
+    public HeightmapToLevelRenderer(GameInstance game, RenderContext context,
+        Heightmap heightmap, BiomeMap biomeMap, BiomeMaterials biomeMaterials, Shader shader)
     {
+        this.shader = shader;
         renderSettings = context.Settings;
-        this.material = material;
         var level = game.State.Level;
         tileMapWidth = level.Radius * 2 + 1;
 
-        (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmap);
+        (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmap, biomeMap, biomeMaterials);
     }
 
     public void CleanUp()
@@ -228,7 +230,11 @@ sealed class HeightmapToLevelRenderer
         GL.FrontFace(FrontFaceDirection.Ccw);
     }
 
-    private (RhombusGridMesh, IRenderer) setupGridRenderer(RenderContext context, Heightmap heightmap)
+    private (RhombusGridMesh, IRenderer) setupGridRenderer(
+        RenderContext context,
+        Heightmap heightmap,
+        BiomeMap biomeMap,
+        BiomeMaterials biomeMaterials)
     {
         var mesh = RhombusGridMesh.CreateDefault();
 
@@ -240,16 +246,19 @@ sealed class HeightmapToLevelRenderer
                 context.Settings.FarPlaneDistance,
                 heightmap.RadiusUniform,
                 heightmap.PixelSizeUVUniform,
-                heightmap.GetHeightmapUniform("heightmap", TextureUnit.Texture0),
+                heightmap.GetMapTextureUniform("heightmap", TextureUnit.Texture0),
+                biomeMap.GetMapTextureUniform("biomemap", TextureUnit.Texture0 + 1),
                 context.Settings.CameraPosition,
                 heightScaleUniform,
                 heightOffsetUniform,
                 gridOffsetUniform,
                 gridScaleUniform
-            }.Concat(material.ArrayTextures.Select((t, i) =>
-                new ArrayTextureUniform(t.UniformName!, TextureUnit.Texture0 + i + 1, t.Texture!))));
+            }.Concat(
+                biomeMaterials.Samplers
+                    .Select((s, i) => s.GetUniform(TextureUnit.Texture0 + i + 2))
+            ));
 
-        material.Shader.RendererShader.UseOnRenderer(renderer);
+        shader.RendererShader.UseOnRenderer(renderer);
 
         return (mesh, renderer);
     }

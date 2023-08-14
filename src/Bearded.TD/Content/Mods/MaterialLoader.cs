@@ -1,47 +1,21 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bearded.Graphics.Textures;
-using SixLabors.ImageSharp.Processing;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Content.Mods;
 
 sealed class MaterialLoader
 {
-    private readonly ModLoadingContext context;
-
-    public MaterialLoader(ModLoadingContext context)
-    {
-        this.context = context;
-    }
-
-    public ArrayTexture CreateArrayTexture(FileInfo file, IEnumerable<string> textureFilenames)
+    public Image LoadTextureImage(FileInfo file, string textureFilename)
     {
         var baseDir = file.Directory ?? throw new InvalidOperationException("Directory should never be null");
 
-        var textureFiles = textureFilenames
-            .Select(name => (Name: name, File: baseDir.GetFiles(name).SingleOrDefault()))
-            .Where(f => f.File != null ? true : throw new InvalidDataException($"Could not find unique material texture file '{f.Name}'."))
-            .Select(f => f.File)
-            .ToList();
+        var textureFile = baseDir.GetFiles(textureFilename).SingleOrDefault()
+            ?? throw new InvalidDataException($"Could not find unique material texture file '{textureFilename}'.");
 
-        var images = textureFiles.Select(f => Image.Load(f.FullName)).ToList();
+        var image = Image.Load(textureFile.FullName);
 
-        unifySize(images);
-
-        return context.GraphicsLoader.CreateArrayTexture(images);
+        return image;
     }
-
-    private static void unifySize(List<Image> images)
-    {
-        var width = images.Max(i => i.Width);
-        var height = images.Max(i => i.Height);
-        foreach (var image in images.Where(i => i.Width != width || i.Height != height))
-        {
-            image.Mutate(i => i.Resize(width, height));
-        }
-    }
-
 }

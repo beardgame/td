@@ -15,9 +15,7 @@ static class GraphicsUnloader
 
     private static void cleanUp(ReadonlyBlueprintCollection<Material> materials)
     {
-        materials.All
-            .SelectMany(m => m.ArrayTextures)
-            .ForEach(textureUniform => textureUniform.Texture.Dispose());
+        materials.All.SelectMany(m => m.Textures).ForEach(t => t.Texture.Dispose());
     }
 
     private static void cleanUp(ReadonlyBlueprintCollection<SpriteSet> spriteSets)

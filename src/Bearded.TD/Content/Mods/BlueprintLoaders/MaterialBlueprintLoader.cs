@@ -1,4 +1,5 @@
 using System.IO;
+using Bearded.TD.Game;
 using Material = Bearded.TD.Content.Models.Material;
 using MaterialJson = Bearded.TD.Content.Serialization.Models.Material;
 
@@ -10,10 +11,12 @@ sealed class MaterialBlueprintLoader : BaseBlueprintLoader<Material, MaterialJso
 
     protected override string RelativePath => "gfx/materials";
 
+    protected override DependencySelector? SelectDependency { get; } = mod => mod.Blueprints.Materials; 
+
     public MaterialBlueprintLoader(BlueprintLoadingContext context)
         : base(context)
     {
-        materialLoader = new MaterialLoader(context.Context);
+        materialLoader = new MaterialLoader();
     }
 
     protected override (FileInfo, MaterialLoader) GetDependencyResolvers(FileInfo file)

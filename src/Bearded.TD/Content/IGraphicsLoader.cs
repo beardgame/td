@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.Graphics.ShaderManagement;
-using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using OpenTK.Graphics.OpenGL;
 using SixLabors.ImageSharp;
@@ -23,6 +22,4 @@ interface IGraphicsLoader
         string id);
 
     IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName);
-
-    ArrayTexture CreateArrayTexture(List<Image> layers);
 }
