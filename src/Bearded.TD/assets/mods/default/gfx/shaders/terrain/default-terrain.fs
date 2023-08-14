@@ -205,13 +205,38 @@ void main()
     vec2 biomeMapUV =
         fPosition.xy / heightmapRadius // -1..1
         * 0.5 + 0.5; // 0..1
-    uint biomeId = uint(round(texture(biomemap, biomeMapUV).r * 255));
-
+    
+    vec3 biomeIdData = texture(biomemap, biomeMapUV).xyz;
+    uint biomeId0 = uint(round(biomeIdData.x * 255));
+    uint biomeId1 = uint(round(biomeIdData.y * 255));
+    float biomeIdInterpolate = biomeIdData.z;
+    
     vec3 wallColor, wallNormal;
-    getWallColor(biomeId, fPosition, fNormal, wallColor, wallNormal);
+    getWallColor(biomeId0, fPosition, fNormal, wallColor, wallNormal);
 
     vec3 floorColor, floorNormal;
-    getFloorColor(biomeId, fPosition, fNormal, floorColor, floorNormal);
+    getFloorColor(biomeId0, fPosition, fNormal, floorColor, floorNormal);
+    
+    if (true && biomeIdInterpolate >= 0)
+    {
+        biomeIdInterpolate = 1 - biomeIdInterpolate;
+        
+        vec3 wallColor1, wallNormal1;
+        getWallColor(biomeId1, fPosition, fNormal, wallColor1, wallNormal1);
+
+        vec3 floorColor1, floorNormal1;
+        getFloorColor(biomeId1, fPosition, fNormal, floorColor1, floorNormal1);
+        
+        //floorColor = vec3(float(biomeId0) / 4, 0, 0);
+        //floorColor1 = vec3(float(biomeId1) / 4, 0, 0);
+        
+        wallColor = mix(wallColor, wallColor1, biomeIdInterpolate);
+        wallNormal = mix(wallNormal, wallNormal1, biomeIdInterpolate);
+        floorColor = mix(floorColor, floorColor1, biomeIdInterpolate);
+        floorNormal = mix(floorNormal, floorNormal1, biomeIdInterpolate);
+        
+        //floorNormal = vec3(0, 0, 1);
+    }
 
     float flatness = smoothstep(0.3, 0.5, fNormal.z);
 

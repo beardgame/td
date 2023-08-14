@@ -28,7 +28,7 @@ abstract class LevelTextureMap : IDisposable
 
     public event VoidEventHandler? ResolutionChanged;
 
-    public LevelTextureMap(GameInstance game, string uniformPrefix, PixelInternalFormat pixelFormat)
+    public LevelTextureMap(GameInstance game, string uniformPrefix, PixelInternalFormat pixelFormat, Action<Texture.Target>? textureSetup = null)
     {
         RadiusUniform = new FloatUniform(uniformPrefix + "Radius");
         PixelSizeUVUniform = new FloatUniform(uniformPrefix + "PixelSizeUV");
@@ -40,6 +40,7 @@ abstract class LevelTextureMap : IDisposable
         {
             t.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
             t.SetWrapMode(TextureWrapMode.ClampToEdge, TextureWrapMode.ClampToEdge);
+            textureSetup?.Invoke(t);
         });
 
         renderTarget = Pipeline.RenderTargetWithColors(texture);

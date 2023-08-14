@@ -3,9 +3,9 @@
 uniform float biomemapRadius;
 
 in vec3 vertexPosition;
-in uint biomeId;
+in float biomeId;
 
-flat out uint fragmentBiomeId;
+out float geometryBiomeId;
 
 void main()
 {
@@ -13,5 +13,5 @@ void main()
 
 	gl_Position = vec4(p, 0, 1.0);
 
-	fragmentBiomeId = biomeId;
+	geometryBiomeId = uint(round(biomeId));
 }

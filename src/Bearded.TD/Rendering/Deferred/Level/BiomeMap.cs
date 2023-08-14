@@ -10,11 +10,11 @@ sealed class BiomeMap : LevelTextureMap
 {
     public BiomeMap(GameInstance game)
         : base(game, "biomemap",
-            //
-            PixelInternalFormat.R8)
+            PixelInternalFormat.Rgb8,
+            t => t.SetFilterMode(TextureMinFilter.Nearest, TextureMagFilter.Nearest))
     {
     }
 
     public IPipeline<Void> DrawBiomeIndex(IPipeline<Void> pipeline)
-        => DrawWithMask(pipeline, ColorMask.DrawRed);
+        => DrawWithMask(pipeline, ColorMask.DrawAll);
 }

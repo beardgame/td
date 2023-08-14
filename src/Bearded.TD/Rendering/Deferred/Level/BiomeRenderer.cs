@@ -66,13 +66,10 @@ internal sealed class BiomeRenderer : IDisposable
     private void render()
     {
         var count = 0;
-        foreach (var tile in Tilemap.EnumerateTilemapWith(level.Radius))
+        foreach (var tile in Tilemap.EnumerateTilemapWith(level.Radius - 1))
         {
-            var p = Tiles.Level.GetPosition(tile).NumericValue;
-            var biome = biomeLayer[tile];
-            byte biomeId = biomeMaterials.GetId(biome);
-
-            baseDrawer.FillCircle(p, Constants.Game.World.HexagonSide, biomeId, 6);
+            drawTriangle(tile, tile.Neighbor(Direction.Right), tile.Neighbor(Direction.DownRight));
+            drawTriangle(tile, tile.Neighbor(Direction.DownRight), tile.Neighbor(Direction.DownLeft));
 
             count++;
 
@@ -86,6 +83,27 @@ internal sealed class BiomeRenderer : IDisposable
 
         baseRenderer.Render();
         baseMeshBuilder.Clear();
+    }
+
+    private void drawTriangle(Tile t0, Tile t1, Tile t2)
+    {
+        var p0 = Tiles.Level.GetPosition(t0).NumericValue;
+        var p1 = Tiles.Level.GetPosition(t1).NumericValue;
+        var p2 = Tiles.Level.GetPosition(t2).NumericValue;
+
+        var biome0 = biomeLayer[t0];
+        var biome1 = biomeLayer[t1];
+        var biome2 = biomeLayer[t2];
+
+        var biomeId0 = biomeMaterials.GetId(biome0);
+        var biomeId1 = biomeMaterials.GetId(biome1);
+        var biomeId2 = biomeMaterials.GetId(biome2);
+
+        baseMeshBuilder.AddTriangle(
+            new BiomeMapVertex(p0, biomeId0),
+            new BiomeMapVertex(p1, biomeId1),
+            new BiomeMapVertex(p2, biomeId2)
+            );
     }
 
     public void Dispose()
