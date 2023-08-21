@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
-using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
@@ -39,14 +36,14 @@ sealed class HeightmapToLevelRenderer
     private float gridScaleSetting;
 
     public HeightmapToLevelRenderer(GameInstance game, RenderContext context,
-        Heightmap heightmap, BiomeMap biomeMap, BiomeMaterials biomeMaterials, Shader shader)
+        Heightmap heightmap, BiomeBuffer biomeBuffer, BiomeMaterials biomeMaterials, Shader shader)
     {
         this.shader = shader;
         renderSettings = context.Settings;
         var level = game.State.Level;
         tileMapWidth = level.Radius * 2 + 1;
 
-        (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmap, biomeMap, biomeMaterials);
+        (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmap, biomeBuffer, biomeMaterials);
     }
 
     public void CleanUp()
@@ -233,7 +230,7 @@ sealed class HeightmapToLevelRenderer
     private (RhombusGridMesh, IRenderer) setupGridRenderer(
         RenderContext context,
         Heightmap heightmap,
-        BiomeMap biomeMap,
+        BiomeBuffer biomeBuffer,
         BiomeMaterials biomeMaterials)
     {
         var mesh = RhombusGridMesh.CreateDefault();
@@ -247,7 +244,8 @@ sealed class HeightmapToLevelRenderer
                 heightmap.RadiusUniform,
                 heightmap.PixelSizeUVUniform,
                 heightmap.GetMapTextureUniform("heightmap", TextureUnit.Texture0),
-                biomeMap.GetMapTextureUniform("biomemap", TextureUnit.Texture0 + 1),
+                biomeBuffer.GetTextureUniform("biomeTilemap", TextureUnit.Texture0 + 1),
+                biomeBuffer.GetRadiusUniform("biomeTilemapRadius"),
                 context.Settings.CameraPosition,
                 heightScaleUniform,
                 heightOffsetUniform,

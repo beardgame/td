@@ -1,6 +1,7 @@
 #version 150
 
-uniform sampler2D biomemap;
+uniform isampler2D biomeTilemap;
+uniform int biomeTilemapRadius;
 
 uniform sampler2DArray diffuseFloor;
 uniform sampler2DArray diffuseCrossSection;
@@ -25,11 +26,12 @@ out vec4 outRGBA;
 out vec4 outNormal;
 out vec4 outDepth;
 
-const float uvScale = 0.2;
+const float wallUvScale = 1;
+const float floorUvScale = 0.2;
 
-void getWallXComponent(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
+void getWallXComponent(int biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
-    vec2 uv = position.xz * uvScale;
+    vec2 uv = position.xz * wallUvScale;
     uv.x = uv.x * -sign(surfaceNormal.y);
 
     vec3 zTransform = surfaceNormal;
@@ -50,9 +52,9 @@ void getWallXComponent(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3
     wallNormal = n;
 }
 
-void getWallYComponent(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
+void getWallYComponent(int biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
-    vec2 uv = position.yz * uvScale;
+    vec2 uv = position.yz * wallUvScale;
     uv.x = uv.x * sign(surfaceNormal.x);
 
     vec3 zTransform = surfaceNormal;
@@ -73,19 +75,23 @@ void getWallYComponent(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3
     wallNormal = n;
 }
 
-void getWallColor(uint biomeId, vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallNormal)
+void getWallColor(int biomeId, vec3 position, vec3 normal, out vec3 wallColor, out vec3 wallNormal)
 {
     vec3 xColor, yColor;
     vec3 xNormal, yNormal;
+
+    vec3 uv = position * wallUvScale;
     
-    if(position.z > 0)
+    uv.z *= 0.5;
+    
+    if(uv.z < 0)
     {
-        position.z *= 2;
+        uv.z *= 0.5;
     }
-    position.z += sin(position.y * 0.2) * sin(position.x * 0.2) * 1;
+    uv.z += sin(uv.y * 0.2) * sin(uv.x * 0.2) * 1;
     
-    getWallXComponent(biomeId, position, normal, xColor, xNormal);
-    getWallYComponent(biomeId, position, normal, yColor, yNormal);
+    getWallXComponent(biomeId, uv, normal, xColor, xNormal);
+    getWallYComponent(biomeId, uv, normal, yColor, yNormal);
 
     // TODO: this is not symetrical!
     float xness = clamp(abs(normal.x / normal.y), 0, 1);
@@ -96,10 +102,10 @@ void getWallColor(uint biomeId, vec3 position, vec3 normal, out vec3 wallColor, 
     wallNormal = mix(xNormal, yNormal, xness);
 }
 
-void getFloorColor(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 floorColor, out vec3 floorNormal)
+void getFloorColor(int biomeId, vec3 position, vec3 surfaceNormal, out vec3 floorColor, out vec3 floorNormal)
 {
-    vec2 uvR = position.xy * uvScale;
-    vec2 uvS = position.xy * uvScale;
+    vec2 uvR = position.xy * floorUvScale;
+    vec2 uvS = position.xy * floorUvScale;
     // distortion needs to be accounted for with normals
     // + vec2(0, sin(position.x * 0.2) * 2);
 
@@ -126,9 +132,117 @@ void getFloorColor(uint biomeId, vec3 position, vec3 surfaceNormal, out vec3 flo
     floorNormal = n;
 }
 
+void getWallAndFloor(int biomeId, vec3 position, vec3 normal, float flatness, out vec3 wallColor, out vec3 wallNormal, out vec3 floorColor, out vec3 floorNormal)
+{
+    if (flatness < 1)
+        getWallColor(biomeId, position, normal, wallColor, wallNormal);
+    if (flatness > 0)
+        getFloorColor(biomeId, position, normal, floorColor, floorNormal);
+}
+
 float dither(vec2 xy)
 {
     return fract(dot(xy, vec2(36, 7) / 16.0f));
+}
+
+void getTile(vec2 xy, out ivec2 tile, out vec2 offset)
+{
+    const float hexDistanceY = 0.8660254;
+    const float hexDistanceX = 1;
+    
+    float yf = xy.y * (1 / hexDistanceY) + 1 / 1.5;
+    float y = floor(yf);
+    float xf = xy.x * (1 / hexDistanceX) - y * 0.5 + 0.5;
+    float x = floor(xf);
+
+    float xRemainder = xf - x - 0.5;
+    float yRemainder = (yf - y) * 1.5;
+
+    tile = ivec2(x, y);
+
+    bool isBottomRightCorner = xRemainder > yRemainder;
+    bool isBottomLeftCorner = -xRemainder > yRemainder;
+
+    tile.x += isBottomRightCorner ? 1 : 0;
+    tile.y += isBottomRightCorner || isBottomLeftCorner ? -1 : 0;
+    
+    vec2 center = vec2(
+        (tile.x + tile.y * 0.5f) * hexDistanceX,
+        tile.y * hexDistanceY
+    );
+    
+    offset = xy - center;
+}
+
+void getTileGridRhombus(vec2 xy, out ivec2 tile, out vec2 offset)
+{
+    const float hexDistanceY = 0.8660254;
+    const float hexDistanceX = 1;
+    
+    float yf = xy.y * (1 / hexDistanceY);
+    float xf = xy.x * (1 / hexDistanceX) - yf * 0.5;
+
+    float y = floor(yf);
+    float x = floor(xf);
+    
+    float yRemainder = yf - y;
+    float xRemainder = xf - x;
+    
+    tile = ivec2(x, y);
+    offset = vec2(xRemainder, yRemainder);
+}
+
+void getBiomeBlend(vec2 tileUV, ivec4 biomeData, out ivec3 biomeIds, out vec3 biomeWeights)
+{
+    int b0, b1, b2;
+    float w0, w1, w2;
+    if(tileUV.x + tileUV.y <= 1)
+    {
+        b0 = biomeData[0];
+        b1 = biomeData[2];
+        b2 = biomeData[3];
+
+        w0 = tileUV.y;
+        w1 = tileUV.x;
+        w2 = 1 - w0 - w1;
+    }
+    else
+    {
+        b0 = biomeData[0];
+        b1 = biomeData[2];
+        b2 = biomeData[1];
+
+        w0 = 1 - tileUV.x;
+        w1 = 1 - tileUV.y;
+        w2 = 1 - w0 - w1;
+    }
+
+    biomeIds[0] = b0;
+    biomeWeights[0] = w0;
+    
+    if(b1 == b0)
+    {
+        biomeWeights[0] += w1;
+    }
+    else
+    {
+        biomeIds[1] = b1;
+        biomeWeights[1] = w1;
+    }
+    
+    if(b2 == b0)
+    {
+        biomeWeights[0] += w2;
+    }
+    else if(b2 == b1)
+    {
+        biomeWeights[1] += w2;
+    }
+    else
+    {
+        biomeIds[2] = b2;
+        biomeWeights[2] = w2;
+    }
 }
 
 void main()
@@ -202,56 +316,46 @@ void main()
         }
     }
     
-    vec2 biomeMapUV =
-        fPosition.xy / heightmapRadius // -1..1
-        * 0.5 + 0.5; // 0..1
+    float biomeIdInterpolate = 0;
+    uint biomeId0 = 0u;
+
+    ivec2 tile;
+    vec2 tileUV;
+    getTileGridRhombus(fPosition.xy, tile, tileUV);
     
-    vec3 biomeIdData = texture(biomemap, biomeMapUV).xyz;
-    uint biomeId0 = uint(round(biomeIdData.x * 255));
-    uint biomeId1 = uint(round(biomeIdData.y * 255));
-    float biomeIdInterpolate = biomeIdData.z;
+    ivec2 sampleTile = tile + ivec2(0, 1);
+    vec2 biomeUV = vec2(sampleTile) / (biomeTilemapRadius * 2) + vec2(0.5);
+    ivec4 biomeData = ivec4(texture(biomeTilemap, biomeUV));
+    
+    ivec3 biomeIds;
+    vec3 biomeWeights;
+    getBiomeBlend(tileUV, biomeData, biomeIds, biomeWeights);
     
     vec3 wallColor, wallNormal;
-    getWallColor(biomeId0, fPosition, fNormal, wallColor, wallNormal);
-
     vec3 floorColor, floorNormal;
-    getFloorColor(biomeId0, fPosition, fNormal, floorColor, floorNormal);
-    
-    if (true && biomeIdInterpolate >= 0)
-    {
-        biomeIdInterpolate = 1 - biomeIdInterpolate;
-        
-        vec3 wallColor1, wallNormal1;
-        getWallColor(biomeId1, fPosition, fNormal, wallColor1, wallNormal1);
-
-        vec3 floorColor1, floorNormal1;
-        getFloorColor(biomeId1, fPosition, fNormal, floorColor1, floorNormal1);
-        
-        //floorColor = vec3(float(biomeId0) / 4, 0, 0);
-        //floorColor1 = vec3(float(biomeId1) / 4, 0, 0);
-        
-        wallColor = mix(wallColor, wallColor1, biomeIdInterpolate);
-        wallNormal = mix(wallNormal, wallNormal1, biomeIdInterpolate);
-        floorColor = mix(floorColor, floorColor1, biomeIdInterpolate);
-        floorNormal = mix(floorNormal, floorNormal1, biomeIdInterpolate);
-        
-        //floorNormal = vec3(0, 0, 1);
-    }
 
     float flatness = smoothstep(0.3, 0.5, fNormal.z);
+    
+    for(int i = 0; i < 3; i++)
+    {
+        int biome = biomeIds[i];
+        float weight = biomeWeights[i];
+        
+        if (weight == 0)
+            continue;
+        
+        vec3 wC, wN, fC, fN;
+        getWallAndFloor(biome, fPosition, fNormal, flatness, wC, wN, fC, fN);
+        
+        wallColor += wC * weight;
+        wallNormal += wN * weight;
+        floorColor += fC * weight;
+        floorNormal += fN * weight;
+    }
 
     vec3 diffuse, normal;
-
-    if (flatness > 0.999)
-    {
-        diffuse = floorColor;
-        normal = floorNormal;
-    }
-    else
-    {
-        diffuse = mix(wallColor, floorColor, flatness);
-        normal = mix(wallNormal, floorNormal, flatness);
-    }
+    diffuse = mix(wallColor, floorColor, flatness);
+    normal = mix(wallNormal, floorNormal, flatness);
 
     vec4 rgba = vec4(diffuse, 1) * fColor;
 

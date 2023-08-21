@@ -12,7 +12,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
 {
     public Heightmap Heightmap { get; }
     private readonly BiomeMaterials biomeMaterials;
-    private readonly BiomeMap biomeMap;
+    private readonly BiomeBuffer biomeBuffer;
     private readonly HeightRenderer heightRenderer;
     private readonly VisibilityRenderer visibilityRenderer;
     private readonly BiomeRenderer biomeRenderer;
@@ -23,11 +23,11 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         Heightmap = new Heightmap(game);
         heightRenderer = new HeightRenderer(game, context, Heightmap);
         visibilityRenderer = new VisibilityRenderer(game, Heightmap, time);
-        biomeMap = new BiomeMap(game);
+        biomeBuffer = new BiomeBuffer(game.State.Level.Radius);
         biomeMaterials = new BiomeMaterials(game);
-        biomeRenderer = new BiomeRenderer(game, biomeMap, biomeMaterials, context);
+        biomeRenderer = new BiomeRenderer(game, biomeBuffer, biomeMaterials, context);
         heightmapToLevelRenderer = new HeightmapToLevelRenderer(
-            game, context, Heightmap, biomeMap, biomeMaterials, levelShader);
+            game, context, Heightmap, biomeBuffer, biomeMaterials, levelShader);
 
         resizeIfNeeded();
         game.Meta.Events.Subscribe<TileDrawInfoChanged>(this);
@@ -50,6 +50,7 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         heightRenderer.Render();
         visibilityRenderer.Render();
         biomeRenderer.Render();
+        biomeBuffer.UploadIfNeeded();
     }
 
     private void resizeIfNeeded()
@@ -57,7 +58,6 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         var settings = UserSettings.Instance.Graphics;
 
         Heightmap.SetScale(settings.TerrainHeightmapResolution);
-        biomeMap.SetScale(settings.BiomeMapResolution);
         heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
     }
 
@@ -69,10 +69,9 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
     public void CleanUp()
     {
         Heightmap.Dispose();
-        biomeMap.Dispose();
+        biomeBuffer.Dispose();
         heightRenderer.CleanUp();
         visibilityRenderer.Dispose();
-        biomeRenderer.Dispose();
         heightmapToLevelRenderer.CleanUp();
     }
 }
