@@ -1,5 +1,5 @@
 {
-    id: "rubble",
+    id: "fungus-small",
     components: [
         { id: "currentTileNotifier" },
         { id: "tileBasedVisibility" },
@@ -7,9 +7,12 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "default.rubble.0",
-                color: "FFC0C0C0",
+                sprite: "default.fungi.fungus-small",
+                shader: "building",
+                drawGroup: "building",
+                color: "White",
                 size: 0.75,
+                heightOffset: 0.2,
             }
         },
     ]

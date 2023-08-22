@@ -1,0 +1,13 @@
+﻿{
+  id: "fungi",
+  textureSamplers:
+  [
+    {
+      sampler: "diffuse"
+    },
+    {
+      sampler: "normal",
+      suffix: "-normal",
+    }
+  ]
+}

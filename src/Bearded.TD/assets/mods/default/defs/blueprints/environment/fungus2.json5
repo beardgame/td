@@ -1,0 +1,19 @@
+{
+    id: "fungus2",
+    components: [
+        { id: "currentTileNotifier" },
+        { id: "tileBasedVisibility" },
+        { id: "tileBlocker" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.fungi.fungus2",
+                shader: "building",
+                drawGroup: "building",
+                color: "White",
+                size: 1.5,
+                heightOffset: 0.3
+            }
+        },
+    ]
+}

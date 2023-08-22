@@ -139,7 +139,7 @@
                     purpose: "blocker"
                 },
                 solution: {
-                    blueprints: [ "default.rubble" ],
+                    blueprints: [ "fungus-small", "fungus0", "fungus1", "fungus2" ],
                     rotation: "randomDirection",
                     z: 0.01
                 }
