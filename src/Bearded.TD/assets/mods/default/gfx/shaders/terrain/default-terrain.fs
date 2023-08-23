@@ -27,7 +27,7 @@ out vec4 outNormal;
 out vec4 outDepth;
 
 const float wallUvScale = 1;
-const float floorUvScale = 0.2;
+const float floorUvScale = 0.25;
 
 void getWallXComponent(int biomeId, vec3 position, vec3 surfaceNormal, out vec3 wallColor, out vec3 wallNormal)
 {
@@ -82,7 +82,7 @@ void getWallColor(int biomeId, vec3 position, vec3 normal, out vec3 wallColor, o
 
     vec3 uv = position * wallUvScale;
     
-    uv.z *= 0.5;
+    uv.z *= -0.5;
     
     if(uv.z < 0)
     {
