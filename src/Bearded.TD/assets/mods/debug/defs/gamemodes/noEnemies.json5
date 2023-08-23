@@ -45,9 +45,7 @@
             id: "contributeBiomes",
             parameters: {
                 biomes: [
-                    "default.cyan",
                     "default.fishy",
-                    "default.magenta",
                     "default.yellow"
                 ]
             }
