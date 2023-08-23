@@ -139,9 +139,23 @@
                     purpose: "blocker"
                 },
                 solution: {
-                    blueprints: [ "fungus-small", "fungus0", "fungus1", "fungus2" ],
+                    blueprints: [ "fungus0", "fungus1", "fungus2" ],
                     rotation: "randomDirection",
                     z: 0.01
+                }
+            }
+        },
+        {
+            id: "contributePropRule",
+            parameters: {
+                selector: {
+                    purpose: "light"
+                },
+                solution: {
+                    blueprints: [ "fungus-light0", "fungus-light1", "fungus-light2" ],
+                    alignment: "randomlyInTile",
+                    rotation: "randomDirection",
+                    z: 0.01,
                 }
             }
         }

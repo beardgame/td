@@ -3,6 +3,24 @@
     behaviors: [
         { id: "setTiles", parameters: { type: "floor" } },
         { id: "selectRandom", parameters: { percentage: 0.2 } },
-        { id: "setTiles", parameters: { type: "crevice" } }
+        { id: "setTiles", parameters: { type: "crevice" } },
+
+        { id: "selectTileType", parameters: { type: "floor" } },
+        { id: "selectRandomSubset", parameters: { percentage: 0.1 } },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "light"
+            }
+        },
+        { id: "selectRandomSubset", parameters: { percentage: 0.6 } },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "light"
+            }
+        }
     ]
 }

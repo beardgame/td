@@ -5,6 +5,24 @@
         { id: "selectRandom", parameters: { percentage: 0.25 } },
         { id: "setTiles", parameters: { type: "crevice" } },
         { id: "selectRandom", parameters: { percentage: 0.1 } },
-        { id: "setTiles", parameters: { type: "wall" } }
+        { id: "setTiles", parameters: { type: "wall" } },
+        
+        { id: "selectTileType", parameters: { type: "floor" } },
+        { id: "selectRandomSubset", parameters: { percentage: 0.1 } },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "light"
+            }
+        },
+        { id: "selectRandomSubset", parameters: { percentage: 0.6 } },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "light"
+            }
+        }
     ]
 }

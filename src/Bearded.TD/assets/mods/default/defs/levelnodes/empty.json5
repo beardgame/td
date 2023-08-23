@@ -1,6 +1,24 @@
 {
     id: "empty",
     behaviors: [
-        { id: "setTiles", parameters: { type: "floor" } }
+        { id: "setTiles", parameters: { type: "floor" } },
+
+        { id: "selectTileType", parameters: { type: "floor" } },
+        { id: "selectRandomSubset", parameters: { percentage: 0.1 } },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "light"
+            }
+        },
+        { id: "selectRandomSubset", parameters: { percentage: 0.6 } },
+        {
+            id: "spawnPropHint",
+            parameters: {
+                placement: "allFromSelection",
+                purpose: "light"
+            }
+        }
     ]
 }

@@ -1,0 +1,27 @@
+{
+    id: "fungus-light2",
+    components: [
+        { id: "currentTileNotifier" },
+        { id: "tileBasedVisibility" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.fungi.fungus-small",
+                shader: "building",
+                drawGroup: "building",
+                color: "White",
+                size: 0.3,
+                heightOffset: 0.12,
+            }
+        },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "FFD5FCFF",
+                radius: 2.5,
+                height: 0.3,
+                intensity: 1,
+            }
+        }
+    ]
+}

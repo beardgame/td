@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Bearded.TD.Game.Generation.Semantic.Features;
+using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
@@ -7,7 +8,7 @@ namespace Bearded.TD.Game.Generation.Semantic.NodeBehaviors;
 [NodeBehavior("selectRandomSubset")]
 sealed class SelectRandomSubset : NodeBehavior<SelectRandomSubset.BehaviorParameters>
 {
-    public sealed record BehaviorParameters(int NumTiles);
+    public sealed record BehaviorParameters(int? NumTiles, double? Percentage);
 
     public SelectRandomSubset(BehaviorParameters parameters) : base(parameters) { }
 
@@ -17,9 +18,14 @@ sealed class SelectRandomSubset : NodeBehavior<SelectRandomSubset.BehaviorParame
         {
             return;
         }
+        
+        var numberOfTilesToSelect = Parameters.NumTiles ??
+            (Parameters.Percentage.HasValue
+                ? MoreMath.RoundToInt(context.Tiles.Selection.Count * Parameters.Percentage.Value)
+                : 0);
 
         var tilesToSelect = context.Tiles.Selection
-            .RandomSubset(Parameters.NumTiles, context.Random)
+            .RandomSubset(numberOfTilesToSelect, context.Random)
             .ToImmutableArray();
 
         context.Tiles.Selection.RemoveAll();
