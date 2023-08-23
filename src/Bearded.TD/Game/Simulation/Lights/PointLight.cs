@@ -19,6 +19,8 @@ class PointLight : Component<PointLight.IPointLightParameters>, IListener<DrawCo
 
         [Modifiable(1)]
         float Intensity { get; }
+
+        bool DrawShadow { get; }
     }
 
     public PointLight(IPointLightParameters parameters) : base(parameters)
@@ -49,7 +51,8 @@ class PointLight : Component<PointLight.IPointLightParameters>, IListener<DrawCo
             position,
             Parameters.Radius.NumericValue,
             Parameters.Color,
-            Parameters.Intensity
+            Parameters.Intensity,
+            Parameters.DrawShadow
         );
     }
 }

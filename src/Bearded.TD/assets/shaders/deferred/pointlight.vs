@@ -8,11 +8,13 @@ in vec3 vertexLightPosition;
 in float vertexLightRadiusSquared;
 in vec4 vertexLightColor;
 in float intensity;
+in float vertexShadow;
 
 out vec2 lightCenterUV;
 out vec3 lightPosition;
 out float lightRadiusSquared;
 out vec4 lightColor;
+out float lightShadow;
 
 void main()
 {
@@ -29,4 +31,5 @@ void main()
     lightPosition = vertexLightPosition;
     lightRadiusSquared = vertexLightRadiusSquared;
     lightColor = vertexLightColor * intensity;
+    lightShadow = vertexShadow;
 }

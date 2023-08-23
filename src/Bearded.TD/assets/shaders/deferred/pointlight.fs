@@ -15,6 +15,7 @@ in vec3 lightPosition;
 in float lightRadiusSquared;
 in vec4 lightColor;
 out vec4 outRGB;
+in float lightShadow;
 
 vec3 getFragmentPositionFromDepth(vec2 uv)
 {
@@ -91,7 +92,9 @@ void main()
 
     vec3 rgb = lightColor.rgb * lightColor.a * (a * f);
 
-    float shadowUmbraFactor = getShadowUmbraFactor(uv, fragmentPosition, vectorToLight);
+    float shadowUmbraFactor = lightShadow > 0
+        ? getShadowUmbraFactor(uv, fragmentPosition, vectorToLight)
+        : 1;
 
     outRGB = vec4(rgb, 0) * shadowUmbraFactor;
 

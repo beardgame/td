@@ -12,8 +12,17 @@
                 drawGroup: "building",
                 color: "White",
                 size: 0.75,
-                heightOffset: 0.2,
+                heightOffset: 0.1,
             }
         },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "White",
+                radius: 3,
+                height: 0.3,
+                intensity: 1,
+            }
+        }
     ]
 }
