@@ -16,6 +16,15 @@ sealed class TileBlockerLayer
         this.events = events;
     }
 
+    public GameObject? this[Tile tile]
+    {
+        get
+        {
+            objectLookup.TryGetValue(tile, out var obj);
+            return obj;
+        }
+    }
+
     public bool IsTileBlocked(Tile tile) => objectLookup.ContainsKey(tile);
 
     public void AddTileBlocker(GameObject obj, Tile tile)

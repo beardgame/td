@@ -111,7 +111,13 @@ sealed class DefaultTileOccupancy : Component,
         return game.Level.IsValid(tile)
             && game.GeometryLayer[tile].Type == TileType.Floor
             && game.VisibilityLayer[tile].IsRevealed()
+            && tileContainsNoNonBuildingTileBlocker(game, tile)
             && tileContainsNoBuildingOrReplaceableBuilding(game, tile);
+    }
+
+    private static bool tileContainsNoNonBuildingTileBlocker(GameState game, Tile tile)
+    {
+        return game.TileBlockerLayer[tile]?.GetComponents<IBuildingStateProvider>().Any() ?? true;
     }
 
     private static bool tileContainsNoBuildingOrReplaceableBuilding(GameState game, Tile tile)
