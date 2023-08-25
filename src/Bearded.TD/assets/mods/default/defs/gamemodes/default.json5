@@ -128,7 +128,8 @@
             parameters: {
                 biomes: [
                     "default.fishy",
-                    "default.yellow"
+                    "default.yellow",
+                    "default.basalt"
                 ]
             }
         },
