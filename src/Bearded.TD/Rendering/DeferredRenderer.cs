@@ -26,7 +26,8 @@ using static Pipeline<DeferredRenderer.RenderState>;
 sealed class DeferredRenderer
 {
     private static readonly SpriteDrawGroup[] solidLevelDrawGroups = { SolidLevelDetails };
-    private static readonly SpriteDrawGroup[] worldDrawGroups = { LevelDetail, Building, Unit };
+    private static readonly SpriteDrawGroup[] worldDrawGroups = { Building, Unit };
+    private static readonly SpriteDrawGroup[] worldDetailGroups = { LevelDetail };
     private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
     private static readonly SpriteDrawGroup[] ignoreDepthGroup = { IgnoreDepth };
 
@@ -71,6 +72,9 @@ sealed class DeferredRenderer
         {
             Geometry = RenderTargetWithDepthAndColors("Geometry",
                 textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth),
+            GeometryDiffuseOnly = RenderTargetWithDepthAndColors("GeometryDiffuseOnly",
+                textures.DepthMask, textures.Diffuse),
+
             LightAccum = RenderTargetWithDepthAndColors("LightAccum", textures.DepthMask, textures.LightAccum),
             Composition = RenderTargetWithDepthAndColors("Composition", textures.DepthMask, textures.Composition),
 
@@ -101,7 +105,14 @@ sealed class DeferredRenderer
                     WithContext(
                         c => c.SetBlendMode(Premultiplied),
                         renderDrawGroups(worldDrawGroups))
-                ))
+                )),
+            WithContext(
+                c => c.SetDebugName("Render level details")
+                    .BindRenderTarget(targets.GeometryDiffuseOnly)
+                    .SetDepthMode(TestOnly(DepthFunction.Less))
+                    .SetBlendMode(Premultiplied),
+                renderDrawGroups(worldDetailGroups)
+                )
         ));
 
         var compositedFrame = renderedGBuffers.Then(InOrder(

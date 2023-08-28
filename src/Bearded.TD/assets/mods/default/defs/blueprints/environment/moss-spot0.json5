@@ -1,0 +1,25 @@
+{
+    id: "moss-spot0",
+    components: [
+        { id: "currentTileNotifier" },
+        { id: "tileBasedVisibility" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.moss-spot.spot0",
+                drawgroup: "leveldetail",
+                color: "White",
+                size: 0.7,
+            }
+        },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "ffe9ff9b",
+                radius: 2,
+                height: 0.3,
+                intensity: 0.8
+            }
+        }
+    ]
+}

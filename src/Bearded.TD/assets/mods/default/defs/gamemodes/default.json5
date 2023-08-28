@@ -153,7 +153,15 @@
                     purpose: "light"
                 },
                 solution: {
-                    blueprints: [ "fungus-light0", "fungus-light1", "fungus-light2" ],
+                    blueprints: [
+                        "fungus-light0",
+                        "fungus-light1",
+                        "fungus-light2",
+                        "moss-spot0",
+                        "moss-spot1",
+                        "moss-spot2",
+                        "moss-spot3",
+                    ],
                     alignment: "randomlyInTile",
                     rotation: "randomDirection",
                     z: 0.01,

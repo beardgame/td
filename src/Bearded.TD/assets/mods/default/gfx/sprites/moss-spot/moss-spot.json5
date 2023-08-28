@@ -1,0 +1,9 @@
+﻿{
+    id: "moss-spot",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}
