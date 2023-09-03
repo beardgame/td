@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.19
+
+* Added multiple biomes
+* Introduced new biomes: coral, basalt
+* Replaced rubble blockers with fungi
+* Improved level texture rendering
+* Added level clutter: glowing fungi, glowing moss
+* Bug fix: buildings cost resources again
+
 ## v0.18
 
 * Replaced level textures
