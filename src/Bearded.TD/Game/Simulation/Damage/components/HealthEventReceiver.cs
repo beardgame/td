@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.SpaceTime;
 
@@ -5,27 +7,29 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 sealed class HealthEventReceiver : Component, IHealthEventReceiver
 {
-    public TypedDamage Damage(TypedDamage typedDamage, IDamageSource? source)
+    public FinalDamageResult Damage(TypedDamage typedDamage, IDamageSource? source)
     {
-        var previewDamage = new PreviewTakeDamage(typedDamage);
-        Events.Preview(ref previewDamage);
+        var damageReceivers =
+            Owner.GetComponents<IDamageReceiver>().OrderByDescending(r => (int) r.Shell).ToImmutableArray();
 
-        var modifiedDamage = typedDamage;
-        if (previewDamage.Resistance is { } resistance)
+        var remainingDamage = typedDamage;
+        var totalExactDamage = TypedDamage.Zero(typedDamage.Type);
+        var totalDiscreteDamage = HitPoints.Zero;
+
+        foreach (var receiver in damageReceivers)
         {
-            modifiedDamage = resistance.ApplyToDamage(modifiedDamage);
-        }
-        if (previewDamage.DamageCap is { } damageCap && damageCap < modifiedDamage.Amount)
-        {
-            modifiedDamage = modifiedDamage.WithAdjustedAmount(damageCap);
+            if (remainingDamage.Amount <= HitPoints.Zero)
+            {
+                break;
+            }
+            var intermediateResult = receiver.ApplyDamage(remainingDamage, source);
+            remainingDamage = intermediateResult.DamageOverflow;
+            totalExactDamage = totalExactDamage
+                .WithAdjustedAmount(totalExactDamage.Amount + intermediateResult.ExactDamageDone.Amount);
+            totalDiscreteDamage += intermediateResult.DiscreteDamageDone;
         }
 
-        if (modifiedDamage.Amount > HitPoints.Zero)
-        {
-            Events.Send(new TakeDamage(modifiedDamage, source));
-        }
-
-        return modifiedDamage;
+        return new FinalDamageResult(totalExactDamage, totalDiscreteDamage);
     }
 
     public void Heal(HealInfo healInfo)
@@ -53,6 +57,6 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
 
 interface IHealthEventReceiver
 {
-    TypedDamage Damage(TypedDamage typedDamage, IDamageSource? source);
+    FinalDamageResult Damage(TypedDamage typedDamage, IDamageSource? source);
     void Heal(HealInfo healInfo);
 }

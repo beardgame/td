@@ -30,7 +30,4 @@ class EventReceiver<TEvent> : Component, IEventReceiver<TEvent>
 }
 
 [Component("takeHitEventReceiver")]
-sealed class TakeHitEventReceiver : EventReceiver<TakeHit>
-{
-    
-}
+sealed class TakeHitEventReceiver : EventReceiver<TakeHit> {}

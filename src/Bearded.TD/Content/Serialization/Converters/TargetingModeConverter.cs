@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Bearded.TD.Game.Simulation.Weapons;
+using Bearded.TD.Utilities;
 using Newtonsoft.Json;
 
 namespace Bearded.TD.Content.Serialization.Converters;
@@ -14,10 +15,9 @@ sealed class TargetingModeConverter : JsonConverterBase<ITargetingMode>
     public TargetingModeConverter()
     {
         targetingModesByName = typeof(TargetingMode)
-            .GetProperties(BindingFlags.Public | BindingFlags.Static)
-            .Where(p => p.PropertyType.IsAssignableTo(typeof(ITargetingMode)))
-            .Select(p => (ITargetingMode) p.GetValue(null))
-            .ToImmutableDictionary(p => p.Name);
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(p => p.FieldType.IsAssignableTo(typeof(ITargetingMode)))
+            .ToImmutableDictionary(p => p.Name.ToCamelCase(), p => (ITargetingMode) p.GetValue(null));
     }
 
     protected override ITargetingMode ReadJson(JsonReader reader, JsonSerializer serializer)

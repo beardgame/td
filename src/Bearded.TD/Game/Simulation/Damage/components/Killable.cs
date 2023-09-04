@@ -5,14 +5,14 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class Killable : Component, IKillable, IListener<TakeDamage>, IListener<EnactDeath>
+sealed class Killable : Component, IKillable, IListener<TookDamage>, IListener<EnactDeath>
 {
     private IDamageSource? lastDamageSource;
     private bool isDead;
 
     protected override void OnAdded()
     {
-        Events.Subscribe<TakeDamage>(this);
+        Events.Subscribe<TookDamage>(this);
         Events.Subscribe<EnactDeath>(this);
     }
 
@@ -24,7 +24,7 @@ sealed class Killable : Component, IKillable, IListener<TakeDamage>, IListener<E
         }
     }
 
-    public void HandleEvent(TakeDamage @event)
+    public void HandleEvent(TookDamage @event)
     {
         if (!isDead)
         {
@@ -40,7 +40,7 @@ sealed class Killable : Component, IKillable, IListener<TakeDamage>, IListener<E
     // Expected to be called from synchronized code.
     public void Kill(IDamageSource? damageSource)
     {
-        Events.Send(new ObjectKilled(lastDamageSource));
+        Events.Send(new ObjectKilled(damageSource ?? lastDamageSource));
         Owner.Delete();
     }
 }

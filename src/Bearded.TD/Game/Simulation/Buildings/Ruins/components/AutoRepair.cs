@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Buildings.Ruins;
 
 [Component("autoRepair")]
 sealed class AutoRepair
-    : Component<AutoRepair.IParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TakeDamage>
+    : Component<AutoRepair.IParameters>, IListener<ObjectRuined>, IListener<RepairFinished>, IListener<TookDamage>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -40,14 +40,14 @@ sealed class AutoRepair
 
         Events.Subscribe<ObjectRuined>(this);
         Events.Subscribe<RepairFinished>(this);
-        Events.Subscribe<TakeDamage>(this);
+        Events.Subscribe<TookDamage>(this);
     }
 
     public override void OnRemoved()
     {
         Events.Unsubscribe<ObjectRuined>(this);
         Events.Unsubscribe<RepairFinished>(this);
-        Events.Unsubscribe<TakeDamage>(this);
+        Events.Unsubscribe<TookDamage>(this);
         base.OnRemoved();
     }
 
@@ -74,7 +74,7 @@ sealed class AutoRepair
         repair = null;
     }
 
-    public void HandleEvent(TakeDamage @event)
+    public void HandleEvent(TookDamage @event)
     {
         if (ruined != null && Parameters.ResetTimerOnDamage)
         {

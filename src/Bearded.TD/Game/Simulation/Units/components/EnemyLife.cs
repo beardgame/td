@@ -14,7 +14,7 @@ sealed class EnemyLife : Component, IListener<ObjectKilled>
 
     public void HandleEvent(ObjectKilled @event)
     {
-        Owner.Game.Meta.Events.Send(new EnemyKilled(Owner, @event.LastDamageSource));
+        Owner.Game.Meta.Events.Send(new EnemyKilled(Owner));
     }
 
     public override void Update(TimeSpan elapsedTime) {}

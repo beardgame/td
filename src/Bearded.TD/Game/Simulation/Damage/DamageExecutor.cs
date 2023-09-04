@@ -15,12 +15,13 @@ readonly struct DamageExecutor
     {
         // Affect actual health
         target.TryGetSingleComponent<IHealthEventReceiver>(out var damageReceiver);
-        var damageTaken = damageReceiver?.Damage(typedDamage, damageSource) ?? TypedDamage.Zero(typedDamage.Type);
+        var damageResult =
+            damageReceiver?.Damage(typedDamage, damageSource) ?? FinalDamageResult.None(typedDamage.Type);
 
         // Inject information about having been hit by something, whether damage was done or not
         // Typically used for visual effects.
         target.TryGetSingleComponent<IEventReceiver<TakeHit>>(out var hitReceiver);
-        hitReceiver?.InjectEvent(new TakeHit(hit, damageTaken));
+        hitReceiver?.InjectEvent(new TakeHit(hit, damageResult.TotalExactDamage));
 
         return damageReceiver != null;
     }
