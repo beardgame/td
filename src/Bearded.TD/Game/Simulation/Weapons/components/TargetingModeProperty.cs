@@ -27,6 +27,22 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
         ReportAggregator.Register(Events, new TargetingReport(this));
     }
 
+    public override void Activate()
+    {
+        base.Activate();
+        if (Parameters.DefaultTargetingMode is { } mode)
+        {
+            if (AllowedTargetingModes.Contains(mode))
+            {
+                Value = mode;
+            }
+            else
+            {
+                Owner.Game.Meta.Logger.Debug?.Log($"Default targeting mode {mode} not actually allowed.");
+            }
+        }
+    }
+
     public override void Update(TimeSpan elapsedTime) { }
 
     public void SetTargetingMode(ITargetingMode newMode)

@@ -39,6 +39,7 @@
     {
       id: "targetingModes",
       parameters: {
+        defaultTargetingMode: "highestHealth"
       }
     },
     {
