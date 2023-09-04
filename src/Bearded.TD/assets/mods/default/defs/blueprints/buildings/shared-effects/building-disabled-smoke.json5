@@ -1,0 +1,33 @@
+﻿{
+  id: "building-disabled-smoke",
+  components: [
+    { id: "particles" },
+    { id: "particlesMoveLinear" },
+    { id: "particlesGravity", parameters: { factor: -0.1 } },
+    { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
+
+    { id: "particlesSpawnContinuously", parameters: {
+      interval: 0.1,
+      intervalNoise: 0.2,
+      lifeTime: 3,
+      lifeTimeNoise: 0.2,
+
+      size: 0.5,
+      sizeNoise: 0.2,
+      color: "88555555",
+
+      velocity: [0, 0, 0.5],
+      velocityNoise: 0.1,
+      randomVelocity: 0.3,
+      randomVelocityNoise: 0.1,
+      orientationNoise: 1,
+      angularVelocity: 90,
+      angularVelocityNoise: 1,
+    }},
+    
+    { id: "particlesDraw", parameters: {
+      sprite: "default.particle.mote",
+      drawMode: "sprite"
+    } }
+  ]
+}
