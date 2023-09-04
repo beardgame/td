@@ -95,7 +95,6 @@ sealed class Health :
 
         var result = new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(damage.Type), damageDoneDiscrete);
 
-        // TODO: fix null!
         Events.Send(new TookDamage(result.AsFinal(), source));
 
         return result;
