@@ -1,10 +1,7 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Synchronization;
-using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.TD.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -19,10 +16,8 @@ interface IHealth
 
 [Component("health")]
 sealed class Health :
-    Component<Health.IParameters>,
+    HitPointsPool<Health.IParameters>,
     IHealth,
-    IDamageReceiver,
-    ISyncable,
     IPreviewListener<PreviewHealDamage>,
     IListener<HealDamage>
 {
@@ -34,15 +29,13 @@ sealed class Health :
         HitPoints? InitialHealth { get; }
     }
 
-    public HitPoints CurrentHealth { get; private set; }
-    public HitPoints MaxHealth { get; private set; }
-    public DamageShell Shell => DamageShell.Health;
+    public HitPoints CurrentHealth => CurrentHitPoints;
+    public HitPoints MaxHealth => MaxHitPoints;
 
-    public Health(IParameters parameters) : base(parameters)
-    {
-        CurrentHealth = parameters.InitialHealth ?? parameters.MaxHealth;
-        MaxHealth = parameters.MaxHealth;
-    }
+    protected override HitPoints TargetMaxHitPoints => Parameters.MaxHealth;
+    public override DamageShell Shell => DamageShell.Health;
+
+    public Health(IParameters parameters) : base(parameters, parameters.MaxHealth) {}
 
     protected override void OnAdded()
     {
@@ -56,6 +49,15 @@ sealed class Health :
         State.IsInvalid("Can never remove health components.");
     }
 
+    public override void Activate()
+    {
+        base.Activate();
+        if (Parameters.InitialHealth is { } initialHealth)
+        {
+            OverrideCurrentHitPoints(initialHealth);
+        }
+    }
+
     public void PreviewEvent(ref PreviewHealDamage @event)
     {
         @event = @event.CappedAt(MaxHealth - CurrentHealth);
@@ -63,99 +65,23 @@ sealed class Health :
 
     public void HandleEvent(HealDamage @event)
     {
-        onHealed(@event.Heal.Heal);
+        RestoreHitPoints(@event.Heal.Heal.Amount);
     }
 
-    private void onHealed(HealInfo heal)
+    protected override TypedDamage ModifyDamage(TypedDamage damage)
     {
-        changeHealth(heal.Amount, out _);
-    }
-
-    public IntermediateDamageResult ApplyDamage(TypedDamage damage, IDamageSource? source)
-    {
-        // No health, so object is already dead.
-        if (CurrentHealth <= HitPoints.Zero)
-        {
-            return IntermediateDamageResult.PassThrough(damage);
-        }
-
         var e = new PreviewTakeDamage(damage);
         Events.Preview(ref e);
         var resistance = e.Resistance ?? Resistance.Zero;
-        var resistedDamage = resistance.ApplyToDamage(damage);
-
-        if (resistedDamage.Amount <= HitPoints.Zero)
-        {
-            return IntermediateDamageResult.Blocked(damage);
-        }
-
-        var cappedDamage =
-            resistedDamage.WithAdjustedAmount(SpaceTime1MathF.Min(resistedDamage.Amount, CurrentHealth));
-        changeHealth(-cappedDamage.Amount, out var damageDoneDiscrete);
-
-        var result = new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(damage.Type), damageDoneDiscrete);
-
-        Events.Send(new TookDamage(result.AsFinal(), source));
-
-        return result;
-    }
-
-    private void changeHealth(HitPoints healthChange, out HitPoints damageDoneDiscrete)
-    {
-        var oldHealthDiscrete = CurrentHealth.Discrete();
-        CurrentHealth = SpaceTime1MathF.Clamp(CurrentHealth + healthChange, HitPoints.Zero, MaxHealth);
-        var newHealthDiscrete = CurrentHealth.Discrete();
-        // This expression may look inverted, but that's because we want the difference as a positive number.
-        damageDoneDiscrete = oldHealthDiscrete - newHealthDiscrete;
+        return resistance.ApplyToDamage(damage);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (Parameters.MaxHealth != MaxHealth)
-        {
-            applyNewMaxHealth();
-        }
+        base.Update(elapsedTime);
         if (CurrentHealth <= HitPoints.Zero)
         {
             Events.Send(new EnactDeath());
-        }
-    }
-
-    private void applyNewMaxHealth()
-    {
-        if (Parameters.MaxHealth > MaxHealth)
-        {
-            CurrentHealth += Parameters.MaxHealth - MaxHealth;
-            MaxHealth = Parameters.MaxHealth;
-        }
-        else
-        {
-            MaxHealth = Parameters.MaxHealth;
-            CurrentHealth = SpaceTime1MathF.Min(CurrentHealth, MaxHealth);
-        }
-    }
-
-    public IStateToSync GetCurrentStateToSync() => new HealthSynchronizedState(this);
-
-    private sealed class HealthSynchronizedState : IStateToSync
-    {
-        private readonly Health source;
-        private float currentHealth;
-
-        public HealthSynchronizedState(Health source)
-        {
-            this.source = source;
-            currentHealth = source.CurrentHealth.NumericValue;
-        }
-
-        public void Serialize(INetBufferStream stream)
-        {
-            stream.Serialize(ref currentHealth);
-        }
-
-        public void Apply()
-        {
-            source.CurrentHealth = new HitPoints(currentHealth);
         }
     }
 
