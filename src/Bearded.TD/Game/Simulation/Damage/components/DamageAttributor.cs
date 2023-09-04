@@ -16,7 +16,7 @@ sealed class DamageAttributor : Component, IListener<TookDamage>, IListener<Obje
 
     public void HandleEvent(TookDamage @event)
     {
-        @event.Source?.AttributeDamage(@event.Damage, Owner);
+        @event.Source?.AttributeDamage(@event.Result, Owner);
     }
 
     public void HandleEvent(ObjectKilled @event)

@@ -26,8 +26,8 @@ sealed class StatisticCollector : Component, ISyncable
     {
         Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
         {
-            totalDamage += e.Result.TypedDamage.Amount.NumericValue;
-            currentWaveDamage += e.Result.TypedDamage.Amount.NumericValue;
+            totalDamage += e.Result.TotalExactDamage.Amount.NumericValue;
+            currentWaveDamage += e.Result.TotalExactDamage.Amount.NumericValue;
         }));
         Events.Subscribe(Listener.ForEvent<CausedKill>(_ =>
         {

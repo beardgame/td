@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 interface IDamageSource
 {
-    void AttributeDamage(DamageResult result, GameObject damagedObject);
+    void AttributeDamage(FinalDamageResult result, GameObject damagedObject);
     void AttributeKill();
 }
 
@@ -20,7 +20,7 @@ sealed class DamageSource : Component, IDamageSource
         ComponentDependencies.Depend<IIdProvider>(Owner, Events, provider => idProvider = provider);
     }
 
-    public void AttributeDamage(DamageResult damageResult, GameObject damagedObject)
+    public void AttributeDamage(FinalDamageResult damageResult, GameObject damagedObject)
     {
         Events.Send(new CausedDamage(damageResult, damagedObject));
     }

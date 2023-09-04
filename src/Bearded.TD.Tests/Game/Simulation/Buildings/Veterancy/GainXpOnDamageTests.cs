@@ -44,6 +44,7 @@ public sealed class GainXpOnDamageTests
     {
         componentTestBed.SendEvent(
             new CausedDamage(
-                new DamageResult(new TypedDamage(hitPoints, DamageType.DivineIntervention), hitPoints), null!));
+                new FinalDamageResult(new TypedDamage(hitPoints, DamageType.DivineIntervention), hitPoints),
+                null!));
     }
 }

@@ -21,11 +21,10 @@ interface IHealth
 sealed class Health :
     Component<Health.IParameters>,
     IHealth,
+    IDamageReceiver,
     ISyncable,
     IPreviewListener<PreviewHealDamage>,
-    IListener<HealDamage>,
-    IPreviewListener<PreviewTakeDamage>,
-    IListener<TakeDamage>
+    IListener<HealDamage>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -37,6 +36,7 @@ sealed class Health :
 
     public HitPoints CurrentHealth { get; private set; }
     public HitPoints MaxHealth { get; private set; }
+    public DamageShell Shell => DamageShell.Health;
 
     public Health(IParameters parameters) : base(parameters)
     {
@@ -48,8 +48,6 @@ sealed class Health :
     {
         Events.Subscribe<PreviewHealDamage>(this);
         Events.Subscribe<HealDamage>(this);
-        Events.Subscribe<PreviewTakeDamage>(this);
-        Events.Subscribe<TakeDamage>(this);
         ReportAggregator.Register(Events, new HealthReport(this));
     }
 
@@ -68,25 +66,39 @@ sealed class Health :
         onHealed(@event.Heal.Heal);
     }
 
-    public void PreviewEvent(ref PreviewTakeDamage @event)
-    {
-        @event = @event.CappedAt(CurrentHealth);
-    }
-
-    public void HandleEvent(TakeDamage @event)
-    {
-        onDamaged(@event.Damage, @event.Source);
-    }
-
     private void onHealed(HealInfo heal)
     {
         changeHealth(heal.Amount, out _);
     }
 
-    private void onDamaged(TypedDamage typedDamage, IDamageSource? source)
+    public IntermediateDamageResult ApplyDamage(TypedDamage damage, IDamageSource? source)
     {
-        changeHealth(-typedDamage.Amount, out var damageDoneDiscrete);
-        Events.Send(new TookDamage(new DamageResult(typedDamage, damageDoneDiscrete), source));
+        // No health, so object is already dead.
+        if (CurrentHealth <= HitPoints.Zero)
+        {
+            return IntermediateDamageResult.PassThrough(damage);
+        }
+
+        var e = new PreviewTakeDamage(damage);
+        Events.Preview(ref e);
+        var resistance = e.Resistance ?? Resistance.Zero;
+        var resistedDamage = resistance.ApplyToDamage(damage);
+
+        if (resistedDamage.Amount <= HitPoints.Zero)
+        {
+            return IntermediateDamageResult.Blocked(damage);
+        }
+
+        var cappedDamage =
+            resistedDamage.WithAdjustedAmount(SpaceTime1MathF.Min(resistedDamage.Amount, CurrentHealth));
+        changeHealth(-cappedDamage.Amount, out var damageDoneDiscrete);
+
+        var result = new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(damage.Type), damageDoneDiscrete);
+
+        // TODO: fix null!
+        Events.Send(new TookDamage(result.AsFinal(), source));
+
+        return result;
     }
 
     private void changeHealth(HitPoints healthChange, out HitPoints damageDoneDiscrete)

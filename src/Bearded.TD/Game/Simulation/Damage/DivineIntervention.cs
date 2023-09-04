@@ -9,7 +9,6 @@ sealed class DivineIntervention : IDamageSource
 
     private DivineIntervention() {}
 
-    public void AttributeDamage(DamageResult result, GameObject damagedObject) {}
-
+    public void AttributeDamage(FinalDamageResult result, GameObject damagedObject) {}
     public void AttributeKill() {}
 }

@@ -18,7 +18,7 @@ sealed class DebugInvulnerable : Component, IPreviewListener<PreviewTakeDamage>
     {
         if (UserSettings.Instance.Debug.InvulnerableBuildings)
         {
-            @event = @event.CappedAt(HitPoints.Zero);
+            @event = @event.ResistedWith(Resistance.Full);
         }
     }
 }

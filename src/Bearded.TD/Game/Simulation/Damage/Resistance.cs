@@ -6,6 +6,7 @@ namespace Bearded.TD.Game.Simulation.Damage;
 readonly struct Resistance
 {
     public static Resistance Zero => new(0);
+    public static Resistance Full => new(1);
 
     // Represents the percentage damage is reduced by
     public float NumericValue { get; }

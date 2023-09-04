@@ -17,7 +17,7 @@ sealed class GainXpOnDamage : Component, IListener<CausedDamage>
 
     public void HandleEvent(CausedDamage @event)
     {
-        var damage = @event.Result.TypedDamage;
+        var damage = @event.Result.TotalExactDamage;
 
         if (damage.Amount == HitPoints.Zero) return;
 
