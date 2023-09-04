@@ -35,7 +35,13 @@ sealed class Health :
     protected override HitPoints TargetMaxHitPoints => Parameters.MaxHealth;
     public override DamageShell Shell => DamageShell.Health;
 
-    public Health(IParameters parameters) : base(parameters, parameters.MaxHealth) {}
+    public Health(IParameters parameters) : base(parameters, parameters.MaxHealth)
+    {
+        if (Parameters.InitialHealth is { } initialHealth)
+        {
+            OverrideCurrentHitPoints(initialHealth);
+        }
+    }
 
     protected override void OnAdded()
     {
@@ -47,15 +53,6 @@ sealed class Health :
     public override void OnRemoved()
     {
         State.IsInvalid("Can never remove health components.");
-    }
-
-    public override void Activate()
-    {
-        base.Activate();
-        if (Parameters.InitialHealth is { } initialHealth)
-        {
-            OverrideCurrentHitPoints(initialHealth);
-        }
     }
 
     public void PreviewEvent(ref PreviewHealDamage @event)

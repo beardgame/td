@@ -6,9 +6,9 @@ using Bearded.TD.Testing.Components;
 using Bearded.TD.Testing.Factions;
 using Bearded.TD.Testing.GameStates;
 using Bearded.TD.Utilities;
-using Bearded.Utilities.SpaceTime;
 using FluentAssertions;
 using Xunit;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Tests.Game.Simulation.Buildings.Ruins;
 
@@ -25,6 +25,7 @@ public sealed class AutoRepairTests
         healthEventReceiver = new HealthEventReceiver();
         componentTestBed.AddComponent(healthEventReceiver);
         componentTestBed.AddComponent(new FactionProvider(FactionTestFactory.CreateFaction()));
+        componentTestBed.AddComponent(new Health(new HealthParametersTemplate(1000.HitPoints(), null)));
     }
 
     [Fact]
