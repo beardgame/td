@@ -16,5 +16,11 @@ struct Particle
     public Instant? TimeOfDeath;
     public bool Deleted;
 
-    public bool IsAliveAtTime(Instant time) => !Deleted && (TimeOfDeath == null || time < TimeOfDeath);
+    public bool IsAliveAtTime(Instant time)
+        => !Deleted && (TimeOfDeath == null || time < TimeOfDeath);
+
+    public float AgeFactorAtTime(Instant time)
+        => TimeOfDeath is { } timeOfDeath
+            ? (float) ((time - CreationTime) / (timeOfDeath - CreationTime))
+            : 0;
 }

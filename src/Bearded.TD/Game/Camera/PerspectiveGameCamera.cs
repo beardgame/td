@@ -15,7 +15,7 @@ sealed class PerspectiveGameCamera : GameCamera
     private float verticalFieldOfViewRadius => UserSettings.Instance.Graphics.FOV.Degrees().Radians * 0.5f;
 
     private float cameraHeight;
-    private float nearPlaneDistance => Math.Max(cameraHeight - highestZToRender, 0.1f);
+    private float nearPlaneDistance => Math.Max(cameraHeight - highestZToRender, 0.01f);
     public override float FarPlaneDistance => cameraHeight - lowestZToRender;
 
     protected override void RecalculateMatrices()

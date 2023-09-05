@@ -37,6 +37,8 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
 
         AngularVelocity AngularVelocity { get; }
         float AngularVelocityNoise { get; }
+
+        bool RandomAngularVelocitySign { get; }
     }
 
     private Instant nextSpawn;
@@ -68,12 +70,17 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
         var orientation = Owner.Direction + Parameters.Orientation +
             Angle.FromDegrees(360) * noise(Parameters.OrientationNoise);
 
+        var angularVelocity = Parameters.AngularVelocity * noise(Parameters.AngularVelocityNoise);
+
+        if (Parameters.RandomAngularVelocitySign)
+            angularVelocity *= StaticRandom.Sign();
+
         var particle = new Particle
         {
             Position = Owner.Position,
             Velocity = velocity,
             Direction = orientation,
-            AngularVelocity = Parameters.AngularVelocity * noise(Parameters.AngularVelocityNoise),
+            AngularVelocity = angularVelocity,
             Size = Parameters.Size.NumericValue * noise(Parameters.SizeNoise),
             Color = Parameters.Color ?? Color.White,
             CreationTime = Owner.Game.Time,
@@ -84,6 +91,6 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
     }
 
     private static float noise(float amount)
-        => amount == 0 ? 0 : 1 + StaticRandom.Float(-amount, amount);
+        => amount == 0 ? 1 : 1 + StaticRandom.Float(-amount, amount);
 }
 
