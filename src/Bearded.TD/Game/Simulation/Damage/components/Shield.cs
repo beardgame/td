@@ -4,8 +4,8 @@ using Bearded.TD.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-[Component("armor")]
-sealed class Armor : HitPointsPool<Armor.IParameters>
+[Component("shield")]
+sealed class Shield : HitPointsPool<Shield.IParameters>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -13,25 +13,25 @@ sealed class Armor : HitPointsPool<Armor.IParameters>
         HitPoints MaxHitPoints { get; }
 
         [Modifiable(15)]
-        HitPoints BlockedDamageAmount { get; }
+        HitPoints DamageThreshold { get; }
 
         [Modifiable(0.1)]
         double BlockedDamageEffectiveness { get; }
     }
 
     protected override HitPoints TargetMaxHitPoints => Parameters.MaxHitPoints;
-    public override DamageShell Shell => DamageShell.Armor;
+    public override DamageShell Shell => DamageShell.Shield;
 
-    public Armor(IParameters parameters) : base(parameters, parameters.MaxHitPoints) { }
+    public Shield(IParameters parameters) : base(parameters, parameters.MaxHitPoints) { }
 
     protected override void OnAdded() { }
 
     protected override TypedDamage ModifyDamage(TypedDamage damage)
     {
-        var blockedAmount = SpaceTime1MathF.Min(damage.Amount, Parameters.BlockedDamageAmount);
-        var passedThroughAmount = damage.Amount - blockedAmount;
+        var fullDamageAmount = SpaceTime1MathF.Max(damage.Amount, Parameters.DamageThreshold);
+        var blockedAmount = damage.Amount - fullDamageAmount;
 
         return damage.WithAdjustedAmount(
-            blockedAmount * (float) Parameters.BlockedDamageEffectiveness + passedThroughAmount);
+            blockedAmount * (float) Parameters.BlockedDamageEffectiveness + fullDamageAmount);
     }
 }
