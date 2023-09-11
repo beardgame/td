@@ -1,0 +1,25 @@
+{
+    id: "minor-defence-fire",
+    affinityElement: "fire",
+    socketShape: "minorDefence",
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "health",
+                mode: "multiply",
+                value: 2,
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.tank-enemy",
+                    element: "fire",
+                }
+            }
+        }
+    ],
+}

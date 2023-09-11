@@ -1,0 +1,17 @@
+{
+    id: "minor-defence-lightning",
+    affinityElement: "lightning",
+    socketShape: "minorDefence",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.tank-enemy",
+                    element: "lightning",
+                }
+            }
+        }
+    ],
+}

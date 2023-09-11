@@ -1,0 +1,26 @@
+{
+    id: "minor-defence-kinetic",
+    affinityElement: "force",
+    socketShape: "minorDefence",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "armor",
+                parameters: {
+                    maxHitPoints: 120
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.tank-enemy",
+                    element: "force",
+                }
+            }
+        }
+    ],
+}
