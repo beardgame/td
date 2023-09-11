@@ -11,8 +11,8 @@
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 50 } },
-        { id: "threat", parameters:  { threat: 50 } },
+        { id: "health", parameters: { maxHealth: 30 } },
+        { id: "threat", parameters:  { threat: 30 } },
         { id: "damageBuildings", parameters: { damage: 1, attackRate: 1 } },
 
         { id: "archetype", parameters: { value: "minion" } },
