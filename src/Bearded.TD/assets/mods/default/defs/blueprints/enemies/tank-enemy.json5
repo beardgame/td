@@ -21,7 +21,7 @@
             id: "resistanceContributions",
             parameters: {
                 factors: {
-                    smallDefence: 0.4
+                    minorDefence: 0.3
                 }
             }
         },
