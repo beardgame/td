@@ -2,7 +2,7 @@ namespace Bearded.TD.Game.Simulation.Model;
 
 enum Element
 {
-    Force,
+    Kinetics,
     Fire,
     Lightning,
     Alchemy,

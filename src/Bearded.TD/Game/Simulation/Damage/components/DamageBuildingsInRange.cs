@@ -72,7 +72,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
                 return;
             }
 
-            var damage = new TypedDamage(Parameters.Damage, DamageType.Force);
+            var damage = new TypedDamage(Parameters.Damage, DamageType.Kinetic);
             var hit = getHit(neighbor);
 
             if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, hit))

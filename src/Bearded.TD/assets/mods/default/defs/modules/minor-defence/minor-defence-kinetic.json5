@@ -1,6 +1,6 @@
 {
     id: "minor-defence-kinetic",
-    affinityElement: "force",
+    affinityElement: "kinetics",
     socketShape: "minorDefence",
     effects: [
         {
@@ -18,7 +18,7 @@
                 id: "enemyIcon",
                 parameters: {
                     icon: "enemies.tank-enemy",
-                    element: "force",
+                    element: "kinetics",
                 }
             }
         }

@@ -58,7 +58,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
         var damage = new UntypedDamage(
             (unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
-        var typedDamage = damage.Typed(Parameters.DamageType ?? DamageType.Force);
+        var typedDamage = damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
 
         AreaOfEffect.Damage(
             Owner.Game, DamageExecutor.FromObject(Owner), typedDamage, center, Parameters.Range);

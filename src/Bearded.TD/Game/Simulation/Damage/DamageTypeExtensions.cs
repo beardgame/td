@@ -8,7 +8,7 @@ static class DamageTypeExtensions
 {
     public static Element ToElement(this DamageType damageType) => damageType switch
     {
-        DamageType.Force => Element.Force,
+        DamageType.Kinetic => Element.Kinetics,
         DamageType.Fire => Element.Fire,
         DamageType.Lightning => Element.Lightning,
         DamageType.Energy => Element.Energy,
@@ -20,7 +20,7 @@ static class DamageTypeExtensions
 
     public static DamageType ToDamageType(this Element element) => element switch
     {
-        Element.Force => DamageType.Force,
+        Element.Kinetics => DamageType.Kinetic,
         Element.Fire => DamageType.Fire,
         Element.Lightning => DamageType.Lightning,
         Element.Alchemy => DamageType.Alchemy,

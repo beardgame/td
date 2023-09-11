@@ -1,6 +1,6 @@
 {
     id: "minion-buff-kinetic",
-    affinityElement: "force",
+    affinityElement: "kinetics",
     socketShape: "minionBuff",
     effects: [
         {
@@ -17,7 +17,7 @@
                 id: "enemyIcon",
                 parameters: {
                     icon: "enemies.swarm-enemy",
-                    element: "force",
+                    element: "kinetics",
                 }
             }
         }

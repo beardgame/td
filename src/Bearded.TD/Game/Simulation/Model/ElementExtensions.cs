@@ -11,7 +11,7 @@ static class ElementExtensions
 
     public static Color GetColor(this Element element) => element switch
     {
-        Element.Force => ForceColor,
+        Element.Kinetics => KineticsColor,
         Element.Fire => FireColor,
         Element.Lightning => LightningColor,
         Element.Alchemy => AlchemyColor,

@@ -4,7 +4,7 @@ public enum DamageType
 {
     DivineIntervention, // Used for cheats/debugging only
 
-    Force,
+    Kinetic,
     Fire,
     Lightning,
 
