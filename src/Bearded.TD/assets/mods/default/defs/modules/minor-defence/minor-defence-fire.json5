@@ -16,7 +16,7 @@
             parameters: {
                 id: "shield",
                 parameters: {
-                    maxHitPoints: 40
+                    maxHitPoints: 30
                 }
             }
         },

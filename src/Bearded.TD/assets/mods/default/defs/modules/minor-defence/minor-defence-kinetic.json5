@@ -8,7 +8,7 @@
             parameters: {
                 id: "armor",
                 parameters: {
-                    maxHitPoints: 120
+                    maxHitPoints: 70
                 }
             }
         },
