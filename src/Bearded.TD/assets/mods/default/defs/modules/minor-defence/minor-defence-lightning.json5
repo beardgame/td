@@ -6,6 +6,15 @@
         {
             type: "component",
             parameters: {
+                id: "shield",
+                parameters: {
+                    maxHitPoints: 120
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
                 id: "enemyIcon",
                 parameters: {
                     icon: "enemies.tank-enemy",

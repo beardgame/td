@@ -7,8 +7,17 @@
             type: "modification",
             parameters: {
                 attributeType: "health",
-                mode: "multiply",
-                value: 2,
+                mode: "fractionOfBase",
+                value: 0.75,
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "shield",
+                parameters: {
+                    maxHitPoints: 40
+                }
             }
         },
         {
