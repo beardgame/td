@@ -61,9 +61,7 @@ static partial class Constants
             public static readonly TimeSpan? FirstDownTimeDuration = null;
             public static readonly TimeSpan DownTimeDuration = 30.S();
 
-            public static readonly TimeSpan EnemyTrainLength = 20.S();
-            public static readonly TimeSpan MaxTimeBetweenSpawns = 5.S(); // Overrides enemy train length.
-            public static readonly TimeSpan MinTimeBetweenSpawns = 0.3.S();
+            public static readonly TimeSpan TargetSpawnDuration = 20.S(); // excludes breaks between batches
 
             public const double FirstWaveValue = 2000;
             public const double WaveValueErrorFactor = 0.1;
