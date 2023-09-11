@@ -70,7 +70,6 @@ sealed class Health :
         var e = new PreviewTakeDamage(damage);
         Events.Preview(ref e);
         var resistance = e.Resistance ?? Resistance.Zero;
-        Owner.Game.Meta.Logger.Debug?.Log($"resistance: {resistance.NumericValue}");
         return resistance.ApplyToDamage(damage);
     }
 
