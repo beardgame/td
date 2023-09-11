@@ -28,7 +28,7 @@ sealed class Shield : HitPointsPool<Shield.IParameters>
 
     protected override TypedDamage ModifyDamage(TypedDamage damage)
     {
-        var fullDamageAmount = SpaceTime1MathF.Max(damage.Amount, Parameters.DamageThreshold);
+        var fullDamageAmount = SpaceTime1MathF.Min(damage.Amount, Parameters.DamageThreshold);
         var blockedAmount = damage.Amount - fullDamageAmount;
 
         return damage.WithAdjustedAmount(
