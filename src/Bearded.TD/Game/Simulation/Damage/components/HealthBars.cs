@@ -35,7 +35,7 @@ sealed class HealthBars : Component, IListener<DrawComponents>
         base.Activate();
         // TODO: only gathers health bars on activate, so doesn't like dynamic health pools
         //       however, this is only temporary since we're building a unified status surface for game objects soon
-        hitPointsPools = Owner.GetComponents<IHitPointsPool>().OrderBy(p => p.Shell).ToImmutableArray();
+        hitPointsPools = Owner.GetComponents<IHitPointsPool>().OrderByDescending(p => p.Shell).ToImmutableArray();
     }
 
     public override void Update(TimeSpan elapsedTime) {}
