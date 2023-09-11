@@ -39,7 +39,7 @@ static class BuildingFactory
         building.AddComponent(new ElementSystemEntity());
         building.AddComponent(new FactionProvider(faction));
         building.AddComponent(new FootprintPosition());
-        building.AddComponent(new HealthBar());
+        building.AddComponent(new HealthBars());
         building.AddComponent(new HealthEventReceiver());
         building.AddComponent(new IdProvider(id));
         building.AddComponent(new IncompleteBuildingComponent());
