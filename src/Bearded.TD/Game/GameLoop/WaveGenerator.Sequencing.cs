@@ -185,9 +185,11 @@ sealed partial class WaveGenerator
             }
 
             compressibleArchetypes.Remove(leastCompressibleArchetype);
-            compressibleDuration = compressibleArchetypes
-                .Select(a => spawnRates[a] * enemyCountByArchetype[a])
-                .Aggregate((l, r) => l + r);
+            compressibleDuration = compressibleArchetypes.Count == 0
+                ? TimeSpan.Zero
+                : compressibleArchetypes
+                    .Select(a => spawnRates[a] * enemyCountByArchetype[a])
+                    .Aggregate((l, r) => l + r);
         }
 
         totalSpawnDuration = spawnDuration(enemyCountByArchetype, spawnRates);
