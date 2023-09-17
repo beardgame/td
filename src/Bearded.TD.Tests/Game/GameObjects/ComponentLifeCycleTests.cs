@@ -26,6 +26,7 @@ public sealed class ComponentLifeCycleTests
     // Components that won't work in the limited test bed we have.
     private static readonly ImmutableHashSet<Type> nonFunctionalComponents = ImmutableHashSet.Create(
         typeof(ArcRenderer), // Expects a target property to always be present.
+        typeof(Child), // Attempts to instantiate a blueprint on activate
         typeof(Foundation), // Requests hardcoded access to a blueprint.
         typeof(GhostBuildingRenderer), // Requests hardcoded access to a blueprint.
         typeof(HitTargetOnActivate), // Expects a target property to always be present.
