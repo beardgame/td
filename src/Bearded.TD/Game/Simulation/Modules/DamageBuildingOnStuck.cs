@@ -40,7 +40,7 @@ sealed class DamageBuildingOnStuck : Component<DamageBuildingOnStuck.IParameters
             return;
         }
 
-        var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Force);
+        var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
         var incident = (targetBuilding.Position - Owner.Position).NormalizedSafe();
         var impact = new Impact(targetBuilding.Position, -incident, incident);
         var hit = Hit.FromAreaOfEffect(impact);

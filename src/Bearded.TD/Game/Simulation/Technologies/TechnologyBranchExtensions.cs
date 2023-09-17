@@ -8,7 +8,7 @@ static class TechnologyBranchExtensions
 {
     public static Element ToElement(this TechnologyBranch branch) => branch switch
     {
-        TechnologyBranch.Force => Element.Force,
+        TechnologyBranch.Kinetics => Element.Kinetics,
         TechnologyBranch.Fire => Element.Fire,
         TechnologyBranch.Lightning => Element.Lightning,
         TechnologyBranch.Energy => Element.Energy,
@@ -19,7 +19,7 @@ static class TechnologyBranchExtensions
 
     public static TechnologyBranch ToTechnologyBranch(this Element element) => element switch
     {
-        Element.Force => TechnologyBranch.Force,
+        Element.Kinetics => TechnologyBranch.Kinetics,
         Element.Fire => TechnologyBranch.Fire,
         Element.Lightning => TechnologyBranch.Lightning,
         Element.Energy => TechnologyBranch.Energy,

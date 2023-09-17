@@ -15,7 +15,7 @@ sealed class ChapterGenerator
 
     public ChapterGenerator(ImmutableArray<Element> elements, int seed)
     {
-        this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Force) : elements;
+        this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Kinetics) : elements;
         this.seed = seed;
     }
 
@@ -43,7 +43,7 @@ sealed class ChapterGenerator
         if (previousChapter is not { } prevChapter)
         {
             // Always start the first wave with force and a random accent element. After that, everything goes.
-            const Element firstChapterElement = Element.Force;
+            const Element firstChapterElement = Element.Kinetics;
             return new ElementalTheme(firstChapterElement, chooseAccentElement(firstChapterElement, random));
         }
 

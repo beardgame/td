@@ -1,6 +1,6 @@
 {
     id: "explode-on-killed-kinetic",
-    affinityElement: "force",
+    affinityElement: "kinetics",
     socketShape: "explodeOnKilled",
     effects: [
         {
@@ -22,7 +22,7 @@
                 id: "enemyIcon",
                 parameters: {
                     icon: "enemies.volatile-enemy",
-                    element: "force",
+                    element: "kinetics",
                 }
             }
         }

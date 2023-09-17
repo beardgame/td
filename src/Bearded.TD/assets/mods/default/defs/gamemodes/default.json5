@@ -67,11 +67,12 @@
                 targetFaction: "players",
                 chaptersPerGame: 5,
                 wavesPerChapter: 5,
-                elements: [ "force", "fire", "lightning" ],
+                elements: [ "kinetics", "fire", "lightning" ],
                 enemies: [
                     { blueprint: "default.dodgy-enemy", probability: 1, },
                     { blueprint: "default.sprinting-enemy", probability: 1, },
                     { blueprint: "default.suicide-enemy", probability: 1, },
+                    { blueprint: "default.tank-enemy", probability: 1, },
                     { blueprint: "default.volatile-enemy", probability: 1, },
                     { blueprint: "default.swarm-enemy", probability: 1, },
                     { blueprint: "default.resistant-swarm-enemy", probability: 1, },

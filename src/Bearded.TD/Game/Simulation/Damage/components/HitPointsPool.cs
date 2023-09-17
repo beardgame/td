@@ -8,14 +8,15 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 abstract partial class HitPointsPool<T> : Component<T>,
     IDamageReceiver,
+    IHitPointsPool,
     ISyncable
     where T : IParametersTemplate<T>
 {
     public abstract DamageShell Shell { get; }
 
     protected abstract HitPoints TargetMaxHitPoints { get; }
-    protected HitPoints MaxHitPoints { get; private set; }
-    protected HitPoints CurrentHitPoints { get; private set; }
+    public HitPoints MaxHitPoints { get; private set; }
+    public HitPoints CurrentHitPoints { get; private set; }
 
     protected HitPointsPool(T parameters, HitPoints maxHitPoints) : base(parameters)
     {
@@ -92,4 +93,11 @@ abstract partial class HitPointsPool<T> : Component<T>,
             CurrentHitPoints = SpaceTime1MathF.Min(CurrentHitPoints, MaxHitPoints);
         }
     }
+}
+
+interface IHitPointsPool
+{
+    DamageShell Shell { get; }
+    HitPoints MaxHitPoints { get; }
+    HitPoints CurrentHitPoints { get; }
 }

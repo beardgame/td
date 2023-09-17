@@ -1,6 +1,6 @@
 ﻿{
   id: "sprint-on-straights-kinetic",
-  affinityElement: "force",
+  affinityElement: "kinetics",
   socketShape: "sprintOnStraights",
   effects: [
     {
@@ -40,7 +40,7 @@
         id: "enemyIcon",
         parameters: {
           icon: "enemies.sprinting-enemy",
-          element: "force",
+          element: "kinetics",
         }
       }
     },

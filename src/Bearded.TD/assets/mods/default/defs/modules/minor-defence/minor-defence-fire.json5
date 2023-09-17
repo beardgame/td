@@ -1,0 +1,34 @@
+{
+    id: "minor-defence-fire",
+    affinityElement: "fire",
+    socketShape: "minorDefence",
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "health",
+                mode: "fractionOfBase",
+                value: 0.75,
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "shield",
+                parameters: {
+                    maxHitPoints: 30
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.tank-enemy",
+                    element: "fire",
+                }
+            }
+        }
+    ],
+}

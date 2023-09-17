@@ -36,8 +36,7 @@ readonly record struct HitPoints(float NumericValue) : IMeasure1F
     public static HitPoints operator *(HitPoints amount, float scalar) =>
         new(scalar * amount.NumericValue);
 
-    public static double operator /(HitPoints left, HitPoints right) =>
-        (double) left.NumericValue / right.NumericValue;
+    public static float operator /(HitPoints left, HitPoints right) => left.NumericValue / right.NumericValue;
 
     public HitPoints Discrete() => new((int) NumericValue);
 }

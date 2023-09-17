@@ -9,6 +9,11 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "⬆"
+    groups:
+      # Always update all OpenTK dependencies together to keep them in sync
+      opentk:
+        patterns:
+          - "OpenTK*"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the

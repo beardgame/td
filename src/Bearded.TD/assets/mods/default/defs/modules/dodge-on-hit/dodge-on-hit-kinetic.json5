@@ -1,6 +1,6 @@
 ﻿{
   id: "dodge-on-hit-kinetic",
-  affinityElement: "force",
+  affinityElement: "kinetics",
   socketShape: "dodgeOnHit",
   effects: [
     {
@@ -20,7 +20,7 @@
         id: "enemyIcon",
         parameters: {
           icon: "enemies.dodgy-enemy",
-          element: "force",
+          element: "kinetics",
         }
       }
     }

@@ -1,27 +1,27 @@
 {
-    id: "swarm-enemy",
+    id: "tank-enemy",
     components: [
-        { id: "name", parameters: { name: "Swarm enemy" } },
+        { id: "name", parameters: { name: "Tank enemy" } },
         {
             id: "sprite",
             parameters: {
                 sprite: "default.particle.orb-soft",
-                color: "cff4d1",
-                size: 0.2,
+                color: "39d140",
+                size: 0.4,
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 30 } },
-        { id: "threat", parameters:  { threat: 30 } },
-        { id: "damageBuildings", parameters: { damage: 1, attackRate: 1 } },
+        { id: "health", parameters: { maxHealth: 120 } },
+        { id: "threat", parameters:  { threat: 180 } },
+        { id: "damageBuildings", parameters: { damage: 6, attackRate: 0.5 } },
 
-        { id: "archetype", parameters: { value: "minion" } },
-        { id: "socket", parameters: { shape: "minionBuff" } },
+        { id: "archetype", parameters: { value: "elite" } },
+        { id: "socket", parameters: { shape: "minorDefence" } },
         {
             id: "resistanceContributions",
             parameters: {
                 factors: {
-                    minionBuff: 0.1
+                    minorDefence: 0.3
                 }
             }
         },

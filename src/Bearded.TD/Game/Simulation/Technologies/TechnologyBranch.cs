@@ -2,7 +2,7 @@ namespace Bearded.TD.Game.Simulation.Technologies;
 
 enum TechnologyBranch
 {
-    Force,
+    Kinetics,
     Fire,
     Lightning,
     Alchemy,

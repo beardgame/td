@@ -1,14 +1,15 @@
 {
-    id: "minion-buff-kinetic",
+    id: "minor-defence-kinetic",
     affinityElement: "kinetics",
-    socketShape: "minionBuff",
+    socketShape: "minorDefence",
     effects: [
         {
-            type: "modification",
+            type: "component",
             parameters: {
-                attributeType: "health",
-                mode: "multiply",
-                value: 1.4,
+                id: "armor",
+                parameters: {
+                    maxHitPoints: 70
+                }
             }
         },
         {
@@ -16,7 +17,7 @@
             parameters: {
                 id: "enemyIcon",
                 parameters: {
-                    icon: "enemies.swarm-enemy",
+                    icon: "enemies.tank-enemy",
                     element: "kinetics",
                 }
             }

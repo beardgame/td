@@ -1,6 +1,6 @@
 {
     id: "explode-on-core-arrival-kinetic",
-    affinityElement: "force",
+    affinityElement: "kinetics",
     socketShape: "explodeOnCoreArrival",
     effects: [
         {
@@ -9,7 +9,7 @@
                 id: "damageBuildingOnStuck",
                 parameters: {
                     damage: 48,
-                    damageType: "force",
+                    damageType: "kinetic",
                     spawnObject: "default.medium-shockwave",
                 }
             }
@@ -26,7 +26,7 @@
                 id: "enemyIcon",
                 parameters: {
                     icon: "enemies.suicide-enemy",
-                    element: "force",
+                    element: "kinetics",
                 }
             }
         }

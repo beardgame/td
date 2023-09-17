@@ -44,7 +44,7 @@ static class EnemyFactory
         obj.AddComponent(new DamageSource());
         obj.AddComponent(new ElementSystemEntity());
         obj.AddComponent(new EnemyLife());
-        obj.AddComponent(new HealthBar());
+        obj.AddComponent(new HealthBars());
         obj.AddComponent(new HealthEventReceiver());
         obj.AddComponent(new Killable());
         obj.AddComponent(new EventReceiver<TakeHit>());

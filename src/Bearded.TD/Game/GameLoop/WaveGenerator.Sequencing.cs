@@ -4,7 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.Linq;
+using static Bearded.TD.Constants.Game.WaveGeneration;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.GameLoop;
@@ -14,6 +17,22 @@ sealed partial class WaveGenerator
     private const int minGroupSize = 7;
     private const int maxGroupSize = minGroupSize * 3;
     private const double targetDensity = 0.6;
+    private static readonly ImmutableDictionary<Archetype, TimeSpan> targetSpawnRates = ImmutableDictionary.CreateRange(
+        new Dictionary<Archetype, TimeSpan>
+        {
+            { Archetype.Minion, 0.2.S() },
+            { Archetype.Elite, 1.S() },
+            { Archetype.Champion, 2.S() },
+            { Archetype.Boss, 4.S() }
+        });
+    private static readonly ImmutableDictionary<Archetype, TimeSpan> maxSpawnRates = ImmutableDictionary.CreateRange(
+        new Dictionary<Archetype, TimeSpan>
+        {
+            { Archetype.Minion, 0.1.S() },
+            { Archetype.Elite, 0.3.S() },
+            { Archetype.Champion, 0.5.S() },
+            { Archetype.Boss, 0.5.S() }
+        });
 
     private EnemySpawnScript generateSpawnScript(
         RoutineComposition composition, IEnumerable<SpawnLocation> spawnLocations, Random random)
@@ -28,8 +47,7 @@ sealed partial class WaveGenerator
         var allBatchesPerLocation = composition.Batches
             .SelectMany(comp => generateBatchesPerLocation(comp, spawnLocationCount, random))
             .ToImmutableArray();
-        var routineDuration = determineRoutineDuration(allBatchesPerLocation);
-        var spawnTimes = new EnemySpawnTimes(spawnEventsBatchedInDuration(allBatchesPerLocation, routineDuration));
+        var spawnTimes = new EnemySpawnTimes(spawnEventsBatchedInDuration(allBatchesPerLocation));
         return new EnemySpawnScript(
             spawnTimes.SpawnTimes.SelectMany(_ => spawnLocationArray,
                     (time, location) => new EnemySpawnScript.EnemySpawnEvent(location, time.TimeOffset, time.EnemyForm))
@@ -88,81 +106,99 @@ sealed partial class WaveGenerator
 
     private static BatchSequence generateBatchSequence(IEnumerable<EnemyForm> forms, Random random)
     {
-        var immutableForms = forms.Shuffled(random).ToImmutableArray();
+        var immutableForms = forms.Shuffled(random)
+            .Select(form => new EnemyFormWithArchetype(form, form.Blueprint.GetArchetype()))
+            .ToImmutableArray();
         return new BatchSequence(immutableForms);
     }
 
-    private record struct BatchSequence(ImmutableArray<EnemyForm> Forms);
+    private record struct BatchSequence(ImmutableArray<EnemyFormWithArchetype> Forms);
 
-    private static TimeSpan determineRoutineDuration(IEnumerable<BatchSequence> batchSequences)
-    {
-        var spawnCount = batchSequences.Sum(s => s.Forms.Length);
-        return TimeSpan.Max(
-            TimeSpan.Min(
-                Constants.Game.WaveGeneration.EnemyTrainLength,
-                Constants.Game.WaveGeneration.MaxTimeBetweenSpawns * (spawnCount - 1)),
-            Constants.Game.WaveGeneration.MinTimeBetweenSpawns * (spawnCount - 1));
-    }
+    // We access the archetype more than once, so we cache it.
+    private record struct EnemyFormWithArchetype(EnemyForm Form, Archetype Archetype);
 
     private static ImmutableArray<EnemySpawnTimes.EnemySpawnTime> spawnEventsBatchedInDuration(
-        IList<BatchSequence> batchSequences, TimeSpan duration)
+        IList<BatchSequence> batchSequences)
     {
-        switch (batchSequences.Count)
+        var enemyCountByArchetype = batchSequences.SelectMany(s => s.Forms)
+            .GroupBy(f => f.Archetype)
+            .ToImmutableDictionary(group => group.Key, group => group.Count());
+        var spawnRates = findOptimizedSpawnRates(enemyCountByArchetype, out var totalSpawnDuration);
+        var totalTimeBetweenBatches = (1 - targetDensity) / targetDensity * totalSpawnDuration;
+        var timeBetweenBatchPairs = batchSequences.Count <= 1
+            ? TimeSpan.Zero
+            : totalTimeBetweenBatches / (batchSequences.Count - 1);
+
+        var result = ImmutableArray.CreateBuilder<EnemySpawnTimes.EnemySpawnTime>();
+        var offset = TimeSpan.Zero;
+
+        foreach (var batchSequence in batchSequences)
         {
-            case < 1:
-                throw new InvalidOperationException();
-            case 1:
-                return spawnEventsSpreadUniformlyInDuration(batchSequences[0].Forms, TimeSpan.Zero, duration)
-                    .ToImmutableArray();
-        }
-
-        var totalEnemies = batchSequences.Sum(s => s.Forms.Length);
-
-        var totalTimeForEnemies = duration * targetDensity;
-        var timePerEnemy = totalTimeForEnemies / (totalEnemies - batchSequences.Count);
-        var individualBreakDuration = duration * (1 - targetDensity) / (batchSequences.Count - 1);
-        var result = ImmutableArray.CreateBuilder<EnemySpawnTimes.EnemySpawnTime>(totalEnemies);
-        var idx = 0;
-
-        for (var i = 0; i < batchSequences.Count; i++)
-        {
-            var batchOffset = i == 0 ? TimeSpan.Zero : result[idx - 1].TimeOffset + individualBreakDuration;
-            var batchDuration = timePerEnemy * (batchSequences[i].Forms.Length - 1);
-
-            foreach (var spawnEvent in spawnEventsSpreadUniformlyInDuration(
-                         batchSequences[i].Forms, batchOffset, batchDuration))
+            foreach (var (form, archetype) in batchSequence.Forms)
             {
-                result.Add(spawnEvent);
-                idx++;
+                var spawnRate = spawnRates[archetype];
+                result.Add(new EnemySpawnTimes.EnemySpawnTime(offset + 0.5f * spawnRate, form));
+                offset += spawnRate;
             }
+
+            offset += timeBetweenBatchPairs;
         }
 
-        return result.MoveToImmutable();
+        return result.ToImmutable();
     }
 
-    private static IEnumerable<EnemySpawnTimes.EnemySpawnTime> spawnEventsSpreadUniformlyInDuration(
-        IReadOnlyList<EnemyForm> forms,
-        TimeSpan additionalOffset,
-        TimeSpan duration)
+    private static ImmutableDictionary<Archetype, TimeSpan> findOptimizedSpawnRates(
+        IDictionary<Archetype, int> enemyCountByArchetype, out TimeSpan totalSpawnDuration)
     {
-        return offsetsSpreadUniformlyInDuration(forms.Count, additionalOffset, duration)
-            .Select((offset, i) => new EnemySpawnTimes.EnemySpawnTime(offset, forms[i]));
+        var totalSpawnDurationWithoutAdjustments = spawnDuration(enemyCountByArchetype, targetSpawnRates);
+        if (totalSpawnDurationWithoutAdjustments <= TargetSpawnDuration)
+        {
+            totalSpawnDuration = totalSpawnDurationWithoutAdjustments;
+            return targetSpawnRates;
+        }
+
+        var spawnRates = new Dictionary<Archetype, TimeSpan>(targetSpawnRates);
+        var compressibleDuration = totalSpawnDurationWithoutAdjustments;
+        var compressibleArchetypes = new List<Archetype>(enemyCountByArchetype.Keys);
+
+        while (compressibleArchetypes.Count > 0)
+        {
+            var leastCompressibleArchetype =
+                Enumerable.MinBy(compressibleArchetypes, a => spawnRates[a] / maxSpawnRates[a]);
+
+            var targetCompressionFactor = compressibleDuration / TargetSpawnDuration;
+            var availableCompressionFactor =
+                spawnRates[leastCompressibleArchetype] / maxSpawnRates[leastCompressibleArchetype];
+
+            if (targetCompressionFactor <= availableCompressionFactor)
+            {
+                foreach (var a in compressibleArchetypes)
+                {
+                    spawnRates[a] /= targetCompressionFactor;
+                }
+                break;
+            }
+
+            foreach (var a in compressibleArchetypes)
+            {
+                spawnRates[a] /= availableCompressionFactor;
+            }
+
+            compressibleArchetypes.Remove(leastCompressibleArchetype);
+            compressibleDuration = compressibleArchetypes.Count == 0
+                ? TimeSpan.Zero
+                : compressibleArchetypes
+                    .Select(a => spawnRates[a] * enemyCountByArchetype[a])
+                    .Aggregate((l, r) => l + r);
+        }
+
+        totalSpawnDuration = spawnDuration(enemyCountByArchetype, spawnRates);
+        return ImmutableDictionary.CreateRange(spawnRates);
     }
 
-    private static IEnumerable<TimeSpan> offsetsSpreadUniformlyInDuration(
-        int count, TimeSpan additionalOffset, TimeSpan duration)
+    private static TimeSpan spawnDuration(
+        IDictionary<Archetype, int> enemyCountByArchetype, IDictionary<Archetype, TimeSpan> spawnRates)
     {
-        switch (count)
-        {
-            case < 1:
-                throw new ArgumentException("Count must be positive", nameof(count));
-            case 1:
-                return ImmutableArray.Create(additionalOffset);
-            default:
-            {
-                var timeBetweenOffsets = duration / (count - 1);
-                return Enumerable.Range(0, count).Select(i => additionalOffset + i * timeBetweenOffsets);
-            }
-        }
+        return enemyCountByArchetype.Select(kvp => spawnRates[kvp.Key] * kvp.Value).Aggregate((l, r) => l + r);
     }
 }
