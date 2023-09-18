@@ -2,9 +2,12 @@
   id: "enemyHit",
   components: [
     { id: "particles" },
+    { id: "particlesCollideWithLevel", parameters : {
+      collisionNormalFactor: 0.3,
+      collisionTangentFactor: 0.3
+    }},
     { id: "particlesMoveLinear" },
     { id: "particlesGravity", parameters: { factor: 1 } },
-    { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
 
     { id: "particlesDraw", parameters: {
       sprite: "default.particle.circle-soft",
