@@ -20,6 +20,9 @@
       angularVelocity: 90,
       angularVelocityNoise: 1,
       randomAngularVelocitySign: true,
+      startDisabled: true,
+      startOnParent: ["objectRuined", "overheated"],
+      stopOnParent: ["objectRepaired", "stopOverheated"],
     } },
 
     { id: "particlesKeyFrames", parameters: {

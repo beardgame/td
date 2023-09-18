@@ -1,5 +1,8 @@
-﻿using Bearded.Graphics;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -9,7 +12,7 @@ using static Bearded.TD.Utilities.Vectors;
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
 [Component("particlesSpawnContinuously")]
-sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
+sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>, IListener<ObjectDeleting>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -39,16 +42,93 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
         float AngularVelocityNoise { get; }
 
         bool RandomAngularVelocitySign { get; }
+        bool StartDisabled { get; }
+
+        ImmutableArray<ITrigger>? StartOn { get; }
+        ImmutableArray<ITrigger>? StopOn { get; }
+        ImmutableArray<ITrigger>? StartOnParent { get; }
+        ImmutableArray<ITrigger>? StopOnParent { get; }
     }
 
     private Instant nextSpawn;
+    private bool disabled;
+    private TriggerListener? startOnParentListener;
+    private TriggerListener? stopOnParentListener;
+    private readonly List<ITriggerSubscription> triggerSubscriptions = new();
 
     public SpawnContinuously(IParameters parameters) : base(parameters)
     {
     }
 
+    public override void Activate()
+    {
+        base.Activate();
+
+        disabled = Parameters.StartDisabled;
+
+        if(Parameters.StartOn is { } startOn)
+            foreach (var trigger in startOn)
+                triggerSubscriptions.Add(trigger.Subscribe(Events, turnOn));
+        if (Parameters.StopOn is { } stopOn)
+            foreach (var trigger in stopOn)
+                triggerSubscriptions.Add(trigger.Subscribe(Events, turnOff));
+
+        if (Owner.Parent is { } parent)
+        {
+            if (Parameters.StartOnParent is { Length: > 0 } startOnParent)
+            {
+                startOnParentListener = new TriggerListener(startOnParent, turnOn);
+                parent.AddComponent(startOnParentListener);
+            }
+            if (Parameters.StopOnParent is { Length: > 0 } stopOnParent)
+            {
+                stopOnParentListener = new TriggerListener(stopOnParent, turnOff);
+                parent.AddComponent(stopOnParentListener);
+            }
+        }
+    }
+
+    public override void OnRemoved()
+    {
+        cleanUp();
+    }
+
+    public void HandleEvent(ObjectDeleting _)
+    {
+        cleanUp();
+    }
+
+    private void cleanUp()
+    {
+        foreach (var subscription in triggerSubscriptions)
+        {
+            subscription.Unsubscribe(Events);
+        }
+
+        if (Owner.Parent is { } parent)
+        {
+            if (startOnParentListener is { } startOnParent)
+                parent.RemoveComponent(startOnParent);
+            if (stopOnParentListener is { } stopOnParent)
+                parent.RemoveComponent(stopOnParent);
+        }
+    }
+
+    private void turnOff()
+    {
+        disabled = true;
+    }
+
+    private void turnOn()
+    {
+        disabled = false;
+    }
+
     public override void Update(TimeSpan elapsedTime)
     {
+        if (disabled)
+            return;
+
         if (nextSpawn <= Owner.Game.Time)
         {
             spawn();
