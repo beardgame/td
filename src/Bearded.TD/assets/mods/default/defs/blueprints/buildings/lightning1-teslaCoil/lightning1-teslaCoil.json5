@@ -47,6 +47,8 @@
         },
         { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
         { id: "spawnObjectOnMaterialized", parameters: { object: "building-materialized-effect"} },
-        { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }}
+        { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
+
+        { id: "child", parameters: { object: "building-disabled-smoke" } }
     ]
 }
