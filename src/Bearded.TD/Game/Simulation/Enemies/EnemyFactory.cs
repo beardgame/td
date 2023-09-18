@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Physics;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
@@ -44,9 +45,9 @@ static class EnemyFactory
         obj.AddComponent(new DamageSource());
         obj.AddComponent(new ElementSystemEntity());
         obj.AddComponent(new EnemyLife());
-        obj.AddComponent(new HealthBars());
         obj.AddComponent(new HealthEventReceiver());
         obj.AddComponent(new Killable());
+        obj.AddComponent(new StatusDisplay());
         obj.AddComponent(new EventReceiver<TakeHit>());
 
         obj.AddComponent(new Syncer());

@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.GameObjects;
+﻿using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
 
@@ -21,6 +22,7 @@ sealed class Shield : HitPointsPool<Shield.IParameters>
 
     protected override HitPoints TargetMaxHitPoints => Parameters.MaxHitPoints;
     public override DamageShell Shell => DamageShell.Shield;
+    protected override Color Color => Constants.Game.GameUI.ShieldColor;
 
     public Shield(IParameters parameters) : base(parameters, parameters.MaxHitPoints) { }
 

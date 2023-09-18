@@ -1,4 +1,6 @@
-﻿using Bearded.TD.Game.Simulation.GameObjects;
+﻿using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
@@ -13,6 +15,7 @@ abstract partial class HitPointsPool<T> : Component<T>,
     where T : IParametersTemplate<T>
 {
     public abstract DamageShell Shell { get; }
+    protected abstract Color Color { get; }
 
     protected abstract HitPoints TargetMaxHitPoints { get; }
     public HitPoints MaxHitPoints { get; private set; }
@@ -22,6 +25,17 @@ abstract partial class HitPointsPool<T> : Component<T>,
     {
         MaxHitPoints = maxHitPoints;
         CurrentHitPoints = maxHitPoints;
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        if (!Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
+        {
+            return;
+        }
+
+        statusDisplay.AddHitPointsBar(new HitPointsBar(this, Shell, Color));
     }
 
     public IntermediateDamageResult ApplyDamage(TypedDamage damage, IDamageSource? source)
@@ -97,7 +111,6 @@ abstract partial class HitPointsPool<T> : Component<T>,
 
 interface IHitPointsPool
 {
-    DamageShell Shell { get; }
     HitPoints MaxHitPoints { get; }
     HitPoints CurrentHitPoints { get; }
 }

@@ -1,3 +1,4 @@
+using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
@@ -34,6 +35,7 @@ sealed class Health :
 
     protected override HitPoints TargetMaxHitPoints => Parameters.MaxHealth;
     public override DamageShell Shell => DamageShell.Health;
+    protected override Color Color => Constants.Game.GameUI.HealthColor;
 
     public Health(IParameters parameters) : base(parameters, parameters.MaxHealth)
     {

@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -39,7 +40,6 @@ static class BuildingFactory
         building.AddComponent(new ElementSystemEntity());
         building.AddComponent(new FactionProvider(faction));
         building.AddComponent(new FootprintPosition());
-        building.AddComponent(new HealthBars());
         building.AddComponent(new HealthEventReceiver());
         building.AddComponent(new IdProvider(id));
         building.AddComponent(new IncompleteBuildingComponent());
@@ -48,6 +48,7 @@ static class BuildingFactory
         building.AddComponent(new Selectable());
         building.AddComponent(new StaticFootprintTileNotifier(footprint));
         building.AddComponent(new StatisticCollector());
+        building.AddComponent(new StatusDisplay(new BuildingStatusDisplayCondition()));
         building.AddComponent(new TemperatureProperty());
         building.AddComponent(new TemperatureBar()); // not alphabetic, saves an event
         building.AddComponent(new TileBasedVisibility());
@@ -72,5 +73,17 @@ static class BuildingFactory
         tileNotifier = new DynamicFootprintTileNotifier();
         ghost.AddComponent(tileNotifier);
         return ghost;
+    }
+
+    private sealed class BuildingStatusDisplayCondition : IStatusDisplayCondition
+    {
+        private IBuildingStateProvider? stateProvider;
+
+        public bool ShouldDraw => stateProvider?.State.IsCompleted ?? true;
+
+        public void Activate(GameObject owner)
+        {
+            owner.TryGetSingleComponent(out stateProvider);
+        }
     }
 }
