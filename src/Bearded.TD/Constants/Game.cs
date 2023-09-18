@@ -53,7 +53,27 @@ static partial class Constants
             public static readonly Color WaterColor = Color.LightBlue;
             public static readonly Color EnergyColor = Color.Yellow;
 
+            public static readonly Color HealthColor = Color.Red;
+            public static readonly Color ArmorColor = Color.SpringGreen;
+            public static readonly Color ShieldColor = Color.DeepSkyBlue;
+
             public static readonly Color EnemyIndicatorColor = Color.Orange;
+
+            public static class StatusDisplay
+            {
+                public static readonly Color HitPointsBackgroundColor = Color.DarkGray;
+
+                // Note: dimensions are in game space, i.e. expressed in hex distance
+                public const float PrimaryHitPointsBarHeight = 0.1f;
+                public const float SecondaryHitPointsBarHeight = 0.5f * PrimaryHitPointsBarHeight;
+
+                public const float ElementMargin = 0.01f;
+                public const float Width = 1;
+
+                // Offset is measured between the centre of the game object to the centre of the primary HP bar
+                public static readonly Difference2 Offset = new(0, -0.5f);
+                public static readonly Unit Z = Unit.One;
+            }
         }
 
         public static class WaveGeneration
