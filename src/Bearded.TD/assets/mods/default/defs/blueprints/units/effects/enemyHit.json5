@@ -1,44 +1,39 @@
 {
   id: "enemyHit",
   components: [
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 12,
-        sprite: "default.particle.circle-soft",
-        color: "BB992222",
-        drawGroupOrderKey: -10,
-        size: 0.1,
-        finalSize: 0.2,
-        lifetime: 4,
-        randomVelocity: 3,
-        incidentVelocity: 5,
-        collideWithLevel: true,
-        collisionNormalFactor: 0.3,
-        collisionTangentFactor: 0.3,
-        offset: [0, 0, 0.2],
-        drawMode: "sprite"
+    { id: "particles" },
+    { id: "particlesMoveLinear" },
+    { id: "particlesGravity", parameters: { factor: 1 } },
+    { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
+
+    { id: "particlesDraw", parameters: {
+      sprite: "default.particle.circle-soft",
+      drawMode: "sprite",
+      drawGroupOrderKey: -10
+    } },
+
+    { id: "particlesSpawnOnCreate", parameters:  {
+      count: 12,
+      sprite: "default.particle.circle-soft",
+      color: "BB992222",
+      lifeTime: 4,
+      lifeTimeNoise: 0.2,
+      randomVelocity: 3,
+      randomVelocityNoise: 0.3,
+      incidentVelocity: 5,
+    }},
+
+    { id: "particlesKeyFrames", parameters: {
+      scaleToParticleLifeTime: true,
+      animation: {
+        keyFrames: [
+          { duration: 0.0, size: 0.1, color: "BB992222" },
+          { duration: 0.8, size: 0.2, color: "BB992222" },
+          { duration: 0.2, size: 0.2, color: "00000000" },
+        ],
       }
-    },
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 4,
-        sprite: "default.particle.circle-soft",
-        color: "BB882222",
-        drawGroupOrderKey: -10,
-        size: 0.05,
-        finalSize: 0.1,
-        lifetime: 3,
-        randomVelocity: 5,
-        incidentVelocity: 8,
-        collideWithLevel: true,
-        collisionNormalFactor: 0.5,
-        collisionTangentFactor: 0.5,
-        offset: [0, 0, 0.2],
-        drawMode: "sprite"
-      }
-    },
+    } },
+
     {
       id: "deleteAfter",
       parameters: {
