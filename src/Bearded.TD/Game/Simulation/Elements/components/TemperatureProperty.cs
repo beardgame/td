@@ -8,6 +8,11 @@ using static Bearded.TD.Constants.Game.Elements;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
+[Trigger("overheated")]
+record struct Overheated : IComponentEvent;
+[Trigger("stopOverheated")]
+record struct StopOverheated : IComponentEvent;
+
 [Component("temperature")]
 sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatureEventReceiver
 {
@@ -74,6 +79,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
         if (breakage is { } receipt && Value <= MaxNormalTemperature)
         {
             receipt.Repair();
+            Events.Send(new StopOverheated());
             breakage = null;
         }
 
@@ -82,6 +88,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
+            Events.Send(new Overheated());
         }
     }
 
