@@ -15,6 +15,7 @@ using Bearded.TD.Game.Simulation.Sounds;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Testing.Components;
+using Bearded.Utilities.Linq;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -60,10 +61,14 @@ public sealed class ComponentLifeCycleTests
 
     public static IEnumerable<object[]> GetAllComponents()
     {
+        return getAllComponentTypes().Select(type => new []{ type });
+    }
+
+    private static IEnumerable<Type> getAllComponentTypes()
+    {
         return AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes().Where(t => t.IsAssignableTo(typeof(IComponent))))
-            .Where(type => type.IsClass && !type.IsAbstract)
-            .Select(type => new []{ type });
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(isInstantiableComponent);
     }
 
     private readonly ITestOutputHelper output;
@@ -79,7 +84,7 @@ public sealed class ComponentLifeCycleTests
     {
         if (nonFunctionalComponents.Contains(type) ||
             assetAccessingBlueprints.Contains(type) ||
-            makeInstance(type) is not { } component)
+            makeInstance(type, out var dependencies) is not { } component)
         {
             return;
         }
@@ -87,6 +92,10 @@ public sealed class ComponentLifeCycleTests
         var componentTestBed = ComponentTestBed.CreateOrphaned();
 
         // Lifecycle
+        foreach (var dep in dependencies)
+        {
+            componentTestBed.AddComponent(dep);
+        }
         componentTestBed.AddComponent(component);
         componentTestBed.AddToGameState();
         if (!permanentComponents.Contains(type)) componentTestBed.RemoveComponent(component);
@@ -96,7 +105,7 @@ public sealed class ComponentLifeCycleTests
     [MemberData(nameof(GetAllComponents))]
     public void LifeCycleWithoutActivateThrowsNoErrors(Type type)
     {
-        if (nonFunctionalComponents.Contains(type) || makeInstance(type) is not { } component)
+        if (nonFunctionalComponents.Contains(type) || makeInstance(type, out _) is not { } component)
         {
             return;
         }
@@ -108,8 +117,10 @@ public sealed class ComponentLifeCycleTests
         if (!permanentComponents.Contains(type)) componentTestBed.RemoveComponent(component);
     }
 
-    private IComponent? makeInstance(Type type)
+    private IComponent? makeInstance(Type type, out IEnumerable<IComponent> dependencies)
     {
+        dependencies = ImmutableArray<IComponent>.Empty;
+
         if (type.ContainsGenericParameters)
         {
             output.WriteLine($"WARN: {type} is generic. Skipping.");
@@ -123,6 +134,23 @@ public sealed class ComponentLifeCycleTests
             output.WriteLine($"WARN: {type} has more than one constructor. Skipping.");
             return null;
         }
+
+        var injectedTypes = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(t => t.GetCustomAttribute<InjectAttribute>() is not null)
+            .Select(f => f.FieldType);
+        dependencies = injectedTypes
+            .Select(resolveDependency)
+            .SelectMany(t =>
+            {
+                if (t == null)
+                {
+                    return Enumerable.Empty<IComponent>();
+                }
+
+                var c = makeInstance(t, out var transitiveDependencies);
+                return c.Yield().Concat(transitiveDependencies);
+            })
+            .ToImmutableArray();
 
         var constructor = constructors[0];
         var parameters = constructor.GetParameters();
@@ -155,6 +183,18 @@ public sealed class ComponentLifeCycleTests
 
         output.WriteLine($"WARN: could not instantiate {type}. Skipping.");
         return null;
+    }
+
+    private static Type? resolveDependency(Type type)
+    {
+        return isInstantiableComponent(type)
+            ? type
+            : getAllComponentTypes().FirstOrDefault(t => t.IsAssignableTo(type));
+    }
+
+    private static bool isInstantiableComponent(Type type)
+    {
+        return type.IsAssignableTo(typeof(IComponent)) && type.IsClass && !type.IsAbstract;
     }
 
     private static object mockedParameters(Type type)

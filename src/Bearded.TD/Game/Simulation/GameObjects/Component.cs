@@ -28,7 +28,12 @@ abstract class Component<TParameters> : IComponent
 
     protected abstract void OnAdded();
 
-    public virtual void Activate() {}
+    public virtual void Activate()
+    {
+        InjectDependencies();
+    }
+
+    protected virtual void InjectDependencies() { }
 
     public virtual void OnRemoved() {}
 
@@ -55,7 +60,12 @@ abstract class Component : IComponent
 
     protected abstract void OnAdded();
 
-    public virtual void Activate() {}
+    public virtual void Activate()
+    {
+        InjectDependencies();
+    }
+
+    protected virtual void InjectDependencies() { }
 
     public virtual void OnRemoved() {}
 
