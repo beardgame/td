@@ -21,6 +21,8 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
         float CollisionNormalFactor { get; }
         [Modifiable(1)]
         float CollisionTangentFactor { get; }
+        [Modifiable(1)]
+        float CollisionAngularFactor { get; }
     }
 
     public CollideWithLevel(IParameters parameters) : base(parameters)
@@ -39,6 +41,7 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
                 level,
                 ref particle.Position,
                 ref particle.Velocity,
+                ref particle.AngularVelocity,
                 elapsedTime);
         }
     }
@@ -48,6 +51,7 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
         Level level,
         ref Position3 p,
         ref Velocity3 v,
+        ref AngularVelocity av,
         TimeSpan elapsedTime)
     {
         var step = v * elapsedTime;
@@ -79,7 +83,7 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
             var floorCollisionFactor = (tileHeight - p.Z) / step.Z;
             if (floorCollisionFactor > previousRayFactor && floorCollisionFactor <= rayFactor)
             {
-                reflect(ref p, ref v, elapsedTime, floorCollisionFactor, Vector3.UnitZ);
+                reflect(ref p, ref v, ref av, elapsedTime, floorCollisionFactor, Vector3.UnitZ);
                 return;
             }
 
@@ -90,7 +94,7 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
 
             if (heightAtTileBorder < tileHeight)
             {
-                reflect(ref p, ref v, elapsedTime, rayFactor, (-rayCaster.LastStep!.Value.Vector()).WithZ());
+                reflect(ref p, ref v, ref av, elapsedTime, rayFactor, (-rayCaster.LastStep!.Value.Vector()).WithZ());
                 return;
             }
 
@@ -98,7 +102,8 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
         }
     }
 
-    private void reflect(ref Position3 p, ref Velocity3 v, TimeSpan elapsedTime, float factor, Vector3 normal)
+    private void reflect(ref Position3 p, ref Velocity3 v, ref AngularVelocity av, TimeSpan elapsedTime,
+        float factor, Vector3 normal)
     {
         normal = normal.NormalizedSafe();
 
@@ -107,7 +112,7 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
         var normalVelocityOut = new Velocity3(normal * dotWithVelocityOutMagnitude);
         var tangentVelocity = v + normalVelocityOut;
 
-        var velocityOut = normalVelocityOut * Parameters.CollisionNormalFactor + tangentVelocity * Parameters.CollisionNormalFactor;
+        var velocityOut = normalVelocityOut * Parameters.CollisionNormalFactor + tangentVelocity * Parameters.CollisionTangentFactor;
 
         var stepToCollisionPoint = v * elapsedTime * factor;
         var stepBackwardsFromCollisionPoint = velocityOut * elapsedTime;
@@ -115,6 +120,8 @@ sealed class CollideWithLevel : ParticleUpdater<CollideWithLevel.IParameters>
 
         p = p + bias + stepToCollisionPoint - stepBackwardsFromCollisionPoint;
         v = velocityOut;
+
+        av *= Parameters.CollisionAngularFactor;
     }
 }
 
