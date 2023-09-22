@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
-using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Utilities.Vectors;
+using static Bearded.TD.Game.Simulation.Drawing.Particles.ParticleSpawning;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
@@ -64,6 +62,8 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>,
                 parent.AddComponent(stopOnParentListener);
             }
         }
+
+        Events.Subscribe(this);
     }
 
     public override void OnRemoved()
@@ -110,7 +110,7 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>,
         if (nextSpawn <= Owner.Game.Time)
         {
             spawn();
-            nextSpawn = Owner.Game.Time + Parameters.Interval * noise(Parameters.IntervalNoise);
+            nextSpawn = Owner.Game.Time + Parameters.Interval * Noise(Parameters.IntervalNoise);
         }
     }
 
@@ -118,8 +118,5 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>,
     {
         Particles.CreateParticles(Parameters, Velocity3.Zero, Owner.Direction, Owner.Game.Time, Owner.Position);
     }
-
-    private static float noise(float amount)
-        => amount == 0 ? 1 : 1 + StaticRandom.Float(-amount, amount);
 }
 

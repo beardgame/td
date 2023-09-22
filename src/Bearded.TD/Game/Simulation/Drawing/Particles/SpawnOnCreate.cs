@@ -47,8 +47,7 @@ sealed class SpawnOnCreate : ParticleUpdater<SpawnOnCreate.IParameters>
 
         if (Owner.TryGetSingleComponent<IDirected3>(out var directed))
         {
-            if (Parameters.Orientation == null)
-                baseDirection = Direction2.Of(directed.Direction.XY().NumericValue);
+            baseDirection = Direction2.Of(directed.Direction.XY().NumericValue);
             vectorVelocity = directed.Direction.NumericValue.NormalizedSafe() * Parameters.VectorVelocity;
         }
 
