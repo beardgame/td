@@ -85,6 +85,7 @@
             }
         },
 
-        { id: "child", parameters: { object: "kinetic0-cannon-spent-shells" } }
+        { id: "child", parameters: { object: "kinetic0-cannon-spent-shells" } },
+        { id: "child", parameters: { object: "kinetic0-cannon-smoke" } }
     ]
 }
