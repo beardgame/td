@@ -83,6 +83,8 @@
                 drawGroup: "building",
                 size: 1.2
             }
-        }
+        },
+
+        { id: "child", parameters: { object: "kinetic3-sniper-spent-shells" } }
     ]
 }

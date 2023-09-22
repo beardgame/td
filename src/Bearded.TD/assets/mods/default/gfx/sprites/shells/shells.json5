@@ -1,0 +1,13 @@
+﻿{
+  id: "shells",
+  textureSamplers:
+  [
+    {
+      sampler: "diffuse"
+    },
+    {
+      sampler: "normal",
+      suffix: "-normal",
+    }
+  ]
+}

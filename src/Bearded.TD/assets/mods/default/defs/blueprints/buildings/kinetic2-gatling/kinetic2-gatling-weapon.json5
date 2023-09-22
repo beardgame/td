@@ -92,6 +92,8 @@
                 drawGroup: "building",
                 size: 1.2
             }
-        }
+        },
+        
+        { id: "child", parameters: { object: "kinetic2-gatling-spent-shells" } }
     ]
 }

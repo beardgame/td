@@ -84,5 +84,7 @@
                 size: 1.2
             }
         },
+
+        { id: "child", parameters: { object: "kinetic0-cannon-spent-shells" } }
     ]
 }
