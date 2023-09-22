@@ -80,7 +80,7 @@ namespace Bearded.TD.Generators.TechEffects
             ISymbol modifiableAttributeSymbol,
             IDictionary<ITypeSymbol, IFieldSymbol> attributeConverters)
         {
-            return symbol.GetMembers()
+            var properties = symbol.GetMembers()
                 .OfType<IPropertySymbol>()
                 .Select(propertySymbol =>
                     {
@@ -105,6 +105,14 @@ namespace Bearded.TD.Generators.TechEffects
                             converter == null ? null : $"{converter}");
                     }
                 );
+
+            if(symbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                properties = properties.Concat(namedTypeSymbol.Interfaces
+                    .SelectMany(i => extractProperties(i, modifiableAttributeSymbol, attributeConverters)));
+            }
+
+            return properties;
         }
 
         public sealed class ParametersPropertyDefinition

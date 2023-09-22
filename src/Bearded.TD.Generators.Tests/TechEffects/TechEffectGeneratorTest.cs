@@ -40,5 +40,19 @@ namespace Bearded.TD.Generators.Tests.TechEffects
 
             await Verifier.Verify(driver, DefaultVerifySettings);
         }
+
+        [Fact]
+        public async Task GeneratesPropertiesOfInheritedInterfaces()
+        {
+            var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/IInheritedParameters.cs");
+            var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
+            var generator = new TechEffectGenerator();
+
+            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+
+            driver = driver.RunGenerators(compilation);
+
+            await Verifier.Verify(driver, DefaultVerifySettings);
+        }
     }
 }
