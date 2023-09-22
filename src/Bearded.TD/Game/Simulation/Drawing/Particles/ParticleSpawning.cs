@@ -23,13 +23,13 @@ static class ParticleSpawning
         var count = countOverride ?? parameters.Count;
         var particleSpan = particles.AddParticles(count);
 
-        var velocityUnitX = Vector2.UnitX;
-        var velocityUnitY = Vector2.UnitY;
+        var unitX = Vector2.UnitX;
+        var unitY = Vector2.UnitY;
 
-        if (parameters.VelocityRelativeToDirection)
+        if (parameters.RelativeToDirection)
         {
-            velocityUnitY = -direction.Vector;
-            velocityUnitX = velocityUnitY.PerpendicularRight;
+            unitY = baseDirection.Vector;
+            unitX = unitY.PerpendicularRight;
         }
 
         for (var i = 0; i < particleSpan.Length; i++)
@@ -38,7 +38,10 @@ static class ParticleSpawning
                 + parameters.Velocity * noise(parameters.VelocityNoise)
                 + Vectors.GetRandomUnitVector3() * parameters.RandomVelocity * noise(parameters.RandomVelocityNoise);
 
-            velocity = (velocity.X * velocityUnitY + velocity.Y * velocityUnitX).WithZ(velocity.Z);
+            velocity = (velocity.X * unitY + velocity.Y * unitX).WithZ(velocity.Z);
+
+            var offset = parameters.Offset;
+            offset = (offset.X * unitY + offset.Y * unitX).WithZ(offset.Z);
 
             var orientation = direction + Angle.FromDegrees(360) * noise(parameters.OrientationNoise);
 
@@ -52,7 +55,7 @@ static class ParticleSpawning
 
             particleSpan[i] = new Particle
             {
-                Position = here,
+                Position = here + offset,
                 Velocity = velocity,
                 Direction = orientation,
                 AngularVelocity = angularVelocity,

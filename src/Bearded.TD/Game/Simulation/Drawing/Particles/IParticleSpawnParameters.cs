@@ -17,11 +17,13 @@ interface IParticleSpawnParameters
     Unit Size { get; }
     float SizeNoise { get; }
 
+    Difference3 Offset { get; }
+    bool RelativeToDirection { get; }
+
     Color? Color { get; }
 
     Velocity3 Velocity { get; }
     float VelocityNoise { get; }
-    bool VelocityRelativeToDirection { get; }
 
     Speed RandomVelocity { get; }
     float RandomVelocityNoise { get; }
