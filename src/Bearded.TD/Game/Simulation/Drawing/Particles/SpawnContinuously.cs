@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Simulation.Drawing.Particles.ParticleSpawning;
 

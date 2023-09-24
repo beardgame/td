@@ -1,0 +1,36 @@
+{
+    id: "kinetic0-cannon-shell-smoke-trail",
+    components: [
+        { id: "particles" },
+        { id: "particlesMoveLinear" },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.particle.mote",
+        } },
+
+        { id: "particlesSpawnContinuously", parameters:  {
+            color: "White",
+            interval: 0.03,
+            lifeTime: 0.6,
+            lifeTimeNoise: 0,
+            randomVelocity: 0.3,
+            randomVelocityNoise: 0.8,
+            angularVelocity: 90,
+            angularVelocityNoise: 0.5,
+            randomAngularVelocitySign: true,
+            stopOnParent : [ "objectDeleting" ]
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.05, color: "White" },
+                    { duration: 1, size: 0.2, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+    ]
+}

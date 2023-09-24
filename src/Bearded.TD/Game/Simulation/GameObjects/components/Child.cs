@@ -13,6 +13,7 @@ sealed class Child : Component<Child.IParameters>, IListener<ObjectDeleting>
     public interface IParameters : IParametersTemplate<IParameters>
     {
         IGameObjectBlueprint Object { get; }
+        bool SurviveParent { get; }
     }
 
     public Child(IParameters parameters) : base(parameters)
@@ -30,7 +31,8 @@ sealed class Child : Component<Child.IParameters>, IListener<ObjectDeleting>
         child.AddComponent(new AttachToParent());
         Owner.Game.Add(child);
 
-        Events.Subscribe(this);
+        if (!Parameters.SurviveParent)
+            Events.Subscribe(this);
     }
 
     public override void Update(TimeSpan elapsedTime)

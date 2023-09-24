@@ -30,5 +30,6 @@
                 onHitEnemy: false
             }
         },
+        { id: "child", parameters: { object: "kinetic0-cannon-shell-smoke-trail", surviveParent: true } }
     ]
 }
