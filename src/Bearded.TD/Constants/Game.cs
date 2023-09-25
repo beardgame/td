@@ -62,17 +62,22 @@ static partial class Constants
             public static class StatusDisplay
             {
                 public static readonly Color HitPointsBackgroundColor = Color.DarkGray;
+                public static readonly Color NegativeColor = Color.OrangeRed;
+                public static readonly Color NeutralColor = Color.WhiteSmoke;
+                public static readonly Color PositiveColor = Color.Lime;
 
                 // Note: dimensions are in game space, i.e. expressed in hex distance
                 public const float PrimaryHitPointsBarHeight = 0.1f;
                 public const float SecondaryHitPointsBarHeight = 0.5f * PrimaryHitPointsBarHeight;
 
+                public const int StatusIconsPerRow = 6;
+
                 public const float ElementMargin = 0.01f;
+                public const float LineWidth = 0.005f;
                 public const float Width = 1;
 
                 // Offset is measured between the centre of the game object to the centre of the primary HP bar
-                public static readonly Difference2 Offset = new(0, -0.5f);
-                public static readonly Unit Z = Unit.One;
+                public static readonly Difference3 Offset = new(0, -0.5f, .05f);
             }
         }
 
