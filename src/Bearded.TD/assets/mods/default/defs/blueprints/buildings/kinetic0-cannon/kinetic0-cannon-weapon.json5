@@ -25,7 +25,7 @@
             id: "automaticFireCycle",
             parameters: {
                 damagePerSecond: 30,
-                fireRate: 0.75
+                fireRate: 0.75,
             }
         },
         {
@@ -77,11 +77,51 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "buildings3.cannon-turret",
+                sprite: "buildings.cannon-bottom",
                 colorMode: "faction",
                 shader: "building",
                 drawGroup: "building",
-                size: 1.2
+                size: 0.2,
+                rotationOffset: -90,
+                offset: [-0.1, 0],
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.cannon-barrel",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.13,
+                heightOffset: 0.02,
+                rotationOffset: -90,
+                offset: [-0.15, 0.09]
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.cannon-barrel",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.13,
+                heightOffset: 0.02,
+                rotationOffset: -90,
+                offset: [-0.15, -0.09]
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.cannon-top",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.6,
+                heightOffset: 0.025,
+                rotationOffset: -90
             }
         },
 

@@ -35,6 +35,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
         Difference2 Offset { get; }
         Direction2? Direction { get; }
         Angle? RandomRotationStep { get; }
+        Angle RotationOffset { get; }
     }
 
 
@@ -74,7 +75,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     public void HandleEvent(DrawComponents e)
     {
         var color = GetColor(Owner, Parameters.ColorMode, Parameters.Color);
-        var direction = (Parameters.Direction ?? Owner.Direction) + rotationOffset;
+        var direction = (Parameters.Direction ?? Owner.Direction) + rotationOffset + Parameters.RotationOffset;
 
         var p = Owner.Position.NumericValue;
         p.Z += Parameters.HeightOffset.NumericValue;
