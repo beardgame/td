@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements;
@@ -8,8 +9,10 @@ namespace Bearded.TD.Game.Simulation.Elements;
 abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.IScope<TEffect> where TEffect : IElementalEffect
 {
     private readonly GameObject target;
+    private readonly IStatusDisplay? statusDisplay;
     private readonly List<EffectWithExpiry> activeEffects = new();
-    private bool hadEffectActive;
+    private IStatusDrawer? cachedStatusDrawer;
+    private ActiveEffect? activeEffect;
 
     protected IEnumerable<TEffect> ActiveEffects => activeEffects.Select(e => e.Effect);
 
@@ -27,37 +30,61 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     public void ApplyTick(Instant now)
     {
         activeEffects.RemoveAll(e => e.Expiry <= now);
+
         if (TryChooseEffect(out var effect))
         {
             ApplyEffectTick(target, effect);
-            startEffectIfPreviouslyInactive(target);
+            startEffectIfPreviouslyInactive();
         }
         else
         {
-            endEffectIfPreviouslyActive(target);
+            endEffectIfPreviouslyActive();
+        }
+
+        if (activeEffect?.StatusIcon is not null)
+        {
+            updateStatusIconExpiry(activeEffect.StatusIcon);
         }
     }
 
     private void startEffectIfPreviouslyInactive()
     {
-        if (hadEffectActive) return;
+        if (activeEffect is not null) return;
 
         StartEffect(target);
-        hadEffectActive = true;
+        var statusReceipt = reportStatus();
+        activeEffect = new ActiveEffect(statusReceipt);
     }
 
+    private IStatusReceipt? reportStatus()
     {
-        if (!hadEffectActive) return;
+        cachedStatusDrawer ??=
+            IconStatusDrawer.FromSpriteBlueprint(target.Game, MakeStatus(target.Game.Meta.Blueprints).Sprite);
+        var statusReceipt = statusDisplay?.AddStatus(new StatusSpec(StatusType.Negative, cachedStatusDrawer), null);
+        return statusReceipt;
+    }
+
     private void endEffectIfPreviouslyActive()
+    {
+        if (activeEffect is null) return;
 
         EndEffect(target);
-        hadEffectActive = false;
+        activeEffect.StatusIcon?.DeleteImmediately();
+        activeEffect = null;
+    }
+
+    private void updateStatusIconExpiry(IStatusReceipt statusIcon)
+    {
+        var latestExpiry = activeEffects.Select(e => e.Expiry).Max();
+        statusIcon.SetExpiryTime(latestExpiry);
     }
 
     protected abstract bool TryChooseEffect(out TEffect effect);
     protected abstract void ApplyEffectTick(GameObject target, TEffect effect);
     protected abstract void StartEffect(GameObject target);
     protected abstract void EndEffect(GameObject target);
+    protected abstract ElementalStatus MakeStatus(Blueprints blueprints);
 
     private readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
+    private sealed record ActiveEffect(IStatusReceipt? StatusIcon);
 }
