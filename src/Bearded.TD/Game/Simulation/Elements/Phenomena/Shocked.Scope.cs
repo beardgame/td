@@ -14,6 +14,8 @@ static partial class Shocked
         private IUpgradeReceipt? receipt;
         private LightningShocks? lightningShocks;
 
+        public Scope(GameObject target) : base(target) { }
+
         protected override bool TryChooseEffect(out Effect effect)
         {
             var effects = ActiveEffects.ToImmutableArray();

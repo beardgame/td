@@ -7,11 +7,11 @@ namespace Bearded.TD.Game.Simulation.Elements;
 interface IElementalPhenomenon
 {
     public Type EffectType { get; }
-    public IScope NewScope();
+    public IScope NewScope(GameObject target);
 
     interface IScope
     {
-        void ApplyTick(GameObject target, Instant now);
+        void ApplyTick(Instant now);
     }
 
     interface IScope<in T> : IScope where T : IElementalEffect

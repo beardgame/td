@@ -7,17 +7,24 @@ namespace Bearded.TD.Game.Simulation.Elements;
 
 abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.IScope<TEffect> where TEffect : IElementalEffect
 {
+    private readonly GameObject target;
     private readonly List<EffectWithExpiry> activeEffects = new();
     private bool hadEffectActive;
 
     protected IEnumerable<TEffect> ActiveEffects => activeEffects.Select(e => e.Effect);
+
+    protected ElementalPhenomenonScopeBase(GameObject target)
+    {
+        this.target = target;
+        target.TryGetSingleComponent(out statusDisplay);
+    }
 
     public void Adopt(TEffect effect, Instant now)
     {
         activeEffects.Add(new EffectWithExpiry(effect, now + effect.Duration));
     }
 
-    public void ApplyTick(GameObject target, Instant now)
+    public void ApplyTick(Instant now)
     {
         activeEffects.RemoveAll(e => e.Expiry <= now);
         if (TryChooseEffect(out var effect))
@@ -31,7 +38,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         }
     }
 
-    private void startEffectIfPreviouslyInactive(GameObject target)
+    private void startEffectIfPreviouslyInactive()
     {
         if (hadEffectActive) return;
 
@@ -39,9 +46,9 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         hadEffectActive = true;
     }
 
-    private void endEffectIfPreviouslyActive(GameObject target)
     {
         if (!hadEffectActive) return;
+    private void endEffectIfPreviouslyActive()
 
         EndEffect(target);
         hadEffectActive = false;

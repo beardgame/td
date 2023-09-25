@@ -13,6 +13,8 @@ static partial class Stunned
         private IBreakageReceipt? receipt;
         private LightningShocks? sparks;
 
+        public Scope(GameObject target) : base(target) { }
+
         protected override bool TryChooseEffect(out Effect effect)
         {
             var effects = ActiveEffects.ToImmutableArray();
