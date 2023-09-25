@@ -40,7 +40,6 @@ sealed partial class StatusDisplay : Component, IStatusDisplay, IListener<DrawCo
             return;
         }
 
-        @event.Core.Primitives.FillCircle(center.NumericValue, ElementMargin, Color.HotPink);
         drawHitPointsBars(@event.Core.ConsoleBackground);
         drawStatuses(@event.Core, @event.Drawer);
     }
