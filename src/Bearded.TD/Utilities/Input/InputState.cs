@@ -12,9 +12,9 @@ sealed class InputState
     public MouseInputState Mouse { get; }
     public KeyboardInputState Keyboard { get; }
 
-    public InputState(InputManager inputManager, float scale)
+    public InputState(InputManager inputManager)
     {
-        Mouse = new MouseInputState(inputManager, scale);
+        Mouse = new MouseInputState(inputManager);
         Keyboard = new KeyboardInputState(inputManager);
     }
 
@@ -42,13 +42,13 @@ sealed class InputState
         public float DeltaScroll { get; }
         public ModifierKeys ModifierKeys { get; }
 
-        public MouseInputState(InputManager inputManager, float scale)
+        public MouseInputState(InputManager inputManager)
         {
             click = inputManager.Actions.Mouse.LeftButton;
             cancel = inputManager.Actions.Mouse.RightButton;
             drag = inputManager.Actions.Mouse.RightButton;
 
-            Position = inputManager.MousePosition * scale;
+            Position = inputManager.MousePosition;
             DeltaScroll = inputManager.DeltaScrollF;
             ModifierKeys = ModifierKeys.FromInputManager(inputManager);
         }

@@ -39,12 +39,7 @@ using Window = Bearded.Graphics.Windowing.Window;
 
 namespace Bearded.TD;
 
-interface IMouseScaleProvider
-{
-    float MouseScale { get; }
-}
-
-sealed class TheGame : Window, IMouseScaleProvider
+sealed class TheGame : Window
 {
     private static TheGame? instance;
 
@@ -65,7 +60,6 @@ sealed class TheGame : Window, IMouseScaleProvider
     private NavigationController navigationController = null!;
 
     private ViewportSize viewportSize;
-    public float MouseScale { get; private set; }
 
     public TheGame(Logger logger, Intent intent)
     {
@@ -101,7 +95,6 @@ sealed class TheGame : Window, IMouseScaleProvider
         UserSettingsSchema.Initialize();
 
         var dependencyResolver = new DependencyResolver();
-        dependencyResolver.Add((IMouseScaleProvider)this);
         dependencyResolver.Add(logger);
         dependencyResolver.Add(activityTimer);
         dependencyResolver.Add(
@@ -185,15 +178,13 @@ sealed class TheGame : Window, IMouseScaleProvider
         if (e.Height == 0 || e.Width == 0)
             return;
 
-        var dpSize = NativeWindow.Size;
-        var pxSize = NativeWindow.ClientSize;
+        var size = NativeWindow.ClientSize;
 
         glActionQueue.Queue(() =>
         {
-            MouseScale = pxSize.X / (float)dpSize.X;
-            viewportSize = new ViewportSize(pxSize.X, pxSize.Y, UserSettings.Instance.UI.UIScale);
+            viewportSize = new ViewportSize(size.X, size.Y, UserSettings.Instance.UI.UIScale);
             renderContext.OnResize(viewportSize);
-            rootControl.SetViewport(dpSize.X, dpSize.Y, UserSettings.Instance.UI.UIScale / MouseScale);
+            rootControl.SetViewport(size.X, size.Y, UserSettings.Instance.UI.UIScale);
         });
     }
 

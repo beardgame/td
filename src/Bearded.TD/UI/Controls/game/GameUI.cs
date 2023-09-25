@@ -30,7 +30,6 @@ sealed class GameUI :
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
     private ShortcutCapturer shortcutCapturer = null!;
-    private IMouseScaleProvider mouseScaleProvider = null!;
 
     public GameUIController GameUIController { get; }
 
@@ -73,7 +72,6 @@ sealed class GameUI :
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
         shortcutCapturer = dependencies.Resolve<ShortcutCapturer>();
-        mouseScaleProvider = dependencies.Resolve<IMouseScaleProvider>();
         var tooltipFactory = dependencies.Resolve<TooltipFactory>();
 
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
@@ -112,7 +110,7 @@ sealed class GameUI :
             FocusReset?.Invoke();
         }
 
-        var inputState = new InputState(inputManager, mouseScaleProvider.MouseScale);
+        var inputState = new InputState(inputManager);
 
         runner.HandleInput(inputState);
         runner.Update(args);
