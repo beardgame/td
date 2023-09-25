@@ -2,6 +2,7 @@ using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Elements.events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.Elements;
@@ -19,6 +20,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
     public Temperature Value { get; private set; }
     private TickCycle? tickCycle;
     private IBreakageReceipt? breakage;
+    private IStatusReceipt? status;
     private ITilePresenceListener? tilePresenceListener;
     private TemperatureDifference queuedTemperatureChange;
 
@@ -79,8 +81,10 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
         if (breakage is { } receipt && Value <= MaxNormalTemperature)
         {
             receipt.Repair();
+            status?.DeleteImmediately();
             Events.Send(new StopOverheated());
             breakage = null;
+            status = null;
         }
 
         if (breakage is null &&
@@ -88,6 +92,17 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
+
+            if (Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
+            {
+                status = statusDisplay.AddStatus(
+                    new StatusSpec(
+                        StatusType.Negative,
+                        IconStatusDrawer.FromSpriteBlueprint(
+                            Owner.Game, Owner.Game.Meta.Blueprints.LoadStatusIconSprite("hot-surface"))),
+                    null);
+            }
+
             Events.Send(new Overheated());
         }
     }
