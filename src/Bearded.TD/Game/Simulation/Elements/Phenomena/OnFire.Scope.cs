@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using static Bearded.TD.Constants.Game.Elements;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
@@ -12,6 +14,8 @@ static partial class OnFire
     private sealed class Scope : ElementalPhenomenonScopeBase<Effect>
     {
         private FireFlicker? fireFlicker;
+
+        public Scope(GameObject target) : base(target) { }
 
         protected override bool TryChooseEffect(out Effect effect)
         {
@@ -47,6 +51,12 @@ static partial class OnFire
             }
             target.RemoveComponent(fireFlicker);
             fireFlicker = null;
+        }
+
+        protected override ElementalStatus MakeStatus(Blueprints blueprints)
+        {
+            var sprite = blueprints.LoadStatusIconSprite("fire");
+            return new ElementalStatus(sprite);
         }
     }
 }

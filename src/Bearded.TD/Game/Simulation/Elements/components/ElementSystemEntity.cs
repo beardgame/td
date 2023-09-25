@@ -34,7 +34,7 @@ sealed class ElementSystemEntity : Component, IElementSystemEntity
     {
         foreach (var (_, scope) in effectScopes)
         {
-            scope.ApplyTick(Owner, now);
+            scope.ApplyTick(now);
         }
     }
 
@@ -46,7 +46,7 @@ sealed class ElementSystemEntity : Component, IElementSystemEntity
             {
                 throw new InvalidOperationException("Type of effect must be same as phenomenon effect type.");
             }
-            scope = effect.Phenomenon.NewScope();
+            scope = effect.Phenomenon.NewScope(Owner);
             effectScopes.Add(typeof(T), scope);
         }
 

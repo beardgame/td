@@ -41,6 +41,7 @@ public sealed class ComponentLifeCycleTests
         typeof(AnimatedSprite), // Attempts to instantiate a sprite on activate.
         typeof(Child), // Attempts to instantiate a sprite on activate.
         typeof(Draw), // Attempts to instantiate a sprite on activate.
+        typeof(DrawConnected), // Attempts to instantiate a sprite on activate.
         typeof(EnemyIcon), // Attempts to instantiate a sprite on activate.
         typeof(LoopSound), // Attempts to play a sound on activate.
         typeof(MuzzleFlash), // Attempts to instantiate a sprite on activate.

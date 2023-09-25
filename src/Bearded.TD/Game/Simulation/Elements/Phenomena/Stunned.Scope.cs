@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
@@ -12,6 +13,8 @@ static partial class Stunned
     {
         private IBreakageReceipt? receipt;
         private LightningShocks? sparks;
+
+        public Scope(GameObject target) : base(target) { }
 
         protected override bool TryChooseEffect(out Effect effect)
         {
@@ -55,6 +58,12 @@ static partial class Stunned
                 target.RemoveComponent(sparks);
                 sparks = null;
             }
+        }
+
+        protected override ElementalStatus MakeStatus(Blueprints blueprints)
+        {
+            var sprite = blueprints.LoadStatusIconSprite("unstable-orb");
+            return new ElementalStatus(sprite);
         }
     }
 }

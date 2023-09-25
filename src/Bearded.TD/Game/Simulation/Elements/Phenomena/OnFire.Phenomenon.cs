@@ -1,4 +1,5 @@
 using System;
+using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
@@ -10,6 +11,6 @@ static partial class OnFire
     {
         public Type EffectType => typeof(Effect);
 
-        public IElementalPhenomenon.IScope NewScope() => new Scope();
+        public IElementalPhenomenon.IScope NewScope(GameObject target) => new Scope(target);
     }
 }

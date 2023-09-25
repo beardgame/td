@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 
@@ -13,6 +14,8 @@ static partial class Shocked
     {
         private IUpgradeReceipt? receipt;
         private LightningShocks? lightningShocks;
+
+        public Scope(GameObject target) : base(target) { }
 
         protected override bool TryChooseEffect(out Effect effect)
         {
@@ -63,6 +66,12 @@ static partial class Shocked
 
             target.RemoveComponent(lightningShocks);
             lightningShocks = null;
+        }
+
+        protected override ElementalStatus MakeStatus(Blueprints blueprints)
+        {
+            var sprite = blueprints.LoadStatusIconSprite("snail");
+            return new ElementalStatus(sprite);
         }
     }
 }
