@@ -72,7 +72,7 @@ static partial class Constants
                 public const float PrimaryHitPointsBarHeight = 0.1f;
                 public const float SecondaryHitPointsBarHeight = 0.5f * PrimaryHitPointsBarHeight;
 
-                public const int StatusIconsPerRow = 6;
+                public const int StatusIconsPerRow = 4;
 
                 public const float ElementMargin = 0.01f;
                 public const float LineWidth = 0.005f;
