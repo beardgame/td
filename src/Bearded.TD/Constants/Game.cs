@@ -65,6 +65,8 @@ static partial class Constants
                 public static readonly Color NegativeColor = Color.OrangeRed;
                 public static readonly Color NeutralColor = Color.WhiteSmoke;
                 public static readonly Color PositiveColor = Color.Lime;
+                public static readonly Color ForegroundColor = Color.White;
+                public static readonly Color BackgroundColor = Color.White * 0.4f;
 
                 // Note: dimensions are in game space, i.e. expressed in hex distance
                 public const float PrimaryHitPointsBarHeight = 0.1f;
