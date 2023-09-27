@@ -15,12 +15,12 @@ record struct Overheated : IComponentEvent;
 record struct StopOverheated : IComponentEvent;
 
 [Component("temperature")]
-sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatureEventReceiver
+sealed partial class TemperatureProperty : Component, IProperty<Temperature>, ITemperatureEventReceiver
 {
     public Temperature Value { get; private set; }
     private TickCycle? tickCycle;
+    private TemperatureStatus? status;
     private IBreakageReceipt? breakage;
-    private IStatusReceipt? status;
     private ITilePresenceListener? tilePresenceListener;
     private TemperatureDifference queuedTemperatureChange;
 
@@ -30,6 +30,10 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
     {
         base.Activate();
         tickCycle = new TickCycle(Owner.Game, applyTick);
+        if (Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
+        {
+            status = new TemperatureStatus(Owner.Game, statusDisplay);
+        }
         tilePresenceListener = Owner.TrackTilePresenceInLayer(Owner.Game.TemperatureLayer);
     }
 
@@ -49,6 +53,7 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
         applyChanges(now);
         applyDecay();
         updateBreakage();
+        status?.UpdateCurrentTemperature(Value);
     }
 
     private void applyChanges(Instant now)
@@ -81,10 +86,9 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
         if (breakage is { } receipt && Value <= MaxNormalTemperature)
         {
             receipt.Repair();
-            status?.DeleteImmediately();
             Events.Send(new StopOverheated());
+            status?.EndOverheat();
             breakage = null;
-            status = null;
         }
 
         if (breakage is null &&
@@ -92,18 +96,8 @@ sealed class TemperatureProperty : Component, IProperty<Temperature>, ITemperatu
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
-
-            if (Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
-            {
-                status = statusDisplay.AddStatus(
-                    new StatusSpec(
-                        StatusType.Negative,
-                        IconStatusDrawer.FromSpriteBlueprint(
-                            Owner.Game, Owner.Game.Meta.Blueprints.LoadStatusIconSprite("hot-surface"))),
-                    null);
-            }
-
             Events.Send(new Overheated());
+            status?.BeginOverheat();
         }
     }
 

@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Vertices;
 using OpenTK.Mathematics;
+using static Bearded.TD.Constants.Game.GameUI.StatusDisplay;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
 
@@ -18,7 +19,7 @@ sealed class IconStatusDrawer : IStatusDrawer
 
     public void Draw(CoreDrawers core, IComponentDrawer drawer, Vector3 position, float size)
     {
-        drawer.DrawSprite(sprite, position, .85f * size, 0f, Color.White);
+        drawer.DrawSprite(sprite, position, .85f * size, 0f, ForegroundColor);
     }
 
     public static IconStatusDrawer FromSpriteBlueprint(GameState game, ISpriteBlueprint blueprint) =>
