@@ -40,7 +40,18 @@
             parameters: {
                 projectile: "kinetic0-cannon-shell",
                 muzzleSpeed: 20,
-                muzzleOffset: [0.3, 0]
+                muzzleOffset: [0.4, 0.1],
+                shootEvery: 2
+            }
+        },
+        {
+            id: "projectileEmitter",
+            parameters: {
+                projectile: "kinetic0-cannon-shell",
+                muzzleSpeed: 20,
+                muzzleOffset: [0.4, -0.1],
+                shootEvery: 2,
+                shootEveryOffset: 1
             }
         },
         {

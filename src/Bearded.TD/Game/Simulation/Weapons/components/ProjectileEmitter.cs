@@ -35,11 +35,15 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         Angle Spread { get; }
 
         Difference2 MuzzleOffset { get; }
+
+        int ShootEvery { get; }
+        int ShootEveryOffset { get; }
     }
 
     private IWeaponState weapon = null!;
     private ITargeter<IPositionable>? targeter;
     private UpgradableProjectileFactory factory = null!;
+    private int shotCounter;
 
     public Position3 EmitPosition
     {
@@ -64,6 +68,8 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         ComponentDependencies.DependDynamic<ITargeter<IPositionable>>(Owner, Events, c => targeter = c);
         factory = new UpgradableProjectileFactory(Parameters.Projectile, Owner);
         Events.Subscribe(this);
+
+        shotCounter = Parameters.ShootEveryOffset;
     }
 
     public override void Update(TimeSpan elapsedTime) {}
@@ -76,7 +82,12 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     public void HandleEvent(FireWeapon @event)
     {
+        shotCounter++;
+        if (shotCounter < Parameters.ShootEvery)
+            return;
+
         emitProjectile(@event.Damage);
+        shotCounter = 0;
     }
 
     private void emitProjectile(UntypedDamage damage)
