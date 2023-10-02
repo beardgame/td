@@ -17,7 +17,6 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
         ElectricCharge MaxCharge { get; }
     }
 
-    private TickCycle? tickCycle;
     private CapacitorStatus? status;
     private IBuildingStateProvider? buildingState;
 
@@ -34,7 +33,6 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
     public override void Activate()
     {
         base.Activate();
-        tickCycle = new TickCycle(Owner.Game, applyTick);
         if (Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
         {
             status = new CapacitorStatus(Owner.Game, statusDisplay);
@@ -48,7 +46,18 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
         {
             updateMaxCharge(MaxCharge);
         }
-        tickCycle?.Update();
+        updateCharge(elapsedTime);
+    }
+
+    private void updateCharge(TimeSpan elapsedTime)
+    {
+        if (!buildingState?.State.IsFunctional ?? false)
+        {
+            return;
+        }
+
+        CurrentCharge = SpaceTime1MathF.Min(MaxCharge, CurrentCharge + elapsedTime * Parameters.RechargeRate);
+        status?.UpdateCharge(CurrentCharge, MaxCharge);
     }
 
     public override void OnRemoved()
@@ -77,17 +86,6 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
         var charge = CurrentCharge;
         CurrentCharge = ElectricCharge.Zero;
         return charge;
-    }
-
-    private void applyTick(Instant now)
-    {
-        if (!buildingState?.State.IsFunctional ?? false)
-        {
-            return;
-        }
-
-        CurrentCharge = SpaceTime1MathF.Min(MaxCharge, CurrentCharge + TickDuration * Parameters.RechargeRate);
-        status?.UpdateCharge(CurrentCharge, MaxCharge);
     }
 }
 
