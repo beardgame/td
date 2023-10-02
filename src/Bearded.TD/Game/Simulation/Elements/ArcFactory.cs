@@ -10,12 +10,14 @@ static class ArcFactory
     public static GameObject CreateArc(
         IGameObjectBlueprint blueprint,
         GameObject parent,
+        GameObject source,
         GameObject target,
         UntypedDamage damage,
         TimeSpan lifeTime)
     {
-        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, parent, parent.Position);
+        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, parent, source.Position);
 
+        obj.AddComponent(new Property<Source>(source.AsSource()));
         obj.AddComponent(new Property<Target>(target.AsTarget()));
         obj.AddComponent(new Property<UntypedDamage>(damage));
         obj.AddComponent(new HitTargetOnActivate());
