@@ -4,7 +4,6 @@ using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Constants.Game.Elements;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
