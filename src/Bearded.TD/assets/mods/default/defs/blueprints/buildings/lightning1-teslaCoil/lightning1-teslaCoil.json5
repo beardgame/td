@@ -35,6 +35,13 @@
             }
         },
         {
+            id: "capacitor",
+            parameters: {
+                maxCharge: 10,
+                rechargeRate: 30,
+            }
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "buildings3.cannon-base",
