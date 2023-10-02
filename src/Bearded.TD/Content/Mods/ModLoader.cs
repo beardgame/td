@@ -111,8 +111,6 @@ static class ModLoader
                 new SpaceTime1Converter<Volume>(v => new Volume(v)),
                 new SpaceTime1Converter<FlowRate>(r => new FlowRate(r)),
                 new SpaceTime1Converter<AngularVelocity>(AngularVelocity.FromDegrees),
-                new SpaceTime1Converter<Energy>(d => new Energy(d)),
-                new SpaceTime1Converter<EnergyConsumptionRate>(d => new EnergyConsumptionRate(d)),
                 new SpaceTime1Converter<ElectricCharge>(d => new ElectricCharge(d)),
                 new SpaceTime1Converter<ElectricChargeRate>(d => new ElectricChargeRate(d)),
                 new SpaceTime1Converter<HitPoints>(d => d.HitPoints()),

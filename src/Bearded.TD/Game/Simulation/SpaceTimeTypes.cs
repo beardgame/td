@@ -44,14 +44,6 @@ static class SpaceTimeTypes
         new(d => new ElectricChargeRate((float) d), e => e.NumericValue);
 
     [ConvertsAttribute]
-    public static AttributeConverter<Energy> EnergyConverter =
-        new(d => new Energy(d), e => e.NumericValue);
-
-    [ConvertsAttribute]
-    public static AttributeConverter<EnergyConsumptionRate> EnergyConsumptionRateConverter =
-        new(d => new EnergyConsumptionRate(d), e => e.NumericValue);
-
-    [ConvertsAttribute]
     public static AttributeConverter<FlowRate> FlowRateConverter =
         new(d => new FlowRate((float) d), r => r.NumericValue);
 
