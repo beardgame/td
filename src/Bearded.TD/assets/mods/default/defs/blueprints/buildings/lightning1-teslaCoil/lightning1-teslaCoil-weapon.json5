@@ -14,11 +14,8 @@
             }
         },
         {
-            id: "automaticFireCycle",
-            parameters: {
-                damagePerSecond: 30,
-                fireRate: 3,
-            }
+            id: "capacitorFireCycle",
+            parameters: {}
         },
         {
             id: "arcEmitter",

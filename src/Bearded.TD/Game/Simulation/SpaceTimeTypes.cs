@@ -36,12 +36,12 @@ static class SpaceTimeTypes
         new(d => new UntypedDamagePerSecond(new HitPoints((int) d)), dps => dps.Amount.NumericValue);
 
     [ConvertsAttribute]
-    public static AttributeConverter<Energy> EnergyConverter =
-        new(d => new Energy(d), e => e.NumericValue);
+    public static AttributeConverter<ElectricCharge> ElectricChargeConverter =
+        new(d => new ElectricCharge((float) d), e => e.NumericValue);
 
     [ConvertsAttribute]
-    public static AttributeConverter<EnergyConsumptionRate> EnergyConsumptionRateConverter =
-        new(d => new EnergyConsumptionRate(d), e => e.NumericValue);
+    public static AttributeConverter<ElectricChargeRate> ElectricChargeRateConverter =
+        new(d => new ElectricChargeRate((float) d), e => e.NumericValue);
 
     [ConvertsAttribute]
     public static AttributeConverter<FlowRate> FlowRateConverter =
