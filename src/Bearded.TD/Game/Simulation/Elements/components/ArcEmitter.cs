@@ -1,8 +1,10 @@
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Tiles;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
@@ -11,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 [Component("arcEmitter")]
 sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<FireWeapon>
 {
-    private IWeaponRange range;
+    private IWeaponRange? range;
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -34,7 +36,7 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<FireWeapo
         var targetLayer = Owner.Game.TargetLayer;
         var conductiveLayer = Owner.Game.ConductiveLayer;
 
-        var tilesInRange = range.GetTilesInRange();
+        var tilesInRange = range?.GetTilesInRange() ?? ImmutableArray<Tile>.Empty;
         var target = tilesInRange
             .SelectMany(
                 t => targetLayer.GetObjectsOnTile(t)

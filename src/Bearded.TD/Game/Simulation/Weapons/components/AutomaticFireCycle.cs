@@ -35,7 +35,7 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
         var currentTime = Game.Time;
         while (nextPossibleShootTime < currentTime)
         {
-            fireWeapon();
+            WeaponFirer.FireWeapon(Events, Parameters.DamagePerSecond / Parameters.FireRate);
 
             var previewDelayEvent = new PreviewDelayNextShot(1 / Parameters.FireRate);
             Events.Preview(ref previewDelayEvent);
@@ -49,20 +49,6 @@ sealed class AutomaticFireCycle : WeaponCycleHandler<AutomaticFireCycle.IParamet
             {
                 nextPossibleShootTime += previewDelayEvent.Delay;
             }
-        }
-    }
-
-    private void fireWeapon()
-    {
-        var preview = new PreviewFireWeapon(Parameters.DamagePerSecond / Parameters.FireRate, false);
-        Events.Preview(ref preview);
-        if (preview.IsCancelled)
-        {
-            Events.Send(new WeaponMisfired());
-        }
-        else
-        {
-            Events.Send(new FireWeapon(Parameters.DamagePerSecond / Parameters.FireRate));
         }
     }
 }
