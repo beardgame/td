@@ -12,8 +12,7 @@ static class ArcFactory
         GameObject parent,
         GameObject source,
         GameObject target,
-        UntypedDamage damage,
-        TimeSpan lifeTime)
+        UntypedDamage damage)
     {
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, parent, source.Position);
 
@@ -21,7 +20,6 @@ static class ArcFactory
         obj.AddComponent(new Property<Target>(target.AsTarget()));
         obj.AddComponent(new Property<UntypedDamage>(damage));
         obj.AddComponent(new HitTargetOnActivate());
-        obj.AddComponent(new DeleteAfter(new DeleteAfterParametersTemplate(lifeTime)));
 
         return obj;
     }

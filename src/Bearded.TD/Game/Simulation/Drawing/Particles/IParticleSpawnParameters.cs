@@ -20,6 +20,9 @@ interface IParticleSpawnParameters
     Difference3 Offset { get; }
     bool RelativeToDirection { get; }
 
+    Unit RandomOffset { get; }
+    float RandomOffsetNoise { get; }
+
     Color? Color { get; }
 
     Velocity3 Velocity { get; }

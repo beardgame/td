@@ -1,4 +1,5 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
@@ -9,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
 static class ParticleSpawning
 {
-    public static void CreateParticles(
+    public static Span<Particle> CreateParticles(
         this Particles particles,
         IParticleSpawnParameters parameters,
         Velocity3 sharedVelocity,
@@ -43,6 +44,9 @@ static class ParticleSpawning
             var offset = parameters.Offset;
             offset = (offset.X * unitY + offset.Y * unitX).WithZ(offset.Z);
 
+            if (parameters.RandomOffset != 0.U())
+                offset += Vectors.GetRandomUnitVector3() * parameters.RandomOffset * noise(parameters.RandomOffsetNoise);
+
             var orientation = direction + Angle.FromDegrees(360) * noise(parameters.OrientationNoise);
 
             var angularVelocity = parameters.AngularVelocity * noise(parameters.AngularVelocityNoise);
@@ -65,6 +69,8 @@ static class ParticleSpawning
                 TimeOfDeath = timeOfDeath,
             };
         }
+
+        return particleSpan;
     }
 
     public static float Noise(float amount) => noise(amount);

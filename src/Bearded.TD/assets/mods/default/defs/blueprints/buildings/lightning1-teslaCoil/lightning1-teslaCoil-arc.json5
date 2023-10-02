@@ -15,18 +15,38 @@
                 damageToDurationFactor: 0.04,
             }
         },
-        {
-            id: "arc",
-            parameters: {
-                sprite: "default.particle.tracer"
+
+        { id: "particles" },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 5 } },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.particle.circle-soft",
+        } },
+
+        { id: "particlesSpawnConnectingSourceAndTarget", parameters:  {
+            color: "White",
+            lifeTime: 0.4,
+            lifeTimeNoise: 0.3,
+            randomVelocity: 0.5,
+            randomVelocityNoise: 0.8,
+            randomOffset: 0.1,
+            randomoffsetNoise: 1,
+
+            segmentLength: 0.6,
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.1, color: "White" },
+                    { duration: 0.9, size: 0.1, color: "White" },
+                    { duration: 1, size: 0.1, color: "00000000" },
+                ],
             }
-        },
-        {
-            id: "pointlight",
-            parameters: {
-                color: "LightCyan",
-                radius: 1,
-            }
-        },
+        } },
+
+        { id: "particlesDeleteIf", parameters: { noParticles: true } }
     ]
 }

@@ -18,7 +18,6 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<FireWeapo
     public interface IParameters : IParametersTemplate<IParameters>
     {
         IGameObjectBlueprint Arc { get; }
-        TimeSpan LifeTime { get; }
     }
 
     public ArcEmitter(IParameters parameters) : base(parameters) { }
@@ -40,7 +39,7 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<FireWeapo
 
         foreach (var arc in arcs)
         {
-            var arcObject = ArcFactory.CreateArc(Parameters.Arc, Owner, arc.Source, arc.Target, damagePerTarget, Parameters.LifeTime);
+            var arcObject = ArcFactory.CreateArc(Parameters.Arc, Owner, arc.Source, arc.Target, damagePerTarget);
             Owner.Game.Add(arcObject);
         }
     }

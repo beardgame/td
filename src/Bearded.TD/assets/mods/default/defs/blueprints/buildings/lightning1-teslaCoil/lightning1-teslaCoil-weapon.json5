@@ -24,7 +24,6 @@
             id: "arcEmitter",
             parameters: {
                 arc: "lightning1-teslaCoil-arc",
-                lifeTime: 0.333,
             }
         },
         {
