@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.ShaderManagement;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content;
@@ -14,12 +14,15 @@ using Bearded.Utilities.Threading;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using static Bearded.TD.Rendering.Loading.SpriteTextureTransformations;
-using Image = SixLabors.ImageSharp.Image;
 
 namespace Bearded.TD.Rendering.Loading;
 
 sealed class GraphicsLoader : IGraphicsLoader
 {
+    readonly record struct Bitmaps(string Name, Dictionary<string, Image<Bgra32>> BitmapsBySampler);
+    readonly record struct PositionedBitmaps(Bitmaps Bitmaps, int X, int Y);
+    readonly record struct PackedBitmaps(IReadOnlyList<PositionedBitmaps> PositionedBitmaps, int Width, int Height);
+
     // TODO: use mod specific shader managers (tricky bit: hot reload)
     private readonly ShaderManager shaderManager;
     private readonly IActionQueue glActions;
@@ -33,7 +36,7 @@ sealed class GraphicsLoader : IGraphicsLoader
     }
 
     public ISpriteSetImplementation CreateSpriteSet(
-        IEnumerable<Sampler> samplers, IEnumerable<SpriteBitmaps> sprites, string id)
+        IEnumerable<Sampler> samplers, IEnumerable<SpriteBitmaps> sprites, string id, SpritePackMode packMode)
     {
         // Avoid multiple enumeration
         var samplerArray = samplers.ToImmutableArray();
@@ -45,9 +48,71 @@ sealed class GraphicsLoader : IGraphicsLoader
             return new PackedSpriteSetBuilder(new(), 0, 0).Build(glActions, new());
         }
 
-        var packedSprites = BinPacking.Pack(spriteRectangles);
+        PackedBitmaps packedSprites = packMode switch
+        {
+            SpritePackMode.Any => binPack(spriteRectangles),
+            SpritePackMode.Vertical => packVertically(spriteRectangles),
+            SpritePackMode.Horizontal => packHorizontally(spriteRectangles),
+            _ => throw new ArgumentOutOfRangeException(nameof(packMode), packMode, null)
+        };
 
-        var usedSamplers = packedSprites.Rectangles.SelectMany(r => r.Value.BitmapsBySampler.Keys).Distinct().ToList();
+        PackedBitmaps binPack(List<BinPacking.Rectangle<Bitmaps>> rectangles)
+        {
+            var result = BinPacking.Pack(rectangles);
+
+            return new PackedBitmaps(
+                result.Rectangles.Select(b => new PositionedBitmaps(b.Value, b.X, b.Y)).ToList(),
+                result.Width,
+                result.Height
+            );
+        }
+
+        PackedBitmaps packVertically(List<BinPacking.Rectangle<Bitmaps>> rectangles)
+        {
+            var height = rectangles.Sum(r => r.Height);
+            var width = rectangles.Max(r => r.Width);
+            var minWidth = rectangles.Min(r => r.Width);
+            if (minWidth < width)
+                logger.Warning?.Log($"Sprite set '{id}' contains sprites with different widths. " +
+                                    $"This may cause issues with the sprite set.");
+
+            var y = 0;
+
+            return new PackedBitmaps(
+                rectangles.Select(r =>
+                {
+                    var b = new PositionedBitmaps(r.Value, 0, y);
+                    y += r.Height;
+                    return b;
+                }).ToList(),
+                width,
+                height
+            );
+        }
+
+        PackedBitmaps packHorizontally(List<BinPacking.Rectangle<Bitmaps>> rectangles)
+        {
+            var width = rectangles.Sum(r => r.Width);
+            var height = rectangles.Max(r => r.Height);
+            var minHeight = rectangles.Min(r => r.Height);
+            if (minHeight < height)
+                logger.Warning?.Log($"Sprite set '{id}' contains sprites with different heights. " +
+                                    $"This may cause issues with the sprite set.");
+            var x = 0;
+
+            return new PackedBitmaps(
+                rectangles.Select(r =>
+                {
+                    var b = new PositionedBitmaps(r.Value, x, 0);
+                    x += r.Width;
+                    return b;
+                }).ToList(),
+                width,
+                height
+            );
+        }
+
+        var usedSamplers = packedSprites.PositionedBitmaps.SelectMany(r => r.Bitmaps.BitmapsBySampler.Keys).Distinct().ToList();
         var unusedSamplersCount = samplerArray.Select(s => s.Name).Except(usedSamplers).Count();
 
         if (unusedSamplersCount > 0)
@@ -55,10 +120,10 @@ sealed class GraphicsLoader : IGraphicsLoader
 
         var builder = new PackedSpriteSetBuilder(usedSamplers, packedSprites.Width, packedSprites.Height);
 
-        foreach (var rectangle in packedSprites.Rectangles)
+        foreach (var rectangle in packedSprites.PositionedBitmaps)
         {
-            var sprite = rectangle.Value.Name;
-            foreach (var (sampler, bitmap) in rectangle.Value.BitmapsBySampler)
+            var sprite = rectangle.Bitmaps.Name;
+            foreach (var (sampler, bitmap) in rectangle.Bitmaps.BitmapsBySampler)
             {
                 builder.CopyBitmap(sprite, sampler, bitmap, rectangle.X, rectangle.Y);
                 bitmap.Dispose();
@@ -80,7 +145,7 @@ sealed class GraphicsLoader : IGraphicsLoader
             ));
         }
 
-        static BinPacking.Rectangle<(string Name, Dictionary<string, Image<Bgra32>> BitmapsBySampler)>
+        static BinPacking.Rectangle<Bitmaps>
             rectangleWithBitmaps(SpriteBitmaps bitmaps)
         {
             var bitmapsBySampler = bitmaps.BitmapsBySampler.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Value);
@@ -91,11 +156,11 @@ sealed class GraphicsLoader : IGraphicsLoader
                     $"Sprite '{bitmaps.SpriteId}' has component images of different sizes");
         }
 
-        static BinPacking.Rectangle<(string, Dictionary<string, Image<Bgra32>>)> rectangleForSpriteWithSize(
+        static BinPacking.Rectangle<Bitmaps> rectangleForSpriteWithSize(
             string spriteId,
             Dictionary<string, Image<Bgra32>> bitmapsBySampler, (int width, int height) size)
         {
-            return new((spriteId, bitmapsBySampler), size.width, size.height);
+            return new(new(spriteId, bitmapsBySampler), size.width, size.height);
         }
 
         static bool allImagesHaveSameSize(ICollection<Image<Bgra32>> bitmaps, out (int width, int height) size)

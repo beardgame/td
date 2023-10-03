@@ -61,7 +61,8 @@ namespace Bearded.TD.Tests.Content
             public ISpriteSetImplementation CreateSpriteSet(
                 IEnumerable<Sampler> samplers,
                 IEnumerable<SpriteBitmaps> sprites,
-                string id) => new MockSpriteSetImplementation();
+                string id,
+                SpritePackMode packMode) => new MockSpriteSetImplementation();
 
             public IRendererShader CreateRendererShader(
                 IList<ModShaderFile> shaders,

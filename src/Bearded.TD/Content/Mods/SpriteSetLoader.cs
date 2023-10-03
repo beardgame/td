@@ -41,7 +41,7 @@ sealed class SpriteSetLoader
         var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
         return modLoadingContext.GraphicsLoader.CreateSpriteSet(
-            samplers.Select(s => s.Sampler), sprites, jsonModel.Id);
+            samplers.Select(s => s.Sampler), sprites, jsonModel.Id, jsonModel.PackMode);
     }
 
     private static IEnumerable<SpriteBitmaps>
