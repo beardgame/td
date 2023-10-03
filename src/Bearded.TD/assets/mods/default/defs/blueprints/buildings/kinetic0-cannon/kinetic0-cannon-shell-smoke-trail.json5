@@ -5,12 +5,13 @@
         { id: "particlesMoveLinear" },
 
         { id: "particlesDrawConnected", parameters: {
-            sprite: "default.particle.mote",
+            sprite: "default.trails.smoke",
+            uvLength : 4,
         } },
 
         { id: "particlesSpawnContinuously", parameters:  {
             color: "White",
-            interval: 0.03,
+            interval: 0.02,
             lifeTime: 0.6,
             lifeTimeNoise: 0,
             randomVelocity: 0.3,
@@ -25,8 +26,8 @@
             scaleToParticleLifeTime: true,
             animation: {
                 keyFrames: [
-                    { duration: 0.0, size: 0.05, color: "White" },
-                    { duration: 1, size: 0.2, color: "00000000" },
+                    { duration: 0.0, size: 0.1, color: "White" },
+                    { duration: 1, size: 0.4, color: "00000000" },
                 ],
             }
         } },

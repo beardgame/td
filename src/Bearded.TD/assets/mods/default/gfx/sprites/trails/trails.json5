@@ -1,0 +1,10 @@
+﻿{
+    id: "trails",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ],
+    packmode: "vertical"
+}

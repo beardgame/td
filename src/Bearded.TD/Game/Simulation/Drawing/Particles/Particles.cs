@@ -53,6 +53,10 @@ sealed class Particles : Component
     public void AddExtension(IParticleExtension extension)
     {
         extensions.Add(extension);
+        if(particles.Length > 0)
+            extension.Resize(particles.Length);
+        if (currentCount > 0)
+            extension.NotifyAdded(0, currentCount);
     }
 
     public void AddParticle(Particle particle)
