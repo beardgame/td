@@ -28,4 +28,13 @@ readonly struct UVRectangle
         top = Top;
         bottom = Bottom;
     }
+
+    public Vector2 Transform(Vector2 uv)
+    {
+        return Vector2.Lerp(
+            Vector2.Lerp(TopLeft, TopRight, uv.X),
+            Vector2.Lerp(BottomLeft, BottomRight, uv.X),
+            uv.Y
+        );
+    }
 }

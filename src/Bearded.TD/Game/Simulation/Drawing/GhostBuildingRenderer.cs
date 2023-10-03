@@ -43,7 +43,7 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
         }
     }
 
-    protected override IDrawableSprite<TVertexData> Drawable<TVertex, TVertexData>(
+    protected override IDrawableSprite<TVertex, TVertexData> Drawable<TVertex, TVertexData>(
         SpriteDrawInfo<TVertex, TVertexData> sprite)
     {
         return sprite.Sprite.MakeConcreteWith(

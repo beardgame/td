@@ -1,3 +1,4 @@
+using System;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
@@ -6,7 +7,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Loading;
 
-sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertexData>
+sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertex, TVertexData>
     where TVertex : struct, IVertexData
 {
     public delegate TVertex CreateSprite(Vector3 position, Vector2 uv, TVertexData data);
@@ -69,19 +70,18 @@ sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertexData>
         TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3)
     {
         meshBuilder.AddQuad(
-            createVertex(p0, transformUV(uv0), data0),
-            createVertex(p1, transformUV(uv1), data1),
-            createVertex(p2, transformUV(uv2), data2),
-            createVertex(p3, transformUV(uv3), data3)
+            createVertex(p0, uv.Transform(uv0), data0),
+            createVertex(p1, uv.Transform(uv1), data1),
+            createVertex(p2, uv.Transform(uv2), data2),
+            createVertex(p3, uv.Transform(uv3), data3)
         );
     }
 
-    private Vector2 transformUV(Vector2 localUV)
+    public void DrawIndexedVertices(
+        int vertexCount, int indexCount, out Span<TVertex> vertices, out Span<ushort> indices,
+        out ushort indexOffset, out UVRectangle uvs)
     {
-        return Vector2.Lerp(
-            Vector2.Lerp(uv.TopLeft, uv.TopRight, localUV.X),
-            Vector2.Lerp(uv.BottomLeft, uv.BottomRight, localUV.X),
-            localUV.Y
-        );
+        meshBuilder.Add(vertexCount, indexCount, out vertices, out indices, out indexOffset);
+        uvs = uv;
     }
 }

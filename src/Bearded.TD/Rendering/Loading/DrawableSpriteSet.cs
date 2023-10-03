@@ -50,7 +50,7 @@ sealed class DrawableSpriteSet<TVertex, TVertexData> : IDisposable, IClearable
         this.textures = textures;
     }
 
-    public IDrawableSprite<TVertexData> GetSprite(string name)
+    public IDrawableSprite<TVertex, TVertexData> GetSprite(string name)
     {
         return sprites[name];
     }

@@ -1,7 +1,15 @@
 using System;
+using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering;
+
+interface IDrawableSprite<TVertex, in TVertexData> : IDrawableSprite<TVertexData>
+{
+    void DrawIndexedVertices(
+        int vertexCount, int indexCount,
+        out Span<TVertex> vertices, out Span<ushort> indices, out ushort indexOffset, out UVRectangle uvs);
+}
 
 interface IDrawableSprite<in TVertexData>
 {

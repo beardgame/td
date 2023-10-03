@@ -1,10 +1,12 @@
+using System;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Shared.Events;
-using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
@@ -69,7 +71,14 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         Drawable(sprite).DrawQuad(p0, p1, p2, p3, uv0, uv1, uv2, uv3, data);
     }
 
-    protected virtual IDrawableSprite<TVertexData> Drawable<TVertex, TVertexData>(
+    public void DrawIndexedVertices<TVertex, TVertexData>(
+        SpriteDrawInfo<TVertex, TVertexData> sprite, int vertexCount, int indexCount, out Span<TVertex> vertices,
+        out Span<ushort> indices, out ushort indexOffset, out UVRectangle uvs) where TVertex : struct, IVertexData
+    {
+        Drawable(sprite).DrawIndexedVertices(vertexCount, indexCount, out vertices, out indices, out indexOffset, out uvs);
+    }
+
+    protected virtual IDrawableSprite<TVertex, TVertexData> Drawable<TVertex, TVertexData>(
         SpriteDrawInfo<TVertex, TVertexData> sprite)
         where TVertex : struct, IVertexData
     {
