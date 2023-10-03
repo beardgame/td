@@ -75,7 +75,8 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
 
         var particleCount = Math.Max(2, MoreMath.CeilToInt(pathLength / Parameters.SegmentLength) + 1);
         var particles = Particles.CreateParticles(
-            Parameters, Velocity3.Zero, Direction2.Zero, Owner.Game.Time, Position3.Zero, particleCount);
+            Parameters, Velocity3.Zero, Direction2.Zero, Owner.Game.Time, Position3.Zero,
+            out var transaction, particleCount);
 
         particles[0].Position = sourcePosition;
         particles[^1].Position = targetPosition;
@@ -114,6 +115,8 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
             var z = sourcePosition.Z + (targetPosition.Z - sourcePosition.Z) * zT;
             particle.Position += (previousPoint + (nextPoint - previousPoint) * t).WithZ(z) - Position3.Zero;
         }
+
+        transaction.Commit();
     }
 
     public override void Update(TimeSpan elapsedTime)

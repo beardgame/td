@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
 static class ParticleSpawning
 {
-    public static Span<Particle> CreateParticles(
+    public static void CreateParticles(
         this Particles particles,
         IParticleSpawnParameters parameters,
         Velocity3 sharedVelocity,
@@ -19,10 +19,24 @@ static class ParticleSpawning
         Position3 here,
         int? countOverride = null)
     {
+        CreateParticles(particles, parameters, sharedVelocity, baseDirection, now, here, out var transaction, countOverride);
+        transaction.Commit();
+    }
+
+    public static Span<Particle> CreateParticles(
+        this Particles particles,
+        IParticleSpawnParameters parameters,
+        Velocity3 sharedVelocity,
+        Direction2 baseDirection,
+        Instant now,
+        Position3 here,
+        out Particles.AddTransaction transaction,
+        int? countOverride = null)
+    {
         var direction = baseDirection + parameters.Orientation;
         var color = parameters.Color ?? Color.White;
         var count = countOverride ?? parameters.Count;
-        var particleSpan = particles.AddParticles(count);
+        var particleSpan = particles.AddParticles(count, out transaction);
 
         var unitX = Vector2.UnitX;
         var unitY = Vector2.UnitY;
