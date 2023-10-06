@@ -10,14 +10,15 @@ updates:
     commit-message:
       prefix: "⬆"
     groups:
-      # Always update all OpenTK dependencies together to keep them in sync
       opentk:
         patterns:
           - "OpenTK*"
-      # Always update all xUnit dependencies together since they always release together
       xunit:
         patterns:
           - "xunit*"
+      verify:
+        patterns:
+          - "Verify*"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
