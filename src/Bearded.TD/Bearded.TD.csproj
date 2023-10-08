@@ -57,8 +57,4 @@
   <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <None Include="assets\**\*" Exclude="assets\mods\debug\*" Link="assets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Game\Simulation\Projectiles\events" />
-  </ItemGroup>
 </Project>
