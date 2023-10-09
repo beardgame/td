@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Debug;
+using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Statistics;
@@ -41,6 +42,8 @@ sealed class ReportControlFactory : IReportControlFactory
         return report switch
         {
             IBuildingStateReport buildingStateReport => new BuildingStateControl(game, buildingStateReport),
+            IDischargeModeReport capacitorDischargeReport =>
+                new CapacitorDischargeReportControl(game, capacitorDischargeReport),
             IEmergencyEMPReport emergencyEMPReport => new EmergencyEMPControl(game, emergencyEMPReport),
             IHealthReport healthReport => new HealthReportControl(healthReport),
             IManualControlReport manualControlReport => new ManualControlReportControl(game, manualControlReport),

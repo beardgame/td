@@ -15,6 +15,9 @@ sealed class CapacitorFireCycle : WeaponCycleHandler<CapacitorFireCycle.IParamet
     }
 
     private ICapacitor? capacitor;
+    private IProperty<CapacitorDischargeMode>? dischargeModeProperty;
+    private CapacitorDischargeMode dischargeMode =>
+        dischargeModeProperty?.Value ?? CapacitorDischargeMode.MinimumCharge;
 
     public CapacitorFireCycle(IParameters parameters)
         : base(parameters)
@@ -25,12 +28,13 @@ sealed class CapacitorFireCycle : WeaponCycleHandler<CapacitorFireCycle.IParamet
     {
         base.Activate();
         Owner.TryGetSingleComponentInOwnerTree(out capacitor);
+        Owner.TryGetSingleComponentInOwnerTree(out dischargeModeProperty);
     }
 
     protected override void UpdateShooting()
     {
         if (capacitor is null) return;
-        if (capacitor.CurrentCharge < capacitor.MaxCharge) return;
+        if (capacitor.CurrentCharge < dischargeMode.MinimumChargePercentage() * capacitor.MaxCharge) return;
 
         var charge = capacitor.Discharge();
         var damage = toDamage(charge);
