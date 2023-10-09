@@ -1,0 +1,23 @@
+{
+    id: "lightning1-betterCapacitor",
+    name: "Supercharged capacitor",
+    cost: 50,
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "chargeCapacity",
+                mode: "multiply",
+                value: 1.8,
+            },
+        },
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "rechargeRate",
+                mode: "multiply",
+                value: 1.5,
+            }
+        }
+    ]
+}
