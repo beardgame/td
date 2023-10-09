@@ -24,11 +24,17 @@
             sprite: "default.trails.arc",
             uvLength : 4
         } },
+        { id: "particlesDrawLight", parameters: {
+            color: "FFDDDDFF",
+            radius: 1,
+            intensity: 1,
+            alphaMode: "fromParticleAlpha",
+        } },
 
         { id: "particlesSpawnConnectingSourceAndTarget", parameters:  {
             color: "White",
             lifeTime: 0.4,
-            lifeTimeNoise: 0.3,
+            lifeTimeNoise: 0,
             randomVelocity: 0.5,
             randomVelocityNoise: 0.8,
             randomOffset: 0.1,
