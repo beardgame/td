@@ -19,6 +19,7 @@
         { id: "particles" },
         { id: "particlesMoveLinear" },
         { id: "particlesDrag", parameters: { linear: 5 } },
+        { id: "particlesAttachToSourceAndTarget" },
 
         { id: "particlesDrawConnected", parameters: {
             sprite: "default.trails.arc",
