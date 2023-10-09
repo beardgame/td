@@ -50,8 +50,8 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         var particles = Particles.ImmutableParticles;
         var uvs = particleUVs.MutableData;
 
-        var u = 0f;
-        Position3 previousPoint = default;
+        float u;
+        Position3 previousPoint;
 
         if (index > 0)
         {
@@ -61,6 +61,11 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
             u = uvs[index - 1] + distance / Parameters.UVLength;
 
             previousPoint = currentPoint;
+        }
+        else
+        {
+            previousPoint = particles[0].Position;
+            u = StaticRandom.Float();
         }
 
         uvs[index] = u;
