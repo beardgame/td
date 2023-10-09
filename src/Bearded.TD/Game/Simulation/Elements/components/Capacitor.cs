@@ -46,7 +46,7 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
     {
         if (Parameters.MaxCharge != MaxCharge)
         {
-            updateMaxCharge(MaxCharge);
+            updateMaxCharge(Parameters.MaxCharge);
         }
         updateCharge(elapsedTime);
     }
