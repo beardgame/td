@@ -14,11 +14,8 @@
             interval: 0.02,
             lifeTime: 0.6,
             lifeTimeNoise: 0,
-            randomVelocity: 0.3,
+            randomVelocity: 0.2,
             randomVelocityNoise: 0.8,
-            angularVelocity: 90,
-            angularVelocityNoise: 0.5,
-            randomAngularVelocitySign: true,
             stopOnParent : [ "objectDeleting" ]
         }},
 
