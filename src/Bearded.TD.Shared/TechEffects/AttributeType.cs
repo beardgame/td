@@ -4,16 +4,17 @@ public enum AttributeType : byte
 {
     None = 0,
 
+    ChargeCapacity,
     Damage,
     DamageOverTime,
-    EffectStrength,
+    Drag,
     FireRate,
     FuelCapacity,
     Health,
     MovementSpeed,
     Range,
+    RechargeRate,
     SplashRange,
     SpreadAngle,
     TurnSpeed,
-    Drag,
 }

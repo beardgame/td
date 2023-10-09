@@ -12,7 +12,10 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
+        [Modifiable(AttributeType.RechargeRate)]
         ElectricChargeRate RechargeRate { get; }
+
+        [Modifiable(AttributeType.ChargeCapacity)]
         ElectricCharge MaxCharge { get; }
     }
 
