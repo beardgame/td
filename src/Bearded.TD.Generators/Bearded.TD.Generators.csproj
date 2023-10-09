@@ -12,8 +12,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- Use the Analyzer OutputItemType to ensure the project is referenced at the right stage -->
-        <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" OutputItemType="Analyzer" />
+        <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" PrivateAssets="all" />
     </ItemGroup>
+
+    <!-- Manually extend where we look for dependencies to include project references -->
+    <PropertyGroup>
+        <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    </PropertyGroup>
+    <Target Name="GetDependencyTargetPaths">
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="..\..\bin\Bearded.TD.Shared\$(Configuration)\Bearded.TD.Shared.dll" IncludeRuntimeDependency="false"/>
+        </ItemGroup>
+    </Target>
 
 </Project>
