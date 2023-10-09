@@ -7,8 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
-      <PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.1" PrivateAssets="all" />
+        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.3.1" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Use the Analyzer OutputItemType to ensure the project is referenced at the right stage -->
+        <ProjectReference Include="..\Bearded.TD.Shared\Bearded.TD.Shared.csproj" OutputItemType="Analyzer" />
     </ItemGroup>
 
 </Project>

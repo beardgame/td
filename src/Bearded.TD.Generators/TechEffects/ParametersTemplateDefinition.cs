@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Shared.TechEffects;
 using Microsoft.CodeAnalysis;
 
 namespace Bearded.TD.Generators.TechEffects
@@ -91,9 +92,9 @@ namespace Bearded.TD.Generators.TechEffects
                         var defaultValue = defaultConstant?.Value;
                         var typeConstant = modifiableAttribute?.NamedArguments
                             .FirstOrDefault(pair => pair.Key == "Type").Value;
-                        var attributeType = typeConstant?.Value == null
-                            ? "AttributeType.None"
-                            : $"(AttributeType) {typeConstant.Value.Value}";
+                        var attributeTypeValue = (byte?) typeConstant?.Value ?? default(byte);
+                        var attributeTypeEnum = (AttributeType) attributeTypeValue;
+                        var attributeType = $"AttributeType.{attributeTypeEnum}";
 
                         attributeConverters.TryGetValue(propertySymbol.Type, out var converter);
                         return new ParametersPropertyDefinition(
