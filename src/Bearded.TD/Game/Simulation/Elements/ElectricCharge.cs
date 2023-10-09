@@ -42,6 +42,10 @@ readonly struct ElectricCharge : IMeasure1F
     public static ElectricCharge operator -(ElectricCharge left, ElectricCharge right) =>
         new(left.NumericValue - right.NumericValue);
 
+    public static ElectricCharge operator *(float scalar, ElectricCharge charge) => new(scalar * charge.NumericValue);
+
+    public static ElectricCharge operator *(ElectricCharge charge, float scalar) => scalar * charge;
+
     public static float operator /(ElectricCharge left, ElectricCharge right) => left.NumericValue / right.NumericValue;
 
     public static ElectricChargeRate operator /(ElectricCharge charge, TimeSpan duration) =>

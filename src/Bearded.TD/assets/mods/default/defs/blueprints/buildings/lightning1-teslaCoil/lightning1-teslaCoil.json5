@@ -37,10 +37,11 @@
         {
             id: "capacitor",
             parameters: {
-                maxCharge: 10,
+                maxCharge: 60,
                 rechargeRate: 30,
             }
         },
+        { id: "dischargeMode" },
         {
             id: "sprite",
             parameters: {
