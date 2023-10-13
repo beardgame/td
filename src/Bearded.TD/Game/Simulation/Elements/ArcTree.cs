@@ -34,6 +34,7 @@ static class ArcTree
 
     public record struct Continuation(
         GameObject Source,
+        IArea CoveringTiles,
         int BouncesBefore,
         int BouncesLeft,
         int Branches,
@@ -41,10 +42,10 @@ static class ArcTree
     {
         public static Continuation Initial(
             GameObject source, int bounces = 1, int branches = 1, int maxBounceDistance = 2)
-            => new(source, 0, bounces, branches, maxBounceDistance);
+            => new(source, Area.Single(Level.GetTile(source.Position)), 0, bounces, branches, maxBounceDistance);
     }
 
-    public static List<Arc> Strike(
+    public static IReadOnlyList<Arc> Strike(
         GameState game,
         GameObject? source,
         IArcSource arcSource,
@@ -92,9 +93,8 @@ static class ArcTree
 
     private static ImmutableArray<Tile> getAreaForContinuation(State state, Continuation continuation)
     {
-        var origin = Level.GetTile(continuation.Source.Position);
         var tiles = state.Ranger.GetTilesInRange(
-            state.Game, state.Passability, origin, 0.U(), continuation.MaxBounceDistance.U());
+            state.Game, state.Passability, continuation.CoveringTiles, 0.U(), continuation.MaxBounceDistance.U());
         return tiles;
     }
 
@@ -146,6 +146,7 @@ static class ArcTree
     {
         var continuation = new Continuation(
             source,
+            Area.Single(Level.GetTile(source.Position)),
             previousContinuation.BouncesBefore + 1,
             previousContinuation.BouncesLeft - 1,
             previousContinuation.Branches,
