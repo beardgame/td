@@ -4,7 +4,12 @@
     { id: "currentTileNotifier" },
     { id: "physicalTilePresence" },
     { id: "tileBasedVisibility" },
-    { id: "conductive" },
+    {
+      id: "conductive",
+      parameters: {
+        addsBranching: 1
+      }
+    },
     {
       id: "sprite",
       parameters: {

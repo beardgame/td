@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 using static System.Math;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -12,9 +13,16 @@ interface IConductive
 }
 
 [Component("conductive")]
-sealed class Conductive : Component, IConductive
+sealed class Conductive : Component<Conductive.IParameters>, IConductive
 {
+    public interface IParameters : IParametersTemplate<IParameters>
+    {
+        public int AddsBranching { get; }
+    }
+
     private readonly MutableArea area = new();
+
+    public Conductive(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded() { }
 
@@ -32,7 +40,7 @@ sealed class Conductive : Component, IConductive
         arc = arc with
         {
             BouncesLeft = arc.BouncesLeft + 1,
-            Branches = Max(arc.Branches, 1),
+            Branches = Max(arc.Branches + Parameters.AddsBranching, 1),
             MaxBounceDistance = Max(arc.MaxBounceDistance, 2),
             CoveringTiles = area
         };
