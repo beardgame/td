@@ -13,6 +13,8 @@ namespace Bearded.TD.Game.Simulation.Elements;
 [Component("arcEmitter")]
 sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<FireWeapon>, IArcSource
 {
+    private const float maxExtraDamage = 0.6f;
+
     private IWeaponRange range = null!;
 
     public interface IParameters : IParametersTemplate<IParameters>
@@ -35,7 +37,10 @@ sealed class ArcEmitter : Component<ArcEmitter.IParameters>, IListener<FireWeapo
         var arcs = ArcTree.Strike(Owner.Game, Owner, this, range.GetTilesInRange());
 
         var damageableTargetCount = arcs.Count(a => a.Target.GetComponents<IHealthEventReceiver>().Any());
-        var damagePerTarget = e.Damage / Math.Max(1, damageableTargetCount);
+        var damageFactorBasedOnTargetCount =
+            1 + maxExtraDamage * (1 - MathF.Pow(0.5f, Math.Max(0, damageableTargetCount - 1)));
+        var totalDamage = e.Damage * damageFactorBasedOnTargetCount;
+        var damagePerTarget = totalDamage / Math.Max(1, damageableTargetCount);
 
         foreach (var arc in arcs)
         {
