@@ -1,0 +1,15 @@
+{
+  id: "lightning2-arcBranching",
+  name: "Arc branching",
+  cost: 50,
+  effects: [
+    {
+      type: "modification",
+      parameters: {
+        attributeType: "arcBranches",
+        mode: "constant",
+        value: 2,
+      }
+    },
+  ]
+}

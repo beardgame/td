@@ -12,7 +12,7 @@
           onHitLevel: true,
           onHitEnemy: true,
           fractionOfBaseDamage: 0.33,
-          branches: 6,
+          branches: 4,
         }
       },
       prerequisites: {
