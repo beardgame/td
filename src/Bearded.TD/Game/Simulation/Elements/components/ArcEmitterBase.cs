@@ -13,14 +13,21 @@ abstract class ArcEmitterBase<T> : Component<T>, IArcSource
     where T : IArcEmissionParameters, IParametersTemplate<T>
 {
     private const float maxExtraDamage = 0.6f;
+    private const int maxRetries = 3;
 
     protected ArcEmitterBase(T parameters) : base(parameters) { }
 
     protected void EmitArc(UntypedDamage baseDamage, ImmutableArray<Tile> tilesInRange)
     {
-        var arcs = ArcTree.Strike(Owner.Game, Owner, this, tilesInRange);
+        IReadOnlyList<ArcTree.Arc> arcs = ImmutableArray<ArcTree.Arc>.Empty;
+        var damageableTargetCount = 0;
 
-        var damageableTargetCount = arcs.Count(a => a.Target.GetComponents<IHealthEventReceiver>().Any());
+        for (var i = 0; i < maxRetries && damageableTargetCount == 0; i++)
+        {
+            arcs = ArcTree.Strike(Owner.Game, Owner, this, tilesInRange);
+            damageableTargetCount = arcs.Count(a => a.Target.GetComponents<IHealthEventReceiver>().Any());
+        }
+
         var damageFactorBasedOnTargetCount =
             1 + maxExtraDamage * (1 - MathF.Pow(0.5f, Math.Max(0, damageableTargetCount - 1)));
         var totalDamage = baseDamage * damageFactorBasedOnTargetCount;
