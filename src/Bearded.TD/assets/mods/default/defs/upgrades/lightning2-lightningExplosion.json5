@@ -10,6 +10,7 @@
         parameters: {
           arc: "lightning1-teslaCoil-arc",
           onHitLevel: true,
+          onHitEnemy: true,
           fractionOfBaseDamage: 0.33,
           branches: 6,
         }
