@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
@@ -14,12 +12,12 @@ interface IRanger
         PassabilityLayer passabilityLayer,
         Tile origin,
         Unit minimumRange,
-        Unit maximumRange) => GetTilesInRange(game, passabilityLayer, origin.Yield(), minimumRange, maximumRange);
+        Unit maximumRange) => GetTilesInRange(game, passabilityLayer, Area.Single(origin), minimumRange, maximumRange);
 
     ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IEnumerable<Tile> origin,
+        IArea origin,
         Unit minimumRange,
         Unit maximumRange);
 }
