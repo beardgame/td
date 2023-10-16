@@ -23,6 +23,12 @@
             id: "hitLevelAtTower"
         },
         {
+            id: "tags",
+            parameters: {
+                tags: [ "hitsLevel" ]
+            }
+        },
+        {
             id: "splashDamageOnHit",
             parameters: {
                 range: 1.5

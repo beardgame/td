@@ -10,6 +10,12 @@
         },
         { id: "deleteOnHit" },
         {
+            id: "tags",
+            parameters: {
+                tags: [ "hitsLevel" ]
+            }
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "default.particle.orb-soft",
