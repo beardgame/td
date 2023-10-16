@@ -1,7 +1,7 @@
 ﻿{
   id: "kinetic2-gatling-spent-shells",
   components: [
-    { id: "particles" },
+    { id: "particles", parameters: { } },
     { id: "particlesCollideWithLevel", parameters : {
       collisionNormalFactor: 0.6,
       collisionTangentFactor: 0.6,

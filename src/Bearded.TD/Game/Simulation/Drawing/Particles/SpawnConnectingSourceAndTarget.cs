@@ -19,6 +19,8 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
     {
         [Modifiable(1)]
         Unit SegmentLength { get; }
+
+        TimeSpan LifetimeOffsetPerUnit { get; }
     }
 
     public SpawnConnectingSourceAndTarget(IParameters parameters) : base(parameters)
@@ -114,6 +116,10 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
             var zT = distanceTraveled / pathLength;
             var z = sourcePosition.Z + (targetPosition.Z - sourcePosition.Z) * zT;
             particle.Position += (previousPoint + (nextPoint - previousPoint) * t).WithZ(z) - Position3.Zero;
+
+            var lifeTimeOffset = Parameters.LifetimeOffsetPerUnit * (distanceTraveled / 1.U());
+            particle.CreationTime += lifeTimeOffset;
+            particle.TimeOfDeath += lifeTimeOffset;
         }
 
         transaction.Commit();

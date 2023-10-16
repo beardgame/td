@@ -1,7 +1,7 @@
 ﻿{
   id: "building-disabled-smoke",
   components: [
-    { id: "particles" },
+    { id: "particles", parameters: { } },
     { id: "particlesMoveLinear" },
     { id: "particlesGravity", parameters: { factor: -0.08 } },
     { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },

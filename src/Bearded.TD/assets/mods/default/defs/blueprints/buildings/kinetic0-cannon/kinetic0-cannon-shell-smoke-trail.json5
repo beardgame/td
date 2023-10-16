@@ -1,7 +1,7 @@
 {
     id: "kinetic0-cannon-shell-smoke-trail",
     components: [
-        { id: "particles" },
+        { id: "particles", parameters: { } },
         { id: "particlesMoveLinear" },
 
         { id: "particlesDrawConnected", parameters: {

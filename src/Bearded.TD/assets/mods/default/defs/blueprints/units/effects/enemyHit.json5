@@ -1,7 +1,7 @@
 {
   id: "enemyHit",
   components: [
-    { id: "particles" },
+    { id: "particles", parameters: { } },
     { id: "particlesCollideWithLevel", parameters : {
       collisionNormalFactor: 0.3,
       collisionTangentFactor: 0.3

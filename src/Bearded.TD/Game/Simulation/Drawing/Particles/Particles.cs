@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
 [Component("particles")]
-sealed class Particles : Component
+sealed class Particles : Component<Particles.IParameters>
 {
     public readonly struct AddTransaction
     {
@@ -28,6 +29,11 @@ sealed class Particles : Component
         }
     }
 
+    public interface IParameters : IParametersTemplate<IParameters>
+    {
+        bool DontRemoveDeadParticles { get; }
+    }
+
     private Particle[] particles = Array.Empty<Particle>();
     private int currentCount;
 
@@ -36,6 +42,10 @@ sealed class Particles : Component
     public int Count => currentCount;
 
     private readonly List<IParticleExtension> extensions = new();
+
+    public Particles(IParameters parameters) : base(parameters)
+    {
+    }
 
     protected override void OnAdded()
     {
@@ -47,6 +57,9 @@ sealed class Particles : Component
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (Parameters.DontRemoveDeadParticles)
+            return;
+
         removeDeadParticles();
     }
 
