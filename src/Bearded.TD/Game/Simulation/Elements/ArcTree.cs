@@ -38,11 +38,11 @@ static class ArcTree
         int BouncesBefore,
         int BouncesLeft,
         int Branches,
-        int MaxBounceDistance)
+        Unit MaxBounceDistance)
     {
         public static Continuation Initial(
-            GameObject source, int bounces = 1, int branches = 1, int maxBounceDistance = 2)
-            => new(source, Area.Single(Level.GetTile(source.Position)), 0, bounces, branches, maxBounceDistance);
+            GameObject source, int bounces = 1, int branches = 1, Unit? maxBounceDistance = null) =>
+            new(source, Area.Single(Level.GetTile(source.Position)), 0, bounces, branches, maxBounceDistance ?? 2.U());
     }
 
     public static IReadOnlyList<Arc> Strike(
@@ -94,7 +94,7 @@ static class ArcTree
     private static ImmutableArray<Tile> getAreaForContinuation(State state, Continuation continuation)
     {
         var tiles = state.Ranger.GetTilesInRange(
-            state.Game, state.Passability, continuation.CoveringTiles, 0.U(), continuation.MaxBounceDistance.U());
+            state.Game, state.Passability, continuation.CoveringTiles, 0.U(), continuation.MaxBounceDistance);
         return tiles;
     }
 

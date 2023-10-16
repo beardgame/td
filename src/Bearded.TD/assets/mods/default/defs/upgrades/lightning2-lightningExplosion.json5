@@ -1,0 +1,22 @@
+{
+  id: "lightning2-lightningExplosion",
+  name: "Lightning explosion",
+  cost: 50,
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "emitArcOnHit",
+        parameters: {
+          arc: "lightning1-teslaCoil-arc",
+          onHitLevel: true,
+          fractionOfBaseDamage: 0.33,
+          branches: 6,
+        }
+      },
+      prerequisites: {
+        requiredTags: [ "hitsLevel" ]
+      }
+    }
+  ]
+}
