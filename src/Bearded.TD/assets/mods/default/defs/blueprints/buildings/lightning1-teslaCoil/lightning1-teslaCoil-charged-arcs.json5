@@ -1,0 +1,69 @@
+{
+    id: "lightning1-teslaCoil-charged-arcs",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 5 } },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.trails.arc",
+            uvLength : 2
+        } },
+        { id: "particlesDrawLight", parameters: {
+            color: "FFDDDDFF",
+            radius: 0.4,
+            intensity: 0.8,
+            alphaMode: "fromParticleAlpha",
+        } },
+
+        { id: "toggleOnTriggers", parameters:  {
+            name: "toggleSpawning",
+            startDisabled: false,
+            startOnParent: ["capacitorFilled"],
+            stopOnParent: ["capacitorDischarged"]
+        }},
+
+        { id: "particlesSpawnArcConnectingRandomPoints", parameters:  {
+            color: "White",
+            lifeTime: 0.25,
+            lifeTimeNoise: 0,
+            randomVelocity: 0.1,
+            randomVelocityNoise: 0.8,
+            randomOffset: 0.03,
+            randomOffsetNoise: 1,
+
+            segmentLength: 0.2,
+            curvature: 1,
+            curvatureNoise: 0.3,
+            zeroEndPointVelocity: true,
+            points: [
+                [0, -0.5, 0.2],
+                [-0.42, 0.28, 0.2],
+                [0.42, 0.28, 0.2],
+
+                [-0.1761, -0.1144, 0.35],
+                [0.1128, 0.1771, 0.35],
+                [0.2054, -0.0437, 0.35],
+                [0.1871, -0.0953, 0.35],
+            ],
+            
+            interval: 1,
+            intervalNoise: 0.5,
+            toggle: "toggleSpawning",
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.25, color: "00000000" },
+                    { duration: 0.1, size: 0.25, color: "White" },
+                    { duration: 0.1, size: 0.25, color: "00000000" },
+                    { duration: 0.1, size: 0.25, color: "White" },
+                    { duration: 0.5, size: 0.25, color: "White" },
+                    { duration: 0.2, size: 0.25, color: "00000000" },
+                ],
+            }
+        } },
+    ]
+}

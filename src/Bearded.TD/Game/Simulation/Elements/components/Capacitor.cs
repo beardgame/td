@@ -7,6 +7,11 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
+[Trigger("capacitorFilled")]
+readonly record struct CapacitorFilled : IComponentEvent;
+[Trigger("capacitorDischarged")]
+readonly record struct CapacitorDischarged : IComponentEvent;
+
 [Component("capacitor")]
 sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
 {
@@ -58,8 +63,12 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
             return;
         }
 
+        var oldCharge = CurrentCharge;
         CurrentCharge = SpaceTime1MathF.Min(MaxCharge, CurrentCharge + elapsedTime * Parameters.RechargeRate);
         status?.UpdateCharge(CurrentCharge, MaxCharge);
+
+        if (CurrentCharge == MaxCharge && oldCharge < MaxCharge)
+            Events.Send(new CapacitorFilled());
     }
 
     public override void OnRemoved()
@@ -87,6 +96,7 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
     {
         var charge = CurrentCharge;
         CurrentCharge = ElectricCharge.Zero;
+        Events.Send(new CapacitorDischarged());
         return charge;
     }
 }
