@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.World;
@@ -21,7 +20,7 @@ sealed class LineOfSightRanger : IRanger
     public ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IEnumerable<Tile> origin,
+        IArea origin,
         Unit minimumRange,
         Unit maximumRange)
     {
