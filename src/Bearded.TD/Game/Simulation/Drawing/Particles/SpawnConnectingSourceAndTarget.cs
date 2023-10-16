@@ -55,7 +55,7 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
             return;
         }
 
-        var secondTile = sourceTile.Neighbor(path[0]);
+        var secondTile = path.Length == 0 ? sourceTile : sourceTile.Neighbor(path[0]);
         Unit firstStepLength;
         Unit pathLength;
 
