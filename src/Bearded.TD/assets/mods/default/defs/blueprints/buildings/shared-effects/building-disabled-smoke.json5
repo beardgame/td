@@ -5,6 +5,13 @@
     { id: "particlesMoveLinear" },
     { id: "particlesGravity", parameters: { factor: -0.08 } },
     { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
+    
+    { id: "toggleOnTriggers", parameters:  {
+      name: "toggleSpawning",
+      startDisabled: true,
+      startOnParent: ["objectRuined", "overheated"],
+      stopOnParent: ["objectRepaired", "stopOverheated"]
+    }},
 
     { id: "particlesSpawnContinuously", parameters: {
       interval: 0.05,
@@ -20,9 +27,8 @@
       angularVelocity: 90,
       angularVelocityNoise: 1,
       randomAngularVelocitySign: true,
-      startDisabled: true,
-      startOnParent: ["objectRuined", "overheated"],
-      stopOnParent: ["objectRepaired", "stopOverheated"],
+
+      toggle: "toggleSpawning"
     } },
 
     { id: "particlesKeyFrames", parameters: {

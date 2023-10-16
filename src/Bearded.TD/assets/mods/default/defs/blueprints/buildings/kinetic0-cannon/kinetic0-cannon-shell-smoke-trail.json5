@@ -9,6 +9,11 @@
             uvLength : 4,
         } },
 
+        { id: "toggleOnTriggers", parameters:  {
+            name: "toggleSpawning",
+            stopOnParent : [ "objectDeleting" ],
+        }},
+
         { id: "particlesSpawnContinuously", parameters:  {
             color: "White",
             interval: 0.02,
@@ -16,7 +21,7 @@
             lifeTimeNoise: 0,
             randomVelocity: 0.2,
             randomVelocityNoise: 0.8,
-            stopOnParent : [ "objectDeleting" ]
+            toggle: "toggleSpawning",
         }},
 
         { id: "particlesKeyFrames", parameters: {
