@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Linq;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
 static class ComponentDependencies
 {
-    public static IDependencyRef DependDynamic<T>(GameObject owner, ComponentEvents events, Action<T?> consumer)
+    public static IDependencyRef DependDynamic<T>(
+        GameObject owner, ComponentEvents events, Action<T?> consumer, Func<T, bool>? filter = null)
         where T : class
     {
-        var currentDependency = owner.GetComponents<T>().LastOrDefault();
+        filter ??= Functions<T>.AlwaysTrue;
+
+        var currentDependency = owner.GetComponents<T>().Where(filter).LastOrDefault();
         if (currentDependency != null)
         {
             consumer(currentDependency);
@@ -19,6 +23,8 @@ static class ComponentDependencies
         var listener = new DynamicDependencyListener<T>();
         listener.AddedComponent += dep =>
         {
+            if (!filter(dep))
+                return;
             currentDependency = dep;
             consumer(dep);
         };
@@ -26,7 +32,7 @@ static class ComponentDependencies
         {
             if (dep != currentDependency)
                 return;
-            currentDependency = owner.GetComponents<T>().LastOrDefault();
+            currentDependency = owner.GetComponents<T>().Where(filter).LastOrDefault();
             consumer(currentDependency);
         };
         events.Subscribe<ComponentAdded>(listener);
@@ -34,9 +40,12 @@ static class ComponentDependencies
         return new DynamicDependencyRef<T>(events, listener);
     }
 
-    public static IDependencyRef Depend<T>(GameObject owner, ComponentEvents events, Action<T> consumer)
+    public static IDependencyRef Depend<T>(
+        GameObject owner, ComponentEvents events, Action<T> consumer, Func<T, bool>? filter = null)
     {
-        var found = owner.GetComponents<T>().FirstOrDefault();
+        filter ??= Functions<T>.AlwaysTrue;
+
+        var found = owner.GetComponents<T>().Where(filter).FirstOrDefault();
         if (found != null)
         {
             consumer(found);
@@ -46,8 +55,11 @@ static class ComponentDependencies
         var listener = new DependencyListener<T>();
         listener.Resolved += dep =>
         {
+            if (!filter(dep))
+                return;
             consumer(dep);
             // TODO: we should unsubscribe after this. Luckily component added events happen rarely.
+            // Unfortunately the naive approach of unsubscribing here causes a concurrent modification exception.
         };
         events.Subscribe(listener);
         return new PendingDependencyRef<T>(events, listener);
