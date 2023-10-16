@@ -6,32 +6,18 @@
         {
             type: "component",
             parameters: {
-                id: "damageOnHit",
+                id: "emitArcOnHit",
                 parameters: {
-                    damageType: "lightning",
-                    fractionOfBaseDamage: 0.5
+                    arc: "lightning1-teslaCoil-arc",
+                    onHitEnemy: true,
+                    fractionOfBaseDamage: 0.33,
+                    bounces: 2,
+                    maxBounceDistance: 1,
                 }
             },
             prerequisites: {
                 requiredTags: [ "projectile" ]
             }
-        },
-        {
-            type: "component",
-            parameters: {
-                id: "applyShockedOnImpact",
-                parameters: {
-                    probability: 0.5
-                }
-            },
-            prerequisites: {
-                requiredTags: [ "projectile" ]
-            }
-        },
-        {
-            type: "addTags",
-            parameters: [ "lightning" ],
-            isSideEffect: true
         }
     ]
 }
