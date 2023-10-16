@@ -4,6 +4,8 @@ public enum AttributeType : byte
 {
     None = 0,
 
+    ArcBounces,
+    ArcBranches,
     ChargeCapacity,
     Damage,
     DamageOverTime,

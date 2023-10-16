@@ -2,8 +2,8 @@
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities.SpaceTime;
 using static System.Math;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
@@ -41,7 +41,7 @@ sealed class Conductive : Component<Conductive.IParameters>, IConductive
         {
             BouncesLeft = arc.BouncesLeft + 1,
             Branches = Max(arc.Branches + Parameters.AddsBranching, 1),
-            MaxBounceDistance = Max(arc.MaxBounceDistance, 2),
+            MaxBounceDistance = Unit.Max(arc.MaxBounceDistance, 2.U()),
             CoveringTiles = area
         };
     }

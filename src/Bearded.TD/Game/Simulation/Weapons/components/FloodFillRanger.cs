@@ -16,7 +16,7 @@ sealed class FloodFillRanger : IRanger
     public ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IArea origin,
+        IEnumerable<Tile> origin,
         Unit minimumRange,
         Unit maximumRange)
     {

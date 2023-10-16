@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -17,7 +18,7 @@ interface IRanger
     ImmutableArray<Tile> GetTilesInRange(
         GameState game,
         PassabilityLayer passabilityLayer,
-        IArea origin,
+        IEnumerable<Tile> origin,
         Unit minimumRange,
         Unit maximumRange);
 }
