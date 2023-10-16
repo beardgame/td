@@ -18,6 +18,16 @@
                 mode: "multiply",
                 value: 1.5,
             }
+        },
+        // standard lightning upgrade: add a bounce
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "arcBounces",
+                mode: "constant",
+                value: 1,
+            },
+            isSideEffect: true
         }
     ]
 }
