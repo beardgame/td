@@ -17,6 +17,9 @@ sealed class EmitArcOnHit
 {
     public interface IParameters : IArcEmissionParameters, IParametersTemplate<IParameters>
     {
+        [Modifiable(defaultValue: 1.0f)]
+        float FractionOfBaseDamage { get; }
+
         bool OnHitLevel { get; }
         bool OnHitEnemy { get; }
     }
