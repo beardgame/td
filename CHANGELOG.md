@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.20
+
+* Added armour and shields for enemies
+* Added status icons for most statuses
+  * Tower temperature is now a status, separated into hot or cold
+  * Tower fuel is now tracked as a status
+* Added consistent health bar rendering, including armour and shields
+* Added particle effects
+  * Smoke when a tower is disabled
+  * Bullet casings
+  * Projectile trails
+  * Exhaust gases for Kinetics towers
+* Made the Cannon have two barrels that shoot alternatingly
+* Replaced sprite for Cannon
+* Changed spawn patterns of swarming enemies to be closer together
+* Made the sniper tower use the "highest health" target mode by default
+* Consistently refer to the Kinetics element as "Kinetics" and no longer use "Force"
+
 ## v0.19
 
 * Added multiple biomes
