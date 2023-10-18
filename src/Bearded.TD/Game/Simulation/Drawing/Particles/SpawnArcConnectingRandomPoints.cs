@@ -46,7 +46,7 @@ sealed class SpawnArcConnectingRandomPoints : ParticleUpdater<SpawnArcConnecting
     {
         base.Activate();
 
-        if (Parameters.Points.Length < 2)
+        if (Parameters.Points.IsDefaultOrEmpty || Parameters.Points.Length < 2)
         {
             Owner.Game.Meta.Logger.Debug?.Log($"{nameof(SpawnArcConnectingRandomPoints)} needs at least two points.");
             nextSpawn = new Instant(double.MaxValue);
