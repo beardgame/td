@@ -9,6 +9,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -19,7 +20,8 @@ sealed partial class BuildingUpgradeManager
     : Component,
         IBuildingUpgradeManager,
         IBuildingUpgradeSyncer,
-        IUpgradable
+        IUpgradable,
+        IListener<ComponentAdded>
 {
     private INameProvider? nameProvider;
     private IFactionProvider? factionProvider;
@@ -54,6 +56,7 @@ sealed partial class BuildingUpgradeManager
 
     protected override void OnAdded()
     {
+        Events.Subscribe(this);
         ReportAggregator.Register(Events, new UpgradeReport(this));
         ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
@@ -144,6 +147,15 @@ sealed partial class BuildingUpgradeManager
     }
 
     public override void Update(TimeSpan elapsedTime) {}
+
+    public void HandleEvent(ComponentAdded @event)
+    {
+        // Replay all past upgrades on this new component
+        foreach (var u in appliedUpgrades)
+        {
+            @event.Component.ApplyUpgrade(u);
+        }
+    }
 }
 
 interface IBuildingUpgradeManager

@@ -19,4 +19,13 @@ static partial class UpgradeApplication
         operation.Commit();
         return operation;
     }
+
+    public static IUpgradeReceipt ApplyUpgrade(this IComponent subject, IUpgrade upgrade)
+    {
+        var upgradePreview = new UpgradePreview(upgrade);
+        subject.PreviewUpgrade(upgradePreview);
+        var operation = upgradePreview.ToOperation();
+        operation.Commit();
+        return operation;
+    }
 }
