@@ -8,7 +8,7 @@
       parameters: {
         id: "emitArcOnHit",
         parameters: {
-          arc: "lightning1-teslaCoil-arc",
+          arc: "lightning-explosion-arc",
           onHitLevel: true,
           onHitEnemy: true,
           fractionOfBaseDamage: 0.33,

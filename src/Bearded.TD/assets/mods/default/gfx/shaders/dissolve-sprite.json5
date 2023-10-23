@@ -1,0 +1,5 @@
+{
+  id: "dissolve-sprite",
+  vertexShader: "default-sprite.vs",
+  fragmentShader: "dissolve-sprite.fs"
+}
