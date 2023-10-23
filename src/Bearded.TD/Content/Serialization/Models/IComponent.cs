@@ -1,5 +1,9 @@
-﻿using Bearded.TD.Content.Behaviors;
+﻿using System.Collections.Immutable;
+using Bearded.TD.Content.Behaviors;
 
 namespace Bearded.TD.Content.Serialization.Models;
 
-interface IComponent : IBehaviorTemplate {}
+interface IComponent : IBehaviorTemplate
+{
+    ImmutableArray<string> Keys { get; }
+}
