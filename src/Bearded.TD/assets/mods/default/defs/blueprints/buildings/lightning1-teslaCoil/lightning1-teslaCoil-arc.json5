@@ -28,8 +28,8 @@
         } },
         { id: "particlesDrawLight", parameters: {
             color: "FFDDDDFF",
-            radius: 1,
-            intensity: 1,
+            radius: 1.5,
+            intensity: 0.75,
             alphaMode: "fromParticleAlpha",
         } },
 
@@ -51,8 +51,7 @@
             animation: {
                 keyFrames: [
                     { duration: 0.0, size: 0.3, color: "00000000" },
-                    { duration: 0.1, size: 0.3, color: "FFAAAAAA" },
-                    { duration: 0.02, size: 0.3, color: "White" },
+                    { duration: 0.1, size: 0.3, color: "White" },
                     { duration: 0.5, size: 0.3, color: "White" },
                     { duration: 0.3, size: 0.3, color: "00000000" },
                 ],
