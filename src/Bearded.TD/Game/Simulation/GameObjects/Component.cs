@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.Upgrades;
+﻿using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -8,6 +9,8 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 abstract class Component<TParameters> : IComponent
     where TParameters : IParametersTemplate<TParameters>
 {
+    public ImmutableArray<string> Keys { get; init; }
+
     protected TParameters Parameters { get; }
 
     protected GameObject Owner { get; private set; } = null!;
@@ -42,6 +45,8 @@ abstract class Component<TParameters> : IComponent
 
 abstract class Component : IComponent
 {
+    public ImmutableArray<string> Keys { get; init; }
+
     protected GameObject Owner { get; private set; } = null!;
 
     protected ComponentEvents Events { get; private set; } = null!;
