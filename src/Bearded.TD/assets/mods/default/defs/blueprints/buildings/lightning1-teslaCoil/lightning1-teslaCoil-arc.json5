@@ -6,6 +6,7 @@
             parameters: {
                 damageType: "lightning",
                 fractionOfBaseDamage: 0.75,
+                delayPerDistanceFromSource: 0.025,
             }
         },
         {

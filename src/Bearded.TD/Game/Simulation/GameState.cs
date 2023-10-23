@@ -36,6 +36,8 @@ sealed class GameState
 
     public EnumerableProxy<GameObject> GameObjects => gameObjects.AsReadOnlyEnumerable();
 
+    private readonly Bearded.Utilities.Collections.PriorityQueue<Instant, Action> delayedActions = new();
+
     public GameTime GameTime { get; } = new();
     public Instant Time => GameTime.Time;
     public GameMeta Meta { get; }
@@ -189,6 +191,11 @@ sealed class GameState
         factions.Add(faction);
     }
 
+    public void DelayBy(TimeSpan time, Action action)
+    {
+        delayedActions.Enqueue(Time + time, action);
+    }
+
     public void Advance(TimeSpan elapsedTime)
     {
         if (!finishedLoading)
@@ -209,6 +216,11 @@ sealed class GameState
         foreach (var obj in gameObjects)
         {
             obj.Update(elapsedTime);
+        }
+
+        while (delayedActions.Count > 0 && delayedActions.Peek().Key <= Time)
+        {
+            delayedActions.Dequeue().Value();
         }
     }
 }
