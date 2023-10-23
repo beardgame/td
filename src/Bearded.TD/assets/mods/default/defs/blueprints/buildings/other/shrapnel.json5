@@ -1,7 +1,7 @@
 {
   id: "shrapnel",
   components: [
-    { id: "tags", parameters: { tags: [ "projectile" ] } },
+    { id: "tags", parameters: { tags: [ "bullet", "projectile" ] } },
     {
       id: "damageOnHit",
       parameters: {}

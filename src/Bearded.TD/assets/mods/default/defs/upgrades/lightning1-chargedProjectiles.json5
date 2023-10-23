@@ -16,7 +16,7 @@
                 }
             },
             prerequisites: {
-                requiredTags: [ "projectile" ]
+                requiredTags: [ "bullet" ]
             }
         }
     ]
