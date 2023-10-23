@@ -17,8 +17,6 @@
         },
 
         { id: "particles", parameters: { dontRemoveDeadParticles: true } },
-        { id: "particlesMoveLinear" },
-        { id: "particlesDrag", parameters: { linear: 5 } },
         { id: "particlesAttachToSourceAndTarget" },
 
         { id: "particlesDrawConnected", parameters: {
@@ -37,8 +35,6 @@
             color: "White",
             lifeTime: 0.2,
             lifeTimeNoise: 0,
-            randomVelocity: 0.5,
-            randomVelocityNoise: 0.8,
             randomOffset: 0.1,
             randomoffsetNoise: 1,
 
