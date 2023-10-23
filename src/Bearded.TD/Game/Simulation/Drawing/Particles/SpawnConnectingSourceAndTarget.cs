@@ -31,16 +31,16 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
     {
         base.Activate();
 
-        if (!Owner.TryGetSingleComponent<IProperty<Source>>(out var source) ||
-            !Owner.TryGetSingleComponent<IProperty<Target>>(out var target))
+        if (!Owner.TryGetProperty<Source>(out var source) ||
+            !Owner.TryGetProperty<Target>(out var target))
         {
             Owner.Game.Meta.Logger.Debug?
                 .Log($"{nameof(SpawnConnectingSourceAndTarget)} requires a source and target property.");
             return;
         }
 
-        var sourcePosition = source.Value.Object.Position;
-        var targetPosition = target.Value.Object.Position;
+        var sourcePosition = source.Object.Position;
+        var targetPosition = target.Object.Position;
         var sourceTile = Level.GetTile(sourcePosition);
         var targetTile = Level.GetTile(targetPosition);
 
