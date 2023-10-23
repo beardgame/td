@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Bearded.Utilities.Linq;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Content.Behaviors;
@@ -66,6 +67,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
     private readonly Type behaviorInterface;
     private readonly Type emptyConstructorParameterType = typeof(TEmptyConstructorParameters);
     private readonly MethodInfo factoryFactoryMethodInfo;
+    private ImmutableArray<PropertyInfo> extraProperties = ImmutableArray<PropertyInfo>.Empty;
 
     private bool initialized;
 
@@ -89,6 +91,12 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
         }
 
         initialized = true;
+
+        extraProperties = typeof(TBehaviorTemplate).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.Name != nameof(IBehaviorTemplate.Id) && p.Name != nameof(IBehaviorTemplate.Parameters))
+            .Select(p => behaviorInterface.GetProperty(p.Name) is { } p2 && p2.PropertyType == p.PropertyType ? p2 : null)
+            .NotNull()
+            .ToImmutableArray();
 
         var knownBehaviors = Assembly.GetExecutingAssembly().GetTypes()
             .Select(t => (type: t, attribute: t.GetCustomAttribute<TBehaviorAttribute>(false)))
@@ -134,23 +142,42 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
         var factoryFactory = makeFactoryFactory(behavior, parameters);
 
         factoryFactoriesById[id] = factoryFactory;
-        parametersById[id] = parameters; // will write multiple times for multi-use behaviours ¯\_(ツ)_/¯
+        parametersById[id] = parameters;
     }
 
     private object makeFactoryFactory(Type behavior, Type parameters)
     {
         var typedMaker = factoryFactoryMethodInfo.MakeGenericMethod(parameters);
 
-        var parameter = Expression.Parameter(parameters);
+        var paramParameter = Expression.Parameter(parameters);
+        var modelParameter = Expression.Parameter(typeof(TBehaviorTemplate));
 
-        var constructorBody = parameters == emptyConstructorParameterType
+        var newExpression = parameters == emptyConstructorParameterType
             ? Expression.New(constructorOf(behavior))
-            : Expression.New(constructorOf(behavior), parameter);
-        var constructor = Expression.Lambda(constructorBody, parameter);
+            : Expression.New(constructorOf(behavior), paramParameter);
+
+        var memberBindings = createMemberBindings(modelParameter);
+        Expression constructorBody = memberBindings.IsDefaultOrEmpty
+            ? newExpression
+            : Expression.MemberInit(newExpression, memberBindings);
+
+        var constructor = Expression.Lambda(constructorBody, paramParameter, modelParameter);
+        Console.WriteLine(constructor.ToString());
         var compiledConstructor = constructor.Compile();
 
-        // returns Func<TParameters, object>
+        // returns Func<TParameters, TBehaviorTemplate, object>
         return typedMaker.Invoke(null, new object[] {compiledConstructor});
+    }
+
+    private ImmutableArray<MemberBinding> createMemberBindings(Expression modelParameter)
+    {
+        return extraProperties.Select(property =>
+        {
+            var propertyToCopy =
+                modelParameter.Type.GetProperty(property.Name) ?? throw new InvalidOperationException();
+            var memberAccess = Expression.Property(modelParameter, propertyToCopy);
+            return (MemberBinding) Expression.Bind(property, memberAccess);
+        }).ToImmutableArray();
     }
 
     private Type constructorParameterTypeOf(Type behaviorType)
@@ -203,16 +230,17 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
 
         var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(parameterType);
 
-        return tryMakeFactory.Invoke(this, new[] { id, parameterData });
+        return tryMakeFactory.Invoke(this, new[] { id, parameterData, template });
     }
 
-    private object tryMakeBehaviorFactoryGeneric<TParameters>(string id, TParameters parameters)
+    private object tryMakeBehaviorFactoryGeneric<TParameters>(
+        string id, TParameters parameters, TBehaviorTemplate template)
     {
         var factoryFactory = factoryFactoriesById[id];
 
-        var typedFactoryFactory = (Func<TParameters, object>) factoryFactory;
+        var typedFactoryFactory = (Func<TParameters, TBehaviorTemplate, object>) factoryFactory;
 
-        return typedFactoryFactory?.Invoke(parameters);
+        return typedFactoryFactory?.Invoke(parameters, template);
     }
 
     #endregion

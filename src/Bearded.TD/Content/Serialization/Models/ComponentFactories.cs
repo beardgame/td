@@ -24,9 +24,30 @@ static class ComponentFactories
         (factories.CreateBehaviorFactory(parameters) as IComponentFactory)!;
 
     private static object makeFactoryFactoryGeneric<TParameters>(
-        Func<TParameters, ISimulationComponent> constructor)
+        Func<TParameters, IComponent, ISimulationComponent> constructor)
         where TParameters : IParametersTemplate<TParameters>
     {
-        return (Func<TParameters, object>) (p => new ComponentFactory<TParameters>(p, constructor));
+        return (Func<TParameters, IComponent, object>)
+            ((p, model) => new ComponentFactory<TParameters>(p, model, constructor));
+    }
+
+    private sealed class ComponentFactory<TComponentParameters> : IComponentFactory
+        where TComponentParameters : IParametersTemplate<TComponentParameters>
+    {
+        private readonly TComponentParameters parameters;
+        private readonly IComponent model;
+        private readonly Func<TComponentParameters, IComponent, ISimulationComponent> factory;
+
+        public ComponentFactory(
+            TComponentParameters parameters,
+            IComponent model,
+            Func<TComponentParameters, IComponent, ISimulationComponent> factory)
+        {
+            this.parameters = parameters;
+            this.model = model;
+            this.factory = factory;
+        }
+
+        public ISimulationComponent Create() => factory(parameters, model);
     }
 }
