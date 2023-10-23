@@ -1,7 +1,7 @@
 {
     id: "kinetic1-mortar-shell",
     components: [
-        { id: "tags", parameters: { tags: [ "projectile" ] } },
+        { id: "tags", parameters: { tags: [ "grenade", "projectile" ] } },
         {
             id: "splashDamageOnHit",
             parameters: {

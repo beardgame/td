@@ -19,6 +19,11 @@
     <OutputPath>../../bin/Bearded.TD/Release/</OutputPath>
   </PropertyGroup>
 
+  <!-- Ignore multiple copies of OpenTK glfw files being copied as part of Linux build -->
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Bearded.UI" Version="0.2.0-dev.3" />
     <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.4" />
