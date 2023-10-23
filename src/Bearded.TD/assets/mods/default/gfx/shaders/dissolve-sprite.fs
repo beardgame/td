@@ -33,9 +33,11 @@ float noise( in vec2 p )
 
 void main()
 {
+    vec2 texSize = textureSize(diffuse, 0);
+    
 	vec4 c = texture(diffuse, p_texcoord);
     
-    float n = noise(p_texcoord * vec2(20, 4)) * 0.5 + 0.5;
+    float n = noise(p_texcoord * texSize * 0.02f) * 0.5 + 0.5;
     
     const float fade = 0.05;
     float a = smoothstep(n - fade, n + fade, p_color.a);
