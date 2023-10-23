@@ -9,36 +9,6 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Content.Behaviors;
 
-/*
- * Current:
- *
- * ComponentFactory<TParams>
- *   Func<TParams, ISimulationComponent> <-- factory for a given type
- *   TParams
- *
- * Want:
- *
- * ComponentFactory<TParams>
- *   Func<TParams, Array<string>, ISimulationComponent> <-- factory for a given type
- *   TParams
- *   Array<string>
- *
- * Problems:
- *
- * - The func is made once per type without knowing the params or keys, so to inject keys into the component, we need to
- *   expand the func with additional parameters
- * - However, there to pull everything together, we need to create the proper generic func type as well as call .Invoke
- *   with it, which will become problematic if the number of parameters in the func is hard to predict
- *
- * Possible solutions:
- *
- * 1. Change _all_ the behaviours to pass in the original model object as second parameter to the lambda, so it is
- *    always accessible. The factory will then also track that original serialized model so it can access its fields.
- * 2. Migrate to source generation for some of this so the code at least becomes readable. Not necessarily a solution
- *    though, because it still has the same problems.
- *
- */
-
 sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyConstructorParameters>
     where TBehaviorTemplate : IBehaviorTemplate
     where TBehaviorAttribute : Attribute, IBehaviorAttribute
