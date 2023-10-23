@@ -14,7 +14,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
 {
     #region Public interface
 
-    public IDictionary<string, Type> ParameterTypesById { get; private set; }
+    public IDictionary<string, Type> ParameterTypesById { get; private set; } = null!;
 
     public object CreateBehaviorFactory(TBehaviorTemplate template) => tryMakeBehaviorFactory(template);
 

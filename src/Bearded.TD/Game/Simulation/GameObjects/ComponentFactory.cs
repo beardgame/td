@@ -9,8 +9,6 @@ sealed class ComponentFactory<TComponentParameters> : IComponentFactory
     private readonly TComponentParameters parameters;
     private readonly Func<TComponentParameters, IComponent> factory;
 
-    public IParametersTemplate ParametersTemplate => parameters;
-
     public ComponentFactory(TComponentParameters parameters, Func<TComponentParameters, IComponent> factory)
     {
         this.parameters = parameters;
@@ -22,7 +20,5 @@ sealed class ComponentFactory<TComponentParameters> : IComponentFactory
 
 interface IComponentFactory
 {
-    public IParametersTemplate ParametersTemplate { get; }
-
     IComponent Create();
 }
