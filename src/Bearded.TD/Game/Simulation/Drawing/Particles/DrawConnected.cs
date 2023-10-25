@@ -23,6 +23,8 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
 
         [Modifiable(1)]
         float UVLength { get; }
+
+        bool AttachLastToObject { get; }
     }
 
     private readonly ParticleExtension<float> particleUVs;
@@ -83,13 +85,32 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
 
     public override void Update(TimeSpan elapsedTime)
     {
+        if (Parameters.AttachLastToObject)
+            attachLastToObject();
+    }
+
+    private void attachLastToObject()
+    {
+        if (Particles.Count < 2)
+            return;
+
+        var particles = Particles.MutableParticles;
+        var uvs = particleUVs.MutableData;
+
+        ref var lastParticlePosition = ref particles[^1].Position;
+        var secondToLastParticlePosition = particles[^2].Position;
+
+        lastParticlePosition = Owner.Position;
+        var distance = (lastParticlePosition - secondToLastParticlePosition).Length.NumericValue;
+        uvs[particles.Length - 1] = uvs[particles.Length - 2] + distance / Parameters.UVLength;
     }
 
     public void HandleEvent(DrawComponents e)
     {
-        var particles = Particles.ImmutableParticles;
-        if (particles.Length < 2)
+        if (Particles.Count < 2)
             return;
+
+        var particles = Particles.ImmutableParticles;
 
         e.Drawer.DrawIndexedVertices(sprite,
             vertexCount: particles.Length * 2,
