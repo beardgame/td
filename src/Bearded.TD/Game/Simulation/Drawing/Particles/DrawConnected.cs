@@ -24,11 +24,16 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         [Modifiable(1)]
         float UVLength { get; }
 
+        float? AddWidthFromScale { get; }
+        float? AddUVFromScale { get; }
+
         bool AttachLastToObject { get; }
     }
 
     private readonly ParticleExtension<float> particleUVs;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
+    private float addedWidth;
+    private float addedUV;
 
     public DrawConnected(IParameters parameters) : base(parameters)
     {
@@ -41,6 +46,15 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
 
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
             Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+        if (Parameters.AddWidthFromScale != null || Parameters.AddUVFromScale != null)
+        {
+            ComponentDependencies.Depend<IProperty<Scale>>(
+                Owner, Events, scale =>
+                {
+                    addedWidth = (Parameters.AddWidthFromScale ?? 0) * scale.Value.Value;
+                    addedUV = (Parameters.AddUVFromScale ?? 0) * scale.Value.Value;
+                });
+        }
 
         Events.Subscribe(this);
 
@@ -60,7 +74,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
             previousPoint = particles[index - 1].Position;
             var currentPoint = particles[index].Position;
             var distance = (currentPoint - previousPoint).Length.NumericValue;
-            u = uvs[index - 1] + distance / Parameters.UVLength;
+            u = uvs[index - 1] + distance / (Parameters.UVLength + addedUV);
 
             previousPoint = currentPoint;
         }
@@ -77,7 +91,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
             var j = index + i;
             var currentPoint = particles[j].Position;
             var distance = (currentPoint - previousPoint).Length.NumericValue;
-            u += distance / Parameters.UVLength;
+            u += distance / (Parameters.UVLength + addedUV);
             uvs[j] = u;
             previousPoint = currentPoint;
         }
@@ -102,7 +116,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
 
         lastParticlePosition = Owner.Position;
         var distance = (lastParticlePosition - secondToLastParticlePosition).Length.NumericValue;
-        uvs[particles.Length - 1] = uvs[particles.Length - 2] + distance / Parameters.UVLength;
+        uvs[particles.Length - 1] = uvs[particles.Length - 2] + distance / (Parameters.UVLength + addedUV);
     }
 
     public void HandleEvent(DrawComponents e)
@@ -119,7 +133,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
 
         var previous = particles[0];
         var current = particles[1];
-        var offset = normalBetween(previous, current) * previous.Size;
+        var offset = normalBetween(previous, current) * (previous.Size + addedWidth);
 
         var uvs = particleUVs.ImmutableData;
         var u = uvs[0];
@@ -129,7 +143,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         for (var i = 2; i < particles.Length; i++)
         {
             var next = particles[i];
-            offset = normalBetween(previous, next) * current.Size;
+            offset = normalBetween(previous, next) * (current.Size + addedWidth);
 
             u = uvs[i - 1];
             vertices[i * 2 - 2] = new UVColorVertex(current.Position.NumericValue + offset.WithZ(), uv.Transform(new Vector2(u, 0)), current.Color);
@@ -139,7 +153,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
             current = next;
         }
 
-        offset = normalBetween(previous, current) * current.Size;
+        offset = normalBetween(previous, current) * (current.Size + addedWidth);
         u = uvs[particles.Length - 1];
         vertices[^2] = new UVColorVertex(current.Position.NumericValue + offset.WithZ(), uv.Transform(new Vector2(u, 0)), current.Color);
         vertices[^1] = new UVColorVertex(current.Position.NumericValue - offset.WithZ(), uv.Transform(new Vector2(u, 1)), current.Color);

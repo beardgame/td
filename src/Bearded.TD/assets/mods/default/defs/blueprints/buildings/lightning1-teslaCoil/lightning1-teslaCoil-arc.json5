@@ -13,7 +13,7 @@
             id: "applyShockedOnImpact",
             parameters: {
                 probability: 0.5,
-                damageToDurationFactor: 0.04,
+                damageToDurationFactor: 0.04
             }
         },
 
@@ -22,10 +22,13 @@
         { id: "particlesDrag", parameters: { linear: 5 } },
         { id: "particlesAttachToSourceAndTarget" },
 
+        { id: "scaleFromDamage", parameters: { "factor" : 1 } },
         { id: "particlesDrawConnected", parameters: {
             sprite: "default.trails.arc",
             shader: "dissolve-sprite",
-            uvLength : 4
+            uvLength : 3,
+            addWidthFromScale: 0.004,
+            addUVFromScale: 0.05,
         } },
         { id: "particlesDrawLight", parameters: {
             color: "FFDDDDFF",
@@ -51,10 +54,10 @@
             scaleToParticleLifeTime: true,
             animation: {
                 keyFrames: [
-                    { duration: 0.0, size: 0.3, color: "00000000" },
-                    { duration: 0.1, size: 0.3, color: "White" },
-                    { duration: 0.5, size: 0.3, color: "White" },
-                    { duration: 0.3, size: 0.3, color: "00000000" },
+                    { duration: 0.0, size: 0.22, color: "00000000" },
+                    { duration: 0.1, size: 0.22, color: "White" },
+                    { duration: 0.5, size: 0.22, color: "White" },
+                    { duration: 0.3, size: 0.22, color: "00000000" },
                 ],
             }
         } },
