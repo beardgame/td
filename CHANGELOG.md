@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.21
+
+* Rewrote arc targeting to include bounces, branches, and be able to shoot around corner
+* Introduced damage scaling for hitting multiple targets with lightning
+* Added rendering for lightning arcs
+* Added capacitor charge to Tesla Coil
+  * Damage is now tied to the amount of charge in the capacitor when fired
+  * Allowed choosing between fully or partially charged capacitor for shooting
+  * Add animations to the Tesla Coil informing the charge level of the capacitor
+* Introduced lightning upgrades:
+  * Improved capacitors (tesla coil)
+  * Lightning explosion (mortar & steam hammer)
+  * Branching (tesla coil & weapons with charged projectiles)
+* Made each lightning upgrade add one potential bounce to lightning arcs
+* Replaced on hit effect of charged projectiles to spawn a lightning arc rather than do lightning damage directly
+* Remove charged projectiles as potential upgrade from mortar
+* Added smoke trails to projectiles
+* Lowered the chance that lightning towers only hit the level
+* Added FPS cap
+
 ## v0.20
 
 * Added armour and shields for enemies
