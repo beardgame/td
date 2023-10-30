@@ -36,15 +36,15 @@
       animation: {
         keyFrames: [
           { duration: 0.0, size: 0.1, color: "00000000" },
-          { duration: 0.4, size: 0.3, color: "55111111" },
-          { duration: 0.4, size: 0.5, color: "88444444" },
+          { duration: 0.4, size: 0.3, color: "55222222" },
+          { duration: 0.4, size: 0.5, color: "88666666" },
           { duration: 0.2, size: 0.6, color: "00000000" },
         ],
       }
     } },
     
     { id: "particlesDraw", parameters: {
-      sprite: "default.particle.mote",
+      sprite: "default.particle.blackSmoke",
       drawMode: "sprite",
       reverseOrder: true,
     } }

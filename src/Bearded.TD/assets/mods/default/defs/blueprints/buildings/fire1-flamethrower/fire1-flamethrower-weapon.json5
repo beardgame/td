@@ -31,7 +31,7 @@
             id: "projectileEmitter",
             parameters: {
                 projectile: "fire1-flamethrower-flame",
-                muzzleSpeed: 6,
+                muzzleSpeed: 12,
                 spread: 3,
                 bulletDropCompensation: 0,
                 muzzleOffset: [0.3, 0]
@@ -53,6 +53,6 @@
         },
 
         { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
-        //{ id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
     ]
 }

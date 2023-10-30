@@ -12,7 +12,12 @@ using static ParticleSpawning;
 [Component("particlesSpawnContinuouslyFromParentProjectiles")]
 sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnContinuouslyFromParentProjectiles.IParameters>
 {
-    private readonly record struct Emitter(GameObject Object, IMoving? Velocity, Instant NextSpawn);
+    private readonly record struct Emitter(
+        GameObject Object,
+        IMoving? Velocity,
+        Instant NextSpawn,
+        Instant BirthTime,
+        bool ConnectToPrevious);
 
     private readonly List<Emitter> emitters = new();
 
@@ -21,8 +26,10 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
         [Modifiable(1)]
         TimeSpan Interval { get; }
         float IntervalNoise { get; }
+        TimeSpan StartDelay { get; }
 
         bool RandomStartInterval { get; }
+        TimeSpan? BetweenLastTwoProjectilesIfCreatedWithin { get; }
     }
 
     public SpawnContinuouslyFromParentProjectiles(IParameters parameters) : base(parameters)
@@ -50,13 +57,25 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
 
     private void onShotProjectile(ShotProjectile e)
     {
-        var nextSpawn = Owner.Game.Time;
+        var now = Owner.Game.Time;
+        var nextSpawn = now + Parameters.StartDelay;
         if (Parameters.RandomStartInterval)
             nextSpawn += Parameters.Interval * StaticRandom.Float();
 
         e.Projectile.TryGetSingleComponent<IMoving>(out var velocity);
 
-        emitters.Add(new Emitter(e.Projectile, velocity, nextSpawn));
+        var connect = false;
+        if (Parameters.BetweenLastTwoProjectilesIfCreatedWithin is { } connectThreshold
+            && emitters.Count > 0)
+        {
+            var lastEmitterBirth = emitters[^1].BirthTime;
+            if (now - lastEmitterBirth < connectThreshold)
+            {
+                connect = true;
+            }
+        }
+
+        emitters.Add(new Emitter(e.Projectile, velocity, nextSpawn, now, connect));
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -71,20 +90,25 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
             if (emitter.NextSpawn > now)
                 continue;
 
-            spawnFrom(emitter);
+            spawnFrom(i);
             emitters[i] = emitter with { NextSpawn = now + Parameters.Interval * Noise(Parameters.IntervalNoise) };
         }
     }
 
-    private void spawnFrom(Emitter emitter)
+    private void spawnFrom(int emitterId)
     {
-        var source = emitter.Object;
+        var emitter = emitters[emitterId];
+
+        var position = emitter.ConnectToPrevious && emitterId > 0
+            ? Position3.Lerp(emitter.Object.Position, emitters[emitterId - 1].Object.Position, StaticRandom.Float())
+            : emitter.Object.Position;
+
         Particles.CreateParticles(
             Parameters,
             emitter.Velocity?.Velocity ?? Velocity3.Zero,
-            source.Direction,
+            emitter.Object.Direction,
             Owner.Game.Time,
-            source.Position);
+            position);
     }
 }
 

@@ -1,7 +1,7 @@
 {
     id : "fire1-flamethrower-flame",
     components : [
-        { id : "drag", parameters : { amount : 0.2 } },
+        { id : "drag", parameters : { amount : 0.5 } },
         { id : "buoyancy", parameters : { amount : 1 } },
         { id : "elasticCollision", parameters : { normal : 0.1, tangent : 0.5 } },
         {
@@ -11,7 +11,7 @@
         {
             id:  "deleteAfter",
             parameters:  {
-                timeSpan:  1.2
+                timeSpan:  0.6
             }
         },
         {
@@ -22,5 +22,21 @@
                 effectDuration: 3
             }
         },
+        {
+            id: "animatedPointLight",
+            parameters: {
+                animation: {
+                    timeScale: 2,
+                    keyFrames: [
+                        { duration: 0.0, radius: 0.75, color: "00ffd385" },
+                        { duration: 0.025, radius: 0.8, color: "88ffd385" },
+                        { duration: 0.1, radius: 1.2, color: "aaff7c39" },
+                        { duration: 0.1, radius: 1.2, color: "aac05629" },
+                        { duration: 0.1, radius: 1.2, color: "66753822" },
+                        { duration: 0.025, radius: 1, color: "00753822" }
+                    ],
+                }
+            }
+        }
     ]
 }

@@ -24,8 +24,8 @@
             id: "projectileEmitter",
             parameters: {
                 projectile: "fire1-flamethrower-flame",
-                muzzleSpeed: 6,
-                spread: 8,
+                muzzleSpeed: 10,
+                spread: 5,
                 bulletDropCompensation: 0,
                 muzzleOffset: [0.15, 0]
             }
@@ -44,5 +44,8 @@
             id: "loopSoundWhileShooting",
             parameters: { sound: "flamethrower-loop" },
         },
+
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
     ]
 }
