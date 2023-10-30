@@ -3,9 +3,6 @@ using System.IO;
 using System.Threading;
 using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Generation.Semantic.Features;
-using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.Rules;
 using Bearded.Utilities.IO;
 using CommandLine;
 
