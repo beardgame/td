@@ -9,7 +9,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class GameObject : IDeletable, IGameObject, IPositionable, IDirected
+sealed class GameObject : IDeletable, IPositionable, IDirected
 {
     private GameState? game;
     // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
