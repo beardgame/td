@@ -65,8 +65,8 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             case UpgradeEffectType.Transaction:
                 var transaction = serializer.Deserialize<TransactionParameters>(def.CreateReader());
                 return new TransactComponents(
-                    transaction.ComponentToAdd,
-                    transaction.KeyToRemove,
+                    transaction.AddComponent,
+                    transaction.RemoveKey,
                     transaction.ReplaceMode,
                     prerequisites,
                     isSideEffect);

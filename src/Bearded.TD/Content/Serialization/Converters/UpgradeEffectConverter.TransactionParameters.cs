@@ -8,5 +8,7 @@ sealed partial class UpgradeEffectConverter
 {
     [UsedImplicitly(ImplicitUseKindFlags.Assign, ImplicitUseTargetFlags.WithMembers)]
     private sealed record TransactionParameters(
-        IComponent ComponentToAdd, string KeyToRemove, TransactComponents.ReplaceMode ReplaceMode = TransactComponents.ReplaceMode.InsertOrReplace);
+        IComponent AddComponent,
+        string RemoveKey,
+        TransactComponents.ReplaceMode ReplaceMode = TransactComponents.ReplaceMode.InsertOrReplace);
 }
