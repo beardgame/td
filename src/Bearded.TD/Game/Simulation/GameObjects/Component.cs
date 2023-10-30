@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 abstract class Component<TParameters> : IComponent
     where TParameters : IParametersTemplate<TParameters>
 {
-    public ImmutableArray<string> Keys { get; init; }
+    public ImmutableArray<string> Keys { get; init; } = ImmutableArray<string>.Empty;
 
     protected TParameters Parameters { get; }
 
@@ -45,7 +45,7 @@ abstract class Component<TParameters> : IComponent
 
 abstract class Component : IComponent
 {
-    public ImmutableArray<string> Keys { get; init; }
+    public ImmutableArray<string> Keys { get; init; } = ImmutableArray<string>.Empty;
 
     protected GameObject Owner { get; private set; } = null!;
 
