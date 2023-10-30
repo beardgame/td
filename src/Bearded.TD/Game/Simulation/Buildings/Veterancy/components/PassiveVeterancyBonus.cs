@@ -45,7 +45,7 @@ sealed class PassiveVeterancyBonus : Component<PassiveVeterancyBonus.IParameters
         var attribute = Parameters.Attribute ?? AttributeType.Damage;
 
         var effect =
-            new ParameterModifiableWithId(
+            new ModifyParameterReversibly(
                 attribute,
                 new ModificationWithId(id, modification),
                 UpgradePrerequisites.Empty);

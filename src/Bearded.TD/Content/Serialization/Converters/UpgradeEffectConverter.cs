@@ -45,7 +45,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             case UpgradeEffectType.Modification:
                 var parameters = new ModificationParameters();
                 serializer.Populate(def.CreateReader(), parameters);
-                return new ParameterModifiable(
+                return new ModifyParameter(
                     parameters.AttributeType, getModification(parameters), prerequisites, isSideEffect);
             case UpgradeEffectType.Component:
                 var component = serializer.Deserialize<IComponent>(def.CreateReader());
@@ -53,7 +53,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                 {
                     throw new InvalidDataException("Missing component definition");
                 }
-                return new ComponentModifiable(component, prerequisites, isSideEffect);
+                return new AddComponent(component, prerequisites, isSideEffect);
             case UpgradeEffectType.AddTags:
                 var tags = serializer.Deserialize<ImmutableArray<string>>(def.CreateReader());
                 if (tags == null || tags.IsEmpty)
@@ -61,7 +61,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                     throw new InvalidDataException("Missing tags");
                 }
 
-                return new TagsModifiable(tags, prerequisites, isSideEffect);
+                return new AddTags(tags, prerequisites, isSideEffect);
             case UpgradeEffectType.Unknown:
             default:
                 throw new InvalidDataException("Upgrade effect must have a valid type.");

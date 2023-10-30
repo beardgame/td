@@ -3,11 +3,11 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class TagsModifiable : UpgradeEffectBase
+sealed class AddTags : UpgradeEffectBase
 {
     private readonly ImmutableArray<string> tagsToAdd;
 
-    public TagsModifiable(ImmutableArray<string> tagsToAdd, UpgradePrerequisites prerequisites, bool isSideEffect)
+    public AddTags(ImmutableArray<string> tagsToAdd, UpgradePrerequisites prerequisites, bool isSideEffect)
         : base(prerequisites, isSideEffect)
     {
         this.tagsToAdd = tagsToAdd;

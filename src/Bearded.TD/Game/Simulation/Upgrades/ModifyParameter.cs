@@ -2,12 +2,12 @@
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class ParameterModifiable : UpgradeEffectBase
+sealed class ModifyParameter : UpgradeEffectBase
 {
     private readonly AttributeType attributeType;
     private readonly Modification modification;
 
-    public ParameterModifiable(
+    public ModifyParameter(
         AttributeType attributeType, Modification modification, UpgradePrerequisites prerequisites, bool isSideEffect
     ) : base(prerequisites, isSideEffect)
     {

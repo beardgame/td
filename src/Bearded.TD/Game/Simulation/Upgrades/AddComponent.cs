@@ -3,11 +3,11 @@ using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class ComponentModifiable : UpgradeEffectBase
+sealed class AddComponent : UpgradeEffectBase
 {
     private readonly IComponent component;
 
-    public ComponentModifiable(IComponent component, UpgradePrerequisites prerequisites, bool isSideEffect)
+    public AddComponent(IComponent component, UpgradePrerequisites prerequisites, bool isSideEffect)
         : base(prerequisites, isSideEffect)
     {
         this.component = component;

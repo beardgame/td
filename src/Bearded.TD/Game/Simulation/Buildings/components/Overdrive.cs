@@ -27,9 +27,9 @@ sealed class Overdrive : Component, IPreviewListener<PreviewTemperatureTick>
 
         var ids = Owner.Game.GamePlayIds;
 
-        var fireRate = new ParameterModifiableWithId(
+        var fireRate = new ModifyParameterReversibly(
             AttributeType.FireRate, damageModification(ids), UpgradePrerequisites.Empty);
-        var damageOverTime = new ParameterModifiableWithId(
+        var damageOverTime = new ModifyParameterReversibly(
             AttributeType.DamageOverTime, damageModification(ids), UpgradePrerequisites.Empty);
         var upgrade = Upgrade.FromEffects(fireRate, damageOverTime);
 

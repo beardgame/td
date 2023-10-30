@@ -2,12 +2,12 @@ using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class ParameterModifiableWithId : UpgradeEffectBase
+sealed class ModifyParameterReversibly : UpgradeEffectBase
 {
     private readonly AttributeType attributeType;
     private readonly ModificationWithId modification;
 
-    public ParameterModifiableWithId(
+    public ModifyParameterReversibly(
         AttributeType attributeType,
         ModificationWithId modification,
         UpgradePrerequisites prerequisites,
