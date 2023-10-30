@@ -43,8 +43,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         switch (type)
         {
             case UpgradeEffectType.Modification:
-                var parameters = new ModificationParameters();
-                serializer.Populate(def.CreateReader(), parameters);
+                var parameters = serializer.Deserialize<ModificationParameters>(def.CreateReader());
                 return new ModifyParameter(
                     parameters.AttributeType, getModification(parameters), prerequisites, isSideEffect);
             case UpgradeEffectType.Component:
@@ -72,28 +71,23 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
     {
         return parameters.Mode switch
         {
-            ModificationParameters.ModificationMode.Constant => Modification.AddConstant(parameters.Value),
-            ModificationParameters.ModificationMode.FractionOfBase => Modification.AddFractionOfBase(parameters.Value),
-            ModificationParameters.ModificationMode.Multiply => Modification.MultiplyWith(parameters.Value),
+            ModificationMode.Constant => Modification.AddConstant(parameters.Value),
+            ModificationMode.FractionOfBase => Modification.AddFractionOfBase(parameters.Value),
+            ModificationMode.Multiply => Modification.MultiplyWith(parameters.Value),
             _ => throw new InvalidDataException("Modification must have a valid type.")
         };
     }
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    private sealed class ModificationParameters
-    {
-        public enum ModificationMode
-        {
-            Unknown = 0,
-            Constant = 1,
-            FractionOfBase = 2,
-            Multiply = 3,
-        }
+    private sealed record ModificationParameters(
+        AttributeType AttributeType, double Value, ModificationMode Mode = ModificationMode.Unknown);
 
-#pragma warning disable CS0649
-        public AttributeType AttributeType;
-        public ModificationMode Mode = ModificationMode.Unknown;
-        public double Value;
-#pragma warning restore CS0649
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    private enum ModificationMode
+    {
+        Unknown = 0,
+        Constant = 1,
+        FractionOfBase = 2,
+        Multiply = 3,
     }
 }
