@@ -11,13 +11,13 @@ sealed class Biome : IConvertsTo<IBiome, IDependencyResolver<Content.Models.Mate
 {
     public string? Id { get; set; }
     public Color OverlayColor { get; set; }
-    public string Material { get; set; }
+    public string? Material { get; set; }
 
     public IBiome ToGameModel(ModMetadata modMetadata, IDependencyResolver<Content.Models.Material> materials)
     {
         return new Content.Models.Biome(
             ModAwareId.FromNameInMod(Id ?? throw new InvalidDataException(), modMetadata),
             OverlayColor,
-            materials.Resolve(Material));
+            materials.Resolve(Material ?? ""));
     }
 }

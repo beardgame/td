@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
-using Bearded.TD.Game.Generation.Semantic.Features;
-using Bearded.TD.Game.Simulation.Factions;
-using Bearded.TD.Game.Simulation.Rules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using IComponentModel = Bearded.TD.Content.Serialization.Models.IComponent;
@@ -23,15 +20,15 @@ static class BehaviorConverterFactory
 
     public static BehaviorConverter<IFactionBehaviorModel> ForFactionBehaviors()
         => new(FactionBehaviorFactories.ParameterTypesForComponentsById
-            .ToDictionary(t => t.Key, t => typeof(Models.FactionBehavior<>).MakeGenericType(t.Value)));
+            .ToDictionary(t => t.Key, t => typeof(FactionBehavior<>).MakeGenericType(t.Value)));
 
     public static BehaviorConverter<IGameRuleModel> ForGameRules()
         => new(GameRuleFactories.ParameterTypesForComponentsById
-            .ToDictionary(t => t.Key, t => typeof(Models.GameRule<>).MakeGenericType(t.Value)));
+            .ToDictionary(t => t.Key, t => typeof(GameRule<>).MakeGenericType(t.Value)));
 
     public static BehaviorConverter<INodeBehaviorModel> ForNodeBehaviors()
         => new(NodeBehaviorFactories.ParameterTypesForComponentsById
-            .ToDictionary(t => t.Key, t => typeof(Models.NodeBehavior<>).MakeGenericType(t.Value)));
+            .ToDictionary(t => t.Key, t => typeof(NodeBehavior<>).MakeGenericType(t.Value)));
 }
 
 sealed class BehaviorConverter<TComponentInterface> : JsonConverterBase<TComponentInterface>
