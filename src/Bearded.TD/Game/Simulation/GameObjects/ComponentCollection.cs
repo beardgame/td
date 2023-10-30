@@ -66,6 +66,11 @@ sealed class ComponentCollection
         return components.OfType<T>();
     }
 
+    public IEnumerable<IComponent> Find(string key)
+    {
+        return components.Where(c => c.Keys.Contains(key));
+    }
+
     public void Update(TimeSpan elapsedTime)
     {
         deferComponentCollectionMutations = true;

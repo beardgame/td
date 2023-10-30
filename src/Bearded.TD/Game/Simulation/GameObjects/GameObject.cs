@@ -74,4 +74,6 @@ sealed class GameObject : IDeletable, IPositionable, IDirected
     public void RemoveComponent(IComponent component) => components.Remove(component);
 
     public IEnumerable<TComponent> GetComponents<TComponent>() => components.Get<TComponent>();
+
+    public IEnumerable<IComponent> FindComponents(string key) => components.Find(key);
 }
