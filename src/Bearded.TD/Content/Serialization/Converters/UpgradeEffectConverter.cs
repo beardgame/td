@@ -10,7 +10,7 @@ using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
-sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
+sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
 {
     private enum UpgradeEffectType
     {
@@ -76,18 +76,5 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
             ModificationMode.Multiply => Modification.MultiplyWith(parameters.Value),
             _ => throw new InvalidDataException("Modification must have a valid type.")
         };
-    }
-
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    private sealed record ModificationParameters(
-        AttributeType AttributeType, double Value, ModificationMode Mode = ModificationMode.Unknown);
-
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    private enum ModificationMode
-    {
-        Unknown = 0,
-        Constant = 1,
-        FractionOfBase = 2,
-        Multiply = 3,
     }
 }
