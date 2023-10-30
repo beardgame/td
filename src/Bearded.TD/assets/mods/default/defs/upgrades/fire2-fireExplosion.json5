@@ -1,6 +1,6 @@
 {
-  id: "lightning2-lightningExplosion",
-  name: "Lightning explosion",
+  id: "fire2-fireExplosion",
+  name: "Fire explosion",
   cost: 50,
   effects: [
     {
@@ -9,20 +9,18 @@
         removeKey: "splashDamage",
         addComponents: [
           {
-            id: "emitArcOnHit",
+            id: "applyAreaOnFireOnImpact",
             parameters: {
-              arc: "lightning-explosion-arc",
-              onHitLevel: true,
-              onHitEnemy: true,
-              fractionOfBaseDamage: 1.5,
-              branches: 4,
+              range: 1.5,
+              fractionOfBaseDamage: 2,
+              effectDuration: 3
             }
           }
         ],
         replaceMode: "replace"
       },
       prerequisites: {
-        requiredTags: [ "hitsLevel" ],
+        requiredTags: [ "grenade" ],
         forbiddenTags: [ "damageReplaced" ],
       }
     },
