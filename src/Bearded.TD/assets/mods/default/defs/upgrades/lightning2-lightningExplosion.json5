@@ -4,16 +4,20 @@
   cost: 50,
   effects: [
     {
-      type: "component",
+      type: "transaction",
       parameters: {
-        id: "emitArcOnHit",
-        parameters: {
-          arc: "lightning-explosion-arc",
-          onHitLevel: true,
-          onHitEnemy: true,
-          fractionOfBaseDamage: 0.33,
-          branches: 4,
-        }
+        removeKey: "splashDamage",
+        addComponent: {
+          id: "emitArcOnHit",
+          parameters: {
+            arc: "lightning-explosion-arc",
+            onHitLevel: true,
+            onHitEnemy: true,
+            fractionOfBaseDamage: 1.5,
+            branches: 4,
+          }
+        },
+        replaceMode: "replace"
       },
       prerequisites: {
         requiredTags: [ "hitsLevel" ]
