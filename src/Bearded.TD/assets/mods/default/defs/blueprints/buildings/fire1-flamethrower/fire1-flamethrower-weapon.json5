@@ -51,5 +51,8 @@
             id: "loopSoundWhileShooting",
             parameters: { sound: "flamethrower-loop" },
         },
+
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
+        //{ id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
     ]
 }

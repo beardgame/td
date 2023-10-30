@@ -33,6 +33,7 @@ static class ParticleSpawning
         out Particles.AddTransaction transaction,
         int? countOverride = null)
     {
+        sharedVelocity *= parameters.InheritVelocity;
         var direction = baseDirection + parameters.Orientation;
         var color = parameters.Color ?? Color.White;
         var count = countOverride ?? parameters.Count;
@@ -43,20 +44,20 @@ static class ParticleSpawning
 
         if (parameters.RelativeToDirection)
         {
-            unitY = baseDirection.Vector;
-            unitX = unitY.PerpendicularRight;
+            unitX = baseDirection.Vector;
+            unitY = unitX.PerpendicularRight;
         }
 
         for (var i = 0; i < particleSpan.Length; i++)
         {
-            var velocity = sharedVelocity
+            var velocity = sharedVelocity * noise(parameters.InheritVelocityNoise)
                 + parameters.Velocity * noise(parameters.VelocityNoise)
                 + Vectors.GetRandomUnitVector3() * parameters.RandomVelocity * noise(parameters.RandomVelocityNoise);
 
-            velocity = (velocity.X * unitY + velocity.Y * unitX).WithZ(velocity.Z);
+            velocity = (velocity.X * unitX + velocity.Y * unitY).WithZ(velocity.Z);
 
             var offset = parameters.Offset;
-            offset = (offset.X * unitY + offset.Y * unitX).WithZ(offset.Z);
+            offset = (offset.X * unitX + offset.Y * unitY).WithZ(offset.Z);
 
             if (parameters.RandomOffset != 0.U())
                 offset += Vectors.GetRandomUnitVector3() * parameters.RandomOffset * noise(parameters.RandomOffsetNoise);

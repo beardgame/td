@@ -1,5 +1,5 @@
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 

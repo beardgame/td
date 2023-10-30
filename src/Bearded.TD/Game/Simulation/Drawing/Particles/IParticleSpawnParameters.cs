@@ -25,6 +25,10 @@ interface IParticleSpawnParameters
 
     Color? Color { get; }
 
+    [Modifiable(1)]
+    float InheritVelocity { get; }
+    float InheritVelocityNoise { get; }
+
     Velocity3 Velocity { get; }
     float VelocityNoise { get; }
 
