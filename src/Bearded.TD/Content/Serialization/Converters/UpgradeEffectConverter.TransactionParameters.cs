@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.Upgrades;
 using JetBrains.Annotations;
@@ -8,7 +9,7 @@ sealed partial class UpgradeEffectConverter
 {
     [UsedImplicitly(ImplicitUseKindFlags.Assign, ImplicitUseTargetFlags.WithMembers)]
     private sealed record TransactionParameters(
-        IComponent AddComponent,
+        ImmutableArray<IComponent> AddComponents,
         string RemoveKey,
-        TransactComponents.ReplaceMode ReplaceMode = TransactComponents.ReplaceMode.InsertOrReplace);
+        ReplaceComponents.ReplaceMode ReplaceMode = ReplaceComponents.ReplaceMode.InsertOrReplace);
 }

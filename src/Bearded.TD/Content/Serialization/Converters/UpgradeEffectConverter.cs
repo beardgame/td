@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.IO;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
@@ -18,7 +17,7 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         Modification = 1,
         Component = 2,
         AddTags = 3,
-        Transaction = 4,
+        Replacement = 4,
     }
 
     protected override IUpgradeEffect ReadJson(JsonReader reader, JsonSerializer serializer)
@@ -62,10 +61,14 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                 }
 
                 return new AddTags(tags, prerequisites, isSideEffect);
-            case UpgradeEffectType.Transaction:
+            case UpgradeEffectType.Replacement:
                 var transaction = serializer.Deserialize<TransactionParameters>(def.CreateReader());
-                return new TransactComponents(
-                    transaction.AddComponent,
+                if (string.IsNullOrWhiteSpace(transaction.RemoveKey))
+                {
+                    throw new InvalidDataException("Missing key to replace");
+                }
+                return new ReplaceComponents(
+                    transaction.AddComponents.IsDefault ? ImmutableArray<IComponent>.Empty : transaction.AddComponents,
                     transaction.RemoveKey,
                     transaction.ReplaceMode,
                     prerequisites,

@@ -7,7 +7,7 @@ using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class TransactComponents : UpgradeEffectBase
+sealed class ReplaceComponents : UpgradeEffectBase
 {
     public enum ReplaceMode
     {
@@ -23,26 +23,26 @@ sealed class TransactComponents : UpgradeEffectBase
         InsertOrReplace
     }
 
-    private readonly IComponent? componentToAdd;
+    private readonly ImmutableArray<IComponent> componentsToAdd;
     private readonly string keyToRemove;
     private readonly ReplaceMode replaceMode;
 
-    public TransactComponents(
-        IComponent? componentToAdd,
+    public ReplaceComponents(
+        ImmutableArray<IComponent> componentsToAdd,
         string keyToRemove,
         ReplaceMode replaceMode,
         UpgradePrerequisites prerequisites,
         bool isSideEffect)
         : base(prerequisites, isSideEffect)
     {
-        this.componentToAdd = componentToAdd;
+        this.componentsToAdd = componentsToAdd;
         this.keyToRemove = keyToRemove;
         this.replaceMode = replaceMode;
     }
 
     public override bool ModifiesComponentCollection(GameObject subject)
     {
-        return (replaceMode == ReplaceMode.InsertOrReplace && componentToAdd is not null) ||
+        return (replaceMode == ReplaceMode.InsertOrReplace && !componentsToAdd.IsEmpty) ||
             subject.FindComponents(keyToRemove).Any();
     }
 
@@ -50,12 +50,12 @@ sealed class TransactComponents : UpgradeEffectBase
     {
         var removals =
             subject.FindComponents(keyToRemove).Select(ComponentCollectionMutation.Removal).ToImmutableArray();
-        var canAddComponent = componentToAdd is not null &&
-            (!removals.IsDefaultOrEmpty || replaceMode == ReplaceMode.InsertOrReplace);
+        var canAddComponent = !removals.IsDefaultOrEmpty || replaceMode == ReplaceMode.InsertOrReplace;
         var additions = canAddComponent
-            ? ComponentCollectionMutation
-                .Addition(ComponentFactories.CreateComponentFactory(componentToAdd).Create())
-                .Yield()
+            ? componentsToAdd
+                .Select(ComponentFactories.CreateComponentFactory)
+                .Select(c => c.Create())
+                .Select(ComponentCollectionMutation.Addition)
             : Enumerable.Empty<ComponentCollectionMutation>();
 
         return new ComponentTransaction(subject, removals.Concat(additions).ToImmutableArray());
