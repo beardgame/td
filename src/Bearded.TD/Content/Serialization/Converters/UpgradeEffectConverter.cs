@@ -53,7 +53,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                 {
                     throw new InvalidDataException("Missing component definition");
                 }
-                return new AddComponent(component, prerequisites, isSideEffect);
+                return new AddComponentFromFactory(component, prerequisites, isSideEffect);
             case UpgradeEffectType.AddTags:
                 var tags = serializer.Deserialize<ImmutableArray<string>>(def.CreateReader());
                 if (tags == null || tags.IsEmpty)

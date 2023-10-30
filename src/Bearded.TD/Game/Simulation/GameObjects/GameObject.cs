@@ -71,7 +71,15 @@ sealed class GameObject : IDeletable, IPositionable, IDirected
         components.Add(component);
     }
 
-    public void RemoveComponent(IComponent component) => components.Remove(component);
+    public void RemoveComponent(IComponent component)
+    {
+        components.Remove(component);
+    }
+
+    public void ModifyComponentCollection(IEnumerable<ComponentCollectionMutation> mutations)
+    {
+        components.ApplyMutations(mutations);
+    }
 
     public IEnumerable<TComponent> GetComponents<TComponent>() => components.Get<TComponent>();
 

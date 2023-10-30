@@ -3,7 +3,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class AddTags : UpgradeEffectBase
+sealed class AddTags : AddComponent
 {
     private readonly ImmutableArray<string> tagsToAdd;
 
@@ -13,7 +13,5 @@ sealed class AddTags : UpgradeEffectBase
         this.tagsToAdd = tagsToAdd;
     }
 
-    public override bool ContributesComponent => true;
-
-    public override IComponent CreateComponent() => ContributeTags.FromStringList(tagsToAdd);
+    protected override IComponent CreateComponent() => ContributeTags.FromStringList(tagsToAdd);
 }

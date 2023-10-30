@@ -1,20 +1,21 @@
-using Bearded.TD.Content.Serialization.Models;
-using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
+using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
-sealed class AddComponent : UpgradeEffectBase
+abstract class AddComponent : UpgradeEffectBase
 {
-    private readonly IComponent component;
+    public override bool ModifiesComponentCollection => true;
 
-    public AddComponent(IComponent component, UpgradePrerequisites prerequisites, bool isSideEffect)
-        : base(prerequisites, isSideEffect)
+    protected AddComponent(UpgradePrerequisites prerequisites, bool isSideEffect)
+        : base(prerequisites, isSideEffect) { }
+
+    public override ComponentTransaction CreateComponentChanges(GameObject gameObject)
     {
-        this.component = component;
+        return new ComponentTransaction(gameObject,
+            ImmutableArray.Create(
+                ComponentCollectionMutation.Addition(CreateComponent())));
     }
 
-    public override bool ContributesComponent => true;
-
-    public override GameObjects.IComponent CreateComponent() =>
-        ComponentFactories.CreateComponentFactory(component).Create();
+    protected abstract IComponent CreateComponent();
 }
