@@ -132,7 +132,6 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
             : Expression.MemberInit(newExpression, memberBindings);
 
         var constructor = Expression.Lambda(constructorBody, paramParameter, modelParameter);
-        Console.WriteLine(constructor.ToString());
         var compiledConstructor = constructor.Compile();
 
         // returns Func<TParameters, TBehaviorTemplate, object>
