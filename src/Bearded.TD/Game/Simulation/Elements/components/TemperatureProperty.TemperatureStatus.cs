@@ -32,7 +32,7 @@ sealed partial class TemperatureProperty
             {
                 coldStatus ??= statusDisplay.AddStatus(new StatusSpec(StatusType.Neutral, coldDrawer), null);
                 progress = (newTemperature - Constants.Game.Elements.MinNormalTemperature) /
-                    (Constants.Game.Elements.MinShownTemperature - Constants.Game.Elements.MinNormalTemperature);
+                    (Constants.Game.Elements.MinTemperature - Constants.Game.Elements.MinNormalTemperature);
             }
             else
             {
@@ -44,7 +44,7 @@ sealed partial class TemperatureProperty
             {
                 hotStatus ??= statusDisplay.AddStatus(new StatusSpec(StatusType.Neutral, hotDrawer), null);
                 progress = (newTemperature - Constants.Game.Elements.MaxNormalTemperature) /
-                    (Constants.Game.Elements.MaxShownTemperature - Constants.Game.Elements.MaxNormalTemperature);
+                    (Constants.Game.Elements.MaxTemperature - Constants.Game.Elements.MaxNormalTemperature);
             }
             else
             {

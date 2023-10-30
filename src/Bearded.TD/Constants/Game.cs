@@ -130,9 +130,9 @@ static partial class Constants
             public static readonly Temperature AmbientTemperature = Temperature.Zero;
             public static readonly TemperatureRate TemperatureDecayRate = new(7.5f);
             public static readonly Temperature MaxNormalTemperature = new(40);
-            public static readonly Temperature MaxShownTemperature = new(100);
+            public static readonly Temperature MaxTemperature = new(100);
             public static readonly Temperature MinNormalTemperature = new(-40);
-            public static readonly Temperature MinShownTemperature = new(-100);
+            public static readonly Temperature MinTemperature = new(-100);
         }
 
         public static class Physics
