@@ -66,6 +66,7 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
         }
 
         Value += queuedTemperatureChange;
+        Value = SpaceTime1MathF.Clamp(Value, MinTemperature, MaxTemperature);
         queuedTemperatureChange = TemperatureDifference.Zero;
     }
 
@@ -92,7 +93,7 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
         }
 
         if (breakage is null &&
-            Value > MaxShownTemperature &&
+            Value > MaxTemperature &&
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
