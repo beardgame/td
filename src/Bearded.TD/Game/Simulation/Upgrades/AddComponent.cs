@@ -5,8 +5,6 @@ namespace Bearded.TD.Game.Simulation.Upgrades;
 
 abstract class AddComponent : UpgradeEffectBase
 {
-    public override bool ModifiesComponentCollection => true;
-
     protected AddComponent(UpgradePrerequisites prerequisites, bool isSideEffect)
         : base(prerequisites, isSideEffect) { }
 
