@@ -13,7 +13,7 @@ sealed class ComponentCollection
 
     private bool isActivated;
     private bool deferComponentCollectionMutations;
-    private readonly Queue<CollectionMutation> queuedMutations = new();
+    private readonly Queue<ComponentCollectionMutation> queuedMutations = new();
 
     public ComponentCollection(GameObject owner, ComponentEvents events)
     {
@@ -25,7 +25,7 @@ sealed class ComponentCollection
     {
         if (deferComponentCollectionMutations)
         {
-            queuedMutations.Enqueue(CollectionMutation.Addition(component));
+            queuedMutations.Enqueue(ComponentCollectionMutation.Addition(component));
             return;
         }
         components.Add(component);
@@ -53,7 +53,7 @@ sealed class ComponentCollection
     {
         if (deferComponentCollectionMutations)
         {
-            queuedMutations.Enqueue(CollectionMutation.Removal(component));
+            queuedMutations.Enqueue(ComponentCollectionMutation.Removal(component));
             return;
         }
         components.Remove(component);
@@ -64,6 +64,11 @@ sealed class ComponentCollection
     public IEnumerable<T> Get<T>()
     {
         return components.OfType<T>();
+    }
+
+    public IEnumerable<IComponent> Find(string key)
+    {
+        return components.Where(c => c.Keys.Contains(key));
     }
 
     public void Update(TimeSpan elapsedTime)
@@ -81,42 +86,30 @@ sealed class ComponentCollection
     {
         while (queuedMutations.Count > 0)
         {
-            var mutation = queuedMutations.Dequeue();
-            switch (mutation.Type)
-            {
-                case CollectionMutationType.Addition:
-                    Add(mutation.Component);
-                    break;
-                case CollectionMutationType.Removal:
-                    Remove(mutation.Component);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            applyMutation(queuedMutations.Dequeue());
         }
     }
 
-    private readonly struct CollectionMutation
+    public void ApplyMutations(IEnumerable<ComponentCollectionMutation> mutations)
     {
-        public static CollectionMutation Addition(IComponent component) =>
-            new(CollectionMutationType.Addition, component);
-
-        public static CollectionMutation Removal(IComponent component) =>
-            new(CollectionMutationType.Removal, component);
-
-        public CollectionMutationType Type { get; }
-        public IComponent Component { get; }
-
-        private CollectionMutation(CollectionMutationType type, IComponent component)
+        foreach (var mutation in mutations)
         {
-            Type = type;
-            Component = component;
+            applyMutation(mutation);
         }
     }
 
-    private enum CollectionMutationType
+    private void applyMutation(ComponentCollectionMutation mutation)
     {
-        Addition,
-        Removal
+        switch (mutation.Type)
+        {
+            case CollectionMutationType.Addition:
+                Add(mutation.Component);
+                break;
+            case CollectionMutationType.Removal:
+                Remove(mutation.Component);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

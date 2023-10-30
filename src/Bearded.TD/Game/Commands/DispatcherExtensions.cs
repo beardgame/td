@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Commands;
 
 static class DispatcherExtensions
 {
-    private static IDispatcher<GameInstance> d(IGameObject obj) => obj.Game.Meta.Dispatcher;
+    private static IDispatcher<GameInstance> d(GameObject obj) => obj.Game.Meta.Dispatcher;
 
     public static void Sync(this GameObject obj, Action<ICommandDispatcher<GameInstance>> action)
         => d(obj).RunOnlyOnServer(action);

@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.TD.Game.Simulation.GameObjects;
+﻿using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
@@ -15,9 +14,10 @@ abstract class UpgradeEffectBase : IUpgradeEffect
         IsSideEffect = isSideEffect;
     }
 
-    public virtual bool ContributesComponent => false;
+    public virtual bool ModifiesComponentCollection(GameObject subject) => false;
 
-    public virtual IComponent CreateComponent() => throw new InvalidOperationException();
+    public virtual ComponentTransaction CreateComponentChanges(GameObject subject) =>
+        ComponentTransaction.Empty(subject);
 
     public virtual bool CanApplyTo(IParametersTemplate subject) => false;
 

@@ -8,8 +8,8 @@ interface IUpgradeEffect
     UpgradePrerequisites Prerequisites { get; }
     bool IsSideEffect { get; }
 
-    bool ContributesComponent { get; }
-    IComponent CreateComponent();
+    bool ModifiesComponentCollection(GameObject subject);
+    ComponentTransaction CreateComponentChanges(GameObject subject);
 
     bool CanApplyTo(IParametersTemplate subject);
     void ApplyTo(IParametersTemplate subject);

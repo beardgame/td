@@ -32,7 +32,8 @@
             id: "splashDamageOnHit",
             parameters: {
                 range: 1.5
-            }
+            },
+            keys: [ "splashDamage" ]
         },
         {
             id: "spawnObjectOnHit",

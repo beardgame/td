@@ -23,18 +23,18 @@ static partial class UpgradeApplication
 
         public void RegisterGameObject(GameObject gameObject)
         {
-            foreach (var effect in upgrade.Effects.Where(e => e.ContributesComponent))
+            foreach (var effect in upgrade.Effects.Where(e => e.ModifiesComponentCollection(gameObject)))
             {
                 upgradeCandidates.Add(
                     new UpgradeEffectCandidate(gameObject, effect),
-                    new UpgradeEffectOperation<IComponent>(
+                    new UpgradeEffectOperation<ComponentTransaction>(
                         () =>
                         {
-                            var component = effect.CreateComponent();
-                            gameObject.AddComponent(component);
-                            return component;
+                            var transaction = effect.CreateComponentChanges(gameObject);
+                            transaction.Commit();
+                            return transaction;
                         },
-                        gameObject.RemoveComponent));
+                        transaction => transaction.Rollback()));
             }
         }
 

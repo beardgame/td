@@ -3,14 +3,13 @@ using System.Collections.Immutable;
 using System.IO;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
-sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
+sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
 {
     private enum UpgradeEffectType
     {
@@ -18,6 +17,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         Modification = 1,
         Component = 2,
         AddTags = 3,
+        Replacement = 4,
     }
 
     protected override IUpgradeEffect ReadJson(JsonReader reader, JsonSerializer serializer)
@@ -43,9 +43,8 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         switch (type)
         {
             case UpgradeEffectType.Modification:
-                var parameters = new ModificationParameters();
-                serializer.Populate(def.CreateReader(), parameters);
-                return new ParameterModifiable(
+                var parameters = serializer.Deserialize<ModificationParameters>(def.CreateReader());
+                return new ModifyParameter(
                     parameters.AttributeType, getModification(parameters), prerequisites, isSideEffect);
             case UpgradeEffectType.Component:
                 var component = serializer.Deserialize<IComponent>(def.CreateReader());
@@ -53,7 +52,7 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                 {
                     throw new InvalidDataException("Missing component definition");
                 }
-                return new ComponentModifiable(component, prerequisites, isSideEffect);
+                return new AddComponentFromFactory(component, prerequisites, isSideEffect);
             case UpgradeEffectType.AddTags:
                 var tags = serializer.Deserialize<ImmutableArray<string>>(def.CreateReader());
                 if (tags == null || tags.IsEmpty)
@@ -61,7 +60,19 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                     throw new InvalidDataException("Missing tags");
                 }
 
-                return new TagsModifiable(tags, prerequisites, isSideEffect);
+                return new AddTags(tags, prerequisites, isSideEffect);
+            case UpgradeEffectType.Replacement:
+                var transaction = serializer.Deserialize<TransactionParameters>(def.CreateReader());
+                if (string.IsNullOrWhiteSpace(transaction.RemoveKey))
+                {
+                    throw new InvalidDataException("Missing key to replace");
+                }
+                return new ReplaceComponents(
+                    transaction.AddComponents.IsDefault ? ImmutableArray<IComponent>.Empty : transaction.AddComponents,
+                    transaction.RemoveKey,
+                    transaction.ReplaceMode,
+                    prerequisites,
+                    isSideEffect);
             case UpgradeEffectType.Unknown:
             default:
                 throw new InvalidDataException("Upgrade effect must have a valid type.");
@@ -72,28 +83,10 @@ sealed class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
     {
         return parameters.Mode switch
         {
-            ModificationParameters.ModificationMode.Constant => Modification.AddConstant(parameters.Value),
-            ModificationParameters.ModificationMode.FractionOfBase => Modification.AddFractionOfBase(parameters.Value),
-            ModificationParameters.ModificationMode.Multiply => Modification.MultiplyWith(parameters.Value),
+            ModificationMode.Constant => Modification.AddConstant(parameters.Value),
+            ModificationMode.FractionOfBase => Modification.AddFractionOfBase(parameters.Value),
+            ModificationMode.Multiply => Modification.MultiplyWith(parameters.Value),
             _ => throw new InvalidDataException("Modification must have a valid type.")
         };
-    }
-
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    private sealed class ModificationParameters
-    {
-        public enum ModificationMode
-        {
-            Unknown = 0,
-            Constant = 1,
-            FractionOfBase = 2,
-            Multiply = 3,
-        }
-
-#pragma warning disable CS0649
-        public AttributeType AttributeType;
-        public ModificationMode Mode = ModificationMode.Unknown;
-        public double Value;
-#pragma warning restore CS0649
     }
 }

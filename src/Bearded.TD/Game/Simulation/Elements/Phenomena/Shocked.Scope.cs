@@ -40,7 +40,7 @@ static partial class Shocked
 
         private static IUpgradeEffect createUpgradeEffect(GameState gameState, Effect effect)
         {
-            return new ParameterModifiableWithId(
+            return new ModifyParameterReversibly(
                 AttributeType.MovementSpeed,
                 new ModificationWithId(
                     gameState.GamePlayIds.GetNext<Modification>(),

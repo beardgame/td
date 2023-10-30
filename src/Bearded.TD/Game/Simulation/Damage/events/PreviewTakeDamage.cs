@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Simulation.GameObjects;
-using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 

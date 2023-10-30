@@ -41,7 +41,7 @@ sealed class DisableDragAfterSprint : Component<DisableDragAfterSprint.IParamete
         reset();
 
         var mod = new ModificationWithId(Owner.Game.GamePlayIds.GetNext<Modification>(), Modification.MultiplyWith(0));
-        var noDrag = new ParameterModifiableWithId(AttributeType.Drag, mod, UpgradePrerequisites.Empty);
+        var noDrag = new ModifyParameterReversibly(AttributeType.Drag, mod, UpgradePrerequisites.Empty);
         var upgrade = Upgrade.FromEffects(noDrag);
 
         upgradeReceipt = Owner.ApplyUpgrade(upgrade);

@@ -9,7 +9,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class GameObject : IDeletable, IGameObject, IPositionable, IDirected
+sealed class GameObject : IDeletable, IPositionable, IDirected
 {
     private GameState? game;
     // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
@@ -71,7 +71,17 @@ sealed class GameObject : IDeletable, IGameObject, IPositionable, IDirected
         components.Add(component);
     }
 
-    public void RemoveComponent(IComponent component) => components.Remove(component);
+    public void RemoveComponent(IComponent component)
+    {
+        components.Remove(component);
+    }
+
+    public void ModifyComponentCollection(IEnumerable<ComponentCollectionMutation> mutations)
+    {
+        components.ApplyMutations(mutations);
+    }
 
     public IEnumerable<TComponent> GetComponents<TComponent>() => components.Get<TComponent>();
+
+    public IEnumerable<IComponent> FindComponents(string key) => components.Find(key);
 }
