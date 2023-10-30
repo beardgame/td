@@ -23,7 +23,7 @@ static partial class UpgradeApplication
 
         public void RegisterGameObject(GameObject gameObject)
         {
-            foreach (var effect in upgrade.Effects.Where(e => e.ModifiesComponentCollection))
+            foreach (var effect in upgrade.Effects.Where(e => e.ModifiesComponentCollection(gameObject)))
             {
                 upgradeCandidates.Add(
                     new UpgradeEffectCandidate(gameObject, effect),

@@ -18,6 +18,7 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         Modification = 1,
         Component = 2,
         AddTags = 3,
+        Transaction = 4,
     }
 
     protected override IUpgradeEffect ReadJson(JsonReader reader, JsonSerializer serializer)
@@ -61,6 +62,14 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
                 }
 
                 return new AddTags(tags, prerequisites, isSideEffect);
+            case UpgradeEffectType.Transaction:
+                var transaction = serializer.Deserialize<TransactionParameters>(def.CreateReader());
+                return new TransactComponents(
+                    transaction.ComponentToAdd,
+                    transaction.KeyToRemove,
+                    transaction.ReplaceMode,
+                    prerequisites,
+                    isSideEffect);
             case UpgradeEffectType.Unknown:
             default:
                 throw new InvalidDataException("Upgrade effect must have a valid type.");

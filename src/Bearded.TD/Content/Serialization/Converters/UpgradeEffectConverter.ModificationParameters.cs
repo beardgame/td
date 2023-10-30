@@ -5,7 +5,7 @@ namespace Bearded.TD.Content.Serialization.Converters;
 
 sealed partial class UpgradeEffectConverter
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    [UsedImplicitly(ImplicitUseKindFlags.Assign, ImplicitUseTargetFlags.WithMembers)]
     private sealed record ModificationParameters(
         AttributeType AttributeType, double Value, ModificationMode Mode = ModificationMode.Unknown);
 

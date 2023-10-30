@@ -10,9 +10,11 @@ abstract class AddComponent : UpgradeEffectBase
     protected AddComponent(UpgradePrerequisites prerequisites, bool isSideEffect)
         : base(prerequisites, isSideEffect) { }
 
-    public override ComponentTransaction CreateComponentChanges(GameObject gameObject)
+    public override bool ModifiesComponentCollection(GameObject subject) => true;
+
+    public override ComponentTransaction CreateComponentChanges(GameObject subject)
     {
-        return new ComponentTransaction(gameObject,
+        return new ComponentTransaction(subject,
             ImmutableArray.Create(
                 ComponentCollectionMutation.Addition(CreateComponent())));
     }

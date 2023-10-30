@@ -14,10 +14,10 @@ abstract class UpgradeEffectBase : IUpgradeEffect
         IsSideEffect = isSideEffect;
     }
 
-    public virtual bool ModifiesComponentCollection => false;
+    public virtual bool ModifiesComponentCollection(GameObject subject) => false;
 
-    public virtual ComponentTransaction CreateComponentChanges(GameObject gameObject) =>
-        ComponentTransaction.Empty(gameObject);
+    public virtual ComponentTransaction CreateComponentChanges(GameObject subject) =>
+        ComponentTransaction.Empty(subject);
 
     public virtual bool CanApplyTo(IParametersTemplate subject) => false;
 
