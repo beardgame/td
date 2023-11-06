@@ -11,7 +11,7 @@ sealed class ApplyOnFireOnImpact : ApplyEffectOnImpact<ApplyOnFireOnImpact.IPara
     public interface IParameters : IParametersTemplate<IParameters>
     {
         double Probability { get; }
-        double FractionOfBaseDamageApplied { get; }
+        double FractionOfBaseDamage { get; }
         TimeSpan EffectDuration { get; }
     }
 
@@ -23,11 +23,11 @@ sealed class ApplyOnFireOnImpact : ApplyEffectOnImpact<ApplyOnFireOnImpact.IPara
     {
         var damagePerSecond =
             new UntypedDamagePerSecond(
-                ((float) (Parameters.FractionOfBaseDamageApplied
+                ((float) (Parameters.FractionOfBaseDamage
                     * damage.Amount.NumericValue
                     / Parameters.EffectDuration.NumericValue))
                 .HitPoints());
-        Owner.TryGetSingleComponent<IDamageSource>(out var damageSource);
+        Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
         return new OnFire.Effect(damagePerSecond, damageSource, Parameters.EffectDuration);
     }
