@@ -34,7 +34,7 @@ float noise( in vec2 p )
 void main()
 {
     vec2 texSize = textureSize(diffuse, 0);
-    
+
 	vec4 c = texture(diffuse, p_texcoord);
     
     float n = noise(p_texcoord * texSize * 0.01f) * 0.5 + 0.5;
@@ -43,7 +43,7 @@ void main()
     
     float actualAlpha = clamp(c.a * 5, 0, 1);
 
-    c.rgb /= c.a;
+    c.rgb /= c.a * 1.5;
     c.rgb *= 2;
     c.rgb *= p_color.rgb;
 
@@ -52,7 +52,6 @@ void main()
     s = clamp(s, 0, 1);
     
     c *= s;
-    
     
     if (s < 0.001)
     {
