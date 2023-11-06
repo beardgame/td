@@ -37,7 +37,7 @@ void main()
 
 	vec4 c = texture(diffuse, p_texcoord);
     
-    float n = noise(p_texcoord * texSize * 0.01f) * 0.5 + 0.5;
+    float n = noise(p_texcoord * texSize * 0.01) * 0.5 + 0.5;
     
     float alphaForDissolve = c.a * p_color.a * 2;
     
