@@ -1,0 +1,9 @@
+{
+    id: "kinetics2-tower-gatling",
+    name: "Gatling",
+    branch: "kinetics",
+    tier: "medium",
+    unlocks: [
+        { type: "building", blueprint: "kinetics2-gatling" }
+    ]
+}

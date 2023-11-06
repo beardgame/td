@@ -1,0 +1,9 @@
+{
+    id: "kinetics1-tower-steamHammer",
+    name: "Steam hammer",
+    branch: "kinetics",
+    tier: "low",
+    unlocks: [
+        { type: "building", blueprint: "kinetics1-steamHammer" }
+    ]
+}

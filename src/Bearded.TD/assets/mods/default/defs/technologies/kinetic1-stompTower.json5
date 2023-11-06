@@ -1,9 +1,0 @@
-{
-    id: "kinetic1-stompTower",
-    name: "Stomp!",
-    branch: "kinetics",
-    tier: "low",
-    unlocks: [
-        { type: "building", blueprint: "kinetic1-stomp" }
-    ]
-}

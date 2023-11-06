@@ -1,0 +1,35 @@
+{
+    id: "kinetics0-cannon-shell",
+    components: [
+        { id: "tags", parameters: { tags: [ "bullet", "projectile" ] } },
+        {
+            id: "damageOnHit",
+            parameters: {}
+        },
+        { id: "deleteOnHit" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "default.particle.tracer",
+                color: "Silver",
+                size: 1.5
+            }
+        },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "FF333344",
+                radius: 2
+            }
+        },
+        {
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "sparkExplosion",
+                onHitLevel: true,
+                onHitEnemy: false
+            }
+        },
+        { id: "child", parameters: { object: "kinetics0-cannon-shell-smoke-trail", surviveParent: true } }
+    ]
+}

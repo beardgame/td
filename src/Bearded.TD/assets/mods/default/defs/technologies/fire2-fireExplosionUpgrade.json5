@@ -1,9 +1,0 @@
-{
-  id: "fire2-lightningExplosionUpgrade",
-  name: "Fire explosion",
-  branch: "fire",
-  tier: "medium",
-  unlocks: [
-    { type: "upgrade", blueprint: "fire2-fireExplosion" }
-  ]
-}

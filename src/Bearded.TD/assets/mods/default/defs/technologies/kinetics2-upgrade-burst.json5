@@ -1,0 +1,9 @@
+{
+    id: "fire2-upgrade-burst",
+    name: "Burst",
+    branch: "kinetics",
+    tier: "medium",
+    unlocks: [
+        { type: "upgrade", blueprint: "kinetics2-burst" }
+    ]
+}
