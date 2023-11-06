@@ -44,7 +44,7 @@
     } },
     
     { id: "particlesDraw", parameters: {
-      sprite: "default.particle.blackSmoke",
+      sprite: "default.large-particles.blackSmoke",
       drawMode: "sprite",
       reverseOrder: true,
     } }

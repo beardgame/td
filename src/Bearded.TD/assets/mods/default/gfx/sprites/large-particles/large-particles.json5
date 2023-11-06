@@ -1,0 +1,9 @@
+﻿{
+    id: "large-particles",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}
