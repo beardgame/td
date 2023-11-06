@@ -37,9 +37,15 @@ sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawC
 
     public void HandleEvent(CausedDamage e)
     {
+        var amount = e.Result.TotalDiscreteDamage;
+
+        if (amount <= HitPoints.Zero)
+        {
+            return;
+        }
+
         var p = e.Target.Position;
         var damage = e.Result.TotalExactDamage;
-        var amount = e.Result.TotalDiscreteDamage;
         var type = damage.Type;
 
         var color = type.ToElement().GetColor();
