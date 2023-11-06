@@ -3,7 +3,7 @@
   components: [
     { id: "particles", parameters: { } },
     { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.1 } },
+    { id: "particlesGravity", parameters: { factor: -0.25 } },
     { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
 
     { id: "particlesDraw", parameters: {
@@ -15,15 +15,16 @@
     } },
 
     { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
-      interval: 0.02,
+      interval: 0.05,
       intervalNoise: 0.2,
       randomStartInterval: true,
       betweenLastTwoProjectilesIfCreatedWithin: 0.15,
+      count: 3,
 
       lifeTime: 0.4,
       lifeTimeNoise: 0,
 
-      inheritVelocity: 0.5,
+      inheritVelocity: 2,
       velocity: [0, 0, 0.5],
       velocityNoise: 0.1,
       randomVelocity: 0,

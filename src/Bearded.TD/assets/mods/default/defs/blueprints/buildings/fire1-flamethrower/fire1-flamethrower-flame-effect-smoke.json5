@@ -3,7 +3,7 @@
   components: [
     { id: "particles", parameters: { } },
     { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.1 } },
+    { id: "particlesGravity", parameters: { factor: -0.25 } },
     { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
 
     { id: "particlesDraw", parameters: {
@@ -23,7 +23,7 @@
       lifeTime: 0.6,
       lifeTimeNoise: 0.2,
 
-      inheritVelocity: 0.5,
+      inheritVelocity: 1.5,
       velocity: [0, 0, 0.5],
       velocityNoise: 0,
       randomVelocity: 0.5,

@@ -33,7 +33,7 @@
             parameters: {
                 projectile: "fire1-flamethrower-flame",
                 muzzleSpeed: 12,
-                spread: 3,
+                spread: 5,
                 bulletDropCompensation: 0,
                 muzzleOffset: [0.3, 0]
             }
