@@ -16,6 +16,8 @@ sealed class PidAim : Component<PidAim.IParameters>, IAngularAccelerator
 
         [Modifiable(10, Type = AttributeType.TurnSpeed)]
         float DerivativeCorrection { get; }
+
+        AngularVelocity? MaxAngularVelocity { get; }
     }
 
     private IWeaponState weapon = null!;
@@ -43,8 +45,20 @@ sealed class PidAim : Component<PidAim.IParameters>, IAngularAccelerator
         if (weapon.IsEnabled)
         {
             accelerateTowardsGoal(elapsedTime);
+            clampVelocity();
             applyVelocity(elapsedTime);
         }
+    }
+
+    private void clampVelocity()
+    {
+        if (Parameters.MaxAngularVelocity is not { } max)
+            return;
+
+        if (angularVelocity > max)
+            angularVelocity = max;
+        else if (angularVelocity < -max)
+            angularVelocity = -max;
     }
 
     private void accelerateTowardsGoal(TimeSpan elapsedTime)

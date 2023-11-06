@@ -18,6 +18,7 @@
             parameters: {
                 proportionalCorrection: 50,
                 derivativeCorrection: 8,
+                maxAngularVelocity: 180,
             }
         },
         {
