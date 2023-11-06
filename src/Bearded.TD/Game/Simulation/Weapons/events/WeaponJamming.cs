@@ -1,6 +1,8 @@
 using Bearded.TD.Commands;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
@@ -21,6 +23,8 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     }
 
     private ActiveJam? activeJam;
+    private IStatusDisplay? statusDisplay;
+    private ISpriteBlueprint? sprite;
 
     public WeaponJamming(IParameters parameters) : base(parameters) { }
 
@@ -40,10 +44,22 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     public void Jam(TimeSpan duration)
     {
         var newJam = new ActiveJam(Owner.Game.Time, duration);
-        if (activeJam is not { } oldJam || newJam.End > oldJam.End)
+
+        if (activeJam is { } oldJam && newJam.End <= oldJam.End)
         {
-            activeJam = newJam;
+            return;
         }
+
+        if (activeJam is null &&
+            (statusDisplay is not null || Owner.TryGetSingleComponentInOwnerTree(out statusDisplay)))
+        {
+            sprite ??= Owner.Game.Meta.Blueprints.LoadStatusIconSprite("spanner");
+            statusDisplay.AddStatus(
+                new StatusSpec(StatusType.Negative, IconStatusDrawer.FromSpriteBlueprint(Owner.Game, sprite)),
+                newJam.End);
+        }
+
+        activeJam = newJam;
     }
 
     public void PreviewEvent(ref PreviewFireWeapon @event)
