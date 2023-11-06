@@ -16,7 +16,7 @@
         {
             id: "automaticFireCycle",
             parameters: {
-                damagePerSecond: 45,
+                damagePerSecond: 40,
                 fireRate: 15,
             }
         },

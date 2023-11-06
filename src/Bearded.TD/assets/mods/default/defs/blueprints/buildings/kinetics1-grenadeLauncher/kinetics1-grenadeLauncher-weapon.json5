@@ -1,0 +1,89 @@
+{
+    id: "kinetics1-grenadeLauncher-weapon",
+    components: [
+        { id: "tags", parameters: { tags: [ "gun" ] } },
+        {
+            id: "range",
+            parameters: {
+                range: 6,
+                minimumRange: 2.5
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
+                coneOfFire: 3,
+            }
+        },
+        {
+            id: "pidAim",
+            parameters: {
+                proportionalCorrection: 10,
+                derivativeCorrection: 10
+            }
+        },
+        {
+            id: "automaticFireCycle",
+            parameters: {
+                damagePerSecond: 20,
+                fireRate: 0.5
+            }
+        },
+        {
+            id: "weaponJamming",
+            parameters: {
+                probabilityPerShot: 0.01,
+                duration: 4,
+            }
+        },
+        {
+            id: "projectileEmitter",
+            parameters: {
+                projectile: "kinetics1-grenadeLauncher-shell",
+                muzzleSpeed: 5,
+                muzzleOffset:  [0.3, 0],
+            }
+        },
+        {
+            id: "muzzleFlash",
+            parameters: {
+                sprite: "particle.muzzleflash",
+                color: "00EED7D0",
+                size: 1,
+                offset: 0.5,
+            }
+        },
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "shotProjectile",
+                sound: "gunshot-punchy",
+            }
+        },
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "weaponMisfired",
+                sound: "gunshot-empty"
+            }
+        },
+        {
+            id: "shakeScreenOnFireWeapon",
+            parameters: {
+                strength: 0.05,
+                duration: 0.2,
+                frequency: 10
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings2.grenadeLauncher-turret",
+                colorMode: "faction",
+                shader: "building-no-normal",
+                drawGroup: "building",
+                size: 1.2
+            }
+        },
+    ]
+}

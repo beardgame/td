@@ -1,0 +1,9 @@
+{
+    id: "lightning1-upgrade-chargedProjectiles",
+    name: "Charged projectiles",
+    branch: "lightning",
+    tier: "low",
+    unlocks: [
+        { type: "upgrade", blueprint: "lightning1-chargedProjectiles" }
+    ]
+}

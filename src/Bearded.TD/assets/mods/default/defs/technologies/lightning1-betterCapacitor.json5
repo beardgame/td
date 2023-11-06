@@ -1,9 +1,0 @@
-{
-  id: "lightning1-betterCapacitor",
-  name: "Supercharged capacitors",
-  branch: "lightning",
-  tier: "low",
-  unlocks: [
-    { type: "upgrade", blueprint: "lightning1-betterCapacitor" }
-  ]
-}

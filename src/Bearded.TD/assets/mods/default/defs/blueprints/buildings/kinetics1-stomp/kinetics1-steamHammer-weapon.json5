@@ -1,0 +1,81 @@
+{
+    id: "kinetics1-steamHammer-weapon",
+    components: [
+        {
+            id: "range",
+            parameters: {
+                range: 1.5,
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
+            }
+        },
+        {
+            id: "automaticFireCycle",
+            parameters: {
+                damagePerSecond: 20,
+                fireRate: 1
+            }
+        },
+        {
+            id: "hitLevelAtTower"
+        },
+        {
+            id: "tags",
+            parameters: {
+                tags: [ "hitsLevel" ]
+            }
+        },
+        {
+            id: "splashDamageOnHit",
+            parameters: {
+                range: 1.5
+            },
+            keys: [ "splashDamage" ]
+        },
+        {
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "medium-shockwave",
+                onHitLevel: true,
+                onHitEnemy: false
+            }
+        },
+        {
+            id: "spawnObjectOnHit",
+            parameters: {
+                object: "ground-splash",
+                onHitLevel: true,
+                onHitEnemy: false
+            }
+        },
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "shotProjectile",
+                sound: "bang-deep",
+            },
+        },
+        {
+            id: "shakeScreenOnFireWeapon",
+            parameters: {
+                strength: 0.3,
+                duration: 0.4,
+                frequency: 10,
+                randomDirection: true,
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.steam-hammer",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 1.2
+            }
+        }
+    ]
+}

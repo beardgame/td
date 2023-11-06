@@ -47,7 +47,7 @@
                 faction: "players",
                 unlocks: [
                     { type: "building", blueprint: "default.wall" },
-                    { type: "building", blueprint: "default.kinetic0-cannon" }
+                    { type: "building", blueprint: "default.kinetics0-cannon" }
                 ]
             }
         },
@@ -80,7 +80,7 @@
             id: "contributeNodes",
             parameters: {
                 nodes: [
-                    { id: "default.base", fixedNumber: 1 },
+                    { id: "default.core", fixedNumber: 1 },
                     { nodes: [
                         { id: "default.empty", weight: 2 },
                         { id: "default.ring", weight: 1, minNumber: 1 },

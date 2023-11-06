@@ -9,7 +9,7 @@
                 id: "damageOnHit",
                 parameters: {
                     damageType: "fire",
-                    fractionOfBaseDamage: 0.9
+                    fractionOfBaseDamage: 0.33
                 }
             },
             prerequisites: {
@@ -21,9 +21,9 @@
             parameters: {
                 id: "applyOnFireOnImpact",
                 parameters: {
-                    probability: 0.05,
-                    fractionOfBaseDamageApplied: 2,
-                    effectDuration: 3
+                    probability: 0.33,
+                    fractionOfBaseDamage: 4,
+                    effectDuration: 1.5
                 }
             },
             prerequisites: {

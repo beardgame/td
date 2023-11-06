@@ -54,7 +54,7 @@
                 faction: "players",
                 unlocks: [
                     { type: "building", blueprint: "wall" },
-                    { type: "building", blueprint: "kinetic0-cannon" }
+                    { type: "building", blueprint: "kinetics0-cannon" }
                 ]
             }
         },
@@ -107,7 +107,7 @@
             id: "contributeNodes",
             parameters: {
                 nodes: [
-                    { id: "default.base", fixedNumber: 1 },
+                    { id: "default.core", fixedNumber: 1 },
                     { id: "default.gas-cave", weight: 0.4, minNumber: 2 },
                     { id: "default.ore-cave", weight: 0.4, minNumber: 2 },
                     { nodes: [

@@ -1,0 +1,27 @@
+{
+    id: "kinetics2-burst",
+    name: "Burst",
+    cost: 50,
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "burst",
+                parameters: {
+                    burstSize: 6,
+                    fireRateFactor: 5,
+                    overallDamageFactor: 2
+                }
+            },
+            prerequisites: {
+                requiredTags: [ "gun" ],
+                forbiddenTags: [ "dynamicFireRate" ]
+            }
+        },
+        {
+            type: "addTags",
+            parameters: [ "dynamicFireRate" ],
+            isSideEffect: true
+        }
+    ]
+}

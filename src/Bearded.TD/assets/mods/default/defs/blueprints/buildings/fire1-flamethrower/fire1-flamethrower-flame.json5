@@ -6,20 +6,23 @@
         { id : "elasticCollision", parameters : { normal : 0.1, tangent : 0.5 } },
         {
             id: "damageOnHit",
-            parameters: { damageType: "fire" }
+            parameters: {
+                damageType: "fire",
+                fractionOfBaseDamage: 0.5
+            }
         },
         {
             id:  "deleteAfter",
-            parameters:  {
+            parameters: {
                 timeSpan:  0.6
             }
         },
         {
             id: "applyOnFireOnImpact",
             parameters: {
-                probability: 0.05,
-                fractionOfBaseDamageApplied: 10,
-                effectDuration: 3
+                probability: 0.33,
+                fractionOfBaseDamage: 15,
+                effectDuration: 1.5
             }
         },
         {

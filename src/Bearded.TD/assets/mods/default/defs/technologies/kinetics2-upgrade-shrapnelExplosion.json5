@@ -1,0 +1,9 @@
+{
+    id: "kinetics2-upgrade-shrapnelExplosion",
+    name: "Shrapnel projectiles",
+    branch: "kinetics",
+    tier: "medium",
+    unlocks: [
+        { type: "upgrade", blueprint: "kinetics2-shrapnelExplosion" }
+    ]
+}
