@@ -7,9 +7,10 @@
     { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
 
     { id: "particlesDraw", parameters: {
-      sprite: "default.particle.flame",
+      sprite: "default.particle.flame3",
       drawMode: "sprite",
-      shader: "dissolve-sprite",
+      shader: "flame",
+      drawGroupOrderKey : 0,
       reverseOrder: false
     } },
 

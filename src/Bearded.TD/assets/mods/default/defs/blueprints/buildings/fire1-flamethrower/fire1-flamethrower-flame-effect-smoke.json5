@@ -9,6 +9,7 @@
     { id: "particlesDraw", parameters: {
       sprite: "default.particle.blackSmoke",
       drawMode: "sprite",
+      drawGroupOrderKey : 1,
       reverseOrder: true
     } },
 
