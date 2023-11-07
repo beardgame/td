@@ -4,7 +4,9 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -34,6 +36,10 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
     private float addedWidth;
     private float addedUV;
+
+    private Angle lastObjectAttachAngle;
+    private Unit lastObjectAttachDistance;
+    private Unit lastObjectAttachZ;
 
     public DrawConnected(IParameters parameters) : base(parameters)
     {
@@ -95,6 +101,14 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
             uvs[j] = u;
             previousPoint = currentPoint;
         }
+
+        if (Parameters.AttachLastToObject)
+        {
+            var lastObjectOffset = particles[^1].Position - Owner.Position;
+            lastObjectAttachAngle = Direction2.Of(lastObjectOffset.XY().NumericValue) - Owner.Direction;
+            lastObjectAttachDistance = lastObjectOffset.XY().Length;
+            lastObjectAttachZ = lastObjectOffset.Z;
+        }
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -114,9 +128,15 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         ref var lastParticlePosition = ref particles[^1].Position;
         var secondToLastParticlePosition = particles[^2].Position;
 
-        lastParticlePosition = Owner.Position;
+        lastParticlePosition = getAttachLocation();
         var distance = (lastParticlePosition - secondToLastParticlePosition).Length.NumericValue;
         uvs[particles.Length - 1] = uvs[particles.Length - 2] + distance / (Parameters.UVLength + addedUV);
+    }
+
+    private Position3 getAttachLocation()
+    {
+        var xy = (Owner.Direction + lastObjectAttachAngle) * lastObjectAttachDistance;
+        return Owner.Position + xy.WithZ(lastObjectAttachZ);
     }
 
     public void HandleEvent(DrawComponents e)

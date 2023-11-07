@@ -35,7 +35,7 @@
                 muzzleSpeed: 12,
                 spread: 5,
                 bulletDropCompensation: 0,
-                muzzleOffset: [0.3, 0]
+                muzzleOffset: [0.2, 0]
             }
         },
         {
@@ -53,6 +53,7 @@
             parameters: { sound: "flamethrower-loop" },
         },
 
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-liquid" } },
         { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
         { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
     ]
