@@ -24,7 +24,7 @@ sealed class ApplyAreaOnFireOnImpact : ApplyAreaEffectOnImpact<ApplyAreaOnFireOn
                     * damage.Amount.NumericValue
                     / Parameters.EffectDuration.NumericValue))
                 .HitPoints());
-        Owner.TryGetSingleComponent<IDamageSource>(out var damageSource);
+        Owner.TryGetSingleComponentInOwnerTree<IDamageSource>(out var damageSource);
 
         return new OnFire.Effect(damagePerSecond, damageSource, Parameters.EffectDuration);
     }
