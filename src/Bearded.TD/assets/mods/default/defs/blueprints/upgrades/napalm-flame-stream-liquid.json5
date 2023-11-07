@@ -1,0 +1,35 @@
+﻿{
+  id: "napalm-flame-stream-liquid",
+  components: [
+    { id: "particles", parameters: { } },
+    { id: "particlesMoveLinear" },
+
+    { id: "particlesDrawConnected", parameters: {
+      sprite: "default.trails.smoke",
+      uvLength : 4,
+      attachLastToObject: true
+    } },
+
+    { id: "particlesSpawnOnTrigger", parameters:  {
+      parentTriggers: ["shotProjectile"],
+      lifeTime: 0.5,
+      offset: [0.2, 0, 0],
+      velocity: [4, 0, 0],
+      relativeToDirection: true,
+    } },
+
+    { id: "particlesKeyFrames", parameters: {
+      scaleToParticleLifeTime: true,
+      animation: {
+        keyFrames: [
+          { duration: 0.0, size: 0.05, color: "00000000" },
+          { duration: 0.1, size: 0.12, color: "aaffffff" },
+          { duration: 0.1, size: 0.15, color: "aaffd385" },
+          { duration: 0.2, size: 0.15, color: "00000000" },
+        ],
+      }
+    } },
+    
+    { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+  ]
+}

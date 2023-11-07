@@ -1,0 +1,52 @@
+﻿{
+  id: "napalm-flame-stream",
+  components: [
+    { id: "particles", parameters: { } },
+    { id: "particlesMoveLinear" },
+    { id: "particlesGravity", parameters: { factor: -0.2 } },
+    { id: "particlesDrag", parameters: { linear: 1, angular: 2 } },
+
+    { id: "particlesDraw", parameters: {
+      sprite: "default.large-particles.flame3",
+      drawMode: "sprite",
+      shader: "flame",
+      drawGroupOrderKey : 2,
+      reverseOrder: false
+    } },
+
+    { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
+      interval: 0.05,
+      intervalNoise: 0.2,
+      randomStartInterval: true,
+      betweenLastTwoProjectilesIfCreatedWithin: 0.15,
+      count: 5,
+
+      lifeTime: 0.3,
+      lifeTimeNoise: 0,
+
+      inheritVelocity: 1.2,
+      velocity: [0, 0, 0],
+      velocityNoise: 0.1,
+      randomVelocity: 0,
+      randomVelocityNoise: 0.1,
+      orientationNoise: 1,
+      angularVelocity: 90,
+      angularVelocityNoise: 1,
+      randomAngularVelocitySign: true,
+    } },
+
+    { id: "particlesKeyFrames", parameters: {
+      scaleToParticleLifeTime: true,
+      animation: {
+        keyFrames: [
+          { duration: 0.0, size: 0, color: "00ffd385" },
+          { duration: 0.05, size: 0.05, color: "FFffd385" },
+          { duration: 0.1, size: 0.15, color: "FFff7c39" },
+          { duration: 0.1, size: 0.2, color: "66c05629" },
+          { duration: 0.1, size: 0.3, color: "00c05629" },
+          //{ duration: 0.1, size: 0.3, color: "00753822" },
+        ],
+      }
+    } },
+  ]
+}
