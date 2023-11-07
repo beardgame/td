@@ -13,7 +13,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
 [Component("particlesDraw")]
-sealed class Draw : Component<Draw.IParameters>, IListener<DrawComponents>
+sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
 {
     public enum DrawMode
     {
@@ -21,7 +21,6 @@ sealed class Draw : Component<Draw.IParameters>, IListener<DrawComponents>
         Line
     }
 
-    private Particles particles = null!;
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
     public interface IParameters : IParametersTemplate<IParameters>
@@ -42,13 +41,10 @@ sealed class Draw : Component<Draw.IParameters>, IListener<DrawComponents>
     {
     }
 
-    protected override void OnAdded()
-    {
-    }
 
     public override void Activate()
     {
-        ComponentDependencies.Depend<Particles>(Owner, Events, p => particles = p);
+        base.Activate();
 
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
             Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
@@ -62,7 +58,7 @@ sealed class Draw : Component<Draw.IParameters>, IListener<DrawComponents>
 
     public void HandleEvent(DrawComponents e)
     {
-        var ps = particles.ImmutableParticles;
+        var ps = Particles.ImmutableParticles;
 
         if (Parameters.ReverseOrder)
         {
