@@ -1,9 +1,9 @@
 {
     id : "fire1-flamethrower-flame",
     components : [
-        { id : "drag", parameters : { amount : 0.5 } },
-        { id : "buoyancy", parameters : { amount : 1 } },
-        { id : "elasticCollision", parameters : { normal : 0.1, tangent : 0.5 } },
+        //{ id : "drag", parameters : { amount : 0.5 } },
+        //{ id : "buoyancy", parameters : { amount : 1 } },
+        //{ id : "elasticCollision", parameters : { normal : 0.1, tangent : 0.5 } },
         {
             id: "damageOnHit",
             parameters: {
@@ -11,12 +11,12 @@
                 fractionOfBaseDamage: 0.5
             }
         },
-        {
+        /*{
             id:  "deleteAfter",
             parameters: {
                 timeSpan:  0.6
             }
-        },
+        },*/
         {
             id: "applyOnFireOnImpact",
             parameters: {
@@ -25,6 +25,7 @@
                 effectDuration: 1.5
             }
         },
+        { id: "deleteOnHit" },
         {
             id: "animatedPointLight",
             parameters: {

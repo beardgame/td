@@ -4,7 +4,7 @@
         {
             id: "range",
             parameters: {
-                range: 3,
+                range: 4.5,
             }
         },
         {
@@ -32,9 +32,9 @@
             id: "projectileEmitter",
             parameters: {
                 projectile: "fire1-flamethrower-flame",
-                muzzleSpeed: 12,
-                spread: 5,
-                bulletDropCompensation: 0,
+                muzzleSpeed: 4,
+                spread: 1,
+                //bulletDropCompensation: 0,
                 muzzleOffset: [0.2, 0]
             }
         },
@@ -53,8 +53,10 @@
             parameters: { sound: "flamethrower-loop" },
         },
 
-        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-liquid" } },
-        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
-        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
+        //{ id: "child", parameters: { object: "fire1-flamethrower-flame-effect-liquid" } },
+        //{ id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
+        //{ id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } },
+        { id: "child", parameters: { object: "napalm-flame-stream-liquid" } },
+        { id: "child", parameters: { object: "napalm-flame-stream" } },
     ]
 }
