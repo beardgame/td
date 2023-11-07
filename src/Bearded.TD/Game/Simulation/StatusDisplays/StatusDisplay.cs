@@ -29,7 +29,10 @@ sealed partial class StatusDisplay : Component, IStatusDisplay, IListener<DrawCo
         condition?.Activate(Owner);
     }
 
-    public override void Update(TimeSpan elapsedTime) { }
+    public override void Update(TimeSpan elapsedTime)
+    {
+        statuses.RemoveAll(s => s.Expiry is { } expiry && expiry <= Owner.Game.Time);
+    }
 
     public void HandleEvent(DrawComponents @event)
     {
