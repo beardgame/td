@@ -51,8 +51,8 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
     private void applyTick(Instant now)
     {
         applyChanges(now);
-        applyDecay();
         updateBreakage();
+        applyDecay();
         status?.UpdateCurrentTemperature(Value);
     }
 
@@ -93,7 +93,7 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
         }
 
         if (breakage is null &&
-            Value > MaxTemperature &&
+            Value >= MaxTemperature &&
             Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
         {
             breakage = breakageHandler.BreakObject();
