@@ -18,6 +18,7 @@ interface IParticleSpawnParameters
     float SizeNoise { get; }
 
     Difference3 Offset { get; }
+    float OffsetNoise { get; }
     bool RelativeToDirection { get; }
 
     Unit RandomOffset { get; }

@@ -9,16 +9,17 @@
     { id: "particlesDraw", parameters: {
       sprite: "default.large-particles.blackSmoke",
       drawMode: "sprite",
+      //shader: "flame",
       drawGroupOrderKey : 1,
       reverseOrder: true
     } },
 
     { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
-      interval: 0.1,
+      interval: 0.05,
       intervalNoise: 0.2,
       randomStartInterval: true,
       betweenLastTwoProjectilesIfCreatedWithin: 0.15,
-      startDelay: 0.1,
+      startDelay: 0.05,
 
       lifeTime: 0.6,
       lifeTimeNoise: 0.2,
@@ -38,10 +39,12 @@
       scaleToParticleLifeTime: true,
       animation: {
         keyFrames: [
+          { duration: 0, size: 0, color: "00000000" },
+          { duration: 0.5, size: 0, color: "00000000" },
           { duration: 0, size: 0.3, color: "00000000" },
           { duration: 0.5, size: 0.4, color: "88753822" },
-          { duration: 0.5, size: 0.5, color: "88111111" },
-          { duration: 0.5, size: 0.6, color: "00000000" },
+          { duration: 0.5, size: 0.5, color: "66333333" },
+          { duration: 0.5, size: 0.0, color: "66333333" },
         ],
       }
     } },

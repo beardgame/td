@@ -98,21 +98,23 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
     private void spawnFrom(int emitterId)
     {
         var emitter = emitters[emitterId];
+        var emitterPosition = emitter.Object.Position;
 
         var particles = Particles.CreateParticles(
             Parameters,
             emitter.Velocity?.Velocity ?? Velocity3.Zero,
             emitter.Object.Direction,
             Owner.Game.Time,
-            emitter.Object.Position,
+            emitterPosition,
             out var transaction);
 
         if (emitter.ConnectToPrevious && emitterId > 0)
         {
+            var toPreviousEmitter = emitters[emitterId - 1].Object.Position - emitterPosition;
+
             foreach (ref var particle in particles)
             {
-                particle.Position = Position3.Lerp(emitter.Object.Position, emitters[emitterId - 1].Object.Position,
-                    StaticRandom.Float());
+                particle.Position += toPreviousEmitter * StaticRandom.Float();
             }
         }
 

@@ -10,16 +10,20 @@
       sprite: "default.large-particles.flame3",
       drawMode: "sprite",
       shader: "flame",
-      drawGroupOrderKey : 0,
+      drawGroupOrderKey : 2,
       reverseOrder: false
     } },
 
     { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
-      interval: 0.05,
+      interval: 0.02,
       intervalNoise: 0.2,
       randomStartInterval: true,
       betweenLastTwoProjectilesIfCreatedWithin: 0.15,
       count: 3,
+      
+      offset: [0.1, 0, 0],
+      offsetNoise: 1,
+      relativeToDirection: true,
 
       lifeTime: 0.4,
       lifeTimeNoise: 0,
@@ -40,7 +44,7 @@
       animation: {
         keyFrames: [
           { duration: 0.0, size: 0, color: "00ffd385" },
-          { duration: 0.05, size: 0.22, color: "FFffd385" },
+          { duration: 0.1, size: 0.22, color: "FFffd385" },
           { duration: 0.1, size: 0.35, color: "FFff7c39" },
           { duration: 0.1, size: 0.47, color: "66c05629" },
           { duration: 0.1, size: 0.6, color: "00753822" },

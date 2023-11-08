@@ -51,12 +51,14 @@ static class ParticleSpawning
         for (var i = 0; i < particleSpan.Length; i++)
         {
             var velocity = sharedVelocity * noise(parameters.InheritVelocityNoise)
-                + parameters.Velocity * noise(parameters.VelocityNoise)
                 + Vectors.GetRandomUnitVector3() * parameters.RandomVelocity * noise(parameters.RandomVelocityNoise);
 
-            velocity = (velocity.X * unitX + velocity.Y * unitY).WithZ(velocity.Z);
+            var localVelocity = parameters.Velocity * noise(parameters.VelocityNoise);
+            localVelocity = (localVelocity.X * unitX + localVelocity.Y * unitY).WithZ(localVelocity.Z);
 
-            var offset = parameters.Offset;
+            velocity += localVelocity;
+
+            var offset = parameters.Offset * noise(parameters.OffsetNoise);
             offset = (offset.X * unitX + offset.Y * unitY).WithZ(offset.Z);
 
             if (parameters.RandomOffset != 0.U())
