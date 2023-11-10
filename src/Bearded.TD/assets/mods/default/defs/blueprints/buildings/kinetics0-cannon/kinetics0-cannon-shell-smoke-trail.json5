@@ -36,6 +36,9 @@
             }
         } },
 
+        { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+        { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
         { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
     ]
 }

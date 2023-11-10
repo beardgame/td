@@ -10,9 +10,11 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "default.particle.tracer",
-                color: "Silver",
-                size: 1.5
+                sprite: "default.shells.bullet",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.04,
+                rotationOffset: -90,
             }
         },
         {

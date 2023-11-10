@@ -26,3 +26,25 @@ sealed class OverrideColorOfLast : ParticleUpdater<OverrideColorOfLast.IParamete
     }
 }
 
+
+[Component("particlesOverrideColorOfFirst")]
+sealed class OverrideColorOfFirst : ParticleUpdater<OverrideColorOfFirst.IParameters>
+{
+    internal interface IParameters : IParametersTemplate<IParameters>
+    {
+        Color Color { get; }
+    }
+
+    public OverrideColorOfFirst(IParameters parameters) : base(parameters)
+    {
+    }
+
+    public override void Update(TimeSpan elapsedTime)
+    {
+        if (Particles.Count == 0)
+            return;
+
+        Particles.MutableParticles[0].Color = Parameters.Color;
+    }
+}
+
