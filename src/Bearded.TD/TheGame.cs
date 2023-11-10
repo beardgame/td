@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Bearded.Audio;
 using Bearded.Graphics;
 using Bearded.TD.Commands.Serialization;
@@ -30,9 +31,13 @@ using Bearded.Utilities.SpaceTime;
 using Bearded.Utilities.Threading;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Activity = Bearded.TD.Utilities.Performance.Activity;
+using Image = SixLabors.ImageSharp.Image;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
 using TimeSpan = System.TimeSpan;
 using Window = Bearded.Graphics.Windowing.Window;
@@ -82,7 +87,18 @@ sealed class TheGame : Window
             WindowState = WindowState.Normal,
             Profile = ContextProfile.Core,
             Flags = ContextFlags.ForwardCompatible,
+            Icon = createIcon(),
         };
+
+    private WindowIcon createIcon()
+    {
+        var image = (Image<Rgba32>)Image.Load("assets/icon.png");
+        image.DangerousTryGetSinglePixelMemory(out var memory);
+        var imageBytes = MemoryMarshal.AsBytes(memory.Span).ToArray();
+        image.Dispose();
+        var windowIcon = new WindowIcon(new OpenTK.Windowing.Common.Input.Image(image.Width, image.Height, imageBytes));
+        return windowIcon;
+    }
 
     protected override void OnLoad()
     {
