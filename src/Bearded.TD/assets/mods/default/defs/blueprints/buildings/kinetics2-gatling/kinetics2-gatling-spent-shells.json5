@@ -12,7 +12,7 @@
 
     { id: "particlesDraw", parameters: {
       sprite: "default.shells.long-neck",
-      shader: "building",
+      shader: "building-fade",
       drawGroup: "building",
       drawMode: "sprite",
       reverseOrder: true,

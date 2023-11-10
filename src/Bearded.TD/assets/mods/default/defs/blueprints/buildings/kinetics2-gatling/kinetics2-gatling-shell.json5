@@ -10,9 +10,11 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "default.particle.tracer",
-                color: "Silver",
-                size: 0.75
+                sprite: "default.shells.bullet",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.024,
+                rotationOffset: -90,
             }
         },
         {
@@ -30,5 +32,6 @@
                 onHitEnemy: false
             }
         },
+        { id: "child", parameters: { object: "kinetics2-gatling-shell-smoke-trail", surviveParent: true } }
     ]
 }

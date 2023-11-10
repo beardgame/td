@@ -10,9 +10,11 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "default.particle.tracer",
-                color: "Silver",
-                size: 3
+                sprite: "default.shells.bullet",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.08,
+                rotationOffset: -90,
             }
         },
         {
@@ -30,5 +32,6 @@
                 onHitEnemy: false
             }
         },
+        { id: "child", parameters: { object: "kinetics3-sniper-shell-smoke-trail", surviveParent: true } }
     ]
 }

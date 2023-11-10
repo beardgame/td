@@ -1,0 +1,44 @@
+{
+    id: "kinetics3-sniper-shell-smoke-trail",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.trails.smoke",
+            uvLength : 6,
+            attachLastToObject: true,
+        } },
+
+        { id: "toggleOnTriggers", parameters:  {
+            name: "toggleSpawning",
+            stopOnParent : [ "objectDeleting" ],
+        }},
+
+        { id: "particlesSpawnContinuously", parameters:  {
+            color: "White",
+            interval: 0.01,
+            lifeTime: 0.8,
+            lifeTimeNoise: 0,
+            randomVelocity: 0.2,
+            randomVelocityNoise: 0.8,
+            toggle: "toggleSpawning",
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.15, color: "00000000" },
+                    { duration: 0.1, size: 0.15, color: "White" },
+                    { duration: 1, size: 0.8, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+        { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
+        { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+    ]
+}
