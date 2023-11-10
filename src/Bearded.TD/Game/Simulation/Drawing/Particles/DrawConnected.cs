@@ -130,7 +130,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
 
         lastParticlePosition = getAttachLocation();
         var distance = (lastParticlePosition - secondToLastParticlePosition).Length.NumericValue;
-        uvs[particles.Length - 1] = uvs[particles.Length - 2] + distance / (Parameters.UVLength + addedUV);
+        uvs[^1] = uvs[^2] + distance / (Parameters.UVLength + addedUV);
     }
 
     private Position3 getAttachLocation()
@@ -174,7 +174,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         }
 
         offset = normalBetween(previous, current) * (current.Size + addedWidth);
-        u = uvs[particles.Length - 1];
+        u = uvs[^1];
         vertices[^2] = new UVColorVertex(current.Position.NumericValue + offset.WithZ(), uv.Transform(new Vector2(u, 0)), current.Color);
         vertices[^1] = new UVColorVertex(current.Position.NumericValue - offset.WithZ(), uv.Transform(new Vector2(u, 1)), current.Color);
 
