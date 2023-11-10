@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -34,6 +35,7 @@ sealed class Particles : Component<Particles.IParameters>
         bool DontRemoveDeadParticles { get; }
     }
 
+    private List<int>? indicesToRemove;
     private Particle[] particles = Array.Empty<Particle>();
     private int currentCount;
 
@@ -91,17 +93,17 @@ sealed class Particles : Component<Particles.IParameters>
         return span;
     }
 
-    private void ensureCapacity(int newCapacity)
+    private void ensureCapacity(int newCount)
     {
-        if (newCapacity <= particles.Length)
+        if (newCount <= particles.Length)
             return;
 
-        var newCount = Math.Max(10, Math.Max(newCapacity, particles.Length * 2));
+        var newCapacity = Math.Max(10, Math.Max(newCount, particles.Length * 2));
 
-        Array.Resize(ref particles, newCount);
+        Array.Resize(ref particles, newCapacity);
 
         foreach (var extension in extensions)
-            extension.Resize(newCount);
+            extension.Resize(newCapacity);
     }
 
     private void removeDeadParticles()
@@ -123,7 +125,7 @@ sealed class Particles : Component<Particles.IParameters>
 
         if (extensions.Count == 0)
         {
-            for (var i = firstDeadCandidate; i < currentCount; i++)
+            for (var i = firstDeadCandidate + 1; i < currentCount; i++)
             {
                 if (particles[i].IsAliveAtTime(now))
                 {
@@ -134,16 +136,26 @@ sealed class Particles : Component<Particles.IParameters>
         }
         else
         {
-            for (var i = firstDeadCandidate; i < currentCount; i++)
+            var removedIndices = indicesToRemove ??= new List<int>();
+            removedIndices.Clear();
+            removedIndices.Add(firstDeadCandidate);
+
+            for (var i = firstDeadCandidate + 1; i < currentCount; i++)
             {
                 if (particles[i].IsAliveAtTime(now))
                 {
                     particles[newCount] = particles[i];
-                    foreach (var extension in extensions)
-                        extension.Move(i, newCount);
                     newCount++;
                 }
+                else
+                {
+                    removedIndices.Add(i);
+                }
             }
+            var removedIndicesSpan = CollectionsMarshal.AsSpan(removedIndices);
+
+            foreach (var extension in extensions)
+                extension.Remove(removedIndicesSpan);
         }
 
         currentCount = newCount;
