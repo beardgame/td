@@ -92,10 +92,9 @@ sealed class TheGame : Window
 
     private WindowIcon createIcon()
     {
-        var image = (Image<Rgba32>)Image.Load("assets/icon.png");
+        using var image = (Image<Rgba32>)Image.Load("assets/icon.png");
         image.DangerousTryGetSinglePixelMemory(out var memory);
         var imageBytes = MemoryMarshal.AsBytes(memory.Span).ToArray();
-        image.Dispose();
         var windowIcon = new WindowIcon(new OpenTK.Windowing.Common.Input.Image(image.Width, image.Height, imageBytes));
         return windowIcon;
     }
