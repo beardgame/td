@@ -4,6 +4,7 @@
   branch: "fire",
   tier: "medium",
   unlocks: [
-    { type: "upgrade", blueprint: "fire2-napalm" }
+    { type: "upgrade", blueprint: "fire2-napalm" },
+    { type: "upgrade", blueprint: "fire2-napalmExplosion" }
   ]
 }

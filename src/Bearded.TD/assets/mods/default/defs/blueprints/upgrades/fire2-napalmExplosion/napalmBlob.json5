@@ -1,0 +1,31 @@
+{
+  id: "napalmBlob",
+  components: [
+    { id : "drag", parameters : { amount : 0.35 } },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "default.particle.spark",
+        color: "FFFFD500",
+        size: 0.25,
+      }
+    },
+    { id: "deleteOnHit" },
+    {
+      id: "applyOnFireOnImpact",
+      parameters: {
+        probability: 1,
+        fractionOfBaseDamage: 16,
+        effectDuration: 4
+      }
+    },
+    {
+      id: "spawnObjectOnHit",
+      parameters: {
+        onHitLevel: true,
+        onHitEnemy: false,
+        object: "napalmPuddle"
+      }
+    }
+  ]
+}
