@@ -44,8 +44,14 @@
             id: "loopSoundWhileShooting",
             parameters: { sound: "flamethrower-loop" },
         },
+        {
+            id: "tags",
+            parameters: {
+                tags: [ "flameEmitter" ],
+            }
+        },
 
-        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" } },
-        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" } }
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" }, keys: [ "fireStreamEffect" ] },
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" }, keys: [ "fireStreamEffect" ] }
     ]
 }
