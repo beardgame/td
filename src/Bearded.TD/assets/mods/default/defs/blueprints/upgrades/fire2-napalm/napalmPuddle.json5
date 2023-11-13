@@ -13,18 +13,17 @@
       id: "applyOnFireOnImpact",
       parameters: {
         probability: 1,
-        fractionOfBaseDamage: 15,
+        fractionOfBaseDamage: 16,
         effectDuration: 4
       }
     },
-    { id: "deleteOnHit" },
     {
       id: "sprite",
       parameters: {
         sprite: "particle.mote",
         drawGroup: "IgnoreDepth",
         color: "FFFFD500",
-        size: 0.05,
+        size: 0.15,
       },
     }
   ]
