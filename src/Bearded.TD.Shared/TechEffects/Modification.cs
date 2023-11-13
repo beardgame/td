@@ -2,12 +2,9 @@
 
 public struct Modification
 {
-    public static Modification AddConstant(double constant)
-        => new Modification(ModificationType.AdditiveAbsolute, constant);
-    public static Modification AddFractionOfBase(double fraction)
-        => new Modification(ModificationType.AdditiveRelative, fraction);
-    public static Modification MultiplyWith(double exponent)
-        => new Modification(ModificationType.Exponent, exponent);
+    public static Modification AddConstant(double constant) => new(ModificationType.AdditiveAbsolute, constant);
+    public static Modification AddFractionOfBase(double fraction) => new(ModificationType.AdditiveRelative, fraction);
+    public static Modification MultiplyWith(double exponent) => new(ModificationType.Exponent, exponent);
 
     public enum ModificationType : byte
     {

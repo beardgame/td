@@ -1,5 +1,4 @@
 using System.IO;
-using Bearded.TD.Game;
 using Material = Bearded.TD.Content.Models.Material;
 using MaterialJson = Bearded.TD.Content.Serialization.Models.Material;
 

@@ -8,8 +8,8 @@ public sealed class AttributeWithModifications<T> : IAttributeWithModifications
 {
     private readonly double baseValue;
     private readonly Func<double, T> valueTransformer;
-    private readonly List<ModificationWithId> additiveModifications = new List<ModificationWithId>();
-    private readonly List<ModificationWithId> exponentialModifications = new List<ModificationWithId>();
+    private readonly List<ModificationWithId> additiveModifications = new();
+    private readonly List<ModificationWithId> exponentialModifications = new();
 
     private bool currentValueDirty;
     private T currentValue;

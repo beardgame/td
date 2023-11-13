@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.Utilities.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
