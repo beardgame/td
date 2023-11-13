@@ -25,10 +25,10 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
     {
         IGameObjectBlueprint Projectile { get; }
 
-        [Modifiable(10.0)]
+        [Modifiable(10.0, Type = AttributeType.MuzzleSpeed)]
         Speed MuzzleSpeed { get; }
 
-        [Modifiable(1)]
+        [Modifiable(1, Type = AttributeType.BulletDropCompensation)]
         float BulletDropCompensation { get; }
 
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]

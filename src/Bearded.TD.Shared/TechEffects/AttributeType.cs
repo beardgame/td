@@ -6,6 +6,7 @@ public enum AttributeType : byte
 
     ArcBounces,
     ArcBranches,
+    BulletDropCompensation,
     ChargeCapacity,
     Damage,
     DamageOverTime,
@@ -14,6 +15,7 @@ public enum AttributeType : byte
     FuelCapacity,
     Health,
     MovementSpeed,
+    MuzzleSpeed,
     Range,
     RechargeRate,
     SplashRange,
