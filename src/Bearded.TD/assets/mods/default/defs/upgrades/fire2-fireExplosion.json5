@@ -15,6 +15,15 @@
               fractionOfBaseDamage: 2,
               effectDuration: 3
             }
+          },
+          {
+            id: "spawnObjectOnHit",
+            parameters: {
+              object: "fireExplosion",
+              onHitLevel: true,
+              onHitEnemy: true
+            },
+            keys: [ "splashDamage" ]
           }
         ],
         replaceMode: "replace"

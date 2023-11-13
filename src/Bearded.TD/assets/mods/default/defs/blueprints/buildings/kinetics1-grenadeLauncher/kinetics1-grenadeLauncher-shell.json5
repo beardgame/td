@@ -56,7 +56,8 @@
                 object: "dustExplosion",
                 onHitLevel: true,
                 onHitEnemy: true
-            }
+            },
+            keys: [ "splashDamage" ]
         },
         {
             id: "spawnObjectOnHit",
@@ -64,7 +65,8 @@
                 object: "medium-shockwave",
                 onHitLevel: true,
                 onHitEnemy: true
-            }
+            },
+            keys: [ "splashDamage" ]
         },
         {
             id: "spawnObjectOnHit",
@@ -72,7 +74,8 @@
                 object: "crater",
                 onHitLevel: true,
                 onHitEnemy: true
-            }
+            },
+            keys: [ "splashDamage" ]
         }
     ]
 }
