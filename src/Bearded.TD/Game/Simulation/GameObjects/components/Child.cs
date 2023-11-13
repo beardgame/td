@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.GameObjects;
 [Component("child")]
 sealed class Child : Component<Child.IParameters>, IListener<ObjectDeleting>
 {
-    private GameObject child = null!;
+    private GameObject? child;
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -35,12 +35,19 @@ sealed class Child : Component<Child.IParameters>, IListener<ObjectDeleting>
             Events.Subscribe(this);
     }
 
+    public override void OnRemoved()
+    {
+        base.OnRemoved();
+        child?.Delete();
+        child = null;
+    }
+
     public override void Update(TimeSpan elapsedTime)
     {
     }
 
     public void HandleEvent(ObjectDeleting @event)
     {
-        child.Delete();
+        child?.Delete();
     }
 }
