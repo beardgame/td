@@ -8,7 +8,7 @@
       parameters: {
         attributeType: "range",
         mode: "multiply",
-        value: 0.667,
+        value: 1.5,
       },
       prerequisites: {
         requiredTags: [ "flameEmitter" ]
