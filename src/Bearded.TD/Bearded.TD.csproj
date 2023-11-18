@@ -29,7 +29,7 @@
     <PackageReference Include="Bearded.UI" Version="0.2.0-dev.3" />
     <PackageReference Include="Bearded.Utilities" Version="0.3.0-dev.4" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Google.Protobuf" Version="3.25.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.25.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenTK.Core" Version="4.8.1" />
