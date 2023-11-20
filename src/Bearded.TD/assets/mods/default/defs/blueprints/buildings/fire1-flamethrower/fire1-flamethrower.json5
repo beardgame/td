@@ -41,6 +41,7 @@
       parameters: {
       }
     },
+    { id: "fuelSystem" },
     { id: "fuelTank", parameters: { fuelCapacity: 150 } },
     { id: "fuelGauge" },
     {

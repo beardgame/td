@@ -23,13 +23,13 @@ static class HandleEmptyFuelTank
 
         public void Execute()
         {
-            if (!gameObject.TryGetSingleComponent<FuelTank>(out var fuelTank))
+            if (!gameObject.TryGetSingleComponent<IFuelSystem>(out var fuelSystem))
             {
-                gameObject.Game.Meta.Logger.Error?.Log($"Could not find fuel tank component in {gameObject}");
+                gameObject.Game.Meta.Logger.Error?.Log($"Could not find fuel system component in {gameObject}");
                 return;
             }
 
-            fuelTank.HandleTankEmpty();
+            fuelSystem.HandleTankEmpty();
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(gameObject);

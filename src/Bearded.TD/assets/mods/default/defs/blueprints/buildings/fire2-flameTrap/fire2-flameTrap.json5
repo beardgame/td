@@ -59,6 +59,7 @@
         maximumTurningAngle: 8,
       }
     },
+    { id: "fuelSystem" },
     { id: "fuelTank", parameters: { fuelCapacity: 240 } },
     { id: "fuelGauge" },
     {
