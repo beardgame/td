@@ -43,6 +43,7 @@ sealed partial class FuelSystem
         private readonly IFactionProvider factionProvider;
         private readonly IBuildingStateProvider buildingStateProvider;
         private Tile lastKnownTile;
+        private Instant lastKnownMove;
         private bool hasValidPreview;
         private DroneFulfillmentPreview fulfillmentPreview;
         private GameObject? pathPreview;
@@ -69,16 +70,16 @@ sealed partial class FuelSystem
             var drawPath = drawing != RangeDrawStyle.DoNotDraw;
             var drawGhost = drawing == RangeDrawStyle.DrawFull;
             var moved = lastKnownTile != ownerTile;
-            lastKnownTile = ownerTile;
 
             if (moved)
             {
+                lastKnownTile = ownerTile;
+                lastKnownMove = owner.Game.Time;
                 refreshFulfillmentPreview();
             }
 
             updatePath(drawPath && hasValidPreview, moved);
             updateGhost(drawGhost && hasValidPreview, moved);
-
         }
 
         public void Terminate()
@@ -139,21 +140,20 @@ sealed partial class FuelSystem
 
         private void updateGhost(bool draw, bool moved)
         {
-            if (!draw && ghostPreview is not null)
+            if ((!draw || moved) && ghostPreview is not null)
             {
                 ghostPreview.Cancel();
                 ghostPreview = null;
             }
 
-            if (draw && (moved || ghostPreview is null))
+            if (draw && ghostPreview is null && owner.Game.Time - lastKnownMove >= ghostSpawnDelay)
             {
-                spawnNewGhostPreview();
+                spawnGhostPreview();
             }
         }
 
-        private void spawnNewGhostPreview()
+        private void spawnGhostPreview()
         {
-            ghostPreview?.Cancel();
             ghostPreview = fulfillmentPreview.Spawner.Preview(fulfillmentPreview);
         }
     }
