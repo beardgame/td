@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Drones;
 using Bearded.TD.Game.Simulation.Factions;
@@ -11,6 +12,7 @@ using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Drawing.TileRangeDrawer;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Elements;
@@ -21,8 +23,9 @@ interface IFuelSystem
 }
 
 [Component("fuelSystem")]
-sealed class FuelSystem : Component,
+sealed partial class FuelSystem : Component,
     IFuelSystem,
+    IListener<ObjectDeleting>,
     IListener<ComponentAdded>,
     IListener<ComponentRemoved>,
     IListener<ShotProjectile>,
@@ -33,6 +36,7 @@ sealed class FuelSystem : Component,
     private readonly List<IFuelTank> knownTanks = new();
     private IBreakageHandler? breakageHandler;
     private IFactionProvider? factionProvider;
+    private IBuildingStateProvider? buildingStateProvider;
     private IBreakageReceipt? breakage;
     private IFuelTank? activeTank;
     private DroneFulfillment? drone;
@@ -41,6 +45,8 @@ sealed class FuelSystem : Component,
     {
         ComponentDependencies.Depend<IBreakageHandler>(Owner, Events, h => breakageHandler = h);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
+        ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, s => buildingStateProvider = s);
+        Events.Subscribe<ObjectDeleting>(this);
         Events.Subscribe<ComponentAdded>(this);
         Events.Subscribe<ComponentRemoved>(this);
         Events.Subscribe<ShotProjectile>(this);
@@ -68,10 +74,16 @@ sealed class FuelSystem : Component,
     {
         base.OnRemoved();
 
+        Events.Unsubscribe<ComponentAdded>(this);
+        Events.Unsubscribe<ComponentRemoved>(this);
+        Events.Unsubscribe<ShotProjectile>(this);
+
         foreach (var knownWeapon in knownWeapons)
         {
             knownWeapon.Weapon.RemoveComponent(knownWeapon.Spy);
         }
+
+        disablePreview();
 
         if (activated)
         {
@@ -79,7 +91,25 @@ sealed class FuelSystem : Component,
         }
     }
 
-    public override void Update(TimeSpan elapsedTime) { }
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        disablePreview();
+    }
+
+    public override void Update(TimeSpan elapsedTime)
+    {
+        var shouldHavePreview =
+            (buildingStateProvider?.State.RangeDrawing ?? RangeDrawStyle.DoNotDraw) != RangeDrawStyle.DoNotDraw;
+        if (shouldHavePreview && preview is null)
+        {
+            enablePreview();
+        }
+        if (!shouldHavePreview && preview is not null)
+        {
+            disablePreview();
+        }
+        preview?.Update();
+    }
 
     public void HandleEvent(ComponentAdded @event)
     {
@@ -153,9 +183,9 @@ sealed class FuelSystem : Component,
         var request = new DroneRequest(Level.GetTile(Owner.Position), () => refillTank(tank));
         var requestEvent = new RequestDrone(factionProvider.Faction, request, null);
         Owner.Game.Meta.Events.Preview(ref requestEvent);
-        if (requestEvent.FulfillmentPreview is { } preview)
+        if (requestEvent.FulfillmentPreview is { } fulfillment)
         {
-            drone = preview.Spawner.Fulfill(request, preview);
+            drone = fulfillment.Spawner.Fulfill(request, fulfillment);
         }
     }
 

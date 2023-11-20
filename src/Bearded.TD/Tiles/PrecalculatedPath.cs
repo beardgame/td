@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Tiles;
 
@@ -19,6 +21,23 @@ sealed class PrecalculatedPath
     public Direction NextDirectionFromTile(Tile t)
     {
         return tileDirectionLookup.GetValueOrDefault(t, Direction.Unknown);
+    }
+
+    public ImmutableArray<Tile> ToTileList()
+    {
+        return toTileEnumerable().ToImmutableArray();
+    }
+
+    private IEnumerable<Tile> toTileEnumerable()
+    {
+        yield return StartTile;
+        var current = StartTile;
+        while (tileDirectionLookup.TryGetValue(current, out var dir))
+        {
+            current = current.Neighbor(dir);
+            yield return current;
+        }
+        State.Satisfies(current == GoalTile);
     }
 
     public static PrecalculatedPath FromPathfindingResult(Tile startTile, Pathfinder.Result result)

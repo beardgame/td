@@ -1,0 +1,19 @@
+{
+  id: "dronePathPreview",
+  components: [
+
+    { id: "particles", parameters: { dontRemoveDeadParticles: true } },
+
+    { id: "particlesSpawnAlongPrecalculatedPath", parameters: {
+      color: "white",
+      size: 0.1,
+
+      z: 0.45,
+    } },
+
+    { id: "particlesDrawConnected", parameters: {
+      sprite: "default.trails.line",
+      attachLastToObject: true,
+    } }
+  ]
+}

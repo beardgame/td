@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
@@ -17,11 +18,48 @@ static class DroneFactory
         PrecalculatedPath path,
         out Drone droneComp)
     {
+        var obj = createDroneWithoutRenderer(
+            blueprint,
+            position,
+            faction,
+            request,
+            path,
+            out droneComp);
+        obj.AddComponent(new DefaultComponentRenderer());
+        return obj;
+    }
+
+    public static GameObject CreateDroneGhost(
+        IGameObjectBlueprint blueprint,
+        Position3 position,
+        Faction faction,
+        PrecalculatedPath path,
+        out Drone droneComp)
+    {
+        var obj = createDroneWithoutRenderer(
+            blueprint,
+            position,
+            faction,
+            DroneRequest.Noop(path.GoalTile),
+            path,
+            out droneComp);
+        obj.AddComponent(new GhostBuildingRenderer());
+        return obj;
+    }
+
+    private static GameObject createDroneWithoutRenderer(
+        IGameObjectBlueprint blueprint,
+        Position3 position,
+        Faction faction,
+        DroneRequest request,
+        PrecalculatedPath path,
+        out Drone droneComp)
+    {
         Argument.Satisfies(request.Location == path.GoalTile);
 
         droneComp = new Drone(request, path);
 
-        var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, null, position, Direction2.Zero);
+        var obj = GameObjectFactory.CreateFromBlueprintWithoutRenderer(blueprint, null, position, Direction2.Zero);
         obj.AddComponent(new FactionProvider(faction));
         obj.AddComponent(droneComp);
         return obj;

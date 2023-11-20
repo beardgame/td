@@ -63,6 +63,20 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
         return new DroneFulfillment(droneComp);
     }
 
+    public DroneFulfillment Preview(DroneFulfillmentPreview preview)
+    {
+        var faction = factionProvider?.Faction ??
+            throw new InvalidOperationException("Cannot fulfill drone requests without faction");
+        var droneGhost = DroneFactory.CreateDroneGhost(
+            Parameters.Drone,
+            Owner.Position + new Difference3(0, 0, 0.5f),
+            faction,
+            PrecalculatedPath.FromPathfindingResult(Location, preview.Path),
+            out var droneComp);
+        Owner.Game.Add(droneGhost);
+        return new DroneFulfillment(droneComp);
+    }
+
     public void PreviewEvent(ref RequestDrone @event)
     {
         if (factionProvider?.Faction is { } faction &&

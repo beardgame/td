@@ -7,6 +7,7 @@ interface IDroneSpawner
 {
     Tile Location { get; }
     DroneFulfillment Fulfill(DroneRequest request, DroneFulfillmentPreview preview);
+    DroneFulfillment Preview(DroneFulfillmentPreview preview);
 }
 
 static class DroneSpawnerExtensions
