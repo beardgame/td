@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.22
+
+* Improved fire rendering
+* Improved rendering of bullets, bullet casings, and bullet trails
+* Rebalanced fire damage: most damage now happens over time, rather than immediately on hit
+* Added new upgrades:
+  * Napalm (flamethrower & flame trap)
+  * Fire explosions (grenade launcher)
+  * Napalm explosion (grenade launcher with fire explosion)
+* Introduced a preview of the path refuelling drones will take when building or selecting a tower with fuel tanks
+* Renamed some towers and technologies:
+  * Mortar -> Grenade launcher
+  * Stomp -> Steam hammer
+  * All technologies are now named after the upgrade they unlock
+* Changed lightning explosions to no longer do kinetics damage and do more lightning damage instead
+* Added a status icon for kinetics towers that get jammed
+* Added an application and window icon
+* Bug fix: temperature is now capped
+* Bug fix: damage is no longer drawn if the damage is zero
+* Bug fix: damage done through an enemy being on fire is now correctly attributed to the tower setting the enemy on fire
+
 ## v0.21
 
 * Rewrote arc targeting to include bounces, branches, and be able to shoot around corner
