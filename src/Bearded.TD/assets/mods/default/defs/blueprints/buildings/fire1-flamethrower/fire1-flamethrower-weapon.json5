@@ -35,17 +35,46 @@
                 muzzleSpeed: 12,
                 spread: 5,
                 bulletDropCompensation: 0,
-                muzzleOffset: [0.2, 0]
+                muzzleOffset: [0.12, 0]
             }
         },
         {
             id: "sprite",
             parameters: {
-                sprite: "buildings2.flamethrower-turret",
+                sprite: "buildings.flamethrower-turret",
                 colorMode: "faction",
-                shader: "building-no-normal",
+                shader: "building",
                 drawGroup: "building",
-                size: 1.2,
+                size: 0.45,
+                rotationOffset: -90,
+                offset: [-0.15, 0.02],
+                heightOffset: 0.02
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.flamethrower-propellant",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.2,
+                rotationOffset: -90,
+                offset: [0.03, -0.12],
+                heightOffset: -0.01,
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.flamethrower-fuel",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.20,
+                rotationOffset: -90,
+                offset: [0.27, -0.01],
+                heightOffset: 0.01
             }
         },
         {
