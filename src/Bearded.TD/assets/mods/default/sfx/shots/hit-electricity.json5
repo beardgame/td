@@ -1,0 +1,4 @@
+{
+    id: "hit-electricity",
+    pitchRange: [0.9, 1.1],
+}

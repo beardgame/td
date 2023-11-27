@@ -34,8 +34,11 @@
             }
         },
         {
-            id: "loopSoundWhileShooting",
-            parameters: { sound: "tesla-loop" },
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "emittedArc",
+                sound: "hit-electricity",
+            },
         }
     ]
 }

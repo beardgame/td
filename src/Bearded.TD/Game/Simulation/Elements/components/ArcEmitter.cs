@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Elements.events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
@@ -26,5 +27,6 @@ sealed class ArcEmitter : ArcEmitterBase<ArcEmitter.IParameters>, IListener<Fire
     public void HandleEvent(FireWeapon e)
     {
         EmitArc(e.Damage, range.GetTilesInRange());
+        Events.Send(new EmittedArc());
     }
 }
