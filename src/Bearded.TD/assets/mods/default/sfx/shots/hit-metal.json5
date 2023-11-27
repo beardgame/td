@@ -1,0 +1,5 @@
+{
+    id: "hit-metal",
+    gain: 0.7,
+    pitchRange: [0.95, 1.05],
+}
