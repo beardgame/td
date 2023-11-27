@@ -38,8 +38,6 @@ sealed class OffsetLifeTime : ParticleUpdater<OffsetLifeTime.IParameters>
 
             particle.CreationTime += offsetTime;
             particle.TimeOfDeath += offsetTime;
-
-            Owner.Game.Meta.Logger.Debug?.Log(offsetTime);
         }
     }
 }

@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -35,6 +36,8 @@ sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
         Unit LineWidth { get; }
 
         bool ReverseOrder { get; }
+
+        Unit HeightOffset { get; }
     }
 
     public Draw(IParameters parameters) : base(parameters)
@@ -78,12 +81,14 @@ sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
 
     private void draw(DrawComponents e, in Particle p)
     {
+        var position = p.Position.XY().WithZ(p.Position.Z + Parameters.HeightOffset);
+
         switch (Parameters.DrawMode)
         {
             case DrawMode.Sprite:
                 e.Drawer.DrawSprite(
                     sprite,
-                    p.Position.NumericValue,
+                    position.NumericValue,
                     p.Size,
                     p.Direction.Radians,
                     p.Color
@@ -92,7 +97,7 @@ sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
             case DrawMode.Line:
                 var v = p.Velocity.NumericValue * p.Size * 0.5f;
                 var w = Vector3.Cross(v.NormalizedSafe(), Vector3.UnitZ) * Parameters.LineWidth.NumericValue * 0.5f;
-                var c = p.Position.NumericValue;
+                var c = position.NumericValue;
 
                 var p0 = c - v + w;
                 var p1 = c + v + w;

@@ -22,6 +22,9 @@ interface IFuelSystem
     void HandleTankEmpty();
 }
 
+[Trigger("tankEmptied")]
+record struct TankEmptied : IComponentEvent;
+
 [Component("fuelSystem")]
 sealed partial class FuelSystem : Component,
     IFuelSystem,
@@ -170,6 +173,7 @@ sealed partial class FuelSystem : Component,
             requestRefuel(activeTank);
         }
         replaceTank();
+        Events.Send(new TankEmptied());
     }
 
     private void requestRefuel(IFuelTank tank)

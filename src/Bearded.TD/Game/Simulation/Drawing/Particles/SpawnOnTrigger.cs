@@ -19,10 +19,13 @@ sealed class SpawnOnTrigger : ParticleUpdater<SpawnOnTrigger.IParameters>, IList
 
         ImmutableArray<ITrigger>? Triggers { get; }
         ImmutableArray<ITrigger>? ParentTriggers { get; }
+
+        int ParentHierarchyDepth { get; }
     }
 
     private readonly Queue<Instant> queue = new();
 
+    private GameObject? parent;
     private TriggerListener? parentListener;
     private readonly List<ITriggerSubscription> triggerSubscriptions = new();
 
@@ -38,13 +41,30 @@ sealed class SpawnOnTrigger : ParticleUpdater<SpawnOnTrigger.IParameters>, IList
             foreach (var trigger in triggers)
                 triggerSubscriptions.Add(trigger.Subscribe(Events, onTrigger));
 
-        if (Owner.Parent is { } parent && Parameters.ParentTriggers is { Length: > 0 } parentTriggers)
+        if (Parameters.ParentTriggers is { Length: > 0 } parentTriggers)
         {
-            parentListener = new TriggerListener(parentTriggers, onTrigger);
-            parent.AddComponent(parentListener);
+            parent = getCorrectAncestor();
+
+            if (parent != null)
+            {
+                parentListener = new TriggerListener(parentTriggers, onTrigger);
+                parent.AddComponent(parentListener);
+            }
         }
 
         Events.Subscribe(this);
+    }
+
+    private GameObject? getCorrectAncestor()
+    {
+        var parent = Owner.Parent;
+        for (var i = 0; i < Parameters.ParentHierarchyDepth; i++)
+        {
+            if (parent is null)
+                break;
+            parent = parent.Parent;
+        }
+        return parent;
     }
 
     public override void OnRemoved()
@@ -64,7 +84,7 @@ sealed class SpawnOnTrigger : ParticleUpdater<SpawnOnTrigger.IParameters>, IList
             subscription.Unsubscribe(Events);
         }
 
-        if (Owner.Parent is { } parent && parentListener is { } listener)
+        if (parent != null && parentListener is { } listener)
         {
             parent.RemoveComponent(listener);
         }

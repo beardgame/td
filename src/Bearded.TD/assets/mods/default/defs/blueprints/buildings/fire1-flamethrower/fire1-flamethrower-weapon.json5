@@ -90,6 +90,8 @@
 
         { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-liquid" }, keys: [ "fireStreamEffect" ] },
         { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" }, keys: [ "fireStreamEffect" ] },
-        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" }, keys: [ "fireStreamEffect" ] }
+        { id: "child", parameters: { object: "fire1-flamethrower-flame-effect-smoke" }, keys: [ "fireStreamEffect" ] },
+        
+        { id: "child", parameters: { object: "fire1-flamethrower-spent-tanks" } }
     ]
 }
