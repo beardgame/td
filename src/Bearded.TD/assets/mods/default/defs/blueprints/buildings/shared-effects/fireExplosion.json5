@@ -3,8 +3,7 @@
   components: [
     { id: "particles", parameters: { } },
     { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.25 } },
-    { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
+    { id: "particlesDrag", parameters: { linear: 6, angular: 2 } },
 
     { id: "particlesDraw", parameters: {
       sprite: "default.large-particles.flame3",
@@ -13,13 +12,28 @@
       drawGroupOrderKey : 2,
       reverseOrder: false
     } },
+    
+    { id: "particlesOffsetLifeTime", parameters: {
+      byVelocity: 0.03,
+      constant: -0.4
+    }},
+    { id: "particlesClampVelocity", parameters: {
+      minZ: 0.1,
+      maxZ: 5
+    }},
+    { id: "particlesSortByPredictedZOnce" },
+    
 
     { id: "particlesSpawnOnCreate", parameters:  {
-      count: 48,
+      count: 100,
       lifeTime: 0.6,
-      lifeTimeNoise: 0.2,
-      randomVelocity: 2,
-      randomVelocityNoise: 1.5,
+      lifeTimeNoise: 0.1,
+      
+      offset: [0, 0, 0.01],
+      
+      randomVelocity: 8,
+      randomVelocityNoise: 0.8,
+      
       orientationNoise: 1,
       angularVelocity: 90,
       angularVelocityNoise: 1,
@@ -30,6 +44,10 @@
       scaleToParticleLifeTime: true,
       animation: {
         keyFrames: [
+          { duration: 0.0, size: 0, color: "00000000" },
+          { duration: 0.2, size: 0, color: "00000000" },
+
+
           { duration: 0.0, size: 0, color: "00ffd385" },
           { duration: 0.1, size: 0.22, color: "FFffd385" },
           { duration: 0.1, size: 0.35, color: "FFff7c39" },
