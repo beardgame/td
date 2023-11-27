@@ -1,0 +1,4 @@
+shots/hit-electricity
+- uses sample by newlocknew - https://creativecommons.org/licenses/by/4.0/
+shots/hit-metal
+- sample by newlocknew, mixed to mono and shortened - https://creativecommons.org/licenses/by/4.0/
