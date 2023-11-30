@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
@@ -15,7 +16,7 @@ using Bearded.TD.Game.Simulation.Sounds;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Testing.Components;
-using Moq;
+using Castle.DynamicProxy;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -67,6 +68,7 @@ public sealed class ComponentLifeCycleTests
             .Select(type => new []{ type });
     }
 
+    private static readonly ProxyGenerator proxyGenerator = new();
     private readonly ITestOutputHelper output;
 
     public ComponentLifeCycleTests(ITestOutputHelper output)
@@ -160,17 +162,11 @@ public sealed class ComponentLifeCycleTests
 
     private static object mockedParameters(Type type)
     {
-        var methodCallEx = Expression.Call(typeof(ComponentLifeCycleTests), nameof(mockedParameters), new[] { type });
-        var lambdaEx = Expression.Lambda(methodCallEx);
-        return lambdaEx.Compile().DynamicInvoke()!;
-    }
-
-    private static object mockedParameters<T>() where T : class, IParametersTemplate<T>
-    {
-        var mock = new Mock<T>();
-        mock.Setup(m => m.CreateModifiableInstance()).Returns(mock.Object);
-        mock.SetReturnsDefault((ITrigger) new EmptyTrigger());
-        return mock.Object;
+        var implementedType = ParametersTemplateLibrary.TemplateTypeByInterface[type];
+        var target = RuntimeHelpers.GetUninitializedObject(implementedType);
+        var interceptor = new Interceptor();
+        var proxy = proxyGenerator.CreateInterfaceProxyWithTarget(type, target, interceptor);
+        return proxy;
     }
 
     private static object? instantiatedComponentWithParameter(
@@ -181,5 +177,24 @@ public sealed class ComponentLifeCycleTests
             Expression.Lambda(Expression.New(constructor, parameterParameter), parameterParameter);
         var componentInstance = newComponentExpression.Compile().DynamicInvoke(parameterInstance);
         return componentInstance;
+    }
+
+    private sealed class Interceptor : IInterceptor
+    {
+        public void Intercept(IInvocation invocation)
+        {
+            if (invocation.Method.Name == "CreateModifiableInstance")
+            {
+                invocation.ReturnValue = invocation.Proxy;
+                return;
+            }
+            if (invocation.Method.ReturnType == typeof(ITrigger))
+            {
+                invocation.ReturnValue = new EmptyTrigger();
+                return;
+            }
+
+            invocation.Proceed();
+        }
     }
 }
