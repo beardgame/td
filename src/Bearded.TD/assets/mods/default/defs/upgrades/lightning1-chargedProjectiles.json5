@@ -18,6 +18,20 @@
             prerequisites: {
                 requiredTags: [ "bullet" ]
             }
-        }
+        },
+        {
+            type: "component",
+            parameters: { id: "child", parameters: { object: "charged-projectile-trail", surviveParent: true } },
+            prerequisites: {
+                requiredTags: [ "bullet" ]
+            }
+        },
+        {
+            type: "component",
+            parameters: { id: "child", parameters: { object: "charged-projectile-trail-long", surviveParent: true } },
+            prerequisites: {
+                requiredTags: [ "bullet" ]
+            }
+        },
     ]
 }

@@ -1,7 +1,9 @@
 ﻿using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Simulation.Drawing.Particles.ParticleSpawning;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
@@ -18,6 +20,7 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
     }
 
     private Instant nextSpawn;
+    private IMoving? moving;
     private IToggle? toggle;
 
     public SpawnContinuously(IParameters parameters) : base(parameters)
@@ -27,6 +30,8 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
     public override void Activate()
     {
         base.Activate();
+
+        ComponentDependencies.Depend<IMoving>(Owner, Events, m => moving = m);
 
         if (Parameters.Toggle is not { } name)
             return;
@@ -48,7 +53,8 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
 
     private void spawn()
     {
-        Particles.CreateParticles(Parameters, Velocity3.Zero, Owner.Direction, Owner.Game.Time, Owner.Position);
+        var v = moving?.Velocity ?? Velocity3.Zero;
+        Particles.CreateParticles(Parameters, v, Owner.Direction, Owner.Game.Time, Owner.Position);
     }
 }
 

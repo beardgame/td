@@ -26,7 +26,7 @@ interface IParticleSpawnParameters
 
     Color? Color { get; }
 
-    [Modifiable(1)]
+    [Modifiable(0)]
     float InheritVelocity { get; }
     float InheritVelocityNoise { get; }
 

@@ -1,15 +1,19 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
 [Component("particlesDrawLight")]
 sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawComponents>
 {
+    private IProperty<Scale>? scale;
+
     public enum AlphaMode
     {
         Constant = 0,
@@ -23,6 +27,7 @@ sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawC
         [Modifiable(1)]
         float Intensity { get; }
         AlphaMode AlphaMode { get; }
+        float AddIntensityFromScale { get; }
     }
 
     public DrawLight(IParameters parameters) : base(parameters)
@@ -33,6 +38,9 @@ sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawC
     {
         base.Activate();
         Events.Subscribe(this);
+
+        if (Parameters.AddIntensityFromScale != 0)
+            ComponentDependencies.Depend<IProperty<Scale>>(Owner, Events, s => scale = s);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -42,6 +50,9 @@ sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawC
     public void HandleEvent(DrawComponents e)
     {
         var pointLight = e.Core.PointLight;
+
+        var scaleIntensity = scale?.Value.Value * Parameters.AddIntensityFromScale ?? 0;
+        var intensity = Parameters.Intensity + scaleIntensity;
 
         foreach (var p in Particles.ImmutableParticles)
         {
@@ -56,7 +67,7 @@ sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawC
                 p.Position.NumericValue,
                 Parameters.Radius.NumericValue,
                 Parameters.Color * a,
-                Parameters.Intensity,
+                intensity,
                 false
                 );
         }

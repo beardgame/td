@@ -1,0 +1,57 @@
+﻿{
+  id: "charged-projectile-trail",
+  components: [
+    { id: "inheritDamageFromParent" },
+    { id: "scaleFromDamage", parameters: { factor: 1 } },
+
+    { id: "particles", parameters: { } },
+    { id: "particlesMoveLinear" },
+
+    { id: "particlesLifeTimeFromScale", parameters: { factor: 0.001 } },
+
+    { id: "particlesDrawConnected", parameters: {
+      sprite: "default.trails.arc",
+      shader: "dissolve-sprite",
+      uvLength : 2,
+      addWidthFromScale: 0.002,
+      addUVFromScale: 0.025,
+      attachLastToObject: true,
+    } },
+
+    { id: "toggleOnTriggers", parameters:  {
+      name: "toggleSpawning",
+      stopOnParent : [ "objectDeleting" ],
+    }},
+
+    { id: "particlesSpawnContinuously", parameters:  {
+      color: "00000000",
+      interval: 0.018,
+      lifeTime: 0.08,
+      lifeTimeNoise: 0,
+      
+      randomVelocity: 2,
+      randomVelocityNoise: 0.8,
+      randomOffset: 0.1,
+      randomoffsetNoise: 1,
+      
+      toggle: "toggleSpawning",
+    }},
+
+    { id: "particlesKeyFrames", parameters: {
+      scaleToParticleLifeTime: true,
+      animation: {
+        keyFrames: [
+          { duration: 0.0, size: 0.1, color: "White" },
+          { duration: 0.5, size: 0.1, color: "White" },
+          { duration: 0.3, size: 0.1, color: "00FFFFFF" },
+          { duration: 0.2, size: 0.1, color: "00FFFFFF" }
+        ],
+      }
+    } },
+
+    { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
+    { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+
+  ]
+}
