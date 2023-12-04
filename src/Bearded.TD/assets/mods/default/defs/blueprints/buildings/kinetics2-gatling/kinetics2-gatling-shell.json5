@@ -18,13 +18,6 @@
             }
         },
         {
-            id: "pointlight",
-            parameters: {
-                color: "FF333344",
-                radius: 1
-            }
-        },
-        {
             id: "spawnObjectOnHit",
             parameters: {
                 object: "sparkExplosion-small",
@@ -32,6 +25,6 @@
                 onHitEnemy: false
             }
         },
-        { id: "child", parameters: { object: "kinetics2-gatling-shell-smoke-trail", surviveParent: true } }
+        { id: "child", parameters: { object: "kinetics2-gatling-shell-smoke-trail", surviveParent: true } },
     ]
 }

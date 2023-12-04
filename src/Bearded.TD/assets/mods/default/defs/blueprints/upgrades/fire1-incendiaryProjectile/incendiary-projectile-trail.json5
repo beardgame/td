@@ -1,0 +1,64 @@
+﻿{
+  id: "incendiary-projectile-trail",
+  components: [
+    { id: "inheritDamageFromParent" },
+    { id: "scaleFromDamage", parameters: { factor: 1 } },
+
+    { id: "particles", parameters: { } },
+    { id: "particlesMoveLinear" },
+
+    { id: "particlesLifeTimeFromScale", parameters: { factor: 0.002 } },
+
+    { id: "particlesDrawConnected", parameters: {
+      sprite: "default.trails.line-soft",
+      uvLength : 2,
+      addWidthFromScale: 0.002,
+      addUVFromScale: 0.025,
+      attachLastToObject: true,
+    } },
+
+    { id: "particlesDrawLight", parameters: {
+      color: "White",
+      radius: 1.5,
+      intensity: 0.4,
+      colorMode: "fromParticleColor",
+      addIntensityFromScale: 0.005,
+    } },
+
+    { id: "toggleOnTriggers", parameters:  {
+      name: "toggleSpawning",
+      stopOnParent : [ "objectDeleting" ],
+    }},
+
+    { id: "particlesSpawnContinuously", parameters:  {
+      color: "00000000",
+      interval: 0.02,
+      lifeTime: 0.12,
+      lifeTimeNoise: 0,
+      
+      offset: [-0.05, 0, 0],
+      relativeToDirection: true,
+      
+      toggle: "toggleSpawning",
+    }},
+
+    { id: "particlesKeyFrames", parameters: {
+      scaleToParticleLifeTime: true,
+      animation: {
+        keyFrames: [
+          { duration: 0.0, size: 0, color: "000000" },
+          { duration: 0.1, size: 0.05, color: "00ffd385" },
+          { duration: 0.1, size: 0.07, color: "00ff3822" },
+          { duration: 0.1, size: 0.07, color: "00ff3822" },
+          { duration: 0.4, size: 0.07, color: "000000" },
+          { duration: 0.1, size: 0.07, color: "000000" }
+        ],
+      }
+    } },
+
+    { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
+    { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+
+  ]
+}

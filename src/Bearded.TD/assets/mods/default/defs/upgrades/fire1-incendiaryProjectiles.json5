@@ -31,9 +31,16 @@
             }
         },
         {
+            type: "component",
+            parameters: { id: "child", parameters: { object: "incendiary-projectile-trail", surviveParent: true } },
+            prerequisites: {
+                requiredTags: [ "bullet" ]
+            }
+        },
+        {
             type: "addTags",
             parameters: [ "fire" ],
             isSideEffect: true
-        }
+        },
     ]
 }

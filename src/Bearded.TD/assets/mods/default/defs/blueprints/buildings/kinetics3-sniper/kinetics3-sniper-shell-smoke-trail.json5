@@ -30,7 +30,7 @@
             animation: {
                 keyFrames: [
                     { duration: 0.0, size: 0.15, color: "00000000" },
-                    { duration: 0.1, size: 0.15, color: "White" },
+                    { duration: 0.1, size: 0.15, color: "88888888" },
                     { duration: 1, size: 0.8, color: "00000000" },
                 ],
             }

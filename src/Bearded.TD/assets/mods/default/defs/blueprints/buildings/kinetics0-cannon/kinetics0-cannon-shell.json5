@@ -18,13 +18,6 @@
             }
         },
         {
-            id: "pointlight",
-            parameters: {
-                color: "FF333344",
-                radius: 2
-            }
-        },
-        {
             id: "spawnObjectOnHit",
             parameters: {
                 object: "sparkExplosion",
