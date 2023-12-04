@@ -35,6 +35,7 @@ sealed class LogicalTilemapGenerator
         LogicalTilemapFitness.ConnectedComponentsCount,
         LogicalTilemapFitness.DisconnectedCrevices,
         LogicalTilemapFitness.ConnectedTrianglesCount,
+        LogicalTilemapFitness.CriticalConnectionCount,
         LogicalTilemapFitness.NodeBehaviorFitness,
         LogicalTilemapFitness.ConnectionDegreeHistogramDifference(
             new[] {0, /*1*/ 0.15, /*2*/ 0.2, /*3*/ 0.45, /*4*/ 0.2, 0, 0}),

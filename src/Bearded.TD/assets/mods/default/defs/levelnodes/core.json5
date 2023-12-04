@@ -3,7 +3,8 @@
     behaviors: [
         { id: "core" },
         { id: "forceToCenter" },
-        { id: "avoidTagProximity", parameters: { tagToAvoid: "spawner", steps: 2 } },
+        { id: "avoidTagProximity", parameters: { tagToAvoid: "spawner", steps: 2, penaltyFactor: 300 } },
+        { id: "avoidTagProximity", parameters: { tagToAvoid: "spawner", steps: 3, penaltyFactor: 100 } },
 
         { id: "setTiles", parameters: { type: "floor" } },
 
