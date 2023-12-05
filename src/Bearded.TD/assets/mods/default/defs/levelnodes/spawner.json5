@@ -3,8 +3,9 @@
     radius: 2,
     explorable: false,
     behaviors: [
-        { id: "forceDeadEnd", parameters: { penaltyFactor: 200 } },
-        { id: "avoidTagAdjacency", parameters: { tagToAvoid: "spawner", penaltyFactor: 50 } },
+        { id: "forceDeadEnd", parameters: { penaltyFactor: 400 } },
+        { id: "avoidTagAdjacency", parameters: { tagToAvoid: "spawner", penaltyFactor: 40 } },
+        { id: "avoidTagProximity", parameters: { tagToAvoid: "spawner", steps: 2, penaltyFactor: 20 } },
 
         { id: "spawner" },
         { id: "setTiles", parameters: { type: "floor" } },

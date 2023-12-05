@@ -379,4 +379,5 @@ namespace $NAMESPACE$
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Targetable/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=targeter/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Teleport/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Tilemap/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=veterancy/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

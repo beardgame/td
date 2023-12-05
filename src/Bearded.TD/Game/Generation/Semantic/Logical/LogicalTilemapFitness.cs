@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Generation.Semantic.Fitness;
@@ -10,15 +11,14 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Generation.Semantic.Logical;
 
-using Tilemap = LogicalTilemap;
 using FF = SimpleFitnessFunction<LogicalTilemap>;
 
 static class LogicalTilemapFitness
 {
-    public static FF AcuteAnglesCount { get; } = new AcuteAngles();
     public static FF ConnectedComponentsCount { get; } = new ConnectedComponents();
     public static FF DisconnectedCrevices { get; } = new ConnectedCrevices();
     public static FF ConnectedTrianglesCount { get; } = new ConnectedTriangles();
+    public static FF CriticalConnectionCount { get; } = new CriticalConnections();
     public static FF BiomeComponentCount { get; } = new DisconnectedBiomes();
 
     public static FF NodeBehaviorFitness { get; } = new NodeBehavior();
@@ -27,10 +27,10 @@ static class LogicalTilemapFitness
     {
         public override string Name => "Node Behaviour";
 
-        protected override double CalculateFitness(Tilemap tilemap)
+        protected override double CalculateFitness(LogicalTilemap tilemap)
         {
             return (
-                from tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
+                from tile in Tilemap.EnumerateTilemapWith(tilemap.Radius)
                 let node = tilemap[tile]
                 where node.Blueprint != null
                 select node.Blueprint!.Behaviors.Sum(b => b.GetFitnessPenalty(tilemap, tile))
@@ -63,12 +63,12 @@ static class LogicalTilemapFitness
             targetHistogram = builder.MoveToImmutable();
         }
 
-        protected override double CalculateFitness(Tilemap tilemap)
+        protected override double CalculateFitness(LogicalTilemap tilemap)
         {
             var actualHistogram = new int[7];
             var tileCount = 0;
 
-            foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
+            foreach (var tile in Tilemap.EnumerateTilemapWith(tilemap.Radius)
                          .Select(t => tilemap[t]).Where(n => n.Blueprint != null))
             {
                 var connections = tile.ConnectedTo.Enumerate().Count();
@@ -88,11 +88,11 @@ static class LogicalTilemapFitness
     {
         public override string Name => "Connected Triangles";
 
-        protected override double CalculateFitness(Tilemap tilemap)
+        protected override double CalculateFitness(LogicalTilemap tilemap)
         {
             var count = 0;
 
-            foreach (var (tile, node) in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
+            foreach (var (tile, node) in Tilemap.EnumerateTilemapWith(tilemap.Radius)
                          .Select(t => (t, tilemap[t])))
             {
                 var connected = node.ConnectedTo;
@@ -106,18 +106,84 @@ static class LogicalTilemapFitness
         }
     }
 
-    private sealed class AcuteAngles : FF
+    private sealed class CriticalConnections : FF
     {
-        public override string Name => "Acute Angles";
+        private static readonly ImmutableHashSet<Direction> rightFacingDirections =
+            ImmutableHashSet.Create(Direction.Right, Direction.UpRight, Direction.DownRight);
 
-        protected override double CalculateFitness(Tilemap tilemap)
+        public override string Name => "Critical Connections";
+
+        protected override double CalculateFitness(LogicalTilemap tilemap)
         {
-            return Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius)
-                .Select(t => tilemap[t])
-                .Select(node => node.ConnectedTo)
-                .Sum(connected => Extensions.Directions.Count(direction
-                    => connected.Includes(direction)
-                    && connected.Includes(direction.Next())));
+            var edges = Tilemap.EnumerateTilemapWith(tilemap.Radius)
+                .SelectMany(
+                    t => tilemap[t].ConnectedTo.Enumerate()
+                        .Where(rightFacingDirections.Contains)
+                        .Select(dir => t.Edge(dir)));
+
+            var penalty = 0;
+
+            foreach (var (from, to) in edges.Select(e => e.AdjacentTiles))
+            {
+                if (isConnectedIndirectly(from, to, out var tilesConnectedToFrom))
+                {
+                    continue;
+                }
+
+                penalty += 3;
+
+                if (!anyTagsPresent(tilesConnectedToFrom) ||
+                    (!isConnectedIndirectly(to, from, out var tilesConnectedToTo)! &&
+                        anyTagsPresent(tilesConnectedToTo)))
+                {
+                    penalty += 15;
+                }
+            }
+
+            return penalty;
+
+            bool isConnectedIndirectly(
+                Tile start, Tile target, [NotNullWhen(false)] out ImmutableHashSet<Tile>? connectedTiles)
+            {
+                var q = new Queue<Tile>();
+                var seen = new HashSet<Tile>();
+
+                q.Enqueue(start);
+                seen.Add(start);
+
+                while (q.TryDequeue(out var currTile))
+                {
+                    var neighborTiles = tilemap[currTile].ConnectedTo.Enumerate().Select(currTile.Neighbor);
+                    foreach (var neighborTile in neighborTiles)
+                    {
+                        if (neighborTile == target)
+                        {
+                            // Don't explore tiles across from our direct connection.
+                            if (currTile == start)
+                            {
+                                continue;
+                            }
+
+                            connectedTiles = default;
+                            return true;
+                        }
+
+                        if (seen.Contains(neighborTile))
+                        {
+                            continue;
+                        }
+
+                        q.Enqueue(neighborTile);
+                        seen.Add(neighborTile);
+                    }
+                }
+
+                connectedTiles = ImmutableHashSet.CreateRange(seen);
+                return false;
+            }
+
+            bool anyTagsPresent(IEnumerable<Tile> tiles) =>
+                tiles.SelectMany(t => tilemap[t].Blueprint?.AllTags ?? Enumerable.Empty<NodeTag>()).Any();
         }
     }
 
@@ -125,11 +191,11 @@ static class LogicalTilemapFitness
     {
         public override string Name => "Connected Components";
 
-        protected override double CalculateFitness(Tilemap tilemap)
+        protected override double CalculateFitness(LogicalTilemap tilemap)
         {
             var componentCount = 0;
             var seen = new HashSet<Tile>();
-            foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius))
+            foreach (var tile in Tilemap.EnumerateTilemapWith(tilemap.Radius))
             {
                 if (seen.Contains(tile) || tilemap[tile].Blueprint == null)
                     continue;
@@ -184,7 +250,7 @@ static class LogicalTilemapFitness
         {
             var virtualRadius = tilemap.Radius + 1;
 
-            foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(virtualRadius))
+            foreach (var tile in Tilemap.EnumerateTilemapWith(virtualRadius))
             {
                 if (tile.Neighbor(Direction.UpRight).Radius > virtualRadius)
                     continue;
@@ -211,7 +277,7 @@ static class LogicalTilemapFitness
             var componentCounts = componentCountsByBiome(tilemap);
             var totalExcessComponents = componentCounts.Sum(kvp => kvp.Value - 1);
 
-            return totalExcessComponents * 200;
+            return totalExcessComponents * 50;
         }
 
         private static ImmutableDictionary<IBiome, int> componentCountsByBiome(LogicalTilemap tilemap)
@@ -219,7 +285,7 @@ static class LogicalTilemapFitness
             var result = ImmutableDictionary.CreateBuilder<IBiome, int>();
             var seen = new HashSet<Tile>();
 
-            foreach (var tile in Tiles.Tilemap.EnumerateTilemapWith(tilemap.Radius))
+            foreach (var tile in Tilemap.EnumerateTilemapWith(tilemap.Radius))
             {
                 if (seen.Contains(tile) || tilemap[tile].Biome == null)
                 {
