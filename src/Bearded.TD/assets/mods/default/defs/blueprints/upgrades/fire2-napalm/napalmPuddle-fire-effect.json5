@@ -1,0 +1,72 @@
+{
+  id: "napalmPuddle-fire-effect",
+  components: [
+    { id: "particles", parameters: { } },
+    { id: "particlesMoveLinear" },
+    { id: "particlesGravity", parameters: { factor: -0.25 } },
+    { id: "particlesDrag", parameters: { linear: 5, angular: 1 } },
+
+    { id: "toggleOnTriggers", parameters:  {
+      name: "toggleSpawning",
+      stopOnParent : [ "objectDeleting" ],
+    }},
+
+    { id: "particlesClampVelocity", parameters: {
+      minZ: 0,
+      maxZ: 0.2
+    }},
+
+    { id: "particlesSpawnContinuously", parameters: {
+      toggle: "toggleSpawning",
+      interval: 0.07,
+      intervalNoise: 0.2,
+      count: 1,
+
+      offset: [0, 0, 0.05],
+      offsetNoise: 0,
+
+      lifeTime: 1.2,
+      lifeTimeNoise: 0.3,
+
+      velocity: [0, 0, 0],
+      velocityNoise: 0,
+      randomVelocity: 0.7,
+      randomVelocityNoise: 0.5,
+      
+      orientationNoise: 1,
+      angularVelocity: 90,
+      angularVelocityNoise: 1,
+      randomAngularVelocitySign: true,
+    } },
+
+    { id: "particlesKeyFrames", parameters: {
+      scaleToParticleLifeTime: true,
+      animation: {
+        keyFrames: [
+          { duration: 0, size: 1, color: "00753822" },
+          { duration: 0.3, size: 0.2, color: "FFffd385" },
+          { duration: 0.1, size: 0.22, color: "FFff7c39" },
+          { duration: 0.1, size: 0.35, color: "66c05629" },
+          { duration: 0.1, size: 0.5, color: "00753822" },
+        ],
+      }
+    } },
+    
+    { id: "particlesDraw", parameters: {
+      sprite: "default.large-particles.flame3",
+      drawMode: "sprite",
+      shader: "flame",
+      drawGroupOrderKey : 2,
+      reverseOrder: true
+    } },
+
+    { id: "particlesDrawLight", parameters: {
+      color: "White",
+      radius: 1.3,
+      intensity: 0.2,
+      colorMode: "fromParticleColor",
+    } },
+
+    { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } }
+  ]
+}

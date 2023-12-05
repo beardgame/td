@@ -17,14 +17,6 @@
         effectDuration: 4
       }
     },
-    {
-      id: "sprite",
-      parameters: {
-        sprite: "particle.mote",
-        drawGroup: "IgnoreDepth",
-        color: "FFFFD500",
-        size: 0.15,
-      },
-    }
+    { id: "child", parameters: { object: "napalmPuddle-fire-effect", surviveParent: true } },
   ]
 }
