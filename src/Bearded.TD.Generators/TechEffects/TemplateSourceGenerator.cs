@@ -36,7 +36,7 @@ namespace Bearded.TD.Generators.TechEffects
             {
                 sb.Append(Templates.Property(p.Type.TypeName, p.Name));
             }
-            sb.Append(Environment.NewLine);
+            sb.Append(Strings.NewLine);
             return this;
         }
 

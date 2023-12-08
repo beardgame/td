@@ -3,10 +3,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bearded.TD.MasterServer</RootNamespace>
     <AssemblyName>Bearded.TD.MasterServer</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Nullable>annotations</Nullable>
-    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>../../bin/Bearded.TD.MasterServer/Debug/</OutputPath>
