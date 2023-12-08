@@ -3,13 +3,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
-using Bearded.TD.Meta;
+using Bearded.TD.Utilities;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
 using OpenTK.Graphics.OpenGL;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
-namespace Bearded.TD.Utilities;
+namespace Bearded.TD.Meta;
 
 sealed class ScreenshotSaver
 {
