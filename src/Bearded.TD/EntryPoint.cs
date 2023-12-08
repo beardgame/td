@@ -48,6 +48,7 @@ static class EntryPoint
 
         logger.Debug?.Log($".NET Core version: {Environment.Version}");
         logger.Debug?.Log($"Runtime: {RuntimeInformation.FrameworkDescription}");
+        logger.Debug?.Log("");
 
         logger.Debug?.Log("Creating behavior factories");
         ComponentFactories.Initialize();
@@ -56,7 +57,8 @@ static class EntryPoint
         NodeBehaviorFactories.Initialize();
         TriggerFactories.Initialize();
 
-        logger.Info?.Log("");
+        logger.Debug?.Log("");
+
         logger.Info?.Log("Creating game");
         var game = new TheGame(logger, options.Intent);
 
