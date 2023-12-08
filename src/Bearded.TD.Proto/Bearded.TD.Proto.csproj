@@ -2,10 +2,10 @@
   <PropertyGroup>
     <RootNamespace>Bearded.TD.Proto</RootNamespace>
     <AssemblyName>Bearded.TD.Proto</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Nullable>annotations</Nullable>
-    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.25.1" />

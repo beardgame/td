@@ -7,7 +7,6 @@ using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
-using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;

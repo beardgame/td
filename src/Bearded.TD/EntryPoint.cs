@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Serialization.Models;
@@ -44,6 +46,10 @@ static class EntryPoint
             writer.WriteLine(entry.Text);
         };
 
+        logger.Debug?.Log($".NET Core version: {Environment.Version}");
+        logger.Debug?.Log($"Runtime: {RuntimeInformation.FrameworkDescription}");
+        logger.Debug?.Log("");
+
         logger.Debug?.Log("Creating behavior factories");
         ComponentFactories.Initialize();
         FactionBehaviorFactories.Initialize();
@@ -51,7 +57,8 @@ static class EntryPoint
         NodeBehaviorFactories.Initialize();
         TriggerFactories.Initialize();
 
-        logger.Info?.Log("");
+        logger.Debug?.Log("");
+
         logger.Info?.Log("Creating game");
         var game = new TheGame(logger, options.Intent);
 

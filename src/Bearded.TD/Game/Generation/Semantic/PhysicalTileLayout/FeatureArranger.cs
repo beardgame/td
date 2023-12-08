@@ -79,9 +79,8 @@ sealed class FeatureArranger
     {
         var circlesUsed = 0;
 
-        var newCircleFeatures = features.OfType<WithCircles>()
-            .Select(f => KeyValuePair.Create(f, f with {Circles = nextCircles(f.Circles.Length)}))
-            .ToDictionary();
+        var newCircleFeatures = LinqExtensions.ToDictionary(features.OfType<WithCircles>()
+            .Select(f => KeyValuePair.Create(f, f with {Circles = nextCircles(f.Circles.Length)})));
 
         return features.Select(f => f switch
         {

@@ -131,7 +131,7 @@ namespace {@namespace}
                 string className,
                 IEnumerable<ParametersPropertyDefinition> modifiableParameters)
             {
-                var assignments = string.Join(Environment.NewLine,
+                var assignments = string.Join(Strings.NewLine,
                     modifiableParameters.Select(p => constructorAssignment(p.Type, p.Name)));
                 return $@"
         public {className}({interfaceName} template)

@@ -42,7 +42,7 @@ sealed class ListenerSourceGenerator
         {
             sb.Append(Templates.Using(u));
         }
-        sb.Append(Environment.NewLine);
+        sb.Append(Strings.NewLine);
         sb.Append(Templates.ClassTop(@namespace, className, modifiers));
         return this;
     }

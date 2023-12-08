@@ -35,7 +35,7 @@ sealed class ProxySourceGenerator
         {
             sb.Append(Templates.Property($"{propertySymbol.Type}", propertySymbol.Name, fieldName));
         }
-        sb.Append(Environment.NewLine);
+        sb.Append(Strings.NewLine);
 
         return this;
     }
