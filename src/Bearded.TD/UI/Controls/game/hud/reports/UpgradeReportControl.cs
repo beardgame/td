@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -20,6 +21,7 @@ sealed partial class UpgradeReportControl : ReportControl
 
     private readonly Binding<string> slots = new();
     private readonly Binding<bool> canUpgrade = new();
+    private readonly Binding<ResourceAmount> resources = new();
 
     public UpgradeReportControl(IUpgradeReportInstance reportInstance, ControlContainer controlContainer)
     {
@@ -68,6 +70,7 @@ sealed partial class UpgradeReportControl : ReportControl
     public override void Update()
     {
         canUpgrade.SetFromSource(reportInstance.CanPlayerUpgradeBuilding);
+        resources.SetFromSource(reportInstance.PlayerResources);
         slots.SetFromSource($"{reportInstance.OccupiedUpgradeSlots} / {reportInstance.UnlockedUpgradeSlots}");
         listItems.UpdateProgress();
     }
@@ -89,7 +92,7 @@ sealed partial class UpgradeReportControl : ReportControl
             return;
         }
 
-        var details = new UpgradeDetailsControl(reportInstance, canUpgrade);
+        var details = new UpgradeDetailsControl(reportInstance, canUpgrade, resources);
         controlContainer.SetControl(details, () =>
         {
             details.Dispose();

@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
@@ -12,11 +13,14 @@ sealed partial class UpgradeReportControl
         private readonly CompositeControl buttonContainer = new();
         private readonly IUpgradeReportInstance reportInstance;
         private readonly Binding<bool> canUpgrade;
+        private readonly Binding<ResourceAmount> resources;
 
-        public UpgradeDetailsControl(IUpgradeReportInstance reportInstance, Binding<bool> canUpgrade)
+        public UpgradeDetailsControl(
+            IUpgradeReportInstance reportInstance, Binding<bool> canUpgrade, Binding<ResourceAmount> resources)
         {
             this.reportInstance = reportInstance;
             this.canUpgrade = canUpgrade;
+            this.resources = resources;
             this.BuildLayout()
                 .ForContentBox()
                 .FillContent(buttonContainer);
@@ -31,10 +35,11 @@ sealed partial class UpgradeReportControl
             var layout = buttonContainer.BuildScrollableColumn();
             foreach (var u in reportInstance.AvailableUpgrades)
             {
+                var canAfford = resources.Transform(r => r >= u.Cost);
                 layout.Add(
                     ButtonFactories.Button(b => b
                         .WithLabel(u.Name)
-                        .WithEnabled(canUpgrade)
+                        .WithEnabled(canUpgrade.And(canAfford))
                         .WithResourceCost(u.Cost)
                         .WithOnClick(() => reportInstance.QueueUpgrade(u))),
                     Constants.UI.Button.Height);

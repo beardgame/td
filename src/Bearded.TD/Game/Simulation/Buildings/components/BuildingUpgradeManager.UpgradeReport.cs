@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
@@ -40,6 +41,7 @@ sealed partial class BuildingUpgradeManager
             private readonly GameInstance game;
             private readonly GlobalGameEvents events;
             private readonly Faction playerFaction;
+            private readonly FactionResources? factionResources;
 
             private readonly List<BuildingUpgradeModel> buildingUpgrades = new();
             private readonly List<IPermanentUpgrade> buildingAvailableUpgrades = new();
@@ -52,6 +54,8 @@ sealed partial class BuildingUpgradeManager
 
             public bool CanPlayerUpgradeBuilding =>
                 upgradeSlots is { HasAvailableSlot: true } && upgradeManager.CanBeUpgradedBy(playerFaction);
+
+            public ResourceAmount PlayerResources => factionResources?.AvailableResources ?? ResourceAmount.Zero;
 
             public event VoidEventHandler? UpgradesUpdated;
             public event VoidEventHandler? AvailableUpgradesUpdated;
@@ -68,6 +72,7 @@ sealed partial class BuildingUpgradeManager
                 this.game = game;
                 events = game.Meta.Events;
                 playerFaction = game.Me.Faction;
+                playerFaction.TryGetBehaviorIncludingAncestors(out factionResources);
 
                 upgradeManager.UpgradeQueued += onUpgradeQueued;
                 upgradeManager.UpgradeCompleted += onUpgradeCompleted;
