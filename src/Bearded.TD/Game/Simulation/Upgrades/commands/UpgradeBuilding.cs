@@ -4,10 +4,12 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
@@ -55,6 +57,11 @@ static class UpgradeBuilding
         {
             var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
             upgradeManager.Upgrade(upgrade);
+            if (building.GetComponents<IBreakageHandler>().SingleOrDefault() is { } breakageHandler)
+            {
+                var receipt = breakageHandler.BreakObject();
+                building.Delay(receipt.Repair, 5.S());
+            }
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() =>
