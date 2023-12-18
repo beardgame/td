@@ -57,6 +57,13 @@ static class UpgradeBuilding
         {
             var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
             upgradeManager.Upgrade(upgrade);
+
+            building.FindFaction().TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
+            var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(upgrade.Cost));
+            reservation.MarkReadyToReceive();
+            DebugAssert.State.Satisfies(reservation.IsCommitted);
+            reservation.ClaimResources(upgrade.Cost);
+
             if (building.GetComponents<IBreakageHandler>().SingleOrDefault() is { } breakageHandler)
             {
                 var receipt = breakageHandler.BreakObject();
