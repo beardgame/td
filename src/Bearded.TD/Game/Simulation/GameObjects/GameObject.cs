@@ -24,6 +24,7 @@ sealed class GameObject : IDeletable, IPositionable, IDirected
     private readonly ComponentEvents events = new();
 
     public bool Deleted { get; private set; }
+    [Obsolete("Use ObjectDeleting component event instead")]
     public event VoidEventHandler? Deleting;
 
     public GameObject(GameObject? parent, Position3 position, Direction2 direction)

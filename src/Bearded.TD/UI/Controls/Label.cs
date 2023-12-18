@@ -1,4 +1,5 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
@@ -20,6 +21,7 @@ class Label : Control
     {
     }
 
+    [Obsolete]
     public Label(string text)
     {
         Text = text;
