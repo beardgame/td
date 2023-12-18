@@ -26,6 +26,7 @@ sealed partial class UpgradeReportControl : ReportControl
         this.reportInstance = reportInstance;
         this.controlContainer = controlContainer;
         reportInstance.UpgradesUpdated += updateUpgradesFromReport;
+        reportInstance.AvailableUpgradesUpdated += updateUpgradesFromReport;
 
         list = new ListControl(new ViewportClippingLayerControl());
         listItems = new UpgradeListItems(

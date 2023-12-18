@@ -5,6 +5,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Networking.Serialization;
 using Bearded.Utilities;
@@ -33,7 +34,8 @@ static class UpgradeBuilding
 
         public override bool CheckPreconditions(Player actor)
         {
-            if (!actor.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
+            if (!actor.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology) ||
+                !actor.Faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
             {
                 return false;
             }
@@ -43,6 +45,7 @@ static class UpgradeBuilding
                 return false;
             }
             return technology.IsUpgradeUnlocked(upgrade)
+                && resources.AvailableResources >= upgrade.Cost
                 && upgradeSlots.HasAvailableSlot
                 && upgradeManager.CanApplyUpgrade(upgrade)
                 && upgradeManager.CanBeUpgradedBy(actor.Faction);
@@ -51,8 +54,7 @@ static class UpgradeBuilding
         public override void Execute()
         {
             var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
-            var incompleteUpgrade = upgradeManager.QueueUpgrade(upgrade);
-            building.AddComponent(new BuildingUpgradeWork(incompleteUpgrade));
+            upgradeManager.Upgrade(upgrade);
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() =>

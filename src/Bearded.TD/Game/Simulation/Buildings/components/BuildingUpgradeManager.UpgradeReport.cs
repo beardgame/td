@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
-using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
@@ -104,21 +103,23 @@ sealed partial class BuildingUpgradeManager
             private void onUpgradeCompleted(IPermanentUpgrade upgrade)
             {
                 var i = buildingUpgrades.FindIndex(model => model.Blueprint == upgrade);
-                if (i == -1)
+                if (i != -1)
                 {
-                    State.IsInvalid();
+                    buildingUpgrades[i].MarkFinished();
+                }
+                else
+                {
+                    buildingUpgrades.Add(new BuildingUpgradeModel(upgrade, null));
+                    updateAvailableUpgrades();
                 }
 
-                buildingUpgrades[i].MarkFinished();
                 UpgradesUpdated?.Invoke();
             }
 
             private void onUpgradeQueued(IIncompleteUpgrade incompleteUpgrade)
             {
                 buildingUpgrades.Add(new BuildingUpgradeModel(incompleteUpgrade.Upgrade, incompleteUpgrade));
-                buildingAvailableUpgrades.Remove(incompleteUpgrade.Upgrade);
-                UpgradesUpdated?.Invoke();
-                AvailableUpgradesUpdated?.Invoke();
+                updateAvailableUpgrades();
             }
 
             public void HandleEvent(UpgradeTechnologyUnlocked @event)
@@ -130,7 +131,6 @@ sealed partial class BuildingUpgradeManager
                 }
 
                 updateAvailableUpgrades();
-                AvailableUpgradesUpdated?.Invoke();
             }
 
             private void updateAvailableUpgrades()
@@ -140,6 +140,7 @@ sealed partial class BuildingUpgradeManager
                     upgradeManager.UpgradesInProgress.Select(t => t.Upgrade).ToImmutableHashSet();
                 buildingAvailableUpgrades
                     .AddRange(upgradeManager.ApplicableUpgrades.WhereNot(upgradesInProgress.Contains));
+                AvailableUpgradesUpdated?.Invoke();
             }
 
             public void QueueUpgrade(IPermanentUpgrade upgrade)

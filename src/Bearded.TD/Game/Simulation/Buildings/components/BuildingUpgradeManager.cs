@@ -71,6 +71,16 @@ sealed partial class BuildingUpgradeManager
         return !appliedUpgrades.Contains(upgrade) && Owner.CanApplyUpgrade(upgrade);
     }
 
+    public void Upgrade(IPermanentUpgrade upgrade)
+    {
+        if (upgradeSlots == null)
+        {
+            throw new InvalidOperationException("Cannot queue upgrade if there are no upgrade slots.");
+        }
+        applyUpgrade(upgrade);
+        upgradeSlots.ReserveSlot().Fill();
+    }
+
     public IIncompleteUpgrade QueueUpgrade(IPermanentUpgrade upgrade)
     {
         if (upgradeSlots == null)
@@ -81,8 +91,6 @@ sealed partial class BuildingUpgradeManager
         upgradesInProgress.Add(upgrade.Id, incompleteUpgrade);
 
         UpgradeQueued?.Invoke(incompleteUpgrade);
-        Owner.Game.Meta.Events.Send(
-            new BuildingUpgradeQueued(nameProvider.NameOrDefault(), Owner, incompleteUpgrade));
 
         return incompleteUpgrade;
     }
@@ -95,13 +103,18 @@ sealed partial class BuildingUpgradeManager
             return;
         }
 
-        Owner.ApplyUpgrade(incompleteUpgrade.Upgrade);
+        applyUpgrade(incompleteUpgrade.Upgrade);
+    }
 
-        appliedUpgrades.Add(incompleteUpgrade.Upgrade);
+    private void applyUpgrade(IPermanentUpgrade upgrade)
+    {
+        Owner.ApplyUpgrade(upgrade);
 
-        UpgradeCompleted?.Invoke(incompleteUpgrade.Upgrade);
+        appliedUpgrades.Add(upgrade);
+
+        UpgradeCompleted?.Invoke(upgrade);
         Owner.Game.Meta.Events.Send(
-            new BuildingUpgradeFinished(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.Upgrade));
+            new BuildingUpgradeFinished(nameProvider.NameOrDefault(), Owner, upgrade));
     }
 
     private void onUpgradeCancelled(IIncompleteUpgrade incompleteUpgrade)
@@ -169,6 +182,9 @@ interface IBuildingUpgradeManager
 
     bool CanApplyUpgrade(IPermanentUpgrade upgrade);
     bool CanBeUpgradedBy(Faction faction);
+    void Upgrade(IPermanentUpgrade upgrade);
+
+    [Obsolete("Queueing of upgrades is no longer expected behaviour")]
     IIncompleteUpgrade QueueUpgrade(IPermanentUpgrade upgrade);
 }
 
