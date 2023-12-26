@@ -32,14 +32,14 @@ jobs:
         run: dotnet test --no-restore --logger "trx;LogFileName=test-results-${{ matrix.dotnet_version }}.trx"
       - name: Upload Verify test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: verify-test-results
           path: |
             **/*.received.*
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: |
