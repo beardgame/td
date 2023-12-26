@@ -26,7 +26,7 @@ jobs:
           fileName: "Bearded.TD.MasterServer-${{ RELEASE_VERSION }}-linux-x64.zip"
 
       - name: Copy binaries to server
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.6
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
