@@ -3,6 +3,7 @@ using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
+using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Resources;
@@ -10,8 +11,10 @@ using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using JetBrains.Annotations;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
@@ -52,10 +55,18 @@ static class BuildBuilding
             {
                 return false;
             }
+            if (!faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var factionResources))
+            {
+                return false;
+            }
+
+            var buildingPreconditions = preconditionsResult();
+            var totalCost = blueprint.GetResourceCost() + buildingPreconditions.AdditionalCost;
 
             return factionTechnology.IsBuildingUnlocked(blueprint)
                 && faction.SharesBehaviorWith<FactionResources>(actor.Faction)
-                && preconditionsResult().IsValid;
+                && buildingPreconditions.IsValid
+                && factionResources.AvailableResources >= totalCost;
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
@@ -68,10 +79,28 @@ static class BuildBuilding
         public override void Execute()
         {
             var result = preconditionsResult();
+            State.Satisfies(result.IsValid);
+
             var building = BuildingFactory.Create(id, blueprint, faction, footprint);
-            var incompleteBuilding = building.GetComponents<IncompleteBuildingComponent>().Single().Work;
-            building.AddComponent(new BuildingConstructionWork(incompleteBuilding, result.AdditionalCost));
             game.State.Add(building);
+
+            var constructionSyncer = building.GetComponents<IBuildingConstructionSyncer>().Single();
+            constructionSyncer.SyncStartBuild();
+            constructionSyncer.SyncCompleteBuild();
+
+            faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
+            var baseCost = building.GetComponents<ICost>().FirstOrDefault()?.Resources ?? ResourceAmount.Zero;
+            var totalCost = baseCost + result.AdditionalCost;
+            var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(totalCost));
+            reservation.MarkReadyToReceive();
+            State.Satisfies(reservation.IsCommitted);
+            reservation.ClaimResources(totalCost);
+
+            if (building.GetComponents<IBreakageHandler>().SingleOrDefault() is { } breakageHandler)
+            {
+                var receipt = breakageHandler.BreakObject();
+                building.Delay(receipt.Repair, 5.S());
+            }
         }
 
         private IBuildBuildingPrecondition.Result preconditionsResult()
