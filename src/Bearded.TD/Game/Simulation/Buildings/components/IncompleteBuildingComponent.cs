@@ -3,6 +3,7 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.Annotations;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -125,7 +126,10 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
             MakeCancelled();
         }
 
+        [MustBeSync]
         public void SyncStartBuild() => SyncStart();
+
+        [MustBeSync]
         public void SyncCompleteBuild() => SyncComplete();
     }
 }
@@ -134,6 +138,9 @@ interface IIncompleteBuilding : IIncompleteWork {}
 
 interface IBuildingConstructionSyncer
 {
+    [MustBeSync]
     void SyncStartBuild();
+
+    [MustBeSync]
     void SyncCompleteBuild();
 }

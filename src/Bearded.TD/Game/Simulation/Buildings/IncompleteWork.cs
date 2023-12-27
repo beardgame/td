@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Shared.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
@@ -39,7 +40,10 @@ abstract class IncompleteWork : IIncompleteWork, ProgressTracker.IProgressSubjec
         progressTracker.Complete();
     }
 
+    [MustBeSync]
     protected void SyncStart() => progressTracker.SyncStart();
+
+    [MustBeSync]
     protected void SyncComplete() => progressTracker.SyncComplete();
 
     public abstract void SendSyncStart();

@@ -1,3 +1,4 @@
+using Bearded.TD.Shared.Annotations;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
@@ -49,6 +50,7 @@ sealed class ProgressTracker
         subject.SendSyncStart();
     }
 
+    [MustBeSync]
     public void SyncStart()
     {
         State.Satisfies(syncedProgressStage == ProgressStage.NotStarted);
@@ -92,6 +94,7 @@ sealed class ProgressTracker
         subject.SendSyncComplete();
     }
 
+    [MustBeSync]
     public void SyncComplete()
     {
         State.Satisfies(syncedProgressStage == ProgressStage.InProgress);
