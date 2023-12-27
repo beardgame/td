@@ -97,7 +97,7 @@ sealed class DefaultTileOccupancy : Component,
             ? Result.Valid
                 with
                 {
-                    AdditionalCost = -totalRefundsForReplacing(parameters.Game, parameters.Footprint.OccupiedTiles)
+                    Cost = -totalRefundsForReplacing(parameters.Game, parameters.Footprint.OccupiedTiles)
                 }
             : Result.Invalid
                 with

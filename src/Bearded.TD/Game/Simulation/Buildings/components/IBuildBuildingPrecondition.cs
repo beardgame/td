@@ -14,19 +14,22 @@ interface IBuildBuildingPrecondition
         bool IsValid,
         ImmutableArray<Tile> BadTiles,
         ImmutableArray<TileEdge> BadEdges,
-        ResourceAmount AdditionalCost)
+        ResourceAmount Cost)
     {
         public static Result Valid => FromBool(true);
         public static Result Invalid => FromBool(false);
 
         public static Result FromBool(bool isValid)
-            => new (isValid, ImmutableArray<Tile>.Empty, ImmutableArray<TileEdge>.Empty, ResourceAmount.Zero);
+            => new(isValid, ImmutableArray<Tile>.Empty, ImmutableArray<TileEdge>.Empty, ResourceAmount.Zero);
+
+        public static Result FromCost(ResourceAmount cost)
+            => new(true, ImmutableArray<Tile>.Empty, ImmutableArray<TileEdge>.Empty, cost);
 
         public static Result And(Result one, Result other) => new(
             one.IsValid && other.IsValid,
             merge(one.BadTiles, other.BadTiles),
             merge(one.BadEdges, other.BadEdges),
-            one.AdditionalCost + other.AdditionalCost);
+            one.Cost + other.Cost);
 
         private static ImmutableArray<T> merge<T>(ImmutableArray<T> one, ImmutableArray<T> other)
         {

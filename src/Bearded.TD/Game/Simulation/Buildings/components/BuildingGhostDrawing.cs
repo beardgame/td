@@ -83,13 +83,10 @@ sealed class BuildingGhostDrawing : Component, IListener<DrawComponents>, IListe
 
         if (result.IsValid)
         {
-            var baseCost = Owner.GetComponents<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
-            var realCost = baseCost + result.AdditionalCost;
-
             e.Core.InGameConsoleFont.DrawLine(
                 Constants.Game.GameUI.ResourcesColor,
                 Owner.Position.NumericValue + 0.1f * Vector3.UnitZ,
-                realCost.NumericValue.ToString(),
+                result.Cost.NumericValue.ToString(),
                 0.18f,
                 0.5f, 0.5f);
         }

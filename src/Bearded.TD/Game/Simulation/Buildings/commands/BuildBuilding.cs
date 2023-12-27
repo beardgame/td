@@ -61,12 +61,11 @@ static class BuildBuilding
             }
 
             var buildingPreconditions = preconditionsResult();
-            var totalCost = blueprint.GetResourceCost() + buildingPreconditions.AdditionalCost;
 
             return factionTechnology.IsBuildingUnlocked(blueprint)
                 && faction.SharesBehaviorWith<FactionResources>(actor.Faction)
                 && buildingPreconditions.IsValid
-                && factionResources.AvailableResources >= totalCost;
+                && factionResources.AvailableResources >= buildingPreconditions.Cost;
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
@@ -89,12 +88,10 @@ static class BuildBuilding
             constructionSyncer.SyncCompleteBuild();
 
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
-            var baseCost = building.GetComponents<ICost>().FirstOrDefault()?.Resources ?? ResourceAmount.Zero;
-            var totalCost = baseCost + result.AdditionalCost;
-            var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(totalCost));
+            var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(result.Cost));
             reservation.MarkReadyToReceive();
             State.Satisfies(reservation.IsCommitted);
-            reservation.ClaimResources(totalCost);
+            reservation.ClaimResources(result.Cost);
 
             if (building.GetComponents<IBreakageHandler>().SingleOrDefault() is { } breakageHandler)
             {
