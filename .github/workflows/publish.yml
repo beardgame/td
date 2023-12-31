@@ -66,7 +66,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: binaries
+          name: binaries-${{matrix.runtime}}
           path: "publish/*.zip"
           if-no-files-found: error
 
@@ -78,8 +78,9 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: binaries
+          pattern: binaries-*
           path: publish/
+          merge-multiple: true
 
       # The version number can be extracted from the currently checked out tag,
       # which has the format 'refs/tags/v*'.
