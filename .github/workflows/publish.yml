@@ -66,7 +66,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{matrix.runtime}}
+          name: binaries-${{matrix.binary}}-${{matrix.runtime}}
           path: "publish/*.zip"
           if-no-files-found: error
 
