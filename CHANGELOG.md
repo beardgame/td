@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.23
+
+* Changed the building and upgrading mechanics
+  * Resources are no longer consumed over time, but immediately consumed
+  * Queueing of buildings or upgrades has been disabled
+* Replaced flamethrower sprite
+* Improved visuals of fire explosion
+* Improved visuals of both incendiary and charged projectiles
+* Updated sound effects for tesla coil and steam hammer
+* Changed level generation to be less likely to generate map with small bottlenecks dividing the map in two
+
 ## v0.22
 
 * Improved fire rendering
