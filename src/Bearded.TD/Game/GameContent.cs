@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -128,11 +127,5 @@ sealed class GameContent(ContentManager contentManager)
         enabledMods.Clear();
         leasesByMod.Clear();
         contentManager.CleanUpAll();
-    }
-
-    [Obsolete]
-    public void Update()
-    {
-        contentManager.Update();
     }
 }

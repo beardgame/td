@@ -216,6 +216,7 @@ sealed class TheGame : Window
         recordLastFramesPerformance();
         using var _ = activityTimer.Start(Activity.UpdateGame);
 
+        contentManager.Update();
         inputManager.Update(NativeWindow.IsFocused);
 
         if (inputManager.IsKeyPressed(Keys.LeftAlt) && inputManager.IsKeyHit(Keys.F4))
