@@ -51,9 +51,9 @@ abstract class LobbyManager
     {
         Network.ConsumeMessages();
         Game.UpdatePlayers(args);
-        Game.ContentManager.Update(args);
+        Game.Content.Update();
 
-        if (Game.Me.ConnectionState == PlayerConnectionState.LoadingMods && Game.ContentManager.IsFinishedLoading)
+        if (Game.Me.ConnectionState == PlayerConnectionState.LoadingMods && Game.Content.IsFinishedLoading)
         {
             Game.Request(ChangePlayerState.Request(Game.Me, PlayerConnectionState.Waiting));
         }

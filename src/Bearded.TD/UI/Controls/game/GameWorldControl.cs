@@ -77,6 +77,7 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
 
     public void CleanUp()
     {
+        game.Content.Dispose();
         renderer.CleanUp();
         UserSettings.SettingsChanged -= userSettingsChanged;
     }

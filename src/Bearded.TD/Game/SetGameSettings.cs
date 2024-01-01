@@ -50,13 +50,13 @@ static class SetGameSettings
         private void logModChanges()
         {
             foreach (var enabledMod in gameSettings.ActiveModIds
-                         .Where(id => game.ContentManager.EnabledMods.All(m => m.Id != id))
-                         .Select(game.ContentManager.FindMod))
+                         .Where(id => game.Content.EnabledMods.All(m => m.Id != id))
+                         .Select(game.Content.FindMod))
             {
                 logSettingChange($"Mod enabled: {enabledMod.Name}");
             }
 
-            foreach (var disabledMod in game.ContentManager.EnabledMods
+            foreach (var disabledMod in game.Content.EnabledMods
                          .Where(m => gameSettings.ActiveModIds.All(id => m.Id != id)))
             {
                 logSettingChange($"Mod disabled: {disabledMod.Name}");

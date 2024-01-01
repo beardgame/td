@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Audio;
 using Bearded.TD.Commands;
-using Bearded.TD.Content;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Input;
@@ -21,7 +20,7 @@ namespace Bearded.TD.Game;
 
 sealed class GameInstance
 {
-    public ContentManager ContentManager { get; }
+    public GameContent Content { get; }
     public Player Me { get; }
     public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
     public GameMeta Meta { get; }
@@ -82,14 +81,14 @@ sealed class GameInstance
     private readonly PlayerManager? playerManager;
 
     public GameInstance(IGameContext context,
-        ContentManager contentManager,
+        GameContent content,
         Player me,
         IdManager ids,
         RenderContext renderContext)
     {
         RequestDispatcher = context.RequestDispatcher;
         context.DataMessageHandlerInitializer(this);
-        ContentManager = contentManager;
+        Content = content;
         Me = me;
         Ids = ids;
         LevelDebugMetadata = new LevelDebugMetadata();
@@ -113,7 +112,7 @@ sealed class GameInstance
         if (Status != GameStatus.Lobby)
             throw new InvalidOperationException("Can only change game settings in the lobby.");
         GameSettings = gameSettings;
-        ContentManager.SetEnabledModsById(gameSettings.ActiveModIds);
+        Content.SetEnabledModsById(gameSettings.ActiveModIds);
         GameSettingsChanged?.Invoke(gameSettings);
     }
 
@@ -172,8 +171,8 @@ sealed class GameInstance
             throw new InvalidOperationException("Cannot override the blueprints once set.");
         }
 
-        blueprints = Blueprints.Merge(ContentManager.LoadedEnabledMods.Select(m => m.Blueprints));
-        Meta.SetBlueprints(Blueprints);
+        blueprints = Content.CreateBlueprints();
+        Meta.SetBlueprints(blueprints);
     }
 
     public void InitializeState(GameState state)

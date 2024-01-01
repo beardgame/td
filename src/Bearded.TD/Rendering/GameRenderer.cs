@@ -538,7 +538,6 @@ sealed class GameRenderer
         levelRenderer.CleanUp();
         waterGeometry.CleanUp();
         ContentRenderers.Dispose();
-        GraphicsUnloader.CleanUp(game.Blueprints);
     }
 
 }

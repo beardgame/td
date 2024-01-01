@@ -5,22 +5,16 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Content.Mods;
 
-sealed class ModForLoading
+sealed class ModForLoading(ModMetadata modMetadata)
 {
-    private readonly ModMetadata modMetadata;
-    private Mod mod;
+    private Mod? mod;
     private bool isLoading;
-    private ModLoadingContext context;
-    private Exception exception;
-    private ReadOnlyCollection<Mod> loadedDependencies;
+    private ModLoadingContext? context;
+    private Exception? exception;
+    private ReadOnlyCollection<Mod>? loadedDependencies;
 
     public bool IsDone { get; private set; }
     public bool DidLoadSuccessfully => IsDone && exception == null;
-
-    public ModForLoading(ModMetadata modMetadata)
-    {
-        this.modMetadata = modMetadata;
-    }
 
     public void StartLoading(ModLoadingContext context, ReadOnlyCollection<Mod> loadedDependencies)
     {
@@ -34,39 +28,40 @@ sealed class ModForLoading
         Task.Run(load);
     }
 
-    private async Task<Mod> load()
+    private async Task load()
     {
         try
         {
-            mod = await ModLoader.Load(context, modMetadata, loadedDependencies);
+            mod = await ModLoader.Load(context!, modMetadata, loadedDependencies!);
         }
         catch (Exception e)
         {
             exception = e;
-            context.Logger.Error?.Log($"Error loading mod {modMetadata.Id}: {e.Message}");
+            context!.Logger.Error?.Log($"Error loading mod {modMetadata.Id}: {e.Message}");
         }
         finally
         {
             IsDone = true;
         }
-        return mod;
     }
 
     public Mod GetLoadedMod()
     {
         if (!IsDone)
+        {
             throw new InvalidOperationException("Must finish loading mod.");
-
+        }
         if (exception != null)
+        {
             throw new Exception($"Something went wrong loading mod '{modMetadata.Id}'", exception);
+        }
 
-        return mod;
+        return mod!;
     }
 
     public void Rethrow()
     {
         DebugAssert.State.Satisfies(exception != null);
-        // ReSharper disable once PossibleNullReferenceException
-        throw exception;
+        throw exception!;
     }
 }

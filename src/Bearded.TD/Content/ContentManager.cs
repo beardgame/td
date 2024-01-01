@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
@@ -14,133 +13,39 @@ namespace Bearded.TD.Content;
 sealed class ContentManager
 {
     private readonly ModLoadingContext loadingContext;
-    public ModLoadingProfiler LoadingProfiler => loadingContext.Profiler;
-
+    private readonly ImmutableArray<ModMetadata> allMods;
     private readonly ImmutableDictionary<string, ModMetadata> modsById;
-    public ImmutableHashSet<ModMetadata> AvailableMods { get; }
-
-    private readonly HashSet<ModMetadata> enabledMods = new();
-    public ImmutableHashSet<ModMetadata> EnabledMods => enabledMods.ToImmutableHashSet();
 
     private readonly Dictionary<ModMetadata, ModForLoading> modsForLoading = new();
     private readonly Queue<ModMetadata> modLoadingQueue = new();
+    private readonly MultiDictionary<ModMetadata, ModLease> leasesByMods = new();
 
-    public ModMetadata? CurrentlyLoading { get; private set; }
-    public bool IsFinishedLoading => CurrentlyLoading is null && modLoadingQueue.Count == 0;
+    private ModMetadata? currentlyLoading;
+    private bool isFinishedLoading => currentlyLoading is null && modLoadingQueue.Count == 0;
 
-    public IEnumerable<Mod> LoadedEnabledMods
-    {
-        get
-        {
-            if (!IsFinishedLoading)
-            {
-                throw new InvalidOperationException("Cannot access loaded enabled mods before finished loading.");
-            }
+    public ModLoadingProfiler LoadingProfiler => loadingContext.Profiler;
 
-            return enabledMods.Select(metadata => modsForLoading[metadata].GetLoadedMod()).ToImmutableArray();
-        }
-    }
+    public ImmutableArray<ModMetadata> VisibleMods => allMods.Where(m => m.Visible).ToImmutableArray();
 
-    public ContentManager(
-        Logger logger, IGraphicsLoader graphicsLoader, IReadOnlyCollection<ModMetadata> availableMods)
+    public ContentManager(Logger logger, IGraphicsLoader graphicsLoader, IReadOnlyCollection<ModMetadata> allMods)
     {
         loadingContext = new ModLoadingContext(logger, graphicsLoader, new ModLoadingProfiler());
 
-        AvailableMods = ImmutableHashSet.CreateRange(availableMods);
-        modsById = availableMods.ToImmutableDictionary(m => m.Id);
+        this.allMods = ImmutableArray.CreateRange(allMods);
+        modsById = allMods.ToImmutableDictionary(m => m.Id);
     }
 
     public ModMetadata FindMod(string modId) => modsById[modId];
 
-    public void SetEnabledModsById(IEnumerable<string> modIds)
-    {
-        setEnabledMods(modIds.Select(FindMod));
-    }
 
-    private void setEnabledMods(IEnumerable<ModMetadata> mods)
-    {
-        enabledMods.Clear();
-        mods.ForEach(enableMod);
-    }
-
-    private void enableMod(ModMetadata mod)
-    {
-        if (enabledMods.Contains(mod))
-        {
-            return;
-        }
-
-        // Make sure all dependencies are enabled too.
-        foreach (var dependency in mod.Dependencies)
-        {
-            var dependencyMod = modsById[dependency.Id];
-            if (!enabledMods.Contains(dependencyMod))
-            {
-                enableMod(dependencyMod);
-            }
-        }
-
-        // Enqueue for loading if it hasn't been loaded yet.
-        if (!modsForLoading.ContainsKey(mod))
-        {
-            modsForLoading.Add(mod, new ModForLoading(mod));
-            modLoadingQueue.Enqueue(mod);
-        }
-
-        enabledMods.Add(mod);
-    }
-
-    public HashSet<ModMetadata> PreviewEnableMod(ModMetadata modToEnable)
-    {
-        var enabled = enabledMods.ToHashSet();
-
-        enable(modToEnable);
-
-        return enabled;
-
-        void enable(ModMetadata mod)
-        {
-            if (enabled.Contains(mod))
-                return;
-
-            foreach (var dependency in mod.Dependencies)
-            {
-                var dependencyMod = modsById[dependency.Id];
-                enable(dependencyMod);
-            }
-
-            enabled.Add(mod);
-        }
-    }
-
-    public HashSet<ModMetadata> PreviewDisableMod(ModMetadata modToDisable)
-    {
-        var enabled = enabledMods.ToHashSet();
-
-        disable(modToDisable);
-
-        return enabled;
-
-        void disable(ModMetadata mod)
-        {
-            if (!enabled.Contains(mod))
-                return;
-
-            var dependents = enabled.Where(m => m.Dependencies.Any(d => d.Id == mod.Id));
-            dependents.ForEach(disable);
-
-            enabled.Remove(mod);
-        }
-    }
-
-    public void Update(UpdateEventArgs args)
+    public void Update()
     {
         pumpLoadingQueue();
     }
 
     private void pumpLoadingQueue()
     {
-        if (CurrentlyLoading is { } metadata)
+        if (currentlyLoading is { } metadata)
         {
             var modForLoading = modsForLoading[metadata];
             if (!modForLoading.IsDone)
@@ -148,10 +53,10 @@ sealed class ContentManager
                 return;
             }
             // TODO: deal with errors
-            CurrentlyLoading = null;
+            currentlyLoading = null;
         }
 
-        if (CurrentlyLoading is null)
+        if (currentlyLoading is null)
         {
             startLoadingNextMod();
         }
@@ -159,11 +64,11 @@ sealed class ContentManager
 
     private void startLoadingNextMod()
     {
-        ModMetadata metadata;
+        ModMetadata? metadata;
         do
         {
             metadata = modLoadingQueue.Count == 0 ? null : modLoadingQueue.Dequeue();
-        } while (metadata != null && !enabledMods.Contains(metadata));
+        } while (metadata != null && (!modsForLoading.ContainsKey(metadata) || !leasesByMods.ContainsKey(metadata)));
 
         if (metadata == null)
         {
@@ -179,28 +84,81 @@ sealed class ContentManager
             .AsReadOnly();
 
         modForLoading.StartLoading(loadingContext, loadedDependencies);
-        CurrentlyLoading = metadata;
+        currentlyLoading = metadata;
     }
 
-    public void CleanUp()
+    public void CleanUpUnused()
     {
-        DebugAssert.State.Satisfies(IsFinishedLoading);
-        var unusedMods = modsForLoading.Where(m => !enabledMods.Contains(m.Key)).ToList();
+        var unusedMods = modsForLoading.Where(kvp => !leasesByMods.ContainsKey(kvp.Key)).ToImmutableArray();
+
         foreach (var (metadata, modForLoading) in unusedMods)
         {
-            GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
+            // We have no way to abort loading. Just finish loading it and we'll pick it up in a future clean-up cycle.
+            if (currentlyLoading == metadata)
+            {
+                continue;
+            }
+
+            if (modForLoading.IsDone)
+            {
+                GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
+            }
             modsForLoading.Remove(metadata);
         }
     }
 
     public void CleanUpAll()
     {
-        DebugAssert.State.Satisfies(IsFinishedLoading);
+        DebugAssert.State.Satisfies(isFinishedLoading);
         foreach (var (_, modForLoading) in modsForLoading)
         {
             GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
         }
-        enabledMods.Clear();
+        leasesByMods.Clear();
         modsForLoading.Clear();
     }
+
+    public IModLease LeaseMod(ModMetadata mod)
+    {
+        var lease = new ModLease(this, mod, findModForLoading(mod));
+        leasesByMods.Add(mod, lease);
+        return lease;
+    }
+
+    private ModForLoading findModForLoading(ModMetadata metadata)
+    {
+        if (modsForLoading.TryGetValue(metadata, out var mod))
+        {
+            return mod;
+        }
+
+        var m = new ModForLoading(metadata);
+        modsForLoading.Add(metadata, m);
+        modLoadingQueue.Enqueue(metadata);
+        return m;
+    }
+
+    private void release(ModLease lease)
+    {
+        leasesByMods.Remove(lease.Metadata, lease);
+    }
+
+    private sealed class ModLease(ContentManager contentManager, ModMetadata metadata, ModForLoading modForLoading)
+        : IModLease
+    {
+        public ModMetadata Metadata => metadata;
+        public bool IsLoaded => modForLoading.IsDone;
+        public Mod LoadedMod => modForLoading.GetLoadedMod();
+
+        public void Dispose()
+        {
+            contentManager.release(this);
+        }
+    }
+}
+
+interface IModLease : IDisposable
+{
+    bool IsLoaded { get; }
+    Mod LoadedMod { get; }
 }

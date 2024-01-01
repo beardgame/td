@@ -37,7 +37,7 @@ sealed class ServerLobbyManager : LobbyManager
     {
         base.Update(args);
 
-        if (forceReady && Game.ContentManager.IsFinishedLoading)
+        if (forceReady && Game.Content.IsFinishedLoading)
         {
             Game.Me.ConnectionState = PlayerConnectionState.Ready;
         }
@@ -77,7 +77,7 @@ sealed class ServerLobbyManager : LobbyManager
     {
         var m = Create(networkInterface, logger, graphicsLoader, renderContext);
 
-        if (!m.Game.ContentManager.EnabledMods.IsEmpty)
+        if (!m.Game.Content.EnabledMods.IsEmpty)
         {
             m.forceReady = true;
         }
@@ -89,7 +89,8 @@ sealed class ServerLobbyManager : LobbyManager
         ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
     {
         var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAllVisible());
-        contentManager.SetEnabledModsById(UserSettings.Instance.LastGameSettings.ActiveModIds);
+        var gameContent = new GameContent(contentManager);
+        gameContent.SetEnabledModsById(UserSettings.Instance.LastGameSettings.ActiveModIds);
 
         var ids = new IdManager();
         var p = new Player(ids.GetNext<Player>(), UserSettings.Instance.Misc.Username)
@@ -98,7 +99,7 @@ sealed class ServerLobbyManager : LobbyManager
         };
 
         return new ServerLobbyManager(
-            new GameInstance(new ServerGameContext(networkInterface, logger), contentManager, p, ids, renderContext),
+            new GameInstance(new ServerGameContext(networkInterface, logger), gameContent, p, ids, renderContext),
             networkInterface);
     }
 }
