@@ -37,7 +37,6 @@ sealed class ContentManager
 
     public ModMetadata FindMod(string modId) => modsById[modId];
 
-
     public void Update()
     {
         pumpLoadingQueue();
