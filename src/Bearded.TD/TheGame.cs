@@ -277,6 +277,7 @@ sealed class TheGame : Window
 
     protected override void OnClosing(CancelEventArgs e)
     {
+        contentManager.CleanUpAll();
         UserSettings.Save(logger);
     }
 
