@@ -37,6 +37,17 @@ sealed class ContentManager
 
     public ModMetadata FindMod(string modId) => modsById[modId];
 
+    public Mod AccessLoadedMod(string modId)
+    {
+        var metadata = FindMod(modId);
+        if (!modsForLoading.TryGetValue(metadata, out var modForLoading) || !modForLoading.IsDone)
+        {
+            throw new InvalidOperationException("Cannot access a mod that isn't loaded");
+        }
+
+        return modForLoading.GetLoadedMod();
+    }
+
     public void Update()
     {
         pumpLoadingQueue();

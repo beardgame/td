@@ -71,7 +71,7 @@ readonly struct ModAwareId : IEquatable<ModAwareId>
         return new ModAwareId(components[0], components[1]);
     }
 
-    [MemberNotNull(nameof(ModId), nameof(Id))]
+    [MemberNotNullWhen(true, nameof(ModId), nameof(Id))]
     // ModId == null implies Id == null
     public bool IsValid => ModId != null;
 
