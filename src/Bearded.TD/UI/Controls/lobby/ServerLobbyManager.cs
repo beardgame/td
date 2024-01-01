@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Loading;
 using Bearded.TD.Game.Players;
@@ -72,10 +71,12 @@ sealed class ServerLobbyManager : LobbyManager
     public override LoadingManager GetLoadingManager() => new ServerLoadingManager(Game, Network);
 
     public static ServerLobbyManager CreateWithReadyPlayer(
-        ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader,
+        ServerNetworkInterface networkInterface,
+        Logger logger,
+        ContentManager contentManager,
         RenderContext renderContext)
     {
-        var m = Create(networkInterface, logger, graphicsLoader, renderContext);
+        var m = Create(networkInterface, logger, contentManager, renderContext);
 
         if (!m.Game.Content.EnabledMods.IsEmpty)
         {
@@ -86,9 +87,11 @@ sealed class ServerLobbyManager : LobbyManager
     }
 
     public static ServerLobbyManager Create(
-        ServerNetworkInterface networkInterface, Logger logger, IGraphicsLoader graphicsLoader, RenderContext renderContext)
+        ServerNetworkInterface networkInterface,
+        Logger logger,
+        ContentManager contentManager,
+        RenderContext renderContext)
     {
-        var contentManager = new ContentManager(logger, graphicsLoader, new ModLister().GetAllVisible());
         var gameContent = new GameContent(contentManager);
         gameContent.SetEnabledModsById(UserSettings.Instance.LastGameSettings.ActiveModIds);
 

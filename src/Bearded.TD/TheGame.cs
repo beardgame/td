@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using Bearded.Audio;
 using Bearded.Graphics;
 using Bearded.TD.Commands.Serialization;
+using Bearded.TD.Content;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
@@ -57,6 +59,7 @@ sealed class TheGame : Window
 
     private InputManager inputManager = null!;
     private RenderContext renderContext = null!;
+    private ContentManager contentManager = null!;
     private RootControl rootControl = null!;
     private UIUpdater uiUpdater = null!;
     private EventManager eventManager = null!;
@@ -109,13 +112,8 @@ sealed class TheGame : Window
         UserSettings.Save(logger);
         UserSettingsSchema.Initialize();
 
-        var dependencyResolver = new DependencyResolver();
-        dependencyResolver.Add(logger);
-        dependencyResolver.Add(activityTimer);
-        dependencyResolver.Add(
-            (IEnumerable<ImmutableArray<TimedActivity>>)recordedActivityTimes.AsReadOnlyEnumerable());
-
         renderContext = new RenderContext(glActionQueue, logger);
+        contentManager = new ContentManager(logger, renderContext.GraphicsLoader, new ModLister().GetAll());
 
         var drawers = renderContext.Drawers;
         rendererRouter = new CachedRendererRouter(
@@ -136,8 +134,13 @@ sealed class TheGame : Window
                 (typeof(Control), new FallbackBoxRenderer(drawers.ConsoleBackground)),
             });
 
+        var dependencyResolver = new DependencyResolver();
+        dependencyResolver.Add(logger);
+        dependencyResolver.Add(activityTimer);
+        dependencyResolver.Add(
+            (IEnumerable<ImmutableArray<TimedActivity>>)recordedActivityTimes.AsReadOnlyEnumerable());
         dependencyResolver.Add(renderContext);
-        dependencyResolver.Add(renderContext.GraphicsLoader);
+        dependencyResolver.Add(contentManager);
 
         inputManager = new InputManager(NativeWindow);
         dependencyResolver.Add(inputManager);

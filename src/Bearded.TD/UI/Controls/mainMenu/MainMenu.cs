@@ -11,13 +11,13 @@ namespace Bearded.TD.UI.Controls;
 sealed class MainMenu : NavigationNode<Intent>
 {
     private Logger logger = null!;
-    private IGraphicsLoader graphicsLoader = null!;
+    private ContentManager contentManager = null!;
     private RenderContext renderContext = null!;
 
     protected override void Initialize(DependencyResolver dependencies, Intent intent)
     {
         logger = dependencies.Resolve<Logger>();
-        graphicsLoader = dependencies.Resolve<IGraphicsLoader>();
+        contentManager = dependencies.Resolve<ContentManager>();
         renderContext = dependencies.Resolve<RenderContext>();
 
         if (intent != Intent.None)
@@ -37,13 +37,12 @@ sealed class MainMenu : NavigationNode<Intent>
     }
 
     private void startLobby(
-        Func<ServerNetworkInterface, Logger, IGraphicsLoader,
-            RenderContext, ServerLobbyManager> lobbyManagerFactory
+        Func<ServerNetworkInterface, Logger, ContentManager, RenderContext, ServerLobbyManager> lobbyManagerFactory
     )
     {
         var network = new ServerNetworkInterface();
         network.RegisterMessageHandler(new NetworkDebugMessageHandler(logger));
-        var lobbyManager = lobbyManagerFactory(network, logger, graphicsLoader, renderContext);
+        var lobbyManager = lobbyManagerFactory(network, logger, contentManager, renderContext);
         Navigation!.Replace<Lobby, LobbyManager>(lobbyManager, this);
     }
 
