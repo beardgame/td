@@ -60,7 +60,7 @@ sealed class TheGame : Window
     private InputManager inputManager = null!;
     private RenderContext renderContext = null!;
     private ContentManager contentManager = null!;
-    private IModLease coreMod = null!;
+    private IModReference coreMod = null!;
     private RootControl rootControl = null!;
     private UIUpdater uiUpdater = null!;
     private EventManager eventManager = null!;
@@ -115,7 +115,7 @@ sealed class TheGame : Window
 
         renderContext = new RenderContext(glActionQueue, logger);
         contentManager = new ContentManager(logger, renderContext.GraphicsLoader, new ModLister().GetAll());
-        coreMod = contentManager.LeaseMod(contentManager.FindMod("core-ui"));
+        coreMod = contentManager.ReferenceMod(contentManager.FindMetadata("core-ui"));
         while (!coreMod.IsLoaded)
         {
             contentManager.Update();

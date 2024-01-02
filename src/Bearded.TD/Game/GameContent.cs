@@ -12,20 +12,20 @@ namespace Bearded.TD.Game;
 sealed class GameContent(ContentManager contentManager)
 {
     private readonly HashSet<ModMetadata> enabledMods = [];
-    private readonly Dictionary<ModMetadata, IModLease> leasesByMod = new();
+    private readonly Dictionary<ModMetadata, IModReference> referencesByMod = new();
 
     public IEnumerable<ModMetadata> AvailableMods => contentManager.VisibleMods;
     public ImmutableHashSet<ModMetadata> EnabledMods => enabledMods.ToImmutableHashSet();
 
-    public bool IsFinishedLoading => enabledMods.Select(mod => leasesByMod[mod]).All(l => l.IsLoaded);
+    public bool IsFinishedLoading => enabledMods.Select(mod => referencesByMod[mod]).All(l => l.IsLoaded);
     public ModLoadingProfiler LoadingProfiler => contentManager.LoadingProfiler;
 
-    public ModMetadata FindMod(string id) => contentManager.FindMod(id);
+    public ModMetadata FindMod(string id) => contentManager.FindMetadata(id);
 
     public void SetEnabledModsById(IEnumerable<string> modIds)
     {
         enabledMods.Clear();
-        modIds.Select(contentManager.FindMod).ForEach(enableMod);
+        modIds.Select(contentManager.FindMetadata).ForEach(enableMod);
     }
 
     private void enableMod(ModMetadata mod)
@@ -38,18 +38,18 @@ sealed class GameContent(ContentManager contentManager)
         // Make sure all dependencies are enabled too.
         foreach (var dependency in mod.Dependencies)
         {
-            var dependencyMod = contentManager.FindMod(dependency.Id);
+            var dependencyMod = contentManager.FindMetadata(dependency.Id);
             if (!enabledMods.Contains(dependencyMod))
             {
                 enableMod(dependencyMod);
             }
         }
 
-        // Enqueue for loading if it hasn't been loaded yet.
-        if (!leasesByMod.ContainsKey(mod))
+        // Create mod reference if it doesn't exist yet.
+        if (!referencesByMod.ContainsKey(mod))
         {
-            var lease = contentManager.LeaseMod(mod);
-            leasesByMod.Add(mod, lease);
+            var reference = contentManager.ReferenceMod(mod);
+            referencesByMod.Add(mod, reference);
         }
 
         enabledMods.Add(mod);
@@ -70,7 +70,7 @@ sealed class GameContent(ContentManager contentManager)
 
             foreach (var dependency in mod.Dependencies)
             {
-                var dependencyMod = contentManager.FindMod(dependency.Id);
+                var dependencyMod = contentManager.FindMetadata(dependency.Id);
                 enable(dependencyMod);
             }
 
@@ -101,31 +101,31 @@ sealed class GameContent(ContentManager contentManager)
     public IEnumerable<IGameModeBlueprint> ListGameModes()
     {
         DebugAssert.State.Satisfies(IsFinishedLoading);
-        return enabledMods.SelectMany(mod => leasesByMod[mod].LoadedMod.Blueprints.GameModes.All);
+        return enabledMods.SelectMany(mod => referencesByMod[mod].LoadedMod.Blueprints.GameModes.All);
     }
 
     public Blueprints CreateBlueprints()
     {
         DebugAssert.State.Satisfies(IsFinishedLoading);
-        return Blueprints.Merge(enabledMods.Select(mod => leasesByMod[mod].LoadedMod.Blueprints));
+        return Blueprints.Merge(enabledMods.Select(mod => referencesByMod[mod].LoadedMod.Blueprints));
     }
 
     public void CleanUpUnused()
     {
-        var unusedMods = leasesByMod.Where(kvp => !enabledMods.Contains(kvp.Key)).ToList();
-        foreach (var (metadata, lease) in unusedMods)
+        var unusedMods = referencesByMod.Where(kvp => !enabledMods.Contains(kvp.Key)).ToList();
+        foreach (var (metadata, reference) in unusedMods)
         {
-            lease.Dispose();
-            leasesByMod.Remove(metadata);
+            reference.Dispose();
+            referencesByMod.Remove(metadata);
         }
         contentManager.CleanUpUnused();
     }
 
     public void Dispose()
     {
-        leasesByMod.Values.ForEach(l => l.Dispose());
+        referencesByMod.Values.ForEach(l => l.Dispose());
         enabledMods.Clear();
-        leasesByMod.Clear();
+        referencesByMod.Clear();
         contentManager.CleanUpAll();
     }
 }

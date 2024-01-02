@@ -12,6 +12,6 @@ static class ContentManagerExtensions
         {
             throw new ArgumentException("Invalid ID for sprite set", nameof(id));
         }
-        return contentManager.AccessLoadedMod(id.ModId).Blueprints.Sprites[id];
+        return contentManager.GetModUnsafe(id.ModId).Blueprints.Sprites[id];
     }
 }

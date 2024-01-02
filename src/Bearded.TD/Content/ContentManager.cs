@@ -18,7 +18,7 @@ sealed class ContentManager
 
     private readonly Dictionary<ModMetadata, ModForLoading> modsForLoading = new();
     private readonly Queue<ModMetadata> modLoadingQueue = new();
-    private readonly MultiDictionary<ModMetadata, ModLease> leasesByMods = new();
+    private readonly MultiDictionary<ModMetadata, ModReference> referencesByMod = new();
 
     private ModMetadata? currentlyLoading;
     private bool isFinishedLoading => currentlyLoading is null && modLoadingQueue.Count == 0;
@@ -35,11 +35,11 @@ sealed class ContentManager
         modsById = allMods.ToImmutableDictionary(m => m.Id);
     }
 
-    public ModMetadata FindMod(string modId) => modsById[modId];
+    public ModMetadata FindMetadata(string modId) => modsById[modId];
 
-    public Mod AccessLoadedMod(string modId)
+    public Mod GetModUnsafe(string modId)
     {
-        var metadata = FindMod(modId);
+        var metadata = FindMetadata(modId);
         if (!modsForLoading.TryGetValue(metadata, out var modForLoading) || !modForLoading.IsDone)
         {
             throw new InvalidOperationException("Cannot access a mod that isn't loaded");
@@ -78,7 +78,7 @@ sealed class ContentManager
         do
         {
             metadata = modLoadingQueue.Count == 0 ? null : modLoadingQueue.Dequeue();
-        } while (metadata != null && (!modsForLoading.ContainsKey(metadata) || !leasesByMods.ContainsKey(metadata)));
+        } while (metadata != null && (!modsForLoading.ContainsKey(metadata) || !referencesByMod.ContainsKey(metadata)));
 
         if (metadata == null)
         {
@@ -99,7 +99,7 @@ sealed class ContentManager
 
     public void CleanUpUnused()
     {
-        var unusedMods = modsForLoading.Where(kvp => !leasesByMods.ContainsKey(kvp.Key)).ToImmutableArray();
+        var unusedMods = modsForLoading.Where(kvp => !referencesByMod.ContainsKey(kvp.Key)).ToImmutableArray();
 
         foreach (var (metadata, modForLoading) in unusedMods)
         {
@@ -124,15 +124,15 @@ sealed class ContentManager
         {
             GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
         }
-        leasesByMods.Clear();
+        referencesByMod.Clear();
         modsForLoading.Clear();
     }
 
-    public IModLease LeaseMod(ModMetadata mod)
+    public IModReference ReferenceMod(ModMetadata mod)
     {
-        var lease = new ModLease(this, mod, findModForLoading(mod));
-        leasesByMods.Add(mod, lease);
-        return lease;
+        var reference = new ModReference(this, mod, findModForLoading(mod));
+        referencesByMod.Add(mod, reference);
+        return reference;
     }
 
     private ModForLoading findModForLoading(ModMetadata metadata)
@@ -148,13 +148,13 @@ sealed class ContentManager
         return m;
     }
 
-    private void release(ModLease lease)
+    private void dereference(ModReference reference)
     {
-        leasesByMods.Remove(lease.Metadata, lease);
+        referencesByMod.Remove(reference.Metadata, reference);
     }
 
-    private sealed class ModLease(ContentManager contentManager, ModMetadata metadata, ModForLoading modForLoading)
-        : IModLease
+    private sealed class ModReference(ContentManager contentManager, ModMetadata metadata, ModForLoading modForLoading)
+        : IModReference
     {
         public ModMetadata Metadata => metadata;
         public bool IsLoaded => modForLoading.IsDone;
@@ -162,12 +162,12 @@ sealed class ContentManager
 
         public void Dispose()
         {
-            contentManager.release(this);
+            contentManager.dereference(this);
         }
     }
 }
 
-interface IModLease : IDisposable
+interface IModReference : IDisposable
 {
     bool IsLoaded { get; }
     Mod LoadedMod { get; }
