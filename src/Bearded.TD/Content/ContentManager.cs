@@ -78,7 +78,7 @@ sealed class ContentManager
         do
         {
             metadata = modLoadingQueue.Count == 0 ? null : modLoadingQueue.Dequeue();
-        } while (metadata != null && (!modsForLoading.ContainsKey(metadata) || !referencesByMod.ContainsKey(metadata)));
+        } while (metadata != null && !modsForLoading.ContainsKey(metadata));
 
         if (metadata == null)
         {
@@ -99,9 +99,7 @@ sealed class ContentManager
 
     public void CleanUpUnused()
     {
-        var unusedMods = modsForLoading.Where(kvp => !referencesByMod.ContainsKey(kvp.Key)).ToImmutableArray();
-
-        foreach (var (metadata, modForLoading) in unusedMods)
+        foreach (var metadata in listUnusedMods())
         {
             // We have no way to abort loading. Just finish loading it and we'll pick it up in a future clean-up cycle.
             if (currentlyLoading == metadata)
@@ -109,11 +107,35 @@ sealed class ContentManager
                 continue;
             }
 
+            var modForLoading = modsForLoading[metadata];
             if (modForLoading.IsDone)
             {
                 GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
             }
             modsForLoading.Remove(metadata);
+        }
+    }
+
+    private ImmutableArray<ModMetadata> listUnusedMods()
+    {
+        var usedMods = new HashSet<ModMetadata>();
+        foreach (var (key, _) in referencesByMod)
+        {
+            visitMod(key);
+        }
+        return modsForLoading.Keys.WhereNot(usedMods.Contains).ToImmutableArray();
+
+        void visitMod(ModMetadata mod)
+        {
+            if (!usedMods.Add(mod))
+            {
+                return;
+            }
+
+            foreach (var dep in mod.Dependencies.Select(d => FindMetadata(d.Id)))
+            {
+                visitMod(dep);
+            }
         }
     }
 
