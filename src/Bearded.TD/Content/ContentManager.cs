@@ -159,9 +159,14 @@ sealed class ContentManager
 
     private ModForLoading findModForLoading(ModMetadata metadata)
     {
-        if (modsForLoading.TryGetValue(metadata, out var mod))
+        return modsForLoading.TryGetValue(metadata, out var mod) ? mod : queueModForLoading(metadata);
+    }
+
+    private ModForLoading queueModForLoading(ModMetadata metadata)
+    {
+        foreach (var dep in metadata.Dependencies.Select(d => FindMetadata(d.Id)))
         {
-            return mod;
+            findModForLoading(dep);
         }
 
         var m = new ModForLoading(metadata);
