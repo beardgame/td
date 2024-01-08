@@ -19,7 +19,7 @@ sealed class TrailDrawer
     public TrailDrawer(GameState game, ISpriteBlueprint sprite)
     {
         this.sprite = sprite.MakeConcreteWith(game.Meta.SpriteRenderers,
-            SpriteDrawGroup.Particle, 0, UVColorVertex.Create,
+            DrawOrderGroup.Particle, 0, UVColorVertex.Create,
             game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-sprite")]);
     }
 

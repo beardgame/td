@@ -29,7 +29,7 @@ sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
         ISpriteBlueprint Sprite { get; }
         Sprite.ColorMode ColorMode { get; }
         Shader? Shader { get; }
-        SpriteDrawGroup? DrawGroup { get; }
+        DrawOrderGroup? DrawGroup { get; }
         int DrawGroupOrderKey { get; }
 
         DrawMode DrawMode { get; }
@@ -50,7 +50,7 @@ sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
         base.Activate();
 
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
-            Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+            Parameters.DrawGroup ?? DrawOrderGroup.Particle, Parameters.DrawGroupOrderKey);
 
         Events.Subscribe(this);
     }

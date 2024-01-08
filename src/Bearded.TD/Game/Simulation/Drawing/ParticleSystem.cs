@@ -36,7 +36,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         Color Color { get; }
         Sprite.ColorMode ColorMode { get; }
         Shader? Shader { get; }
-        SpriteDrawGroup? DrawGroup { get; }
+        DrawOrderGroup? DrawGroup { get; }
         int DrawGroupOrderKey { get; }
 
         Unit Size { get; }
@@ -109,7 +109,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
     private void initializeSprite()
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
-            Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+            Parameters.DrawGroup ?? DrawOrderGroup.Particle, Parameters.DrawGroupOrderKey);
     }
 
     private void initializeParticles()

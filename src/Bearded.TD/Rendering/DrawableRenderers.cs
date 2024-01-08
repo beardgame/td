@@ -29,20 +29,20 @@ sealed class DrawableRenderers : IDrawableRenderers
     }
 
     // ReSharper disable NotAccessedPositionalProperty.Local
-    private readonly record struct DrawGroup(SpriteDrawGroup Group, int OrderKey);
+    private readonly record struct DrawGroup(DrawOrderGroup Group, int OrderKey);
     private readonly record struct Key(
         Type DrawableType, IDrawableTemplate Template, Shader Shader, DrawGroup DrawGroup);
     // ReSharper restore NotAccessedPositionalProperty.Local
 
     private static Key key<TDrawableType>(
-        IDrawableTemplate template, Shader shader, SpriteDrawGroup group, int orderKey)
+        IDrawableTemplate template, Shader shader, DrawOrderGroup group, int orderKey)
         => new(typeof(TDrawableType), template, shader, new DrawGroup(group, orderKey));
 
     private static readonly DrawOrderKeyComparer drawOrderKeyComparer = new();
 
     private readonly Dictionary<Key, object> knownDrawables = new();
-    private readonly Dictionary<SpriteDrawGroup, Renderers> renderersByDrawGroup =
-        Enum.GetValues<SpriteDrawGroup>().ToDictionary(g => g, _ => new Renderers());
+    private readonly Dictionary<DrawOrderGroup, Renderers> renderersByDrawGroup =
+        Enum.GetValues<DrawOrderGroup>().ToDictionary(g => g, _ => new Renderers());
 
     private readonly IRenderSetting[] defaultRenderSettings;
 
@@ -62,7 +62,7 @@ sealed class DrawableRenderers : IDrawableRenderers
     }
 
     public TDrawableType GetOrCreateDrawableFor<TDrawableType>(
-        IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        IDrawableTemplate template, Shader shader, DrawOrderGroup drawGroup, int drawGroupOrderKey,
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable
     {
@@ -89,7 +89,7 @@ sealed class DrawableRenderers : IDrawableRenderers
 
     private void createAndRegisterRenderer(
         IDrawable drawable,
-        SpriteDrawGroup drawGroup, int drawGroupOrderKey)
+        DrawOrderGroup drawGroup, int drawGroupOrderKey)
     {
         var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
 
@@ -98,7 +98,7 @@ sealed class DrawableRenderers : IDrawableRenderers
         renderers.AddSorted((drawGroupOrderKey, renderer), drawOrderKeyComparer);
     }
 
-    public void RenderDrawGroup(SpriteDrawGroup group)
+    public void RenderDrawGroup(DrawOrderGroup group)
     {
         foreach (var (_, renderer) in renderersByDrawGroup[group])
         {

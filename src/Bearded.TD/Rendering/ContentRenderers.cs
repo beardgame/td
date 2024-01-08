@@ -24,7 +24,7 @@ sealed class ContentRenderers : IDisposable
         FluidGeometries = fluidGeometries.ToImmutableArray();
     }
 
-    public void RenderDrawGroup(SpriteDrawGroup group)
+    public void RenderDrawGroup(DrawOrderGroup group)
     {
         drawableRenderers.RenderDrawGroup(group);
     }

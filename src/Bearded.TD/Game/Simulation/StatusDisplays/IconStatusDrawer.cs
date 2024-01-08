@@ -23,5 +23,5 @@ sealed class IconStatusDrawer : IStatusDrawer
     }
 
     public static IconStatusDrawer FromSpriteBlueprint(GameState game, ISpriteBlueprint blueprint) =>
-        new(SpriteDrawInfo.ForUVColor(game, blueprint, drawGroup: SpriteDrawGroup.IgnoreDepth));
+        new(SpriteDrawInfo.ForUVColor(game, blueprint, drawGroup: DrawOrderGroup.IgnoreDepth));
 }

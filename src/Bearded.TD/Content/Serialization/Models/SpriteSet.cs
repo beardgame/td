@@ -19,7 +19,7 @@ sealed class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, Sprite
     }
 
     public string? Id { get; set; }
-    public SpriteDrawGroup DrawGroup { get; set; } = SpriteDrawGroup.Unknown;
+    public DrawOrderGroup DrawGroup { get; set; } = DrawOrderGroup.Unknown;
     public int DrawGroupOrderKey { get; set; }
 
     public string? DefaultTextureSampler { get; set; }

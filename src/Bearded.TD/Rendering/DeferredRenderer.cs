@@ -14,7 +14,7 @@ using Bearded.TD.Utilities.Collections;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Pipelines.Context.CullMode;
-using static Bearded.TD.Content.Models.SpriteDrawGroup;
+using static Bearded.TD.Content.Models.DrawOrderGroup;
 
 namespace Bearded.TD.Rendering;
 
@@ -25,11 +25,11 @@ using static Pipeline<DeferredRenderer.RenderState>;
 
 sealed class DeferredRenderer
 {
-    private static readonly SpriteDrawGroup[] solidLevelDrawGroups = { SolidLevelDetails };
-    private static readonly SpriteDrawGroup[] worldDrawGroups = { Building, Unit };
-    private static readonly SpriteDrawGroup[] worldDetailGroups = { LevelDetail };
-    private static readonly SpriteDrawGroup[] postLightGroups = { Particle, Unknown };
-    private static readonly SpriteDrawGroup[] ignoreDepthGroup = { IgnoreDepth };
+    private static readonly DrawOrderGroup[] solidLevelDrawGroups = { SolidLevelDetails };
+    private static readonly DrawOrderGroup[] worldDrawGroups = { Building, Unit };
+    private static readonly DrawOrderGroup[] worldDetailGroups = { LevelDetail };
+    private static readonly DrawOrderGroup[] postLightGroups = { Particle, Unknown };
+    private static readonly DrawOrderGroup[] ignoreDepthGroup = { IgnoreDepth };
 
     public sealed record RenderState(Vector2i Resolution, RenderTarget FinalRenderTarget, ContentRenderers Content);
 
@@ -179,7 +179,7 @@ sealed class DeferredRenderer
             fullRender);
     }
 
-    private static IPipeline<RenderState> renderDrawGroups(SpriteDrawGroup[] drawGroups)
+    private static IPipeline<RenderState> renderDrawGroups(DrawOrderGroup[] drawGroups)
     {
         return Do(s =>
         {

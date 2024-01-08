@@ -13,7 +13,7 @@ internal interface ISpriteSetImplementation : IDisposable
 
     DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
         SpriteSet spriteSet, IDrawableRenderers drawableRenderers,
-        SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        DrawOrderGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader)
         where TVertex : struct, IVertexData;

@@ -27,7 +27,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
         ColorMode ColorMode { get;  }
         ISpriteBlueprint Sprite { get; }
         Shader? Shader { get; }
-        SpriteDrawGroup? DrawGroup { get; }
+        DrawOrderGroup? DrawGroup { get; }
         int DrawGroupOrderKey { get; }
         [Modifiable(1)]
         Unit Size { get; }
@@ -51,7 +51,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
     public override void Activate()
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
-            Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+            Parameters.DrawGroup ?? DrawOrderGroup.Particle, Parameters.DrawGroupOrderKey);
 
         if (Parameters.RandomRotationStep is { } step)
         {

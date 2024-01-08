@@ -48,7 +48,7 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
     {
         return sprite.Sprite.MakeConcreteWith(
             Owner.Game.Meta.SpriteRenderers,
-            SpriteDrawGroup.IgnoreDepth, 0,
+            DrawOrderGroup.IgnoreDepth, 0,
             sprite.Create, shader);
     }
 

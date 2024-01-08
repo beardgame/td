@@ -35,7 +35,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
     {
         ISpriteBlueprint Sprite { get; }
         Shader? Shader { get; }
-        SpriteDrawGroup? DrawGroup { get; }
+        DrawOrderGroup? DrawGroup { get; }
         int DrawGroupOrderKey { get; }
         Unit HeightOffset { get; }
         Difference2 Offset { get; }
@@ -57,7 +57,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
     public override void Activate()
     {
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
-            Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+            Parameters.DrawGroup ?? DrawOrderGroup.Particle, Parameters.DrawGroupOrderKey);
 
         Events.Subscribe(this);
 

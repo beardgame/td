@@ -20,7 +20,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
     {
         ISpriteBlueprint Sprite { get; }
         Shader? Shader { get; }
-        SpriteDrawGroup? DrawGroup { get; }
+        DrawOrderGroup? DrawGroup { get; }
         int DrawGroupOrderKey { get; }
 
         [Modifiable(1)]
@@ -51,7 +51,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         base.Activate();
 
         sprite = SpriteDrawInfo.ForUVColor(Owner.Game, Parameters.Sprite, Parameters.Shader,
-            Parameters.DrawGroup ?? SpriteDrawGroup.Particle, Parameters.DrawGroupOrderKey);
+            Parameters.DrawGroup ?? DrawOrderGroup.Particle, Parameters.DrawGroupOrderKey);
         if (Parameters.AddWidthFromScale != null || Parameters.AddUVFromScale != null)
         {
             ComponentDependencies.Depend<IProperty<Scale>>(

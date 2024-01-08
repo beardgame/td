@@ -20,7 +20,7 @@ sealed class SpriteBlueprint : ISpriteBlueprint
     }
 
     public IDrawableSprite<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(IDrawableRenderers drawableRenderers,
-        SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        DrawOrderGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData
     {

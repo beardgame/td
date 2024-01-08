@@ -77,7 +77,7 @@ sealed class Foundation : Component<Foundation.IParameters>, IFoundation, IListe
 
         Sprite sprite(string name) => SpriteDrawInfo
             .From(Parameters.Sprites.GetSprite(name),
-                DeferredSprite3DVertex.Create, shader, SpriteDrawGroup.SolidLevelDetails);
+                DeferredSprite3DVertex.Create, shader, DrawOrderGroup.SolidLevelDetails);
 
         Events.Subscribe(this);
     }

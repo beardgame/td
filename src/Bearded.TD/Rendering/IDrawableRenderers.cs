@@ -8,7 +8,7 @@ namespace Bearded.TD.Rendering;
 interface IDrawableRenderers
 {
     TDrawableType GetOrCreateDrawableFor<TDrawableType>(
-        IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        IDrawableTemplate template, Shader shader, DrawOrderGroup drawGroup, int drawGroupOrderKey,
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable;
 
@@ -16,7 +16,7 @@ interface IDrawableRenderers
         IDrawable drawable,
         IRenderSetting[] customRenderSettings);
 
-    void RenderDrawGroup(SpriteDrawGroup group);
+    void RenderDrawGroup(DrawOrderGroup group);
     void Dispose();
     void ClearAll();
 }

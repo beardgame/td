@@ -76,7 +76,7 @@ namespace Bearded.TD.Tests.Content
             public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
                 SpriteSet spriteSet,
                 IDrawableRenderers drawableRenderers,
-                SpriteDrawGroup drawGroup,
+                DrawOrderGroup drawGroup,
                 int drawGroupOrderKey,
                 DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
                 Shader shader)

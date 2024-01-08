@@ -8,7 +8,7 @@ namespace Bearded.TD.Testing.GameStates;
 sealed class NoOpDrawableRenderers : IDrawableRenderers
 {
     public TDrawableType GetOrCreateDrawableFor<TDrawableType>(
-        IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        IDrawableTemplate template, Shader shader, DrawOrderGroup drawGroup, int drawGroupOrderKey,
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable
     {
@@ -20,7 +20,7 @@ sealed class NoOpDrawableRenderers : IDrawableRenderers
         throw new InvalidOperationException("Cannot create custom renderers in tests");
     }
 
-    public void RenderDrawGroup(SpriteDrawGroup @group) { }
+    public void RenderDrawGroup(DrawOrderGroup @group) { }
     public void Dispose() { }
     public void ClearAll() { }
 }

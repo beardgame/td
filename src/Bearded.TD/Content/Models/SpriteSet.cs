@@ -9,7 +9,7 @@ using Bearded.TD.Rendering.Loading;
 
 namespace Bearded.TD.Content.Models;
 
-enum SpriteDrawGroup
+enum DrawOrderGroup
 {
     // When adding new groups, make sure the DeferredRenderer knows about them, or they won't render
     SolidLevelDetails,
@@ -39,7 +39,7 @@ sealed class SpriteSet : IBlueprint, IDisposable, IDrawableTemplate
 
     public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
         IDrawableRenderers drawableRenderers,
-        SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        DrawOrderGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData
     {
