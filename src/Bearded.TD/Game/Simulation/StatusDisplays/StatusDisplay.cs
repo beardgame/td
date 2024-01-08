@@ -12,8 +12,6 @@ sealed partial class StatusDisplay : Component, IStatusDisplay, IListener<DrawCo
 
     private Position3 center => Owner.Position + Offset;
 
-    public StatusDisplay() : this(null) { }
-
     public StatusDisplay(IStatusDisplayCondition? condition)
     {
         this.condition = condition;

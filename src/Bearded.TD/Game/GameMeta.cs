@@ -15,6 +15,7 @@ namespace Bearded.TD.Game;
 sealed class GameMeta
 {
     private Blueprints? blueprints;
+    private IUIDrawState? uiDrawState;
     private readonly ScreenShaker screenShaker = new();
 
     public IDispatcher<GameInstance> Dispatcher { get; }
@@ -23,8 +24,9 @@ sealed class GameMeta
     public Logger Logger { get; }
     public bool GameOver { get; private set; }
     public GlobalGameEvents Events { get; } = new();
-    public Blueprints Blueprints => blueprints!;
     public ISoundScape SoundScape { get; }
+    public Blueprints Blueprints => blueprints!;
+    public IUIDrawState UIDrawState => uiDrawState!;
     public IScreenShaker ScreenShaker => screenShaker;
 
     public ISpriteRenderers SpriteRenderers { get; }
@@ -55,6 +57,17 @@ sealed class GameMeta
             throw new InvalidOperationException("Can only set blueprints once.");
 
         this.blueprints = blueprints;
+    }
+
+    public void SetUIDrawState(IUIDrawState uiDrawState)
+    {
+        // TODO: remove this mutability.
+        // See also SetBlueprints above
+
+        if (this.uiDrawState != null)
+            throw new InvalidOperationException("Can only set UI draw state once.");
+
+        this.uiDrawState = uiDrawState;
     }
 
     public void DoGameOver()

@@ -74,15 +74,16 @@ static class BuildingFactory
         return ghost;
     }
 
-    private sealed class BuildingStatusDisplayCondition : IStatusDisplayCondition
+    private sealed class BuildingStatusDisplayCondition : InputAwareStatusDisplayCondition
     {
         private IBuildingStateProvider? stateProvider;
 
-        public bool ShouldDraw => stateProvider?.State.IsCompleted ?? true;
+        public override bool ShouldDraw => base.ShouldDraw && (stateProvider?.State.IsCompleted ?? true);
 
-        public void Activate(GameObject owner)
+        public override void Activate(GameObject owner)
         {
             owner.TryGetSingleComponent(out stateProvider);
+            base.Activate(owner);
         }
     }
 }

@@ -10,12 +10,14 @@ sealed class PlayerInput
 {
     private readonly GameInstance game;
     private readonly InteractionHandler defaultInteractionHandler;
-    private readonly ICursorHandler cursor;
+    private readonly MouseCursorHandler cursor;
+    private readonly UIDrawStateImpl uiDrawState = new();
 
     private bool isMouseFocused;
     private InteractionHandler? interactionHandler;
 
     public Position2 CursorPosition => cursor.CursorPosition;
+    public IUIDrawState UIDrawState => uiDrawState;
 
     public PlayerInput(GameInstance game)
     {
@@ -41,16 +43,24 @@ sealed class PlayerInput
 
     public void HandleInput(InputState input)
     {
-        if (isMouseFocused)
+        if (!isMouseFocused)
         {
-            cursor.HandleInput(input);
-            interactionHandler!.Update(cursor);
-
-            if (input.ForKey(Keys.Tab).Hit)
-            {
-                sendPing();
-            }
+            return;
         }
+
+        cursor.HandleInput(input);
+        interactionHandler!.Update(cursor);
+
+        if (input.ForKey(Keys.Tab).Hit)
+        {
+            sendPing();
+        }
+
+        if (input.ForKey(Keys.X).Hit)
+        {
+            uiDrawState.StatusDisplayShown = !uiDrawState.StatusDisplayShown;
+        }
+        uiDrawState.InvertStatusDisplay = input.ForKey(Keys.LeftAlt).Active || input.ForKey(Keys.RightAlt).Active;
     }
 
     private void sendPing()
@@ -73,4 +83,12 @@ sealed class PlayerInput
     }
 
     public void ResetInteractionHandler() => SetInteractionHandler(defaultInteractionHandler);
+
+    private class UIDrawStateImpl : IUIDrawState
+    {
+        public bool StatusDisplayShown { get; set; }
+        public bool InvertStatusDisplay { get; set; }
+
+        public bool DrawStatusDisplays => StatusDisplayShown ^ InvertStatusDisplay;
+    }
 }
