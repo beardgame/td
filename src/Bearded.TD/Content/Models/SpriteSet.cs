@@ -21,7 +21,7 @@ enum SpriteDrawGroup
     Unknown
 }
 
-sealed class SpriteSet : IBlueprint, IDisposable
+sealed class SpriteSet : IBlueprint, IDisposable, IDrawableTemplate
 {
     private readonly ISpriteSetImplementation sprites;
     public ModAwareId Id { get; }

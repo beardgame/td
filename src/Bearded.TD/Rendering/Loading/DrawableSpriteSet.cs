@@ -28,7 +28,7 @@ static class DrawableSpriteSet
     }
 }
 
-sealed class DrawableSpriteSet<TVertex, TVertexData> : IDisposable, IClearable
+sealed class DrawableSpriteSet<TVertex, TVertexData> : IDrawable
     where TVertex : struct, IVertexData
 {
     private readonly ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder;

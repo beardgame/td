@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
-using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.Linq;
@@ -11,6 +10,15 @@ using Bearded.Utilities.Linq;
 namespace Bearded.TD.Rendering;
 
 using Renderers = List<(int DrawOrderKey, IRenderer Renderer)>;
+
+interface IDrawable : IClearable, IDisposable
+{
+    IRenderer CreateRendererWithSettings(IEnumerable<IRenderSetting> settings);
+}
+
+// Right now this is just a marker interface to indicate intention
+// It should perhaps contain the method creating the actual drawable, or be passed into it to avoid generics?
+interface IDrawableTemplate;
 
 sealed class SpriteRenderers : ISpriteRenderers
 {
@@ -23,12 +31,12 @@ sealed class SpriteRenderers : ISpriteRenderers
     // ReSharper disable NotAccessedPositionalProperty.Local
     private readonly record struct DrawGroup(SpriteDrawGroup Group, int OrderKey);
     private readonly record struct Key(
-        Type Vertex, Type VertexData, SpriteSet SpriteSet, Shader Shader, DrawGroup DrawGroup);
+        Type DrawableType, IDrawableTemplate SpriteSet, Shader Shader, DrawGroup DrawGroup);
     // ReSharper restore NotAccessedPositionalProperty.Local
 
-    private static Key key<TVertex, TVertexData>(
-        SpriteSet spriteSet, Shader shader, SpriteDrawGroup group, int orderKey)
-        => new(typeof(TVertex), typeof(TVertexData), spriteSet, shader, new DrawGroup(group, orderKey));
+    private static Key key<TDrawableType>(
+        IDrawableTemplate spriteSet, Shader shader, SpriteDrawGroup group, int orderKey)
+        => new(typeof(TDrawableType), spriteSet, shader, new DrawGroup(group, orderKey));
 
     private static readonly DrawOrderKeyComparer drawOrderKeyComparer = new();
 
@@ -53,15 +61,15 @@ sealed class SpriteRenderers : ISpriteRenderers
         };
     }
 
-    public DrawableSpriteSet<TVertex, TVertexData> GetOrCreateDrawableSpriteSetFor<TVertex, TVertexData>(
-        SpriteSet spriteSet, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
-        Func<DrawableSpriteSet<TVertex, TVertexData>> createDrawable)
-        where TVertex : struct, IVertexData
+    public TDrawableType GetOrCreateDrawableSpriteSetFor<TDrawableType>(
+        IDrawableTemplate spriteSet, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+        Func<TDrawableType> createDrawable)
+        where TDrawableType : IDrawable
     {
-        var key = key<TVertex, TVertexData>(spriteSet, shader, drawGroup, drawGroupOrderKey);
+        var key = key<TDrawableType>(spriteSet, shader, drawGroup, drawGroupOrderKey);
 
         if (knownSpriteSets.TryGetValue(key, out var obj))
-            return (DrawableSpriteSet<TVertex, TVertexData>)obj;
+            return (TDrawableType)obj;
 
         var newDrawable = createDrawable();
         createAndRegisterRenderer(newDrawable, drawGroup, drawGroupOrderKey);
@@ -70,20 +78,18 @@ sealed class SpriteRenderers : ISpriteRenderers
         return newDrawable;
     }
 
-    public IRenderer CreateCustomRendererFor<TVertex, TVertexData>(
-        DrawableSpriteSet<TVertex, TVertexData> drawable,
+    public IRenderer CreateCustomRendererFor(
+        IDrawable drawable,
         IRenderSetting[] customRenderSettings)
-        where TVertex : struct, IVertexData
     {
         return drawable.CreateRendererWithSettings(
             customRenderSettings.Concat(defaultRenderSettings)
         );
     }
 
-    private void createAndRegisterRenderer<TVertex, TVertexData>(
-        DrawableSpriteSet<TVertex, TVertexData> drawable,
+    private void createAndRegisterRenderer(
+        IDrawable drawable,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey)
-        where TVertex : struct, IVertexData
     {
         var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
 
