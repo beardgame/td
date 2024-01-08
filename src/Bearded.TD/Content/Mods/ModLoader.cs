@@ -76,9 +76,7 @@ static class ModLoader
             context.Logger.Debug?.Log(
                 $"Mod {meta.Id} finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
 
-            return new Mod(
-                meta.Id,
-                meta.Name,
+            var blueprints = new Blueprints(
                 shaders,
                 materials,
                 sprites,
@@ -92,8 +90,9 @@ static class ModLoader
                 technologies,
                 levelNodes,
                 biomes,
-                gameModes,
-                tags.GetForCurrentMod());
+                gameModes);
+
+            return new Mod(meta.Id, meta.Name, blueprints, tags.GetForCurrentMod());
         }
 
         private JsonSerializer configureSerializer()

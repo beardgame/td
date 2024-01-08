@@ -16,40 +16,11 @@ namespace Bearded.TD.Content.Mods;
 sealed class Mod(
     string id,
     string name,
-    ReadonlyBlueprintCollection<Shader> shaders,
-    ReadonlyBlueprintCollection<Material> materials,
-    ReadonlyBlueprintCollection<SpriteSet> sprites,
-    ReadonlyBlueprintCollection<FontDefinition> fontDefinitions,
-    ReadonlyBlueprintCollection<Font> fonts,
-    ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
-    ReadonlyBlueprintCollection<IFootprint> footprints,
-    ReadonlyBlueprintCollection<IGameObjectBlueprint> weapons,
-    ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
-    ReadonlyBlueprintCollection<IModule> modules,
-    ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
-    ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
-    ReadonlyBlueprintCollection<IBiome> biomes,
-    ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes,
+    Blueprints blueprints,
     IDictionary<ModAwareId, UpgradeTag> tags)
 {
     public string Id { get; } = id;
     public string Name { get; } = name;
-
-    public Blueprints Blueprints { get; } = new(
-        shaders,
-        materials,
-        sprites,
-        fontDefinitions,
-        fonts,
-        soundEffects,
-        footprints,
-        weapons,
-        upgrades,
-        modules,
-        technologies,
-        levelNodes,
-        biomes,
-        gameModes);
-
+    public Blueprints Blueprints { get; } = blueprints;
     public IDictionary<ModAwareId, UpgradeTag> Tags { get; } = tags;
 }
