@@ -47,7 +47,7 @@ sealed class GhostBuildingRenderer : DefaultComponentRenderer, IListener<Constru
         SpriteDrawInfo<TVertex, TVertexData> sprite)
     {
         return sprite.Sprite.MakeConcreteWith(
-            Owner.Game.Meta.SpriteRenderers,
+            Owner.Game.Meta.DrawableRenderers,
             DrawOrderGroup.IgnoreDepth, 0,
             sprite.Create, shader);
     }

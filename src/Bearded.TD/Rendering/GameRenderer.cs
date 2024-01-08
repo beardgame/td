@@ -62,7 +62,7 @@ sealed class GameRenderer
         ContentRenderers = new ContentRenderers(
             levelRenderer,
             new [] { waterGeometry },
-            game.Meta.SpriteRenderers
+            game.Meta.DrawableRenderers
         );
 
         shapeDrawer = drawers.Primitives;

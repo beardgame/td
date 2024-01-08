@@ -29,21 +29,21 @@ sealed class GameMeta
     public IUIDrawState UIDrawState => uiDrawState!;
     public IScreenShaker ScreenShaker => screenShaker;
 
-    public ISpriteRenderers SpriteRenderers { get; }
+    public IDrawableRenderers DrawableRenderers { get; }
 
     public GameMeta(
         Logger logger,
         IDispatcher<GameInstance> dispatcher,
         IGameSynchronizer synchronizer,
         IdManager ids,
-        ISpriteRenderers spriteRenderers,
+        IDrawableRenderers drawableRenderers,
         ISoundScape soundScape)
     {
         Logger = logger;
         Synchronizer = synchronizer;
         Dispatcher = dispatcher;
         Ids = ids;
-        SpriteRenderers = spriteRenderers;
+        DrawableRenderers = drawableRenderers;
         SoundScape = soundScape;
     }
 

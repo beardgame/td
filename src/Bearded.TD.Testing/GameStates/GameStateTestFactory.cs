@@ -16,7 +16,7 @@ static class GameStateTestFactory
             new LocalDispatcher(),
             new NoOpSynchronizer(),
             new IdManager(),
-            new NoOpSpriteRenderers(),
+            new NoOpDrawableRenderers(),
             new EmptySoundScape());
         var settings = new GameSettings.Builder().Build();
         var state = new GameState(meta, settings);

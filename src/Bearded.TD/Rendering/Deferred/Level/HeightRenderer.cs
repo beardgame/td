@@ -81,7 +81,7 @@ sealed class HeightRenderer
     {
         return game.Blueprints.Sprites[ModAwareId.ForDefaultMod("terrain-splats")]
             .MakeCustomRendererWith<HeightmapSplatVertex, (float MinH, float MaxH)>(
-                game.Meta.SpriteRenderers,
+                game.Meta.DrawableRenderers,
                 HeightmapSplatVertex.Create,
                 game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("heightmap-splatter")],
                 heightmap.RadiusUniform

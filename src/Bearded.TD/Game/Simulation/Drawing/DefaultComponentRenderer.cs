@@ -83,7 +83,7 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         where TVertex : struct, IVertexData
     {
         return sprite.Sprite.MakeConcreteWith(
-            Owner.Game.Meta.SpriteRenderers,
+            Owner.Game.Meta.DrawableRenderers,
             sprite.DrawGroup, sprite.DrawGroupOrderKey,
             sprite.Create, sprite.Shader);
     }
