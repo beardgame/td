@@ -201,6 +201,7 @@ sealed class GameInstance
         cameraController = new GameCameraController(Camera, State.Level.Radius);
         selectionManager = new SelectionManager();
         playerInput = new PlayerInput(this);
+        state.Meta.SetUIDrawState(playerInput.UIDrawState);
     }
 
     private void setAllPlayerConnectionStates(PlayerConnectionState playerConnectionState)
