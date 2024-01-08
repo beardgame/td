@@ -126,6 +126,6 @@ sealed class GameContent(ContentManager contentManager)
         referencesByMod.Values.ForEach(l => l.Dispose());
         enabledMods.Clear();
         referencesByMod.Clear();
-        contentManager.CleanUpAll();
+        contentManager.CleanUpUnused();
     }
 }
