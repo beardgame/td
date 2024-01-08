@@ -1,10 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Bearded.TD.Audio;
 using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Models.Fonts;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.Elements;
@@ -20,6 +23,7 @@ using FactionBlueprint = Bearded.TD.Content.Serialization.Models.FactionBlueprin
 using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlueprint;
 
 namespace Bearded.TD.Content.Mods;
@@ -31,19 +35,11 @@ static class ModLoader
         return await new Loader(context, mod, loadedDependencies).Load();
     }
 
-    private sealed class Loader
+    private sealed class Loader(
+        ModLoadingContext context,
+        ModMetadata meta,
+        ReadOnlyCollection<Mod> loadedDependencies)
     {
-        private readonly ModLoadingContext context;
-        private readonly ModMetadata meta;
-        private readonly ReadOnlyCollection<Mod> loadedDependencies;
-
-        public Loader(ModLoadingContext context, ModMetadata meta, ReadOnlyCollection<Mod> loadedDependencies)
-        {
-            this.context = context;
-            this.meta = meta;
-            this.loadedDependencies = loadedDependencies;
-        }
-
         public async Task<Mod> Load()
         {
             return await Task.Run(load);
@@ -62,6 +58,10 @@ static class ModLoader
             var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
             var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
+            
+            var fontDefinitions = new ReadonlyBlueprintCollection<FontDefinition>(Array.Empty<FontDefinition>());
+            var fonts = new ReadonlyBlueprintCollection<Font>(Array.Empty<Font>());;
+            
             var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintBlueprintLoader(loadingContext).LoadBlueprints();
             var gameObjects = new GameObjectBlueprintLoader(loadingContext).LoadBlueprints();
@@ -76,12 +76,12 @@ static class ModLoader
             context.Logger.Debug?.Log(
                 $"Mod {meta.Id} finished loading in {context.Profiler.TotalElapsedTime:s\\.fff}s");
 
-            return new Mod(
-                meta.Id,
-                meta.Name,
+            var blueprints = new Blueprints(
                 shaders,
                 materials,
                 sprites,
+                fontDefinitions,
+                fonts,
                 soundEffects,
                 footprints,
                 gameObjects,
@@ -90,8 +90,9 @@ static class ModLoader
                 technologies,
                 levelNodes,
                 biomes,
-                gameModes,
-                tags.GetForCurrentMod());
+                gameModes);
+
+            return new Mod(meta.Id, meta.Name, blueprints, tags.GetForCurrentMod());
         }
 
         private JsonSerializer configureSerializer()

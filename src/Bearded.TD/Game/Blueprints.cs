@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Models.Fonts;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Enemies;
@@ -18,6 +19,8 @@ sealed record Blueprints(
     ReadonlyBlueprintCollection<Shader> Shaders,
     ReadonlyBlueprintCollection<Material> Materials,
     ReadonlyBlueprintCollection<SpriteSet> Sprites,
+    ReadonlyBlueprintCollection<FontDefinition> FontDefinitions,
+    ReadonlyBlueprintCollection<Font> Fonts,
     ReadonlyBlueprintCollection<ISoundEffect> SoundEffects,
     ReadonlyBlueprintCollection<IFootprint> Footprints,
     ReadonlyBlueprintCollection<IGameObjectBlueprint> GameObjects,
@@ -35,6 +38,8 @@ sealed record Blueprints(
             flatten(list, b => b.Shaders),
             flatten(list, b => b.Materials),
             flatten(list, b => b.Sprites),
+            flatten(list, b => b.FontDefinitions),
+            flatten(list, b => b.Fonts),
             flatten(list, b => b.SoundEffects),
             flatten(list, b => b.Footprints),
             flatten(list, b => b.GameObjects),

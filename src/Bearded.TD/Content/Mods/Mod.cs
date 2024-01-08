@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bearded.TD.Audio;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Models.Fonts;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Enemies;
@@ -12,45 +13,14 @@ using Bearded.TD.Game.Simulation.World;
 
 namespace Bearded.TD.Content.Mods;
 
-sealed class Mod
+sealed class Mod(
+    string id,
+    string name,
+    Blueprints blueprints,
+    IDictionary<ModAwareId, UpgradeTag> tags)
 {
-    public string Id { get; }
-    public string Name { get; }
-
-    public Blueprints Blueprints { get; }
-    public IDictionary<ModAwareId, UpgradeTag> Tags { get; }
-
-    public Mod(string id,
-        string name,
-        ReadonlyBlueprintCollection<Shader> shaders,
-        ReadonlyBlueprintCollection<Material> materials,
-        ReadonlyBlueprintCollection<SpriteSet> sprites,
-        ReadonlyBlueprintCollection<ISoundEffect> soundEffects,
-        ReadonlyBlueprintCollection<IFootprint> footprints,
-        ReadonlyBlueprintCollection<IGameObjectBlueprint> weapons,
-        ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades,
-        ReadonlyBlueprintCollection<IModule> modules,
-        ReadonlyBlueprintCollection<ITechnologyBlueprint> technologies,
-        ReadonlyBlueprintCollection<INodeBlueprint> levelNodes,
-        ReadonlyBlueprintCollection<IBiome> biomes,
-        ReadonlyBlueprintCollection<IGameModeBlueprint> gameModes,
-        IDictionary<ModAwareId, UpgradeTag> tags)
-    {
-        Id = id;
-        Name = name;
-        Blueprints = new Blueprints(
-            shaders,
-            materials,
-            sprites,
-            soundEffects,
-            footprints,
-            weapons,
-            upgrades,
-            modules,
-            technologies,
-            levelNodes,
-            biomes,
-            gameModes);
-        Tags = tags;
-    }
+    public string Id { get; } = id;
+    public string Name { get; } = name;
+    public Blueprints Blueprints { get; } = blueprints;
+    public IDictionary<ModAwareId, UpgradeTag> Tags { get; } = tags;
 }
