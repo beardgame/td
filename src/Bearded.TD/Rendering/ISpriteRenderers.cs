@@ -7,8 +7,8 @@ namespace Bearded.TD.Rendering;
 
 interface ISpriteRenderers
 {
-    TDrawableType GetOrCreateDrawableSpriteSetFor<TDrawableType>(
-        IDrawableTemplate spriteSet, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+    TDrawableType GetOrCreateDrawableFor<TDrawableType>(
+        IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable;
 

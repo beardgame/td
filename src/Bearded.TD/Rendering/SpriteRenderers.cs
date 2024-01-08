@@ -31,16 +31,16 @@ sealed class SpriteRenderers : ISpriteRenderers
     // ReSharper disable NotAccessedPositionalProperty.Local
     private readonly record struct DrawGroup(SpriteDrawGroup Group, int OrderKey);
     private readonly record struct Key(
-        Type DrawableType, IDrawableTemplate SpriteSet, Shader Shader, DrawGroup DrawGroup);
+        Type DrawableType, IDrawableTemplate Template, Shader Shader, DrawGroup DrawGroup);
     // ReSharper restore NotAccessedPositionalProperty.Local
 
     private static Key key<TDrawableType>(
-        IDrawableTemplate spriteSet, Shader shader, SpriteDrawGroup group, int orderKey)
-        => new(typeof(TDrawableType), spriteSet, shader, new DrawGroup(group, orderKey));
+        IDrawableTemplate template, Shader shader, SpriteDrawGroup group, int orderKey)
+        => new(typeof(TDrawableType), template, shader, new DrawGroup(group, orderKey));
 
     private static readonly DrawOrderKeyComparer drawOrderKeyComparer = new();
 
-    private readonly Dictionary<Key, object> knownSpriteSets = new();
+    private readonly Dictionary<Key, object> knownDrawables = new();
     private readonly Dictionary<SpriteDrawGroup, Renderers> renderersByDrawGroup =
         Enum.GetValues<SpriteDrawGroup>().ToDictionary(g => g, _ => new Renderers());
 
@@ -61,19 +61,19 @@ sealed class SpriteRenderers : ISpriteRenderers
         };
     }
 
-    public TDrawableType GetOrCreateDrawableSpriteSetFor<TDrawableType>(
-        IDrawableTemplate spriteSet, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+    public TDrawableType GetOrCreateDrawableFor<TDrawableType>(
+        IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable
     {
-        var key = key<TDrawableType>(spriteSet, shader, drawGroup, drawGroupOrderKey);
+        var key = key<TDrawableType>(template, shader, drawGroup, drawGroupOrderKey);
 
-        if (knownSpriteSets.TryGetValue(key, out var obj))
+        if (knownDrawables.TryGetValue(key, out var obj))
             return (TDrawableType)obj;
 
         var newDrawable = createDrawable();
         createAndRegisterRenderer(newDrawable, drawGroup, drawGroupOrderKey);
-        knownSpriteSets.Add(key, newDrawable);
+        knownDrawables.Add(key, newDrawable);
 
         return newDrawable;
     }
@@ -109,9 +109,9 @@ sealed class SpriteRenderers : ISpriteRenderers
 
     public void Dispose()
     {
-        foreach (var spriteSet in knownSpriteSets.Values.Cast<IDisposable>())
+        foreach (var drawable in knownDrawables.Values.Cast<IDisposable>())
         {
-            spriteSet.Dispose();
+            drawable.Dispose();
         }
 
         foreach (var drawGroup in renderersByDrawGroup.Values)
@@ -125,9 +125,9 @@ sealed class SpriteRenderers : ISpriteRenderers
 
     public void ClearAll()
     {
-        foreach (var spriteSet in knownSpriteSets.Values.Cast<IClearable>())
+        foreach (var drawable in knownDrawables.Values.Cast<IClearable>())
         {
-            spriteSet.Clear();
+            drawable.Clear();
         }
     }
 }

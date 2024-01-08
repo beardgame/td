@@ -7,8 +7,8 @@ namespace Bearded.TD.Testing.GameStates;
 
 sealed class NoOpSpriteRenderers : ISpriteRenderers
 {
-    public TDrawableType GetOrCreateDrawableSpriteSetFor<TDrawableType>(
-        IDrawableTemplate spriteSet, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
+    public TDrawableType GetOrCreateDrawableFor<TDrawableType>(
+        IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable
     {

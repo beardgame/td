@@ -32,7 +32,7 @@ sealed class PackedSpriteSet : ISpriteSetImplementation
         Shader shader)
         where TVertex : struct, IVertexData
     {
-        return spriteRenderers.GetOrCreateDrawableSpriteSetFor(
+        return spriteRenderers.GetOrCreateDrawableFor(
             spriteSet, shader, drawGroup, drawGroupOrderKey,
             () => DrawableSpriteSet.Create(textures, sprites, shader, createVertex)
         );
