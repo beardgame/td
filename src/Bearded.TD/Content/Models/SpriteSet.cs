@@ -38,22 +38,22 @@ sealed class SpriteSet : IBlueprint, IDisposable, IDrawableTemplate
     }
 
     public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-        ISpriteRenderers spriteRenderers,
+        IDrawableRenderers drawableRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData
     {
-        return sprites.MakeConcreteWith(this, spriteRenderers, drawGroup, drawGroupOrderKey, createVertex, shader);
+        return sprites.MakeConcreteWith(this, drawableRenderers, drawGroup, drawGroupOrderKey, createVertex, shader);
     }
 
     public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-        ISpriteRenderers spriteRenderers,
+        IDrawableRenderers drawableRenderers,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader,
         params IRenderSetting[] customRenderSettings)
         where TVertex : struct, IVertexData
     {
-        return sprites.MakeCustomRendererWith(spriteRenderers, createVertex, shader, customRenderSettings);
+        return sprites.MakeCustomRendererWith(drawableRenderers, createVertex, shader, customRenderSettings);
     }
 
     public void Dispose()

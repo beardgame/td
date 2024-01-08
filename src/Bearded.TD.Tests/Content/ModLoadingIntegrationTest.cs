@@ -75,7 +75,7 @@ namespace Bearded.TD.Tests.Content
 
             public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
                 SpriteSet spriteSet,
-                ISpriteRenderers spriteRenderers,
+                IDrawableRenderers drawableRenderers,
                 SpriteDrawGroup drawGroup,
                 int drawGroupOrderKey,
                 DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
@@ -83,7 +83,7 @@ namespace Bearded.TD.Tests.Content
                 where TVertex : struct, IVertexData => default!;
 
             public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-                ISpriteRenderers spriteRenderers,
+                IDrawableRenderers drawableRenderers,
                 DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
                 Shader shader,
                 params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;

@@ -19,11 +19,11 @@ sealed class SpriteBlueprint : ISpriteBlueprint
         this.spriteSet = spriteSet;
     }
 
-    public IDrawableSprite<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(ISpriteRenderers spriteRenderers,
+    public IDrawableSprite<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(IDrawableRenderers drawableRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
         where TVertex : struct, IVertexData
     {
-        return spriteSet.MakeConcreteWith(spriteRenderers, drawGroup, drawGroupOrderKey, createVertex, shader).GetSprite(name);
+        return spriteSet.MakeConcreteWith(drawableRenderers, drawGroup, drawGroupOrderKey, createVertex, shader).GetSprite(name);
     }
 }

@@ -20,7 +20,7 @@ interface IDrawable : IClearable, IDisposable
 // It should perhaps contain the method creating the actual drawable, or be passed into it to avoid generics?
 interface IDrawableTemplate;
 
-sealed class SpriteRenderers : ISpriteRenderers
+sealed class DrawableRenderers : IDrawableRenderers
 {
     private sealed class DrawOrderKeyComparer : IComparer<(int DrawOrderKey, IRenderer)>
     {
@@ -46,7 +46,7 @@ sealed class SpriteRenderers : ISpriteRenderers
 
     private readonly IRenderSetting[] defaultRenderSettings;
 
-    public SpriteRenderers(RenderContext context)
+    public DrawableRenderers(RenderContext context)
     {
         defaultRenderSettings = new IRenderSetting[]
         {

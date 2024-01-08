@@ -26,20 +26,20 @@ sealed class PackedSpriteSet : ISpriteSetImplementation
     }
 
     public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-        SpriteSet spriteSet, ISpriteRenderers spriteRenderers,
+        SpriteSet spriteSet, IDrawableRenderers drawableRenderers,
         SpriteDrawGroup drawGroup, int drawGroupOrderKey,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader)
         where TVertex : struct, IVertexData
     {
-        return spriteRenderers.GetOrCreateDrawableFor(
+        return drawableRenderers.GetOrCreateDrawableFor(
             spriteSet, shader, drawGroup, drawGroupOrderKey,
             () => DrawableSpriteSet.Create(textures, sprites, shader, createVertex)
         );
     }
 
     public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-        ISpriteRenderers spriteRenderers,
+        IDrawableRenderers drawableRenderers,
         DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
         Shader shader,
         params IRenderSetting[] customRenderSettings)
@@ -47,7 +47,7 @@ sealed class PackedSpriteSet : ISpriteSetImplementation
     {
         // TODO: who is responsible for cleaning these up?
         var drawable = DrawableSpriteSet.Create(textures, sprites, shader, createVertex);
-        var renderer = spriteRenderers.CreateCustomRendererFor(drawable, customRenderSettings);
+        var renderer = drawableRenderers.CreateCustomRendererFor(drawable, customRenderSettings);
         return (drawable, renderer);
     }
 

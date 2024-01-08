@@ -5,7 +5,7 @@ using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Rendering;
 
-interface ISpriteRenderers
+interface IDrawableRenderers
 {
     TDrawableType GetOrCreateDrawableFor<TDrawableType>(
         IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,

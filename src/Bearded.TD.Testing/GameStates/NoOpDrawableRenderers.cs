@@ -5,7 +5,7 @@ using Bearded.TD.Rendering;
 
 namespace Bearded.TD.Testing.GameStates;
 
-sealed class NoOpSpriteRenderers : ISpriteRenderers
+sealed class NoOpDrawableRenderers : IDrawableRenderers
 {
     public TDrawableType GetOrCreateDrawableFor<TDrawableType>(
         IDrawableTemplate template, Shader shader, SpriteDrawGroup drawGroup, int drawGroupOrderKey,

@@ -103,7 +103,7 @@ sealed class GameInstance
             context.GameSynchronizer,
             ids,
             // TODO: oh so bad and leaky, this really shouldn't be here, but then again this whole class is bad
-            new SpriteRenderers(renderContext),
+            new DrawableRenderers(renderContext),
             SoundScape.WithChannelCount(Constants.Audio.SoundEffectChannelCount));
     }
 
