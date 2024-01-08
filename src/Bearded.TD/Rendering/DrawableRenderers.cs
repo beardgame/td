@@ -48,8 +48,8 @@ sealed class DrawableRenderers : IDrawableRenderers
 
     public DrawableRenderers(RenderContext context)
     {
-        defaultRenderSettings = new IRenderSetting[]
-        {
+        defaultRenderSettings =
+        [
             context.Settings.ProjectionMatrix,
             context.Settings.ViewMatrix,
             context.Settings.FarPlaneDistance,
@@ -58,7 +58,7 @@ sealed class DrawableRenderers : IDrawableRenderers
             context.Settings.FarPlaneUnitX,
             context.Settings.FarPlaneUnitY,
             context.Settings.Time,
-        };
+        ];
     }
 
     public TDrawableType GetOrCreateDrawableFor<TDrawableType>(
@@ -89,11 +89,11 @@ sealed class DrawableRenderers : IDrawableRenderers
 
     private void createAndRegisterRenderer(
         IDrawable drawable,
-        DrawOrderGroup drawGroup, int drawGroupOrderKey)
+        DrawOrderGroup group, int drawGroupOrderKey)
     {
         var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
 
-        var renderers = renderersByDrawGroup[drawGroup];
+        var renderers = renderersByDrawGroup[group];
 
         renderers.AddSorted((drawGroupOrderKey, renderer), drawOrderKeyComparer);
     }
