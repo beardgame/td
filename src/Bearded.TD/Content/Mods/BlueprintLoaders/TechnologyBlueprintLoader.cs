@@ -13,24 +13,15 @@ using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.Technolo
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class TechnologyBlueprintLoader
+sealed class TechnologyBlueprintLoader(
+    BlueprintLoadingContext context,
+    ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
+    ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades)
     : BaseBlueprintLoader<
-        ITechnologyBlueprint, TechnologyBlueprintJson, TechnologyBlueprintJson.DependencyResolvers>
+        ITechnologyBlueprint, TechnologyBlueprintJson, TechnologyBlueprintJson.DependencyResolvers>(context)
 {
-    private readonly ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects;
-    private readonly ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades;
-
-    protected override DependencySelector SelectDependency { get; } = m => m.Blueprints.Technologies;
-
     protected override string RelativePath => "defs/technologies";
-
-    public TechnologyBlueprintLoader(BlueprintLoadingContext context,
-        ReadonlyBlueprintCollection<IGameObjectBlueprint> gameObjects,
-        ReadonlyBlueprintCollection<IPermanentUpgrade> upgrades) : base(context)
-    {
-        this.gameObjects = gameObjects;
-        this.upgrades = upgrades;
-    }
+    protected override DependencySelector SelectDependency => m => m.Blueprints.Technologies;
 
     protected override List<ITechnologyBlueprint> LoadBlueprintsFromFiles(IEnumerable<FileInfo> files)
     {

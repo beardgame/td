@@ -4,11 +4,9 @@ using ModuleBlueprintJson = Bearded.TD.Content.Serialization.Models.ModuleBluepr
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class ModuleBlueprintLoader : BaseBlueprintLoader<IModule, ModuleBlueprintJson, Void>
+sealed class ModuleBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<IModule, ModuleBlueprintJson, Void>(context)
 {
     protected override string RelativePath => "defs/modules";
-
     protected override DependencySelector SelectDependency => m => m.Blueprints.Modules;
-
-    public ModuleBlueprintLoader(BlueprintLoadingContext context) : base(context) { }
 }

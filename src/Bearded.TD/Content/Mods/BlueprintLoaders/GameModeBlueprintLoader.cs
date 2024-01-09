@@ -9,14 +9,11 @@ using GameModeBlueprintJson = Bearded.TD.Content.Serialization.Models.GameModeBl
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class GameModeBlueprintLoader
-    : BaseBlueprintLoader<IGameModeBlueprint, GameModeBlueprintJson, Void>
+sealed class GameModeBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<IGameModeBlueprint, GameModeBlueprintJson, Void>(context)
 {
     protected override string RelativePath => "defs/gamemodes";
-
-    public GameModeBlueprintLoader(BlueprintLoadingContext context) : base(context)
-    {
-    }
+    protected override DependencySelector? SelectDependency => null;
 
     public override ReadonlyBlueprintCollection<IGameModeBlueprint> LoadBlueprints()
     {

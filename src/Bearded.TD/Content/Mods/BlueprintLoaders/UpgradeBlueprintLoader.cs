@@ -4,13 +4,9 @@ using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlue
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class UpgradeBlueprintLoader : BaseBlueprintLoader<IPermanentUpgrade, UpgradeBlueprintJson, Void>
+sealed class UpgradeBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<IPermanentUpgrade, UpgradeBlueprintJson, Void>(context)
 {
     protected override string RelativePath => "defs/upgrades";
-
     protected override DependencySelector SelectDependency => m => m.Blueprints.Upgrades;
-
-    public UpgradeBlueprintLoader(BlueprintLoadingContext context) : base(context)
-    {
-    }
 }

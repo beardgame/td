@@ -12,22 +12,15 @@ using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>
+abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>(BlueprintLoadingContext context)
     where TBlueprint : IBlueprint
     where TJsonModel : IConvertsTo<TBlueprint, TResolvers>
 {
     protected delegate ReadonlyBlueprintCollection<TBlueprint> DependencySelector(Mod mod);
-
-    protected BlueprintLoadingContext Context { get; }
+    protected BlueprintLoadingContext Context { get; } = context;
 
     protected abstract string RelativePath { get; }
-
-    protected virtual DependencySelector? SelectDependency => null;
-
-    protected BaseBlueprintLoader(BlueprintLoadingContext context)
-    {
-        Context = context;
-    }
+    protected abstract DependencySelector? SelectDependency { get; }
 
     public virtual ReadonlyBlueprintCollection<TBlueprint> LoadBlueprints()
     {

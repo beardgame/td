@@ -5,18 +5,13 @@ using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class SpriteBlueprintLoader : BaseBlueprintLoader<SpriteSet, SpriteSetJson, (FileInfo, SpriteSetLoader)>
+sealed class SpriteBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<SpriteSet, SpriteSetJson, (FileInfo, SpriteSetLoader)>(context)
 {
-    private readonly SpriteSetLoader loader;
-
     protected override string RelativePath => "gfx/sprites";
+    protected override DependencySelector SelectDependency => m => m.Blueprints.Sprites;
 
-    protected override DependencySelector? SelectDependency { get; } =  m => m.Blueprints.Sprites;
-
-    public SpriteBlueprintLoader(BlueprintLoadingContext context) : base(context)
-    {
-        loader = new SpriteSetLoader(context.Context, context.Meta);
-    }
+    private readonly SpriteSetLoader loader = new(context.Context, context.Meta);
 
     protected override void SetupDependencyResolver(ReadonlyBlueprintCollection<SpriteSet> blueprintCollection)
     {

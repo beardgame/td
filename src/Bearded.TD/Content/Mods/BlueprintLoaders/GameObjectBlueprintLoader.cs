@@ -12,14 +12,13 @@ namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
 sealed class GameObjectBlueprintLoader : BaseBlueprintLoader<IGameObjectBlueprint, Serialization.Models.GameObjectBlueprint, Void>
 {
+    protected override string RelativePath => "defs/blueprints";
+    protected override DependencySelector SelectDependency => m => m.Blueprints.GameObjects;
+
     private readonly GameObjectProxyBlueprintResolver gameObjectProxyBlueprintCollector;
     private readonly DependencyConverter<IGameObjectBlueprint> dependencyConverter;
     private readonly Dictionary<ModAwareId, (GameObjectBlueprint Blueprint, FileInfo File, List<GameObjectBlueprintProxy> Dependencies)>
         dependenciesByBlueprintId = new();
-
-    protected override string RelativePath => "defs/blueprints";
-
-    protected override DependencySelector SelectDependency => m => m.Blueprints.GameObjects;
 
     public GameObjectBlueprintLoader(BlueprintLoadingContext context) : base(context)
     {

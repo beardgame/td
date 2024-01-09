@@ -4,19 +4,13 @@ using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class ShaderBlueprintLoader : BaseBlueprintLoader<Shader, ShaderJson, (FileInfo, ShaderLoader)>
+sealed class ShaderBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<Shader, ShaderJson, (FileInfo, ShaderLoader)>(context)
 {
-    private readonly ShaderLoader shaderLoader;
-
     protected override string RelativePath => "gfx/shaders";
-
     protected override DependencySelector SelectDependency => m => m.Blueprints.Shaders;
 
-    public ShaderBlueprintLoader(BlueprintLoadingContext context)
-        : base(context)
-    {
-        shaderLoader = new ShaderLoader(context.Context, context.Meta);
-    }
+    private readonly ShaderLoader shaderLoader = new(context.Context, context.Meta);
 
     protected override (FileInfo, ShaderLoader) GetDependencyResolvers(FileInfo file)
     {

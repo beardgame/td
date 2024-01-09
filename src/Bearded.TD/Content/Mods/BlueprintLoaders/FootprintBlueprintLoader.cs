@@ -6,15 +6,11 @@ using FootprintJson = Bearded.TD.Content.Serialization.Models.Footprint;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class FootprintBlueprintLoader : BaseBlueprintLoader<IFootprint, FootprintJson, Void>
+sealed class FootprintBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<IFootprint, FootprintJson, Void>(context)
 {
     protected override string RelativePath => "defs/footprints";
-
     protected override DependencySelector SelectDependency => m => m.Blueprints.Footprints;
-
-    public FootprintBlueprintLoader(BlueprintLoadingContext context) : base(context)
-    {
-    }
 
     protected override void SetupDependencyResolver(ReadonlyBlueprintCollection<IFootprint> blueprintCollection)
     {

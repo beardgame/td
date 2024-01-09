@@ -4,18 +4,13 @@ using SoundEffectJson = Bearded.TD.Content.Serialization.Models.SoundEffect;
 
 namespace Bearded.TD.Content.Mods.BlueprintLoaders;
 
-sealed class SoundBlueprintLoader : BaseBlueprintLoader<ISoundEffect, SoundEffectJson, (FileInfo, SoundLoader)>
+sealed class SoundBlueprintLoader(BlueprintLoadingContext context)
+    : BaseBlueprintLoader<ISoundEffect, SoundEffectJson, (FileInfo, SoundLoader)>(context)
 {
-    private readonly SoundLoader loader;
-
     protected override string RelativePath => "sfx";
+    protected override DependencySelector SelectDependency => m => m.Blueprints.SoundEffects;
 
-    protected override DependencySelector? SelectDependency { get; } =  m => m.Blueprints.SoundEffects;
-
-    public SoundBlueprintLoader(BlueprintLoadingContext context) : base(context)
-    {
-        loader = new SoundLoader(context.Meta);
-    }
+    private readonly SoundLoader loader = new(context.Meta);
 
     protected override (FileInfo, SoundLoader) GetDependencyResolvers(FileInfo file)
     {
