@@ -6,6 +6,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Content;
@@ -26,6 +27,8 @@ sealed class ContentManager
     public ModLoadingProfiler LoadingProfiler => loadingContext.Profiler;
 
     public ImmutableArray<ModMetadata> VisibleMods => allMods.Where(m => m.Visible).ToImmutableArray();
+
+    public event GenericEventHandler<ICollection<ModMetadata>>? ModsUnloaded;
 
     public ContentManager(Logger logger, IGraphicsLoader graphicsLoader, IReadOnlyCollection<ModMetadata> allMods)
     {
@@ -99,6 +102,7 @@ sealed class ContentManager
 
     public void CleanUpUnused()
     {
+        var unloadedMods = new List<ModMetadata>();
         foreach (var metadata in listUnusedMods())
         {
             // We have no way to abort loading. Just finish loading it and we'll pick it up in a future clean-up cycle.
@@ -113,7 +117,10 @@ sealed class ContentManager
                 GraphicsUnloader.CleanUp(modForLoading.GetLoadedMod().Blueprints);
             }
             modsForLoading.Remove(metadata);
+            unloadedMods.Add(metadata);
         }
+        if (unloadedMods.Count > 0)
+            ModsUnloaded?.Invoke(unloadedMods);
     }
 
     private ImmutableArray<ModMetadata> listUnusedMods()

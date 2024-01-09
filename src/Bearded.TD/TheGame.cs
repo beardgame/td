@@ -124,24 +124,8 @@ sealed class TheGame : Window
             tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(10));
         }
 
-        var drawers = renderContext.Drawers;
-        rendererRouter = new CachedRendererRouter(
-            new (Type, object)[]
-            {
-                (typeof(UIDebugOverlayControl.Highlight),
-                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, drawers.ConsoleFont)),
-                (typeof(RenderLayerCompositeControl),
-                    new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                (typeof(AutoCompletingTextInput),
-                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
-                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
-                (typeof(Label), new LabelRenderer(drawers.UIFont)),
-                (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
-                (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
-                (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),
-                (typeof(Dot), new DotRenderer(drawers.ConsoleBackground)),
-                (typeof(Control), new FallbackBoxRenderer(drawers.ConsoleBackground)),
-            });
+        resetUIRenderers();
+        contentManager.ModsUnloaded += _ => resetUIRenderers();
 
         var dependencyResolver = new DependencyResolver();
         dependencyResolver.Add(logger);
@@ -198,6 +182,30 @@ sealed class TheGame : Window
 
         if (UserSettings.Instance.Debug.PerformanceOverlay)
             instance!.navigationController.Push<PerformanceOverlay>();
+    }
+
+    private void resetUIRenderers()
+    {
+        renderContext.Renderers.DrawableRenderers.DisposeAll();
+
+        var drawers = renderContext.Drawers;
+        rendererRouter = new CachedRendererRouter(
+            new (Type, object)[]
+            {
+                (typeof(UIDebugOverlayControl.Highlight),
+                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, drawers.ConsoleFont)),
+                (typeof(RenderLayerCompositeControl),
+                    new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
+                (typeof(AutoCompletingTextInput),
+                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
+                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
+                (typeof(Label), new LabelRenderer(drawers.UIFont)),
+                (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
+                (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
+                (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),
+                (typeof(Dot), new DotRenderer(drawers.ConsoleBackground)),
+                (typeof(Control), new FallbackBoxRenderer(drawers.ConsoleBackground)),
+            });
     }
 
     protected override void OnResize(ResizeEventArgs e)
