@@ -113,7 +113,9 @@ sealed class TheGame : Window
         UserSettings.Save(logger);
         UserSettingsSchema.Initialize();
 
-        renderContext = new RenderContext(glActionQueue, logger);
+        var renderSettings = new CoreRenderSettings();
+        var renderers = new DrawableRenderers(renderSettings);
+        renderContext = new RenderContext(glActionQueue, logger, renderers, renderSettings);
         contentManager = new ContentManager(logger, renderContext.GraphicsLoader, new ModLister().GetAll());
         coreMod = contentManager.ReferenceMod(contentManager.FindMetadata("core-ui"));
         while (!coreMod.IsLoaded)

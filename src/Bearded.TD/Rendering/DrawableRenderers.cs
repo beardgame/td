@@ -46,18 +46,18 @@ sealed class DrawableRenderers : IDrawableRenderers
 
     private readonly IRenderSetting[] defaultRenderSettings;
 
-    public DrawableRenderers(RenderContext context)
+    public DrawableRenderers(CoreRenderSettings settings)
     {
         defaultRenderSettings =
         [
-            context.Settings.ProjectionMatrix,
-            context.Settings.ViewMatrix,
-            context.Settings.FarPlaneDistance,
-            context.Settings.CameraPosition,
-            context.Settings.FarPlaneBaseCorner,
-            context.Settings.FarPlaneUnitX,
-            context.Settings.FarPlaneUnitY,
-            context.Settings.Time,
+            settings.ProjectionMatrix,
+            settings.ViewMatrix,
+            settings.FarPlaneDistance,
+            settings.CameraPosition,
+            settings.FarPlaneBaseCorner,
+            settings.FarPlaneUnitX,
+            settings.FarPlaneUnitY,
+            settings.Time,
         ];
     }
 
@@ -107,7 +107,7 @@ sealed class DrawableRenderers : IDrawableRenderers
         }
     }
 
-    public void Dispose()
+    public void DisposeAll()
     {
         foreach (var drawable in knownDrawables.Values.Cast<IDisposable>())
         {

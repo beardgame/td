@@ -17,13 +17,13 @@ sealed class RenderContext
     public CoreDrawers Drawers { get; }
     public FrameCompositor Compositor { get; }
 
-    public RenderContext(IActionQueue glActionQueue, Logger logger)
+    public RenderContext(IActionQueue glActionQueue, Logger logger, IDrawableRenderers drawableRenderers, CoreRenderSettings renderSettings)
     {
         Shaders = new CoreShaders();
         GraphicsLoader = new GraphicsLoader(Shaders.ShaderManager, glActionQueue, logger);
 
-        Settings = new CoreRenderSettings();
-        Renderers = new CoreRenderers(Shaders, Settings);
+        Settings = renderSettings;
+        Renderers = new CoreRenderers(Shaders, Settings, drawableRenderers);
         DeferredRenderer = new DeferredRenderer(Settings, Shaders);
         Compositor = new FrameCompositor(logger, Settings, Shaders, Renderers, DeferredRenderer);
         Drawers = new CoreDrawers(Renderers, DeferredRenderer);

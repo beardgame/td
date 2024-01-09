@@ -29,9 +29,12 @@ sealed class CoreRenderers
     public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> UIFontMeshBuilder { get; }
     public IRenderer UIFontRenderer { get; }
 
+    public IDrawableRenderers DrawableRenderers { get; }
 
-    public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings)
+    public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings, IDrawableRenderers renderers)
     {
+        DrawableRenderers = renderers;
+
         var primitiveShader = shaders.GetShaderProgram("geometry");
         var uvColorShader = shaders.GetShaderProgram("uvcolor");
 
@@ -87,5 +90,6 @@ sealed class CoreRenderers
         ConsoleBackground.Clear();
         ConsoleFontMeshBuilder.Clear();
         UIFontMeshBuilder.Clear();
+        DrawableRenderers.ClearAll();
     }
 }

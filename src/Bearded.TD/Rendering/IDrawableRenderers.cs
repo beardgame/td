@@ -17,6 +17,6 @@ interface IDrawableRenderers
         IRenderSetting[] customRenderSettings);
 
     void RenderDrawGroup(DrawOrderGroup group);
-    void Dispose();
+    void DisposeAll();
     void ClearAll();
 }

@@ -31,7 +31,7 @@ sealed class ContentRenderers : IDisposable
 
     public void Dispose()
     {
-        drawableRenderers.Dispose();
+        drawableRenderers.DisposeAll();
     }
 
     public void ClearAll()

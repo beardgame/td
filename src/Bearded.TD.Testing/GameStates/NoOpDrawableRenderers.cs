@@ -21,6 +21,6 @@ sealed class NoOpDrawableRenderers : IDrawableRenderers
     }
 
     public void RenderDrawGroup(DrawOrderGroup @group) { }
-    public void Dispose() { }
+    public void DisposeAll() { }
     public void ClearAll() { }
 }
