@@ -2,15 +2,15 @@
 
 namespace Bearded.TD.Content.Serialization.Models.Fonts;
 
-readonly record struct GlyphJson(
+readonly record struct Glyph(
     int Unicode,
     float Advance,
     Bounds PlaneBounds,
     Bounds AtlasBounds)
 {
-    public Glyph ToGlyph(AtlasParametersJson atlas)
+    public Content.Models.Fonts.Glyph ToGlyph(AtlasParameters atlas)
     {
-        return new Glyph(
+        return new Content.Models.Fonts.Glyph(
             (char) Unicode,
             Advance,
             PlaneBounds,

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Bearded.TD.Audio;
 using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Content.Models.Fonts;
 using Bearded.TD.Content.Mods.BlueprintLoaders;
 using Bearded.TD.Content.Serialization.Converters;
 using Bearded.TD.Game;
@@ -20,11 +18,7 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using Newtonsoft.Json;
 using FactionBlueprint = Bearded.TD.Content.Serialization.Models.FactionBlueprint;
-using SpriteSetJson = Bearded.TD.Content.Serialization.Models.SpriteSet;
-using ShaderJson = Bearded.TD.Content.Serialization.Models.Shader;
-using TechnologyBlueprintJson = Bearded.TD.Content.Serialization.Models.TechnologyBlueprint;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
-using UpgradeBlueprintJson = Bearded.TD.Content.Serialization.Models.UpgradeBlueprint;
 
 namespace Bearded.TD.Content.Mods;
 
@@ -58,10 +52,8 @@ static class ModLoader
             var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
             var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
-            
-            var fontDefinitions = new ReadonlyBlueprintCollection<FontDefinition>(Array.Empty<FontDefinition>());
-            var fonts = new ReadonlyBlueprintCollection<Font>(Array.Empty<Font>());;
-            
+            var fontDefinitions = new FontDefinitionBlueprintLoader(loadingContext).LoadBlueprints();
+            var fonts = new FontBlueprintLoader(loadingContext).LoadBlueprints();
             var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
             var footprints = new FootprintBlueprintLoader(loadingContext).LoadBlueprints();
             var gameObjects = new GameObjectBlueprintLoader(loadingContext).LoadBlueprints();
