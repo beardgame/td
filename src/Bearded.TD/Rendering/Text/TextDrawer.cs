@@ -11,6 +11,7 @@ using Bearded.Graphics.Textures;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Models.Fonts;
+using Bearded.TD.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using Font = Bearded.TD.Content.Models.Fonts.Font;
@@ -21,7 +22,7 @@ static class TextDrawer
 {
     public static TextDrawer<TVertex, TVertexParameters> Create<TVertex, TVertexParameters>(
         Font font,
-        TextDrawer<TVertex, TVertexParameters>.CreateTextVertex createVertex,
+        CreateVertex<TVertex, TVertexParameters> createVertex,
         Shader? shader = null)
         where TVertex : struct, IVertexData
     {
@@ -62,13 +63,11 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
     IEnumerable<IRenderSetting> settings,
     Shader shader,
     ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder,
-    TextDrawer<TVertex, TVertexParameters>.CreateTextVertex createTextVertex,
+    CreateVertex<TVertex, TVertexParameters> createTextVertex,
     IEnumerable<IDisposable> disposables)
     : ITextDrawer<TVertexParameters>, IDrawable
     where TVertex : struct, IVertexData
 {
-    public delegate TVertex CreateTextVertex(Vector3 xyz, Vector2 uv, TVertexParameters parameters);
-
     public void DrawLine(
         Vector3 xyz, string text,
         float fontHeight, float alignHorizontal, float alignVertical,

@@ -7,6 +7,7 @@ using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -16,7 +17,7 @@ static class DrawableSpriteSet
         ImmutableArray<TextureUniform> textures,
         ImmutableDictionary<string, SpriteParameters> baseSprites,
         Shader shader,
-        DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex)
+        CreateVertex<TVertex, TVertexData> createVertex)
         where TVertex : struct, IVertexData
     {
         var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<TVertex>();

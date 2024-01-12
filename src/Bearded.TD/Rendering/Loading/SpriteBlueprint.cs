@@ -1,5 +1,6 @@
 ﻿using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -21,7 +22,7 @@ sealed class SpriteBlueprint : ISpriteBlueprint
 
     public IDrawableSprite<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(IDrawableRenderers drawableRenderers,
         DrawOrderGroup drawGroup, int drawGroupOrderKey,
-        DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
+        CreateVertex<TVertex, TVertexData> createVertex, Shader shader)
         where TVertex : struct, IVertexData
     {
         return spriteSet.MakeConcreteWith(drawableRenderers, drawGroup, drawGroupOrderKey, createVertex, shader).GetSprite(name);

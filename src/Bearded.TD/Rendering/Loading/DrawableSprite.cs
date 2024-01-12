@@ -2,6 +2,7 @@ using System;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
 
@@ -10,16 +11,14 @@ namespace Bearded.TD.Rendering.Loading;
 sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertex, TVertexData>
     where TVertex : struct, IVertexData
 {
-    public delegate TVertex CreateSprite(Vector3 position, Vector2 uv, TVertexData data);
-
     private readonly IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder;
-    private readonly CreateSprite createVertex;
+    private readonly CreateVertex<TVertex, TVertexData> createVertex;
     private readonly UVRectangle uv;
     private readonly Vector2 baseSize;
 
     public DrawableSprite(
         IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
-        CreateSprite createVertex,
+        CreateVertex<TVertex, TVertexData> createVertex,
         SpriteParameters spriteParameters)
     {
         this.meshBuilder = meshBuilder;

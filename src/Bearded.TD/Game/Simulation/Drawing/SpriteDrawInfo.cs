@@ -21,7 +21,7 @@ static class SpriteDrawInfo
 
     public static SpriteDrawInfo<TVertex, TVertexData> FromWithFallbackShader<TVertex, TVertexData>(
         GameState game, Shader? shader, ISpriteBlueprint sprite,
-        DrawableSprite<TVertex, TVertexData>.CreateSprite create,
+        CreateVertex<TVertex, TVertexData> create,
         DrawOrderGroup drawGroup, int drawGroupOrderKey = 0)
         where TVertex : struct, IVertexData
     {
@@ -31,7 +31,7 @@ static class SpriteDrawInfo
     }
 
     public static SpriteDrawInfo<TVertex, TVertexData> From<TVertex, TVertexData>(
-        ISpriteBlueprint sprite, DrawableSprite<TVertex, TVertexData>.CreateSprite create, Shader shader,
+        ISpriteBlueprint sprite, CreateVertex<TVertex, TVertexData> create, Shader shader,
         DrawOrderGroup drawGroup, int drawGroupOrderKey = 0)
         where TVertex : struct, IVertexData
     {
@@ -43,14 +43,14 @@ readonly struct SpriteDrawInfo<TVertex, TVertexData>
     where TVertex : struct, IVertexData
 {
     public ISpriteBlueprint Sprite { get; }
-    public DrawableSprite<TVertex, TVertexData>.CreateSprite Create { get; }
+    public CreateVertex<TVertex, TVertexData> Create { get; }
     public Shader Shader { get; }
     public DrawOrderGroup DrawGroup { get; }
     public int DrawGroupOrderKey { get; }
 
     public SpriteDrawInfo(
         ISpriteBlueprint sprite,
-        DrawableSprite<TVertex, TVertexData>.CreateSprite create,
+        CreateVertex<TVertex, TVertexData> create,
         Shader shader,
         DrawOrderGroup drawGroup, int drawGroupOrderKey)
     {

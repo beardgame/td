@@ -12,6 +12,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities.IO;
 using FluentAssertions;
 using Xunit;
@@ -78,13 +79,13 @@ namespace Bearded.TD.Tests.Content
                 IDrawableRenderers drawableRenderers,
                 DrawOrderGroup drawGroup,
                 int drawGroupOrderKey,
-                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+                CreateVertex<TVertex, TVertexData> createVertex,
                 Shader shader)
                 where TVertex : struct, IVertexData => default!;
 
             public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
                 IDrawableRenderers drawableRenderers,
-                DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+                CreateVertex<TVertex, TVertexData> createVertex,
                 Shader shader,
                 params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
         }

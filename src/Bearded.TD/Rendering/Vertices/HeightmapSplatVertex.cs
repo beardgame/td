@@ -15,7 +15,7 @@ readonly struct HeightmapSplatVertex : IVertexData
     private readonly float minHeight;
     private readonly float maxHeight;
 
-    public static DrawableSprite<HeightmapSplatVertex, (float, float)>.CreateSprite Create { get; } =
+    public static CreateVertex<HeightmapSplatVertex, (float, float)> Create { get; } =
         (p, uv, minMax) => new HeightmapSplatVertex(p.Xy, uv, minMax.Item1, minMax.Item2);
 
     public HeightmapSplatVertex(Vector2 position, Vector2 uv, float minHeight, float maxHeight)

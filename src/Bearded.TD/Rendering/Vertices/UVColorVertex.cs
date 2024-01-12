@@ -14,7 +14,7 @@ readonly struct UVColorVertex : IVertexData
     private readonly Vector2 uv;
     private readonly Color color;
 
-    public static DrawableSprite<UVColorVertex, Color>.CreateSprite Create { get; } =
+    public static CreateVertex<UVColorVertex, Color> Create { get; } =
         (p, uv, color) => new UVColorVertex(p, uv, color);
 
     public UVColorVertex(Vector3 position, Vector2 uv, Color color)

@@ -10,8 +10,7 @@ namespace Bearded.TD.Rendering.Vertices;
 [StructLayout(LayoutKind.Sequential)]
 readonly struct DeferredSprite3DVertex : IVertexData
 {
-    public static DrawableSprite<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)>
-        .CreateSprite Create { get; } =
+    public static CreateVertex<DeferredSprite3DVertex, (Vector3 Normal, Vector3 Tangent, Color Color)> Create { get; } =
         (position, uv, data) => new DeferredSprite3DVertex(
             position, data.Normal, data.Tangent, uv, data.Color);
 

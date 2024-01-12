@@ -6,6 +6,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
+using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Content.Models;
 
@@ -28,7 +29,7 @@ sealed class SpriteSet : IBlueprint, IDisposable, IDrawableTemplate
     public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
         IDrawableRenderers drawableRenderers,
         DrawOrderGroup drawGroup, int drawGroupOrderKey,
-        DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex, Shader shader)
+        CreateVertex<TVertex, TVertexData> createVertex, Shader shader)
         where TVertex : struct, IVertexData
     {
         return sprites.MakeConcreteWith(this, drawableRenderers, drawGroup, drawGroupOrderKey, createVertex, shader);
@@ -36,7 +37,7 @@ sealed class SpriteSet : IBlueprint, IDisposable, IDrawableTemplate
 
     public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
         IDrawableRenderers drawableRenderers,
-        DrawableSprite<TVertex, TVertexData>.CreateSprite createVertex,
+        CreateVertex<TVertex, TVertexData> createVertex,
         Shader shader,
         params IRenderSetting[] customRenderSettings)
         where TVertex : struct, IVertexData
