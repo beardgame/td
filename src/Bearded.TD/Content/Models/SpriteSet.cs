@@ -9,18 +9,6 @@ using Bearded.TD.Rendering.Loading;
 
 namespace Bearded.TD.Content.Models;
 
-enum DrawOrderGroup
-{
-    // When adding new groups, make sure the DeferredRenderer knows about them, or they won't render
-    SolidLevelDetails,
-    LevelDetail,
-    Building,
-    Unit,
-    Particle,
-    IgnoreDepth,
-    Unknown
-}
-
 sealed class SpriteSet : IBlueprint, IDisposable, IDrawableTemplate
 {
     private readonly ISpriteSetImplementation sprites;
