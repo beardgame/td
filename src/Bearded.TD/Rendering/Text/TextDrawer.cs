@@ -1,31 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Text;
+using Bearded.Graphics.Textures;
 using Bearded.Graphics.Vertices;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Models.Fonts;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using Font = Bearded.TD.Content.Models.Fonts.Font;
 
 namespace Bearded.TD.Rendering.Text;
 
-sealed class TextDrawer<TVertex, TVertexParameters> : ITextDrawer<TVertexParameters>
+static class TextDrawer
+{
+    public static TextDrawer<TVertex, TVertexParameters> Create<TVertex, TVertexParameters>(
+        Font font,
+        TextDrawer<TVertex, TVertexParameters>.CreateTextVertex createVertex,
+        Shader? shader = null)
+        where TVertex : struct, IVertexData
+    {
+        var disposables = new List<IDisposable>(font.Material.Textures.Count + 1);
+        var settings = new List<IRenderSetting>(font.Material.Textures.Count + 1);
+
+        var i = 0;
+        foreach (var (name, image) in font.Material.Textures)
+        {
+            // TODO: these textures should be cached
+            // - cache in font, similar to how textures are cached in PackedSpriteSet?
+            // - could still cause duplication if same material is used for different purposes...
+            var texture = Texture.From(ImageTextureData.From(image), c => c.GenerateMipmap());
+            disposables.Add(texture);
+            settings.Add(new TextureUniform(name, TextureUnit.Texture0 + i, texture));
+            i++;
+        }
+
+        var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<TVertex>();
+        disposables.Add(meshBuilder);
+        settings.Add(new Vector2Uniform("unitRange", font.Definition.UnitRange));
+
+        shader ??= font.Material.Shader;
+
+        return new TextDrawer<TVertex, TVertexParameters>(
+            font.Definition,
+            settings,
+            shader,
+            meshBuilder,
+            createVertex,
+            disposables
+            );
+    }
+}
+
+sealed class TextDrawer<TVertex, TVertexParameters>(
+    IFontDefinition font,
+    IEnumerable<IRenderSetting> settings,
+    Shader shader,
+    ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder,
+    TextDrawer<TVertex, TVertexParameters>.CreateTextVertex createTextVertex,
+    IEnumerable<IDisposable> disposables)
+    : ITextDrawer<TVertexParameters>, IDrawable
     where TVertex : struct, IVertexData
 {
     public delegate TVertex CreateTextVertex(Vector3 xyz, Vector2 uv, TVertexParameters parameters);
-
-    private readonly IFontDefinition font;
-    private readonly IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder;
-    private readonly CreateTextVertex createTextVertex;
-
-    public TextDrawer(
-        IFontDefinition font,
-        IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
-        CreateTextVertex createTextVertex)
-    {
-        this.font = font;
-        this.meshBuilder = meshBuilder;
-        this.createTextVertex = createTextVertex;
-    }
 
     public void DrawLine(
         Vector3 xyz, string text,
@@ -99,4 +141,29 @@ sealed class TextDrawer<TVertex, TVertexParameters> : ITextDrawer<TVertexParamet
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector3 transform(Vector2 v, Vector3 unitX, Vector3 unitY)
         => v.X * unitX + v.Y * unitY;
+
+    public IRenderer CreateRendererWithSettings(IEnumerable<IRenderSetting> additionalSettings)
+    {
+        var renderer = BatchedRenderer.From(
+            meshBuilder.ToRenderable(),
+            settings.Concat(additionalSettings)
+        );
+
+        shader.RendererShader.UseOnRenderer(renderer);
+
+        return renderer;
+    }
+
+    public void Clear()
+    {
+        meshBuilder.Clear();
+    }
+
+    public void Dispose()
+    {
+        foreach (var disposable in disposables)
+        {
+            disposable.Dispose();
+        }
+    }
 }

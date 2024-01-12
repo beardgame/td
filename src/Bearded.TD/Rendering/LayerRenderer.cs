@@ -1,9 +1,11 @@
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.Textures;
+using Bearded.TD.Content.Models;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using static Bearded.Graphics.Pipelines.Context.BlendMode;
+using static Bearded.TD.Content.Models.DrawOrderGroup;
 
 namespace Bearded.TD.Rendering;
 
@@ -12,6 +14,14 @@ using IPipeline = IPipeline<LayerRenderer.State>;
 
 sealed class LayerRenderer
 {
+    private static readonly DrawOrderGroup[] uiDrawGroups =
+    [
+        UIBackground,
+        UISpritesBack,
+        UIFont,
+        UISpritesTop,
+    ];
+
     public readonly struct State
     {
         public IRenderLayer Layer { get; }
@@ -38,18 +48,31 @@ sealed class LayerRenderer
             InOrder(
                 Do(s => settings.SetSettingsFor(s.Layer)),
                 Do(tryRenderDeferred),
-                WithContext(c => c
-                        .SetDebugName("Render primitives, UI and fonts")
-                        .SetBlendMode(Premultiplied),
-                    Render(
-                        renderers.PrimitivesRenderer,
-                        renderers.ConsoleBackgroundRenderer,
-                        renderers.UIFontRenderer,
-                        renderers.ConsoleFontRenderer)
-                ),
+                WithContext(c =>c.SetBlendMode(Premultiplied),
+                    InOrder(
+                        WithContext(c => c.SetDebugName("Render UI and fonts"),
+                            renderDrawGroups(renderers.DrawableRenderers, uiDrawGroups)
+                        ),
+                        WithContext(c => c.SetDebugName("Render primitives"),
+                            Render(
+                                renderers.PrimitivesRenderer,
+                                renderers.ConsoleBackgroundRenderer,
+                                renderers.UIFontRenderer,
+                                renderers.ConsoleFontRenderer)
+                        )
+                    )),
                 Do(renderers.ClearAll)
             )
         );
+    }
+
+    private static IPipeline renderDrawGroups(IDrawableRenderers renderers, DrawOrderGroup[] drawGroups)
+    {
+        return Do(_ =>
+        {
+            foreach (var spriteDrawGroup in drawGroups)
+                renderers.RenderDrawGroup(spriteDrawGroup);
+        });
     }
 
     private void tryRenderDeferred(State state)
