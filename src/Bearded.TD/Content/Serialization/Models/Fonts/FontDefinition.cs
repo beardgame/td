@@ -20,7 +20,7 @@ sealed class FontDefinition : IConvertsTo<Content.Models.Fonts.FontDefinition, V
     {
         return new Content.Models.Fonts.FontDefinition(
             ModAwareId.FromNameInMod(Name ?? throw new InvalidDataException(), modMetadata),
-            new Vector2(Atlas.Width, Atlas.Height) * (1 / (float)Atlas.DistanceRange),
+            new Vector2(Atlas.DistanceRange / (float)Atlas.Width, Atlas.DistanceRange / (float)Atlas.Height),
             Glyphs.Select(g => g.ToGlyph(Atlas)),
             Kerning?.Select(k => ((char)k.Unicode1, (char)k.Unicode2, k.Advance))
                 ?? Enumerable.Empty<(char, char, float)>()
