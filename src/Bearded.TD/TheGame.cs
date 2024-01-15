@@ -92,6 +92,7 @@ sealed class TheGame : Window
             Profile = ContextProfile.Core,
             Flags = ContextFlags.ForwardCompatible,
             Icon = createIcon(),
+            Title = "Bearded.TD " + Config.VersionString,
         };
 
     private WindowIcon createIcon()
