@@ -6,14 +6,18 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Bearded.Audio;
 using Bearded.Graphics;
+using Bearded.Graphics.Text;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
+using Bearded.TD.Rendering.Text;
 using Bearded.TD.Rendering.UI;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
@@ -38,7 +42,9 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using static Bearded.TD.Constants.Content;
 using Activity = Bearded.TD.Utilities.Performance.Activity;
+using Color = Bearded.Graphics.Color;
 using Image = SixLabors.ImageSharp.Image;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
 using TimeSpan = System.TimeSpan;
@@ -60,7 +66,6 @@ sealed class TheGame : Window
     private InputManager inputManager = null!;
     private RenderContext renderContext = null!;
     private ContentManager contentManager = null!;
-    private IModReference coreMod = null!;
     private RootControl rootControl = null!;
     private UIUpdater uiUpdater = null!;
     private EventManager eventManager = null!;
@@ -118,15 +123,16 @@ sealed class TheGame : Window
         var renderers = new DrawableRenderers(renderSettings);
         renderContext = new RenderContext(glActionQueue, logger, renderers, renderSettings);
         contentManager = new ContentManager(logger, renderContext.GraphicsLoader, new ModLister().GetAll());
-        coreMod = contentManager.ReferenceMod(contentManager.FindMetadata("core-ui"));
+        var coreMod = contentManager.ReferenceMod(contentManager.FindMetadata(CoreUI.ModId));
         while (!coreMod.IsLoaded)
         {
             contentManager.Update();
             tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(10));
         }
 
-        resetUIRenderers();
-        contentManager.ModsUnloaded += _ => resetUIRenderers();
+        var uiBlueprints = coreMod.LoadedMod.Blueprints;
+        resetUIRenderers(uiBlueprints);
+        contentManager.ModsUnloaded += _ => resetUIRenderers(uiBlueprints);
 
         var dependencyResolver = new DependencyResolver();
         dependencyResolver.Add(logger);
@@ -185,22 +191,31 @@ sealed class TheGame : Window
             instance!.navigationController.Push<PerformanceOverlay>();
     }
 
-    private void resetUIRenderers()
+    private void resetUIRenderers(Blueprints blueprints)
     {
-        renderContext.Renderers.DrawableRenderers.DisposeAll();
+        var renderers = renderContext.Renderers.DrawableRenderers;
+        renderers.DisposeAll();
 
         var drawers = renderContext.Drawers;
+
+        var defaultFont = blueprints.Fonts[CoreUI.Fonts.DefaultText];
+        var defaultTextDrawer = defaultFont
+            .MakeConcreteWith(renderers, DrawOrderGroup.UIFont, 0, UVColorVertex.Create)
+            .WithDefaults(Constants.UI.Text.FontSize, 0, 0, Vector3.UnitX, Vector3.UnitY, Color.White);
+
+        renderContext.Renderers.SetInGameConsoleFont(defaultTextDrawer.With(unitDownDP: -Vector3.UnitY));
+
         rendererRouter = new CachedRendererRouter(
             new (Type, object)[]
             {
                 (typeof(UIDebugOverlayControl.Highlight),
-                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, drawers.ConsoleFont)),
+                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
                 (typeof(RenderLayerCompositeControl),
                     new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
                 (typeof(AutoCompletingTextInput),
-                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
-                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, drawers.UIFont)),
-                (typeof(Label), new LabelRenderer(drawers.UIFont)),
+                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
+                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
+                (typeof(Label), new LabelRenderer(defaultTextDrawer)),
                 (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
                 (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
                 (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),

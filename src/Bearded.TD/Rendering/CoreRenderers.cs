@@ -1,95 +1,46 @@
-using System.Collections.Immutable;
-using System.Drawing;
-using System.Linq;
+using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
-using Bearded.Graphics.RenderSettings;
-using Bearded.Graphics.System.Drawing;
-using Bearded.Graphics.Textures;
+using Bearded.Graphics.Text;
 using Bearded.TD.Rendering.Vertices;
-using OpenTK.Graphics.OpenGL;
-using Font = Bearded.Graphics.Text.Font;
 
 namespace Bearded.TD.Rendering;
 
 sealed class CoreRenderers
 {
-    public Font ConsoleFont { get; }
-    public Font UIFont { get; }
-
     public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; } = new();
     public IRenderer PrimitivesRenderer { get; }
 
     public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> ConsoleBackground { get; } = new();
     public IRenderer ConsoleBackgroundRenderer { get; }
 
-    public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> ConsoleFontMeshBuilder { get; }
-    public IRenderer ConsoleFontRenderer { get; }
-
-    public ExpandingIndexedTrianglesMeshBuilder<UVColorVertex> UIFontMeshBuilder { get; }
-    public IRenderer UIFontRenderer { get; }
-
     public IDrawableRenderers DrawableRenderers { get; }
+    public TextDrawerWithDefaults<Color> InGameConsoleFont { get; private set; } = null!;
 
     public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings, IDrawableRenderers renderers)
     {
         DrawableRenderers = renderers;
 
         var primitiveShader = shaders.GetShaderProgram("geometry");
-        var uvColorShader = shaders.GetShaderProgram("uvcolor");
 
         PrimitivesRenderer = BatchedRenderer.From(
             Primitives.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
-        primitiveShader!.UseOnRenderer(PrimitivesRenderer);
+        primitiveShader.UseOnRenderer(PrimitivesRenderer);
 
         ConsoleBackgroundRenderer = BatchedRenderer.From(
             ConsoleBackground.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
-        primitiveShader!.UseOnRenderer(ConsoleBackgroundRenderer);
+        primitiveShader.UseOnRenderer(ConsoleBackgroundRenderer);
+    }
 
-        var supportedCharacters = Enumerable
-            // ACII
-            .Range(' ', '~' - ' ').Select(i => (char) i)
-            // Degree symbol
-            .Append('°')
-            .ToImmutableArray();
-
-        var (consoleFontTextureData, consoleFont) = // used to be inconsolata
-            FontFactory.From(new System.Drawing.Font(FontFamily.GenericMonospace, 32), supportedCharacters, 2);
-        // TODO: premultiply console font texture data!
-        var consoleFontTexture = Texture.From(consoleFontTextureData, t =>
-        {
-            t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
-            t.GenerateMipmap();
-        });
-
-        ConsoleFont = consoleFont;
-        ConsoleFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
-        ConsoleFontRenderer = BatchedRenderer.From(ConsoleFontMeshBuilder.ToRenderable(),
-            settings.ViewMatrix, settings.ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, consoleFontTexture));
-        uvColorShader!.UseOnRenderer(ConsoleFontRenderer);
-
-        var (uiFontTextureData, uiFont) = // used to be helveticaneue
-            FontFactory.From(new System.Drawing.Font(FontFamily.GenericSansSerif, 32), supportedCharacters, 2);
-        // TODO: premultiply console font texture data!
-        var uiFontTexture = Texture.From(uiFontTextureData, t =>
-        {
-            t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
-            t.GenerateMipmap();
-        });
-
-        UIFont = uiFont;
-        UIFontMeshBuilder = new ExpandingIndexedTrianglesMeshBuilder<UVColorVertex>();
-        UIFontRenderer = BatchedRenderer.From(UIFontMeshBuilder.ToRenderable(),
-            settings.ViewMatrix, settings.ProjectionMatrix, new TextureUniform("diffuse", TextureUnit.Texture0, uiFontTexture));
-        uvColorShader!.UseOnRenderer(UIFontRenderer);
+    public void SetInGameConsoleFont(TextDrawerWithDefaults<Color> font)
+    {
+        InGameConsoleFont = font;
     }
 
     public void ClearAll()
     {
         Primitives.Clear();
         ConsoleBackground.Clear();
-        ConsoleFontMeshBuilder.Clear();
-        UIFontMeshBuilder.Clear();
         DrawableRenderers.ClearAll();
     }
 }

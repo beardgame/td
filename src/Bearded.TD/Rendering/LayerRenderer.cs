@@ -50,15 +50,13 @@ sealed class LayerRenderer
                 Do(tryRenderDeferred),
                 WithContext(c =>c.SetBlendMode(Premultiplied),
                     InOrder(
-                        WithContext(c => c.SetDebugName("Render UI and fonts"),
-                            renderDrawGroups(renderers.DrawableRenderers, uiDrawGroups)
-                        ),
                         WithContext(c => c.SetDebugName("Render primitives"),
                             Render(
                                 renderers.PrimitivesRenderer,
-                                renderers.ConsoleBackgroundRenderer,
-                                renderers.UIFontRenderer,
-                                renderers.ConsoleFontRenderer)
+                                renderers.ConsoleBackgroundRenderer)
+                        ),
+                        WithContext(c => c.SetDebugName("Render UI and fonts"),
+                            renderDrawGroups(renderers.DrawableRenderers, uiDrawGroups)
                         )
                     )),
                 Do(renderers.ClearAll)
