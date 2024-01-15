@@ -18,12 +18,31 @@ using Font = Bearded.TD.Content.Models.Fonts.Font;
 
 namespace Bearded.TD.Rendering.Text;
 
+static class FontExtensions
+{
+    public static TextDrawer<TVertex, TVertexParameters> MakeConcreteWith<TVertex, TVertexParameters>(
+        this Font font,
+        IDrawableRenderers drawableRenderers,
+        DrawOrderGroup drawGroup,
+        int drawGroupOrderKey,
+        CreateVertex<TVertex, TVertexParameters> createVertex,
+        Shader? shader = null)
+        where TVertex : struct, IVertexData
+    {
+        shader ??= font.Material.Shader;
+        return drawableRenderers.GetOrCreateDrawableFor(
+            font, shader, drawGroup, drawGroupOrderKey,
+            () => TextDrawer.Create(font, createVertex, shader)
+        );
+    }
+}
+
 static class TextDrawer
 {
     public static TextDrawer<TVertex, TVertexParameters> Create<TVertex, TVertexParameters>(
         Font font,
         CreateVertex<TVertex, TVertexParameters> createVertex,
-        Shader? shader = null)
+        Shader shader)
         where TVertex : struct, IVertexData
     {
         var disposables = new List<IDisposable>(font.Material.Textures.Count + 1);
@@ -35,7 +54,11 @@ static class TextDrawer
             // TODO: these textures should be cached
             // - cache in font, similar to how textures are cached in PackedSpriteSet?
             // - could still cause duplication if same material is used for different purposes...
-            var texture = Texture.From(ImageTextureData.From(image), c => c.GenerateMipmap());
+            var texture = Texture.From(ImageTextureData.From(image), c =>
+                {
+                    c.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
+                }
+            );
             disposables.Add(texture);
             settings.Add(new TextureUniform(name, TextureUnit.Texture0 + i, texture));
             i++;
@@ -44,8 +67,6 @@ static class TextDrawer
         var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<TVertex>();
         disposables.Add(meshBuilder);
         settings.Add(new Vector2Uniform("unitRange", font.Definition.UnitRange));
-
-        shader ??= font.Material.Shader;
 
         return new TextDrawer<TVertex, TVertexParameters>(
             font.Definition,
