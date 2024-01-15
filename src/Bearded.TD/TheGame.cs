@@ -298,6 +298,12 @@ sealed class TheGame : Window
         instance!.navigationController.Push<UIDebugOverlay>();
     }
 
+    [Command("debug.fonts")]
+    private static void openFontTextOverlay(Logger logger, CommandParameters p)
+    {
+        instance!.navigationController.Push<FontTest>();
+    }
+
     [Command("perf")]
     private static void togglePerformanceOverlay(Logger logger, CommandParameters? _)
     {
