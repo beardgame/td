@@ -34,7 +34,10 @@ sealed class AutoCompletingTextInputRenderer : IRenderer<AutoCompletingTextInput
 
         var stringOffset = textDrawer.StringWidth(textInput.Text, (float) textInput.FontSize);
 
-        var str = textInput.AutoCompletionText.Substring(textInput.Text.Length);
+        if (textInput.Text.Length >= textInput.AutoCompletionText.Length)
+            return;
+
+        var str = textInput.AutoCompletionText[textInput.Text.Length..];
 
         var midLeft = textInput.Frame.TopLeft + new Vector2d(0, textInput.Frame.Size.Y * .5);
         textDrawer.DrawLine(
