@@ -14,6 +14,7 @@ readonly record struct Glyph(
             (char) Unicode,
             Advance,
             PlaneBounds,
-            AtlasBounds.Multiply(1.0f / atlas.Width, 1.0f / atlas.Height));
+            // Multiply y by -1 to transform into GL uv space
+            AtlasBounds.Multiply(1.0f / atlas.Width, -1.0f / atlas.Height));
     }
-};
+}
