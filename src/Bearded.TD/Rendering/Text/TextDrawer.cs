@@ -85,7 +85,7 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         Vector3 unitRightDP, Vector3 unitDownDP, TVertexParameters parameters)
     {
         var unitX = unitRightDP * fontHeight;
-        var unitY = unitDownDP * fontHeight;
+        var unitY = unitDownDP * -fontHeight; // negated, because unitY points UP, relative to font
         var alignOffset = new Vector2(
             -alignHorizontal * line.Width,
             -alignVertical
@@ -105,14 +105,14 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         {
             var (xy, uv) = glyph;
 
-            var topLeft = origin + transform(xy.TopLeft, unitX, unitY);
+            var bottomLeft = origin + transform(xy.BottomLeft, unitX, unitY);
             var stepRight = xy.Width * unitX;
-            var stepDown = xy.Height * unitY;
+            var stepUp = xy.Height * unitY;
 
-            vertices[vertex] = createTextVertex(topLeft, uv.TopLeft, parameters);
-            vertices[vertex + 1] = createTextVertex(topLeft + stepRight, uv.TopRight, parameters);
-            vertices[vertex + 2] = createTextVertex(topLeft + stepDown, uv.BottomLeft, parameters);
-            vertices[vertex + 3] = createTextVertex(topLeft + stepRight + stepDown, uv.BottomRight, parameters);
+            vertices[vertex] = createTextVertex(bottomLeft, uv.BottomLeft, parameters);
+            vertices[vertex + 1] = createTextVertex(bottomLeft + stepUp, uv.TopLeft, parameters);
+            vertices[vertex + 2] = createTextVertex(bottomLeft + stepRight, uv.BottomRight, parameters);
+            vertices[vertex + 3] = createTextVertex(bottomLeft + stepUp + stepRight, uv.TopRight, parameters);
 
             indices[index] = vertexIndex;
             indices[index + 1] = (ushort)(vertexIndex + 1);
