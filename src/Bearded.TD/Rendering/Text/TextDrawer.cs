@@ -109,7 +109,7 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         var unitY = unitDownDP * -fontHeight; // negated, because unitY points UP, relative to font
         var alignOffset = new Vector2(
             -alignHorizontal * line.Width,
-            -alignVertical
+            alignVertical - 1 // in line with previous behaviour
         );
         var origin = xyz + transform(alignOffset, unitX, unitY);
 
