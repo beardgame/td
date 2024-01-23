@@ -62,7 +62,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         Events.Subscribe(this);
 
         startTime = Owner.Game.Time;
-        
+
         if (Parameters.RandomAngle)
             angle = StaticRandom.Float(360).Degrees();
     }
@@ -94,6 +94,6 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
 
         var color = Sprite.GetColor(Owner, Parameters.ColorMode, keyframe.Color);
 
-        e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction.Radians + angle.Radians, color);
+        e.Drawer.DrawSprite(sprite, p, keyframe.Size.NumericValue, Owner.Direction + angle, color);
     }
 }

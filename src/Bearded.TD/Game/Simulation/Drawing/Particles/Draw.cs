@@ -7,6 +7,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -90,7 +91,7 @@ sealed class Draw : ParticleUpdater<Draw.IParameters>, IListener<DrawComponents>
                     sprite,
                     position.NumericValue,
                     p.Size,
-                    p.Direction.Radians,
+                    p.Direction,
                     p.Color
                 );
                 break;

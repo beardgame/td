@@ -281,7 +281,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
                         sprite,
                         p.Position.NumericValue,
                         size,
-                        p.Velocity.XY().Direction.Radians,
+                        p.Velocity.XY().Direction,
                         argb);
                     break;
                 case DrawMode.Line:

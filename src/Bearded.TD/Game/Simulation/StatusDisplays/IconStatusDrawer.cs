@@ -19,7 +19,7 @@ sealed class IconStatusDrawer : IStatusDrawer
 
     public void Draw(CoreDrawers core, IComponentDrawer drawer, Vector3 position, float size)
     {
-        drawer.DrawSprite(sprite, position, .85f * size, 0f, ForegroundColor);
+        drawer.DrawSprite(sprite, position, .85f * size, ForegroundColor);
     }
 
     public static IconStatusDrawer FromSpriteBlueprint(GameState game, ISpriteBlueprint blueprint) =>

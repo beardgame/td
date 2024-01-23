@@ -103,7 +103,7 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
             var icon = futureSpawnsWithIcons[i].Icon!.Value;
             var pos = anchor + i * offsetBetweenIcons;
 
-            drawer.DrawSprite(icon.Sprite, pos.NumericValue, iconSize, 0, icon.Color);
+            drawer.DrawSprite(icon.Sprite, pos.NumericValue, iconSize, icon.Color);
             font.DrawLine(icon.Color, (pos + offsetToText).NumericValue, $"{futureSpawnsWithIcons[i].Amount}");
         }
     }

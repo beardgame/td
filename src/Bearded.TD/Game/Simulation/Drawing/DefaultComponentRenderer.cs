@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Shared.Events;
+using Bearded.Utilities.Geometry;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -48,10 +49,10 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
     }
 
     public void DrawSprite<TVertex, TVertexData>(
-        SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, float angle, TVertexData data)
+        SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, Angle angle, TVertexData data)
         where TVertex : struct, IVertexData
     {
-        Drawable(sprite).Draw(position, size, angle, data);
+        Drawable(sprite).DrawWithWidth(position, size, angle, data);
     }
 
     public void DrawQuad<TVertex, TVertexData>(

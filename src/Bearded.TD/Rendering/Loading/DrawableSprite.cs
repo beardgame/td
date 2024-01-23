@@ -4,33 +4,25 @@ using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Loading;
 
-sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertex, TVertexData>
-    where TVertex : struct, IVertexData
+sealed class DrawableSprite<TVertex, TVertexData>(
+    IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
+    CreateVertex<TVertex, TVertexData> createVertex,
+    SpriteParameters spriteParameters)
+        : IDrawableSprite<TVertex, TVertexData>
+        where TVertex : struct, IVertexData
 {
-    private readonly IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder;
-    private readonly CreateVertex<TVertex, TVertexData> createVertex;
-    private readonly UVRectangle uv;
-    private readonly Vector2 baseSize;
+    private readonly UVRectangle uv = spriteParameters.UV;
+    private readonly Vector2 baseSize = spriteParameters.BaseSize;
 
-    public DrawableSprite(
-        IIndexedTrianglesMeshBuilder<TVertex, ushort> meshBuilder,
-        CreateVertex<TVertex, TVertexData> createVertex,
-        SpriteParameters spriteParameters)
-    {
-        this.meshBuilder = meshBuilder;
-        this.createVertex = createVertex;
-        uv = spriteParameters.UV;
-        baseSize = spriteParameters.BaseSize;
-    }
-
-    public void Draw(Vector3 center, float scale, float angle, TVertexData data)
+    public void DrawWithWidth(Vector3 center, float width, Angle angle, TVertexData data)
     {
         ((IDrawableSprite<TVertexData>)this).Draw(
-            center, baseSize.X * scale, baseSize.Y * scale, angle, data
+            center, baseSize.X * width, baseSize.Y * width, angle, data
         );
     }
 
@@ -49,7 +41,7 @@ sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertex, TVe
 
         var z = center.Z;
 
-        ((IDrawableSprite<TVertexData>) this).DrawQuad(
+        ((IDrawableSprite<TVertexData>)this).DrawQuad(
             v0.WithZ(z), v1.WithZ(z), v2.WithZ(z), v3.WithZ(z), data
         );
     }
@@ -65,7 +57,8 @@ sealed class DrawableSprite<TVertex, TVertexData> : IDrawableSprite<TVertex, TVe
         );
     }
 
-    public void DrawQuad(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
+    public void DrawQuad(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0, Vector2 uv1, Vector2 uv2,
+        Vector2 uv3,
         TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3)
     {
         meshBuilder.AddQuad(

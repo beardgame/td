@@ -1,6 +1,7 @@
 using System;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering.Loading;
+using Bearded.Utilities.Geometry;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
@@ -8,7 +9,17 @@ namespace Bearded.TD.Game.Simulation.Drawing;
 interface IComponentDrawer
 {
     void DrawSprite<TVertex, TVertexData>(
-        SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, float angle, TVertexData data)
+        SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, TVertexData data)
+        where TVertex : struct, IVertexData
+        => DrawSprite(sprite, position, size, Angle.Zero, data);
+
+    void DrawSprite<TVertex, TVertexData>(
+        SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, Direction2 direction, TVertexData data)
+        where TVertex : struct, IVertexData
+        => DrawSprite(sprite, position, size, direction - Direction2.Zero, data);
+
+    void DrawSprite<TVertex, TVertexData>(
+        SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, Angle angle, TVertexData data)
         where TVertex : struct, IVertexData;
 
     void DrawQuad<TVertex, TVertexData>(

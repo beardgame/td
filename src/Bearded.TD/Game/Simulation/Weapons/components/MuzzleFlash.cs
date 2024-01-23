@@ -94,7 +94,7 @@ sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
             sprite,
             flash.Position.NumericValue,
             flash.Size,
-            flash.Direction.Radians,
+            flash.Direction,
             Parameters.Color);
 
         e.Core.PointLight.Draw(

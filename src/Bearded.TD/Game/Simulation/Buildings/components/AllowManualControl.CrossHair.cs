@@ -68,7 +68,7 @@ sealed partial class AllowManualControl
                 sprite,
                 Target.NumericValue,
                 0.5f,
-                45.Degrees().Radians,
+                45.Degrees(),
                 (faction?.Faction.Color ?? Color.Gray).WithAlpha(0.75f) * 0.75f);
         }
     }

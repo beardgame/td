@@ -89,7 +89,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
             p.Xy += o.NumericValue;
         }
 
-        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, direction.Radians, color);
+        e.Drawer.DrawSprite(sprite, p, Parameters.Size.NumericValue, direction, color);
     }
 
     public static Color GetColor(GameObject obj, ColorMode mode, Color defaultColor)

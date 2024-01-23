@@ -47,7 +47,7 @@ sealed class EnemyIcon : Component<EnemyIcon.IParameters>, IListener<DrawCompone
     public void HandleEvent(DrawComponents @event)
     {
         var pos = Owner.Position + iconOffset;
-        @event.Drawer.DrawSprite(sprite, pos.NumericValue, size, 0, IconColor);
+        @event.Drawer.DrawSprite(sprite, pos.NumericValue, size, IconColor);
     }
 
     public SpriteDrawInfo<UVColorVertex, Color> MakeIconSprite(GameState game)
