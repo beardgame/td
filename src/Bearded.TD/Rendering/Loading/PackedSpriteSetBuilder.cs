@@ -72,6 +72,7 @@ sealed class PackedSpriteSetBuilder
             var texture = Texture.From(sampler.Data, t =>
             {
                 t.GenerateMipmap();
+                t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
             });
 
             return new TextureUniform(sampler.Name, TextureUnit.Texture0 + i, texture);
