@@ -1,0 +1,9 @@
+﻿{
+    id: "symbols",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}

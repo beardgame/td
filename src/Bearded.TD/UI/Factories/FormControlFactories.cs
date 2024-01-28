@@ -31,7 +31,7 @@ static class FormControlFactories
             checkbox.Add(new Border());
             if (valueBinding.Value)
             {
-                checkbox.Add(new Label("x"));
+                checkbox.Add(new Sprite { SpriteId = Constants.Content.CoreUI.Sprites.CheckMark } );
             }
         }
     }

@@ -12,6 +12,11 @@ static partial class Constants
         {
             public const string ModId = "core-ui";
 
+            public static class DefaultShaders
+            {
+                public static ModAwareId Sprite = new (ModId, "default-sprite");
+            }
+
             public static class Fonts
             {
                 public static readonly ModAwareId DefaultText = new (ModId, "default-text");
@@ -20,6 +25,13 @@ static partial class Constants
 
                 public static readonly ModAwareId DecoTitle = new (ModId, "deco-title");
                 public static readonly ModAwareId ScriptTitle = new (ModId, "script-title");
+            }
+
+            public static class Sprites
+            {
+                private static ModAwareSpriteId symbol(string id) => new(new ModAwareId(ModId, "symbols"), id);
+
+                public static readonly ModAwareSpriteId CheckMark = symbol("checkmark");
             }
         }
     }

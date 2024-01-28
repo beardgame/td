@@ -205,6 +205,8 @@ sealed class TheGame : Window
 
         renderContext.Renderers.SetInGameConsoleFont(defaultTextDrawer.With(unitDownDP: -Vector3.UnitY));
 
+        var spriteShader = blueprints.Shaders[CoreUI.DefaultShaders.Sprite];
+
         rendererRouter = new CachedRendererRouter(
             new (Type, object)[]
             {
@@ -216,6 +218,7 @@ sealed class TheGame : Window
                     new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
                 (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
                 (typeof(Label), new LabelRenderer(defaultTextDrawer)),
+                (typeof(Sprite), new SpriteRenderer(contentManager, renderers, spriteShader)),
                 (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
                 (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
                 (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),
