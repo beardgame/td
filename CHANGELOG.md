@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.24
+
+* Replaced UI font rendering
+* Replaced fonts
+* Replaced checkbox icon
+* Hid status of buildings and enemies by default, toggle using Z and hold alt to temporarily invert the visibility state
+* Added loading of core UI assets to the game bootup
+* Known issue: vertical alignment of text labels is off
+* Known issue: icons in the UI are drawn upside down
+
 ## v0.23
 
 * Changed the building and upgrading mechanics
