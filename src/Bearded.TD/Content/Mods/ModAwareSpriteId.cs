@@ -2,17 +2,8 @@
 
 namespace Bearded.TD.Content.Mods;
 
-struct ModAwareSpriteId
+readonly record struct ModAwareSpriteId(ModAwareId SpriteSet, string Id)
 {
-    public ModAwareId SpriteSet { get; }
-    public string Id { get; }
-
-    public ModAwareSpriteId(ModAwareId spriteSet, string id)
-    {
-        SpriteSet = spriteSet;
-        Id = id;
-    }
-
     public static ModAwareSpriteId FromNameInMod(string name, ModMetadata mod)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -20,17 +11,13 @@ struct ModAwareSpriteId
 
         var components = name.Split('.');
 
-        switch (components.Length)
+        return components.Length switch
         {
-            case 1:
-                throw new InvalidDataException($"Srite id must contain at least one . ({name})");
-            case 2:
-                return new ModAwareSpriteId(new ModAwareId(mod.Id, components[0]), components[1]);
-            case 3:
-                return new ModAwareSpriteId(new ModAwareId(components[0], components[1]), components[2]);
-            default:
-                throw new InvalidDataException($"Sprite id may not contain more than two . ({name})");
-        }
+            1 => throw new InvalidDataException($"Srite id must contain at least one '.' ({name})"),
+            2 => new ModAwareSpriteId(new ModAwareId(mod.Id, components[0]), components[1]),
+            3 => new ModAwareSpriteId(new ModAwareId(components[0], components[1]), components[2]),
+            _ => throw new InvalidDataException($"Sprite id may not contain more than two '.' ({name})")
+        };
     }
 
     public override string ToString()
