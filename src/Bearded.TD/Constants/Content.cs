@@ -25,6 +25,8 @@ static partial class Constants
 
                 public static readonly ModAwareId DecoTitle = new (ModId, "deco-title");
                 public static readonly ModAwareId ScriptTitle = new (ModId, "script-title");
+
+                public static readonly ModAwareId MonospaceText = new (ModId, "monospace-text");
             }
 
             public static class Sprites
