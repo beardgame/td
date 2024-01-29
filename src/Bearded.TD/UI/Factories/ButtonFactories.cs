@@ -18,8 +18,6 @@ static class ButtonFactories
 {
     public static Button Button(string label) => Button(b => b.WithLabel(label));
 
-    public static Button Button(Func<string> labelFunc) => Button(b => b.WithLabel(labelFunc));
-
     public static Button Button(BuilderFunc<Builder> builderFunc)
     {
         var builder = new Builder();
@@ -56,7 +54,7 @@ static class ButtonFactories
     public sealed class Builder
     {
         private Func<string>? labelProvider;
-        private (int CostAmount, Color Color)? cost;
+        private (IReadonlyBinding<int> CostAmount, Color Color)? cost;
         private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
         private GenericEventHandler<Button.ClickEventArgs>? onClick;
@@ -71,6 +69,13 @@ static class ButtonFactories
             return this;
         }
 
+        public Builder WithLabel(IReadonlyBinding<string> labelBinding)
+        {
+            labelProvider = () => labelBinding.Value;
+            return this;
+        }
+
+        [Obsolete("Use a binding instead")]
         public Builder WithLabel(Func<string> labelFunc)
         {
             labelProvider = labelFunc;
@@ -79,13 +84,19 @@ static class ButtonFactories
 
         public Builder WithResourceCost(ResourceAmount amount)
         {
-            cost = (amount.NumericValue, Constants.Game.GameUI.ResourcesColor);
+            cost = (new Binding<int>(amount.NumericValue), Constants.Game.GameUI.ResourcesColor);
+            return this;
+        }
+
+        public Builder WithResourceCost(IReadonlyBinding<ResourceAmount> amount)
+        {
+            cost = (amount.Transform(r => r.NumericValue), Constants.Game.GameUI.ResourcesColor);
             return this;
         }
 
         public Builder WithTechCost(int amount)
         {
-            cost = (amount, Constants.Game.GameUI.TechPointsColor);
+            cost = (new Binding<int>(amount), Constants.Game.GameUI.TechPointsColor);
             return this;
         }
 
@@ -155,11 +166,15 @@ static class ButtonFactories
             if (cost.HasValue)
             {
                 label.Anchor(a => a.Top(margin: Margin).Bottom(relativePercentage: .4));
-                button.Add(new Label(cost.Value.CostAmount.ToString())
+                var costLabel = new Label
                 {
+                    Text = cost.Value.CostAmount.Value.ToString(),
                     Color = cost.Value.Color,
                     FontSize = CostFontSize,
-                }.Anchor(a => a.Bottom(margin: Margin).Top(relativePercentage: .6)));
+                };
+                cost.Value.CostAmount.SourceUpdated += newCost => costLabel.Text = newCost.ToString();
+
+                button.Add(costLabel.Anchor(a => a.Bottom(margin: Margin).Top(relativePercentage: .6)));
             }
 
             button.Add(new DynamicBorder(colorProvider));

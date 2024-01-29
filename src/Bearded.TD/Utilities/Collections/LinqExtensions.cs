@@ -107,4 +107,5 @@ static class LinqExtensions
         return returnValue;
     }
 
+    public static IEnumerable<T?> AsNullable<T>(this IEnumerable<T> source) => source;
 }
