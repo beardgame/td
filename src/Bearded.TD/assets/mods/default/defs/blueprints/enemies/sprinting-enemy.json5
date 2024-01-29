@@ -1,7 +1,12 @@
 {
     id: "sprinting-enemy",
     components: [
-        { id: "name", parameters: { name: "Sprinting enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Sprinting enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

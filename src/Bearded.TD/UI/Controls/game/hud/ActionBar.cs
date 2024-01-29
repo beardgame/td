@@ -97,6 +97,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
         lastFilledIndex++;
         handlers[lastFilledIndex] = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
-        labels[lastFilledIndex] = (blueprint.GetName(), $"{blueprint.GetResourceCost().NumericValue}");
+        labels[lastFilledIndex] = (blueprint.NameOrDefault(), $"{blueprint.GetResourceCost().NumericValue}");
     }
 }

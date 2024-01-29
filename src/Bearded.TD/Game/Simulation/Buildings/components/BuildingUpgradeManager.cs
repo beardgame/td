@@ -23,7 +23,7 @@ sealed partial class BuildingUpgradeManager
         IUpgradable,
         IListener<ComponentAdded>
 {
-    private INameProvider? nameProvider;
+    private ObjectAttributes attributes = ObjectAttributes.Default;
     private IFactionProvider? factionProvider;
     private IUpgradeSlots? upgradeSlots;
     private readonly List<IPermanentUpgrade> appliedUpgrades = new();
@@ -58,7 +58,7 @@ sealed partial class BuildingUpgradeManager
     {
         Events.Subscribe(this);
         ReportAggregator.Register(Events, new UpgradeReport(this));
-        ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
+        ComponentDependencies.Depend<ObjectAttributes>(Owner, Events, attr => attributes = attr);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         ComponentDependencies.Depend<IUpgradeSlots>(Owner, Events, slots => upgradeSlots = slots);
     }
@@ -114,7 +114,7 @@ sealed partial class BuildingUpgradeManager
 
         UpgradeCompleted?.Invoke(upgrade);
         Owner.Game.Meta.Events.Send(
-            new BuildingUpgradeFinished(nameProvider.NameOrDefault(), Owner, upgrade));
+            new BuildingUpgradeFinished(attributes.Name, Owner, upgrade));
     }
 
     private void onUpgradeCancelled(IIncompleteUpgrade incompleteUpgrade)
@@ -126,7 +126,7 @@ sealed partial class BuildingUpgradeManager
         }
 
         Owner.Game.Meta.Events.Send(
-            new BuildingUpgradeCancelled(nameProvider.NameOrDefault(), Owner, incompleteUpgrade.Upgrade));
+            new BuildingUpgradeCancelled(attributes.Name, Owner, incompleteUpgrade.Upgrade));
     }
 
     public void SyncStartUpgrade(ModAwareId upgradeId)

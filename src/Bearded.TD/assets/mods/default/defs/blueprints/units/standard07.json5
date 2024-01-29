@@ -1,7 +1,12 @@
 {
     id: "standard07",
     components: [
-        { id: "name", parameters: { name: "Standard enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Standard enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

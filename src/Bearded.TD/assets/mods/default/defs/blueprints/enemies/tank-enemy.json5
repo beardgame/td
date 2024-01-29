@@ -1,7 +1,12 @@
 {
     id: "tank-enemy",
     components: [
-        { id: "name", parameters: { name: "Tank enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Tank enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

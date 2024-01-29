@@ -1,7 +1,12 @@
 {
     id: "dodgy-enemy",
     components: [
-        { id: "name", parameters: { name: "Dodgy enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Dodgy enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

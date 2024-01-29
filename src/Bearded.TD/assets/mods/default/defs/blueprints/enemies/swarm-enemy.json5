@@ -1,7 +1,12 @@
 {
     id: "swarm-enemy",
     components: [
-        { id: "name", parameters: { name: "Swarm enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Swarm enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

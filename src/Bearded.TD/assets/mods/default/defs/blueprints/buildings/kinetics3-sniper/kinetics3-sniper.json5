@@ -1,7 +1,12 @@
 {
   id: "kinetics3-sniper",
   components: [
-    { id: "name", parameters: { name: "Sniper" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Sniper",
+      }
+    },
     { id: "cost", parameters: { resources: 75 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

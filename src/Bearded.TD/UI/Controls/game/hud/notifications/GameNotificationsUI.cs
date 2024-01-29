@@ -42,13 +42,13 @@ sealed class GameNotificationsUI
     private ImmutableArray<INotificationListener> createNotificationListeners() =>
         ImmutableArray.Create<INotificationListener>(
             textAndGameObjectEventListener<BuildingConstructionFinished>(
-                @event => $"Constructed {getObjectName(@event.GameObject)}",
+                @event => $"Constructed {@event.GameObject.NameOrDefault()}",
                 @event => ScrollTo(game, @event.GameObject)),
             textAndGameObjectEventListener<BuildingRepairFinished>(
-                @event => $"Repaired {getObjectName(@event.GameObject)}",
+                @event => $"Repaired {@event.GameObject.NameOrDefault()}",
                 @event => ScrollTo(game, @event.GameObject)),
             textAndGameObjectEventListener<BuildingGainedLevel>(
-                @event => $"{getObjectName(@event.GameObject)} gained level",
+                @event => $"{@event.GameObject.NameOrDefault()} gained level",
                 @event => ScrollTo(game, @event.GameObject)),
             textAndGameObjectEventListener<BuildingUpgradeFinished>(
                 @event => $"Upgraded {@event.BuildingName} with {@event.Upgrade.Name}",
@@ -57,13 +57,6 @@ sealed class GameNotificationsUI
                 @event => $"Unlocked {@event.Technology.Name}"),
             new ExplorationTokenListener(this),
             new TechnologyTokenListener(this));
-
-    private static string getObjectName(GameObject gameObject)
-    {
-        return gameObject.TryGetSingleComponent<INameProvider>(out var nameProvider)
-            ? nameProvider.Name
-            : "<obj>";
-    }
 
     public void Initialize(GameInstance game, ITimeSource timeSource)
     {

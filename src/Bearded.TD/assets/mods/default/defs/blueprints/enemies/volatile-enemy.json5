@@ -1,7 +1,12 @@
 {
     id: "volatile-enemy",
     components: [
-        { id: "name", parameters: { name: "Volatile enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Volatile enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

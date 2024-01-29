@@ -1,7 +1,12 @@
 {
   id: "kinetics0-cannon",
   components: [
-    { id: "name", parameters: { name: "Cannon" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Cannon",
+      }
+    },
     { id: "cost", parameters: { resources: 50 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

@@ -1,7 +1,12 @@
 {
   id: "kinetics2-gatling",
   components: [
-    { id: "name", parameters: { name: "Gatling" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Gatling",
+      }
+    },
     { id: "cost", parameters: { resources: 50 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

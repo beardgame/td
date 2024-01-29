@@ -1,7 +1,12 @@
 {
     id: "lightning1-teslaCoil",
     components: [
-        { id: "name", parameters: { name: "Tesla coil" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Tesla coil",
+            }
+        },
         { id: "cost", parameters: { resources: 50 } },
         { id: "footprint", parameters: { footprint: "single" } },
         { id: "footprintTransformation" },
