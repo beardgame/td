@@ -198,12 +198,9 @@ sealed class TheGame : Window
 
         var drawers = renderContext.Drawers;
 
-        var defaultFont = blueprints.Fonts[CoreUI.Fonts.DefaultText];
-        var defaultTextDrawer = defaultFont
-            .MakeConcreteWith(renderers, DrawOrderGroup.UIFont, 0, UVColorVertex.Create)
-            .WithDefaults(Constants.UI.Text.FontSize, 0, 0, Vector3.UnitX, Vector3.UnitY, Color.White);
+        var uiFonts = UIFonts.Load(blueprints, renderers);
 
-        renderContext.Renderers.SetInGameConsoleFont(defaultTextDrawer.With(unitDownDP: -Vector3.UnitY));
+        renderContext.Renderers.SetInGameConsoleFont(uiFonts.Default.With(unitDownDP: -Vector3.UnitY));
 
         var spriteShader = blueprints.Shaders[CoreUI.DefaultShaders.Sprite];
 
@@ -211,13 +208,13 @@ sealed class TheGame : Window
             new (Type, object)[]
             {
                 (typeof(UIDebugOverlayControl.Highlight),
-                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
+                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, uiFonts.Default)),
                 (typeof(RenderLayerCompositeControl),
                     new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
                 (typeof(AutoCompletingTextInput),
-                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
-                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, defaultTextDrawer)),
-                (typeof(Label), new LabelRenderer(defaultTextDrawer)),
+                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, uiFonts.Default)),
+                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, uiFonts.Default)),
+                (typeof(Label), new LabelRenderer(uiFonts)),
                 (typeof(Sprite), new SpriteRenderer(contentManager, renderers, spriteShader)),
                 (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
                 (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),

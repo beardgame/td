@@ -14,12 +14,11 @@ class Label : Control
 
     public string Text { get; set; } = "a label";
     public double FontSize { get; set; } = 24;
-    public Vector2d TextAnchor { get; set; } = new Vector2d(0.5, 0.5);
+    public Vector2d TextAnchor { get; set; } = new(0.5, 0.5);
     public Color Color { get; set; } = Color.White;
+    public TextStyle TextStyle { get; set; } = TextStyle.Default;
 
-    public Label()
-    {
-    }
+    public Label() {}
 
     [Obsolete]
     public Label(string text)
