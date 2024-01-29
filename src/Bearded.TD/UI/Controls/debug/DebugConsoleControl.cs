@@ -1,5 +1,4 @@
-﻿using System.Collections.Frozen;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
@@ -23,7 +22,7 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
             {Logger.Severity.Info, Color.White},
             {Logger.Severity.Debug, Color.SpringGreen},
             {Logger.Severity.Trace, Color.SkyBlue},
-        }.ToFrozenDictionary();
+        }.AsReadOnly();
 
     private readonly DebugConsole debug;
     private readonly ListControl logBox;
