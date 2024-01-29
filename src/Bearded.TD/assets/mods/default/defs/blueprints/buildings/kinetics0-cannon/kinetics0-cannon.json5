@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Cannon",
+        icon: "building-icons.cannon-shot",
       }
     },
     { id: "cost", parameters: { resources: 50 } },

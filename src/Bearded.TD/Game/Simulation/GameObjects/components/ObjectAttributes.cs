@@ -1,4 +1,4 @@
-using Bearded.TD.Content.Models;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -13,12 +13,12 @@ sealed class ObjectAttributes(ObjectAttributes.IParameters parameters)
     {
         public string Name { get; }
         public string? Description { get; }
-        public ISpriteBlueprint? Icon { get; }
+        public ModAwareSpriteId? Icon { get; }
     }
 
     public string Name => Parameters.Name;
     public string? Description => Parameters.Description;
-    public ISpriteBlueprint? Icon => Parameters.Icon;
+    public ModAwareSpriteId? Icon => Parameters.Icon;
 
     protected override void OnAdded() { }
     public override void Update(TimeSpan elapsedTime) { }
@@ -31,7 +31,7 @@ interface IObjectAttributes
 {
     string Name { get; }
     string? Description { get; }
-    ISpriteBlueprint? Icon { get; }
+    ModAwareSpriteId? Icon { get; }
 }
 
 static class ObjectAttributesExtensions

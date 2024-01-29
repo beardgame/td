@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Flamethrower",
+        icon: "building-icons.dragon-breath",
       }
     },
     { id: "cost", parameters: { resources: 50 } },

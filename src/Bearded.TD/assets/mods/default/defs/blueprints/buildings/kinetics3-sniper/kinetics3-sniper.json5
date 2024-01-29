@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Sniper",
+        icon: "building-icons.reticule",
       }
     },
     { id: "cost", parameters: { resources: 75 } },

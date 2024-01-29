@@ -5,6 +5,7 @@
             id: "attributes",
             parameters: {
                 name: "Tesla coil",
+                icon: "building-icons.tesla-coil",
             }
         },
         { id: "cost", parameters: { resources: 50 } },

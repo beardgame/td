@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Wall",
+        icon: "building-icons.stakes-fence",
       }
     },
     { id: "cost", parameters: { resources: 7 } },

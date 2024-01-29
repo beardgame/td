@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Grenade launcher",
+        icon: "building-icons.heavy-fall",
       }
     },
     { id: "cost", parameters: { resources: 50 } },

@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Gatling",
+        icon: "building-icons.minigun",
       }
     },
     { id: "cost", parameters: { resources: 50 } },

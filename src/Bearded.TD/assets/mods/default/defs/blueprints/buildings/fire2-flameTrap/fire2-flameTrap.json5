@@ -5,6 +5,7 @@
       id: "attributes",
       parameters: {
         name: "Flame trap",
+        icon: "building-icons.wildfires",
       }
     },
     { id: "cost", parameters: { resources: 50 } },
