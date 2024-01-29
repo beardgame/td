@@ -80,10 +80,10 @@ static class BuildingFactory
 
         public override bool ShouldDraw => base.ShouldDraw && (stateProvider?.State.IsCompleted ?? true);
 
-        public override void Activate(GameObject owner)
+        public override void Activate(GameObject owner, ComponentEvents events)
         {
             owner.TryGetSingleComponent(out stateProvider);
-            base.Activate(owner);
+            base.Activate(owner, events);
         }
     }
 }

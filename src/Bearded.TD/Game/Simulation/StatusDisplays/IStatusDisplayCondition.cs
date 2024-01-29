@@ -6,5 +6,5 @@ interface IStatusDisplayCondition
 {
     bool ShouldDraw { get; }
 
-    void Activate(GameObject owner);
+    void Activate(GameObject owner, ComponentEvents events);
 }
