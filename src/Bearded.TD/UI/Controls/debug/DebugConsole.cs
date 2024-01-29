@@ -18,9 +18,9 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class DebugConsole : UpdateableNavigationNode<Void>
 {
-    private static readonly char[] space = {' '};
+    private static readonly char[] space = [' '];
 
-    private List<string> commandHistory = new();
+    private List<string> commandHistory = [];
     private readonly ConcurrentQueue<Logger.Entry> loggerEntriesAdded = new();
     private int commandHistoryIndex = -1;
 
@@ -56,7 +56,7 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
         logger.Logged -= fireLoggerEntryEvent;
     }
 
-    private static readonly char[] newLineCharacters = {'\r', '\n'};
+    private static readonly char[] newLineCharacters = ['\r', '\n'];
 
     public override void Update(UpdateEventArgs args)
     {

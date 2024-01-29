@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Frozen;
+using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
@@ -12,8 +13,8 @@ namespace Bearded.TD.UI.Controls;
 sealed class DebugConsoleControl : ViewportClippingLayerControl
 {
     private const int logHistoryLength = 100;
-    private static readonly Dictionary<Logger.Severity, Color> colorBySeverity =
-        new Dictionary<Logger.Severity, Color>
+    private static readonly IReadOnlyDictionary<Logger.Severity, Color> colorBySeverity =
+        new Dictionary<Logger.Severity, Color>()
         {
 
             {Logger.Severity.Fatal, Color.DeepPink},
@@ -22,7 +23,7 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
             {Logger.Severity.Info, Color.White},
             {Logger.Severity.Debug, Color.SpringGreen},
             {Logger.Severity.Trace, Color.SkyBlue},
-        };
+        }.ToFrozenDictionary();
 
     private readonly DebugConsole debug;
     private readonly ListControl logBox;
@@ -83,7 +84,8 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
             Text = entry.Text,
             Color = colorBySeverity[entry.Severity],
             FontSize = 16,
-            TextAnchor = .5 * Vector2d.UnitY
+            TextAnchor = .5 * Vector2d.UnitY,
+            TextStyle = TextStyle.Monospace
         };
     }
 
