@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.Graphics;
+﻿using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
