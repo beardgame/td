@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
@@ -55,7 +56,7 @@ sealed class ActionBarControl : CompositeControl
     private Button buttonForIndex(int i)
     {
         var binding = model.Entries.ListElementByIndex<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>(i);
-        return ButtonFactories.Button(b => b
+        var button = ButtonFactories.Button(b => b
             .WithEnabled(binding.Transform(e => e is not null))
             .WithLabel(binding.Transform(e => e?.Label ?? ""))
             .WithResourceCost(binding.Transform(e => e?.Cost ?? ResourceAmount.Zero))
@@ -63,5 +64,21 @@ sealed class ActionBarControl : CompositeControl
         ).Anchor(a => a
             .Top(relativePercentage: i * buttonHeightPercentage)
             .Bottom(relativePercentage: (i + 1) * buttonHeightPercentage));
+        tempAddIcon(button, binding);
+        return button;
+    }
+
+    private void tempAddIcon(Button button, IReadonlyBinding<ActionBarEntry?> binding)
+    {
+        var sprite = new Sprite { SpriteId = binding.Value?.Icon ?? default, Color = Color.White * 0.5f };
+        sprite.BindIsVisible(binding.Transform(e => e != null));
+        binding.SourceUpdated += newEntry =>
+        {
+            if (newEntry is not null)
+            {
+                sprite.SpriteId = newEntry.Icon;
+            }
+        };
+        button.Add(sprite.Anchor(a => a.Left(margin: 4, width: 24)));
     }
 }
