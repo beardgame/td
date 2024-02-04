@@ -26,7 +26,6 @@ using Bearded.TD.Utilities.Performance;
 using Bearded.UI.Controls;
 using Bearded.UI.Events;
 using Bearded.UI.Navigation;
-using Bearded.UI.Rendering;
 using Bearded.Utilities.Input;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.SpaceTime;
@@ -41,7 +40,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using static Bearded.TD.Constants.Content;
 using Activity = Bearded.TD.Utilities.Performance.Activity;
 using Image = SixLabors.ImageSharp.Image;
-using TextInput = Bearded.TD.UI.Controls.TextInput;
 using TimeSpan = System.TimeSpan;
 using Window = Bearded.Graphics.Windowing.Window;
 
@@ -61,11 +59,10 @@ sealed class TheGame : Window
     private InputManager inputManager = null!;
     private RenderContext renderContext = null!;
     private ContentManager contentManager = null!;
+    private UIRenderers uiRenderers = null!;
     private RootControl rootControl = null!;
     private UIUpdater uiUpdater = null!;
     private EventManager eventManager = null!;
-
-    private CachedRendererRouter rendererRouter = null!;
     private NavigationController navigationController = null!;
 
     private ViewportSize viewportSize;
@@ -125,9 +122,9 @@ sealed class TheGame : Window
             tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(10));
         }
 
-        var uiBlueprints = coreMod.LoadedMod.Blueprints;
-        resetUIRenderers(uiBlueprints);
-        contentManager.ModsUnloaded += _ => resetUIRenderers(uiBlueprints);
+        uiRenderers = new UIRenderers(renderContext, contentManager, coreMod.LoadedMod.Blueprints);
+        uiRenderers.Reload();
+        contentManager.ModsUnloaded += _ => uiRenderers.Reload();
 
         var dependencyResolver = new DependencyResolver();
         dependencyResolver.Add(logger);
@@ -184,39 +181,6 @@ sealed class TheGame : Window
 
         if (UserSettings.Instance.Debug.PerformanceOverlay)
             instance!.navigationController.Push<PerformanceOverlay>();
-    }
-
-    private void resetUIRenderers(Blueprints blueprints)
-    {
-        var renderers = renderContext.Renderers.DrawableRenderers;
-        renderers.DisposeAll();
-
-        var drawers = renderContext.Drawers;
-
-        var uiFonts = UIFonts.Load(blueprints, renderers);
-
-        renderContext.Renderers.SetInGameConsoleFont(uiFonts.Default.With(unitDownDP: -Vector3.UnitY));
-
-        var spriteShader = blueprints.Shaders[CoreUI.DefaultShaders.Sprite];
-
-        rendererRouter = new CachedRendererRouter(
-            new (Type, object)[]
-            {
-                (typeof(UIDebugOverlayControl.Highlight),
-                    new UIDebugOverlayHighlightRenderer(drawers.ConsoleBackground, uiFonts.Default)),
-                (typeof(RenderLayerCompositeControl),
-                    new RenderLayerCompositeControlRenderer(renderContext.Compositor)),
-                (typeof(AutoCompletingTextInput),
-                    new AutoCompletingTextInputRenderer(drawers.ConsoleBackground, uiFonts.Default)),
-                (typeof(TextInput), new TextInputRenderer(drawers.ConsoleBackground, uiFonts.Default)),
-                (typeof(Label), new LabelRenderer(uiFonts)),
-                (typeof(Sprite), new SpriteRenderer(contentManager, renderers, spriteShader)),
-                (typeof(Border), new BorderRenderer(drawers.ConsoleBackground)),
-                (typeof(BackgroundBox), new BackgroundBoxRenderer(drawers.ConsoleBackground)),
-                (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(drawers.ConsoleBackground)),
-                (typeof(Dot), new DotRenderer(drawers.ConsoleBackground)),
-                (typeof(Control), new FallbackBoxRenderer(drawers.ConsoleBackground)),
-            });
     }
 
     protected override void OnResize(ResizeEventArgs e)
@@ -276,7 +240,7 @@ sealed class TheGame : Window
         }
 
         renderContext.Compositor.PrepareForFrame();
-        rootControl.Render(rendererRouter);
+        rootControl.Render(uiRenderers);
         renderContext.Compositor.FinalizeFrame();
 
         using (activityTimer.Start(Activity.SwapBuffer))
