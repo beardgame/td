@@ -1,5 +1,5 @@
-using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.Graphics.Text;
 using Bearded.TD.Content.Models;
@@ -21,11 +21,11 @@ sealed class UIFonts
         {
             { TextStyle.Default, new TextStyleDefinition(Fonts.DefaultText, Text.FontSize) },
             { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize) },
-        }.ToFrozenDictionary();
+        }.AsReadOnly();
 
     public static UIFonts Load(Blueprints blueprints, IDrawableRenderers renderers)
     {
-        var fontDrawers = textStyles.ToFrozenDictionary(
+        var fontDrawers = textStyles.ToImmutableDictionary(
             kvp => kvp.Key,
             kvp =>
             {

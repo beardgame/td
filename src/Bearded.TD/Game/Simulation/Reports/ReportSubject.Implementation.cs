@@ -14,10 +14,10 @@ sealed class ReportSubject : Component, IReportSubject, ReportAggregator.IReport
             .Comparing<IReport, byte>(r => (byte) r.Type)
             .ThenComparing(r => r.GetHashCode()));
 
-    private INameProvider? nameProvider;
+    private IObjectAttributes attributes = ObjectAttributes.Default;
     private IFactionProvider? factionProvider;
 
-    public string Name => nameProvider.NameOrDefault();
+    public string Name => attributes.Name;
     public Faction? Faction => factionProvider?.Faction;
     public IReadOnlyCollection<IReport> Reports => ImmutableArray.CreateRange(reports);
 
@@ -26,7 +26,7 @@ sealed class ReportSubject : Component, IReportSubject, ReportAggregator.IReport
     protected override void OnAdded()
     {
         ReportAggregator.AggregateForever(Events, this);
-        ComponentDependencies.Depend<INameProvider>(Owner, Events, provider => nameProvider = provider);
+        ComponentDependencies.Depend<IObjectAttributes>(Owner, Events, attr => attributes = attr);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
     }
 

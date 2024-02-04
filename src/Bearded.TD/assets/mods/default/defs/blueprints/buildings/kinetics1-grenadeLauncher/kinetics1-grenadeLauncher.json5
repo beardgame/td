@@ -1,7 +1,13 @@
 {
   id: "kinetics1-grenadeLauncher",
   components: [
-    { id: "name", parameters: { name: "Grenade launcher" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Grenade launcher",
+        icon: "building-icons.heavy-fall",
+      }
+    },
     { id: "cost", parameters: { resources: 50 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

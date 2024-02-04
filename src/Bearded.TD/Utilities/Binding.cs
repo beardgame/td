@@ -108,4 +108,24 @@ static class Binding
 
         return aggregated;
     }
+
+    public static IReadonlyBinding<int> CollectionSize<TCollection, TElement>(this Binding<TCollection> collection)
+        where TCollection : ICollection<TElement>
+    {
+        var count = new Binding<int>(collection.Value.Count);
+        collection.ControlUpdated += newColl => count.SetFromControl(newColl.Count);
+        collection.SourceUpdated += newColl => count.SetFromSource(newColl.Count);
+        return count;
+    }
+
+    public static IReadonlyBinding<TElement?> ListElementByIndex<TList, TElement>(this Binding<TList> list, int index)
+        where TList : IList<TElement>
+    {
+        var element = new Binding<TElement?>(elementOrDefault(list.Value));
+        list.ControlUpdated += newList => element.SetFromControl(elementOrDefault(newList));
+        list.SourceUpdated += newList => element.SetFromSource(elementOrDefault(newList));
+        return element;
+
+        TElement? elementOrDefault(TList l) => index < l.Count ? l[index] : default;
+    }
 }

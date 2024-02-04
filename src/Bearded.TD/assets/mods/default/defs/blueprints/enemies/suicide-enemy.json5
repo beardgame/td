@@ -1,7 +1,12 @@
 {
     id: "suicide-enemy",
     components: [
-        { id: "name", parameters: { name: "Suicide enemy" } },
+        {
+            id: "attributes",
+            parameters: {
+                name: "Suicide enemy",
+            }
+        },
         {
             id: "sprite",
             parameters: {

@@ -1,7 +1,13 @@
 {
   id: "wall",
   components: [
-    { id: "name", parameters: { name: "Wall" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Wall",
+        icon: "building-icons.stakes-fence",
+      }
+    },
     { id: "cost", parameters: { resources: 7 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

@@ -1,18 +1,12 @@
-using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Technologies;
 
-sealed class BuildingUnlock : ITechnologyUnlock
+sealed class BuildingUnlock(IGameObjectBlueprint buildingBlueprint) : ITechnologyUnlock
 {
-    private readonly IGameObjectBlueprint buildingBlueprint;
+    private readonly IObjectAttributes attributes = buildingBlueprint.AttributesOrDefault();
 
-    public string Description => $"Unlock building: {buildingBlueprint.GetName()}";
-
-    public BuildingUnlock(IGameObjectBlueprint buildingBlueprint)
-    {
-        this.buildingBlueprint = buildingBlueprint;
-    }
+    public string Description => $"Unlock building: {attributes.Name}";
 
     public void Apply(FactionTechnology factionTechnology)
     {

@@ -1,7 +1,13 @@
 {
   id: "fire1-flamethrower",
   components: [
-    { id: "name", parameters: { name: "Flamethrower" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Flamethrower",
+        icon: "building-icons.dragon-breath",
+      }
+    },
     { id: "cost", parameters: { resources: 50 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

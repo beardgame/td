@@ -24,7 +24,7 @@ sealed partial class StatusDisplay : Component, IStatusDisplay, IListener<DrawCo
 
     public override void Activate()
     {
-        condition?.Activate(Owner);
+        condition?.Activate(Owner, Events);
     }
 
     public override void Update(TimeSpan elapsedTime)

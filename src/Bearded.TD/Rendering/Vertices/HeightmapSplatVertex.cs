@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using Bearded.Graphics.Vertices;
-using Bearded.TD.Rendering.Loading;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
 

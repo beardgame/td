@@ -4,6 +4,7 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls;
 
+[Obsolete("Use a label with bindings instead")]
 sealed class DynamicLabel : Label
 {
     private readonly Func<string> stringProvider;

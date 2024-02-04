@@ -1,7 +1,13 @@
 {
   id: "kinetics1-steamHammer",
   components: [
-    { id: "name", parameters: { name: "Steam hammer" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Steam hammer",
+        icon: "building-icons.earth-crack",
+      }
+    },
     { id: "cost", parameters: { resources: 50 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

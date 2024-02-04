@@ -1,11 +1,9 @@
 ﻿using Bearded.Graphics;
-using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Loading;
-using Bearded.TD.Rendering.Vertices;
 using OpenTK.Mathematics;
 using ColorVertexData = Bearded.TD.Rendering.Vertices.ColorVertexData;
 

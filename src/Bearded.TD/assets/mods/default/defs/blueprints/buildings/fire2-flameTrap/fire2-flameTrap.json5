@@ -1,7 +1,13 @@
 {
   id: "fire2-flameTrap",
   components: [
-    { id: "name", parameters: { name: "Flame trap" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Flame trap",
+        icon: "building-icons.wildfires",
+      }
+    },
     { id: "cost", parameters: { resources: 50 } },
     { id: "footprint", parameters: { footprint: "single" } },
     { id: "footprintTransformation" },

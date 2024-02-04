@@ -2,7 +2,6 @@ using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Game.Simulation.Drawing;

@@ -1,6 +1,5 @@
 ﻿using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering;
-using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Content.Models;

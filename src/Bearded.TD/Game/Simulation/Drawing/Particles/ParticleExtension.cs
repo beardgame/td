@@ -1,5 +1,4 @@
 ﻿using System;
-using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 

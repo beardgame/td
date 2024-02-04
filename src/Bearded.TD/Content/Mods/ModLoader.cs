@@ -124,6 +124,7 @@ static class ModLoader
                 BehaviorConverterFactory.ForNodeBehaviors(),
                 new FlattenedBlueprintConverter<IFactionBlueprint, FactionBlueprint>(meta),
                 ModAwareIdConverter.WithinMod(meta),
+                ModAwareSpriteIdConverter.WithinMod(meta),
                 new ExternalIdConverter<Faction>(),
                 new NodeTagConverter(),
                 new SocketShapeConverter(),

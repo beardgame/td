@@ -1,4 +1,9 @@
-﻿using Bearded.TD.UI.Factories;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.UI.Factories;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
@@ -9,7 +14,7 @@ sealed class ActionBarControl : CompositeControl
     private const float buttonHeightPercentage = 1f / Constants.Game.GameUI.ActionBarSize;
 
     private readonly ActionBar model;
-    private readonly Button[] buttons;
+    private readonly List<Button> buttons = [];
 
     public ActionBarControl(ActionBar model)
     {
@@ -17,33 +22,63 @@ sealed class ActionBarControl : CompositeControl
 
         Add(new BackgroundBox());
 
-        buttons = new Button[Constants.Game.GameUI.ActionBarSize];
-        for (var i = 0; i < buttons.Length; i++)
-        {
-            var i1 = i;
-            buttons[i] = new Button().WithDefaultStyle(new ButtonLabelWithCost())
-                .Anchor(a => a
-                    .Top(relativePercentage: i1 * buttonHeightPercentage)
-                    .Bottom(relativePercentage: (i1 + 1) * buttonHeightPercentage))
-                .Subscribe(b => b.Clicked += _ => model.OnActionClicked(i1));
-            Add(buttons[i]);
-        }
-
-        model.ActionsChanged += updateButtonLabels;
-        updateButtonLabels();
+        model.Entries
+            .CollectionSize<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>().SourceUpdated += updateButtonCount;
+        updateButtonCount(model.Entries.Value.Length);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
-    private void updateButtonLabels()
+    private void updateButtonCount(int newCount)
     {
-        for (var i = 0; i < buttons.Length; i++)
+        var currentCount = buttons.Count;
+        if (currentCount == newCount) return;
+
+        if (currentCount > newCount)
         {
-            var (actionName, cost) = model.ActionLabelForIndex(i);
-            var labelWithCost = buttons[i].FirstChildOfType<ButtonLabelWithCost>();
-            labelWithCost.Name = actionName;
-            labelWithCost.Cost = cost;
-            buttons[i].IsEnabled = actionName != null;
+            for (var i = newCount; i < currentCount; i++)
+            {
+                Remove(buttons[i]);
+            }
+            buttons.RemoveRange(newCount, currentCount - newCount);
         }
+        else
+        {
+            for (var i = currentCount; i < newCount; i++)
+            {
+                var button = buttonForIndex(i);
+                buttons.Add(button);
+                Add(button);
+            }
+        }
+    }
+
+    private Button buttonForIndex(int i)
+    {
+        var binding = model.Entries.ListElementByIndex<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>(i);
+        var button = ButtonFactories.Button(b => b
+            .WithEnabled(binding.Transform(e => e is not null))
+            .WithLabel(binding.Transform(e => e?.Label ?? ""))
+            .WithResourceCost(binding.Transform(e => e?.Cost ?? ResourceAmount.Zero))
+            .WithOnClick(() => binding.Value?.OnClick())
+        ).Anchor(a => a
+            .Top(relativePercentage: i * buttonHeightPercentage)
+            .Bottom(relativePercentage: (i + 1) * buttonHeightPercentage));
+        tempAddIcon(button, binding);
+        return button;
+    }
+
+    private void tempAddIcon(Button button, IReadonlyBinding<ActionBarEntry?> binding)
+    {
+        var sprite = new Sprite { SpriteId = binding.Value?.Icon ?? default, Color = Color.White * 0.5f };
+        sprite.BindIsVisible(binding.Transform(e => e != null));
+        binding.SourceUpdated += newEntry =>
+        {
+            if (newEntry is not null)
+            {
+                sprite.SpriteId = newEntry.Icon;
+            }
+        };
+        button.Add(sprite.Anchor(a => a.Left(margin: 4, width: 24)));
     }
 }

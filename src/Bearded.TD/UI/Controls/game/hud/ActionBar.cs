@@ -1,32 +1,34 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.UI.Shortcuts;
+using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using static Bearded.TD.Constants.Game.GameUI;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 {
-    private static ImmutableArray<Keys> numberKeys =
+    private static readonly ImmutableArray<Keys> numberKeys =
         ImmutableArray.Create(Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0);
 
-    public event VoidEventHandler? ActionsChanged;
-
-    private readonly InteractionHandler?[] handlers = new InteractionHandler[Constants.Game.GameUI.ActionBarSize];
-    private readonly (string, string)[] labels = new (string, string)[Constants.Game.GameUI.ActionBarSize];
+    public Binding<ImmutableArray<ActionBarEntry?>> Entries { get; } = new();
 
     private readonly ShortcutLayer shortcuts;
 
     private GameInstance game = null!;
     private ShortcutCapturer shortcutCapturer = null!;
-    private int lastFilledIndex = -1;
 
     public ActionBar()
     {
@@ -36,10 +38,10 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     private ShortcutLayer createShortcuts()
     {
         var builder = ShortcutLayer.CreateBuilder();
-        for (var i = 0; i < Math.Min(numberKeys.Length, Constants.Game.GameUI.ActionBarSize); i++)
+        for (var i = 0; i < Math.Min(numberKeys.Length, ActionBarSize); i++)
         {
             var idx = i;
-            builder.AddShortcut(numberKeys[i], () => OnActionClicked(idx));
+            builder.AddShortcut(numberKeys[i], () => Entries.Value[idx]?.OnClick());
         }
         return builder.Build();
     }
@@ -50,30 +52,22 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         this.shortcutCapturer = shortcutCapturer;
         shortcutCapturer.AddLayer(shortcuts);
 
-        if (game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology))
-        {
-            foreach (var b in technology.UnlockedBuildings)
-            {
-                addBuilding(b);
-            }
-        }
+        var buildingEntries = game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+            ? technology.UnlockedBuildings.Select(makeEntryFromBlueprint).AsNullable().ToImmutableArray()
+            : ImmutableArray<ActionBarEntry?>.Empty;
+        var missingEntryCount = ActionBarSize - buildingEntries.Length;
+        var actionBarEntries = missingEntryCount <= 0
+            ? buildingEntries
+            : buildingEntries.Concat(Enumerable.Repeat((ActionBarEntry?) null, missingEntryCount)).ToImmutableArray();
+        Entries.SetFromSource(actionBarEntries);
 
         game.Meta.Events.Subscribe(this);
-        ActionsChanged?.Invoke();
     }
 
     public void Terminate()
     {
         shortcutCapturer.RemoveLayer(shortcuts);
         game.Meta.Events.Unsubscribe(this);
-    }
-
-    public (string actionLabel, string cost) ActionLabelForIndex(int i) => labels[i];
-
-    public void OnActionClicked(int actionIndex)
-    {
-        if (handlers[actionIndex] == null) return;
-        game.PlayerInput.SetInteractionHandler(handlers[actionIndex]);
     }
 
     public void HandleEvent(BuildingTechnologyUnlocked @event)
@@ -85,18 +79,33 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         }
 
         addBuilding(@event.Blueprint);
-        ActionsChanged?.Invoke();
     }
 
     private void addBuilding(IGameObjectBlueprint blueprint)
     {
-        if (lastFilledIndex == Constants.Game.GameUI.ActionBarSize - 2)
-        {
-            throw new InvalidOperationException("Tried adding new building, but action bar is full D:");
-        }
+        var existingEntries = Entries.Value;
+        var firstNonEmptyIndex = existingEntries.IndexOf(null);
 
-        lastFilledIndex++;
-        handlers[lastFilledIndex] = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
-        labels[lastFilledIndex] = (blueprint.GetName(), $"{blueprint.GetResourceCost().NumericValue}");
+        var newEntry = makeEntryFromBlueprint(blueprint);
+        var newEntries = firstNonEmptyIndex >= 0
+            ? existingEntries.SetItem(firstNonEmptyIndex, newEntry)
+            : existingEntries.Add(newEntry);
+
+        Entries.SetFromSource(newEntries);
+    }
+
+    private ActionBarEntry makeEntryFromBlueprint(IGameObjectBlueprint blueprint)
+    {
+        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
+        var attributes = blueprint.AttributesOrDefault();
+        return new ActionBarEntry(
+            attributes.Name,
+            blueprint.GetResourceCost(),
+            attributes.Icon ?? Constants.Content.CoreUI.Sprites.CheckMark,
+            onClick);
+
+        void onClick() => game.PlayerInput.SetInteractionHandler(handler);
     }
 }
+
+sealed record ActionBarEntry(string Label, ResourceAmount Cost, ModAwareSpriteId Icon, VoidEventHandler OnClick);

@@ -1,7 +1,12 @@
 {
   id: "core",
   components: [
-    { id: "name", parameters: { name: "Core" } },
+    {
+      id: "attributes",
+      parameters: {
+        name: "Core",
+      }
+    },
     { id: "cost", parameters: { resources: 1 } },
     { id: "footprint", parameters: { footprint: "seven" } },
     { id: "footprintTransformation" },
