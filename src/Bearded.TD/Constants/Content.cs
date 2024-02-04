@@ -15,6 +15,7 @@ static partial class Constants
             public static class DefaultShaders
             {
                 public static ModAwareId Sprite = new (ModId, "default-sprite");
+                public static ModAwareId Shapes = new (ModId, "shapes");
             }
 
             public static class Fonts
