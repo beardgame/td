@@ -58,7 +58,7 @@ abstract class TilemapBuffer<T> : IDisposable
         if (dataUploaded)
             return;
 
-        using var target = texture.Bind(TextureTarget.Texture2D);
+        using var target = texture.Bind();
         GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
         GL.TexImage2D(TextureTarget.Texture2D, 0, internalPixelFormat,
             width, width, 0, pixelFormat, pixelType, pixels);
