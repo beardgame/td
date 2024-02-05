@@ -1,26 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using static Bearded.TD.Constants.Game.GameUI;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class ActionBarControl : CompositeControl
 {
-    private const float buttonHeightPercentage = 1f / Constants.Game.GameUI.ActionBarSize;
-
     private readonly ActionBar model;
     private readonly List<Button> buttons = [];
 
     public ActionBarControl(ActionBar model)
     {
         this.model = model;
-
-        Add(new BackgroundBox());
+        IsClickThrough = true;
 
         model.Entries
             .CollectionSize<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>().SourceUpdated += updateButtonCount;
@@ -56,29 +52,20 @@ sealed class ActionBarControl : CompositeControl
     private Button buttonForIndex(int i)
     {
         var binding = model.Entries.ListElementByIndex<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>(i);
-        var button = ButtonFactories.Button(b => b
+        var button = ButtonFactories.StandaloneIconButton(b => b
             .WithEnabled(binding.Transform(e => e is not null))
-            .WithLabel(binding.Transform(e => e?.Label ?? ""))
-            .WithResourceCost(binding.Transform(e => e?.Cost ?? ResourceAmount.Zero))
+            .WithIcon(binding.Transform(e => e?.Icon ?? default))
             .WithOnClick(() => binding.Value?.OnClick())
         ).Anchor(a => a
-            .Top(relativePercentage: i * buttonHeightPercentage)
-            .Bottom(relativePercentage: (i + 1) * buttonHeightPercentage));
-        tempAddIcon(button, binding);
+            .Left(margin: buttonLeftMargin(i), width: buttonSize, relativePercentage: 0.5)
+            .Bottom(margin: buttonBottomMargin, height: buttonSize)
+        );
         return button;
     }
 
-    private void tempAddIcon(Button button, IReadonlyBinding<ActionBarEntry?> binding)
-    {
-        var sprite = new Sprite { SpriteId = binding.Value?.Icon ?? default, Color = Color.White * 0.5f };
-        sprite.BindIsVisible(binding.Transform(e => e != null));
-        binding.SourceUpdated += newEntry =>
-        {
-            if (newEntry is not null)
-            {
-                sprite.SpriteId = newEntry.Icon;
-            }
-        };
-        button.Add(sprite.Anchor(a => a.Left(margin: 4, width: 24)));
-    }
+    private const double buttonBottomMargin = Constants.UI.Button.Margin;
+    private const double buttonBetweenMargin = Constants.UI.Button.Margin;
+    private const double buttonSize = Constants.UI.Button.SquareButtonSize;
+    private const double barLeftMargin = -0.5 * ActionBarSize * (buttonSize + buttonBetweenMargin);
+    private static double buttonLeftMargin(int i) => barLeftMargin + i * (buttonSize + buttonBetweenMargin);
 }
