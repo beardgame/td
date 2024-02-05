@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bearded.Graphics;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Tooltips;
@@ -184,5 +185,63 @@ static partial class ButtonFactories
                 control.Add(costLabel.Anchor(a => a.Bottom(margin: Constants.UI.Button.Margin).Top(relativePercentage: .6)));
             }
         }
+    }
+
+    public sealed class IconButtonBuilder : Builder<IconButtonBuilder>
+    {
+        private readonly ButtonSize size;
+        private IReadonlyBinding<ModAwareSpriteId>? icon;
+
+        protected override IconButtonBuilder This => this;
+
+        public static IconButtonBuilder ForInlineButton() => new(inlineButtonSize);
+        public static IconButtonBuilder ForStandaloneButton() => new(standaloneButtonSize);
+
+        private IconButtonBuilder(ButtonSize size)
+        {
+            this.size = size;
+        }
+
+        public IconButtonBuilder WithIcon(ModAwareSpriteId icon)
+        {
+            this.icon = Binding.Constant(icon);
+            return this;
+        }
+
+        public IconButtonBuilder WithIcon(IReadonlyBinding<ModAwareSpriteId> icon)
+        {
+            this.icon = icon;
+            return this;
+        }
+
+        protected override void Validate()
+        {
+            DebugAssert.State.Satisfies(icon != null);
+        }
+
+        protected override void AddContent(IControlParent control, IReadonlyBinding<Color> color)
+        {
+            var iconControl = new Sprite { SpriteId = icon!.Value, Color = color.Value, Size = size.SpriteSize };
+            control.Add(iconControl);
+
+            icon.SourceUpdated += id => iconControl.SpriteId = id;
+            color.SourceUpdated += c => iconControl.Color = c;
+
+            iconControl.BindIsVisible(icon.Transform(id => id.SpriteSet.IsValid && !string.IsNullOrWhiteSpace(id.Id)));
+        }
+
+        public Button Build(out double buttonSize)
+        {
+            buttonSize = size.Size;
+            return Build();
+        }
+
+        private readonly record struct ButtonSize(double Size, double SpriteSize);
+
+        private static readonly ButtonSize inlineButtonSize =
+            new(Constants.UI.Text.LineHeight, Constants.UI.Text.LineHeight);
+
+        private static readonly ButtonSize standaloneButtonSize =
+            new(Constants.UI.Button.SquareButtonSize, Constants.UI.Button.SquareButtonSize);
     }
 }

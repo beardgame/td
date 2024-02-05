@@ -7,9 +7,14 @@ static partial class ButtonFactories
 {
     public static Button Button(string label) => Button(b => b.WithLabel(label));
 
-    public static Button Button(BuilderFunc<TextButtonBuilder> builderFunc)
+    public static Button Button(BuilderFunc<TextButtonBuilder> builderFunc) =>
+        button(new TextButtonBuilder(), builderFunc);
+
+    public static Button StandaloneIconButton(BuilderFunc<IconButtonBuilder> builderFunc) =>
+        button(IconButtonBuilder.ForStandaloneButton(), builderFunc);
+
+    private static Button button<T>(T builder, BuilderFunc<T> builderFunc) where T : Builder<T>
     {
-        var builder = new TextButtonBuilder();
         builderFunc(builder);
         return builder.Build();
     }
