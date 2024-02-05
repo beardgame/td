@@ -25,10 +25,6 @@ sealed class GameUIControl : CompositeControl
                 .Right(width: 200)
                 .Top(margin: 0, height: 220));
         nonDiegeticUIWrapper.Add(gameStatusControl);
-        nonDiegeticUIWrapper.Add(new PlayerStatusUIControl(gameUI.PlayerStatusUI)
-            .Anchor(a => a
-                .Right(width: 200)
-                .Below(gameStatusControl, height: 100)));
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
             .Anchor(a => a
                 .Top(height: Constants.UI.LayoutMargin * 2 + Constants.UI.Button.Height)
