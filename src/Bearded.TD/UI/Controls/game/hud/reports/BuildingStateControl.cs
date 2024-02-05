@@ -11,6 +11,7 @@ sealed class BuildingStateControl : ReportControl
     private readonly GameInstance game;
     private readonly IBuildingStateReport report;
     private readonly Binding<bool> buttonEnabled = new();
+    private readonly Binding<string> buttonLabel = new();
 
     public override double Height { get; }
 
@@ -22,15 +23,13 @@ sealed class BuildingStateControl : ReportControl
         var column = this.BuildFixedColumn();
         column
             .AddButton(b => b
-                .WithLabel(label)
+                .WithLabel(buttonLabel)
                 .WithOnClick(deleteBuilding)
                 .WithEnabled(buttonEnabled));
         Height = column.Height;
 
         Update();
     }
-
-    private string label() => report.IsMaterialized ? $"Delete (refund: {report.RefundValue})" : "Cancel";
 
     private void deleteBuilding()
     {
@@ -43,6 +42,7 @@ sealed class BuildingStateControl : ReportControl
         {
             buttonEnabled.SetFromSource(report.CanBeDeleted);
         }
+        buttonLabel.SetFromSource(report.IsMaterialized ? $"Delete (refund: {report.RefundValue})" : "Cancel");
     }
 
     public override void Dispose() {}

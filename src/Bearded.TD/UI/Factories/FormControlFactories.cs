@@ -70,7 +70,7 @@ static class FormControlFactories
         valueBinding.SourceUpdated += _ => updateValidity();
 
         var button = ButtonFactories.Button(b => b
-            .WithLabel(() => renderer(valueBinding.Value))
+            .WithLabel(valueBinding.Transform(renderer))
             .WithError(errorBinding)
             .WithOnClick(advanceSelection));
         return button;
@@ -146,7 +146,7 @@ static class FormControlFactories
 
     public static FormFactories.Builder AddButtonRow(
         this FormFactories.Builder builder,
-        BuilderFunc<ButtonFactories.Builder> builderFunc)
+        BuilderFunc<ButtonFactories.TextButtonBuilder> builderFunc)
     {
         return builder.AddFormRow(null, layout => layout.DockFixedSizeToRight(
             ButtonFactories.Button(builderFunc).WrapVerticallyCentered(Constants.UI.Button.Height),

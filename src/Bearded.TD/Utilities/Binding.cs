@@ -45,6 +45,8 @@ interface IReadonlyBinding<out T>
 
 static class Binding
 {
+    public static IReadonlyBinding<T> Constant<T>(T value) => Create(value);
+
     public static Binding<T> Create<T>(T initialValue) => new(initialValue);
 
     public static Binding<T> Create<T>(T initialValue, GenericEventHandler<T> syncBack)

@@ -18,7 +18,7 @@ static class TabBarFactories
 
     public sealed class Builder
     {
-        private readonly List<BuilderFunc<ButtonFactories.Builder>> buttonBuilderFunctions = new();
+        private readonly List<BuilderFunc<ButtonFactories.TextButtonBuilder>> buttonBuilderFunctions = [];
 
         public Builder AddButton(string label, VoidEventHandler onClick, IReadonlyBinding<bool>? isActive = null)
         {
