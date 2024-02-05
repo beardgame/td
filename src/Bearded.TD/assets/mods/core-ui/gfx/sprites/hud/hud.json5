@@ -1,0 +1,9 @@
+﻿{
+    id: "hud",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}
