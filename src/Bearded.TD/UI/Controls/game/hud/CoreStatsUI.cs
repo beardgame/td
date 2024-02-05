@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.Utilities;
+using Bearded.UI.EventArgs;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Bearded.TD.UI.Controls;
@@ -32,7 +33,7 @@ sealed class CoreStatsUI : IListener<WaveStarted>
     public CoreStatsUI()
     {
         shortcuts = ShortcutLayer.CreateBuilder()
-            .AddShortcut(Keys.E, tryFireEMP)
+            .AddShortcut(Keys.E, ModifierKeys.None.WithControl(), tryFireEMP)
             .Build();
     }
 
