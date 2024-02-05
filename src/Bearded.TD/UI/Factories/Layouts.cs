@@ -30,6 +30,15 @@ static class Layouts
         return wrapper;
     }
 
+    public static Control WrapAligned(this Control control, double width, double height, double alignX, double alignY)
+    {
+        var wrapper = CompositeControl.CreateClickThrough();
+        wrapper.Add(control.Anchor(a => a
+            .Left(margin: -alignX * width, width: width, relativePercentage: alignX)
+            .Top(margin: -alignY * height, height: height, relativePercentage: alignY)));
+        return wrapper;
+    }
+
     public static Control SurroundWithMargins(this Control control, double margin)
     {
         var wrapper = CompositeControl.CreateClickThrough();
@@ -53,9 +62,8 @@ static class Layouts
 
         public PristineLayout ForFullScreen()
         {
-            const double m = LayoutMargin;
-            Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
-            Vertical = new VerticalAnchors(new Anchors(new Anchor(0, m), new Anchor(1, -m)));
+            Horizontal = new HorizontalAnchors(new Anchors(new Anchor(0, LayoutMargin), new Anchor(1, -LayoutMargin)));
+            Vertical = new VerticalAnchors(new Anchors(new Anchor(0, LayoutMargin), new Anchor(1, -LayoutMargin)));
             return this;
         }
 
@@ -63,6 +71,15 @@ static class Layouts
         {
             // Use the same margins as full screen for now.
             return ForFullScreen();
+        }
+
+        public PristineLayout ForInnerContent()
+        {
+            Horizontal =
+                new HorizontalAnchors(new Anchors(new Anchor(0, LayoutMarginSmall), new Anchor(1, -LayoutMarginSmall)));
+            Vertical =
+                new VerticalAnchors(new Anchors(new Anchor(0, LayoutMarginSmall), new Anchor(1, -LayoutMarginSmall)));
+            return this;
         }
     }
 

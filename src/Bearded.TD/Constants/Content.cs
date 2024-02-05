@@ -35,6 +35,10 @@ static partial class Constants
                 private static ModAwareSpriteId symbol(string id) => new(new ModAwareId(ModId, "symbols"), id);
 
                 public static readonly ModAwareSpriteId CheckMark = symbol("checkmark");
+
+                private static ModAwareSpriteId hud(string id) => new(new ModAwareId(ModId, "hud"), id);
+
+                public static readonly ModAwareSpriteId Technology = hud("microscope-lens");
             }
         }
     }

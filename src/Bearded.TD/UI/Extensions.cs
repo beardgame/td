@@ -9,6 +9,9 @@ static class Extensions
     public static AnchorTemplate MarginAllSides(this AnchorTemplate a, double margin) =>
         a.Top(margin: margin).Bottom(margin: margin).Left(margin: margin).Right(margin: margin);
 
+    public static AnchorTemplate HorizontallyCentered(this AnchorTemplate a, double width) =>
+        a.Left(-0.5 * width, width, 0.5);
+
     public static AnchorTemplate Below(
         this AnchorTemplate a, Control control, double? height = null, double margin = 0) =>
         a.Top(margin: control.VerticalAnchors.Bottom.Offset + margin, height: height);

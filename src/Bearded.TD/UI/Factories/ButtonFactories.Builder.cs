@@ -189,7 +189,7 @@ static partial class ButtonFactories
 
     public sealed class IconButtonBuilder : Builder<IconButtonBuilder>
     {
-        private readonly ButtonSize size;
+        private ButtonSize size;
         private IReadonlyBinding<ModAwareSpriteId>? icon;
 
         protected override IconButtonBuilder This => this;
@@ -211,6 +211,12 @@ static partial class ButtonFactories
         public IconButtonBuilder WithIcon(IReadonlyBinding<ModAwareSpriteId> icon)
         {
             this.icon = icon;
+            return this;
+        }
+
+        public IconButtonBuilder WithCustomSize(double buttonSize)
+        {
+            size = new ButtonSize(buttonSize, buttonSize);
             return this;
         }
 

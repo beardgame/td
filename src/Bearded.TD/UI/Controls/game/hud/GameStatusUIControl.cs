@@ -7,32 +7,33 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class GameStatusUIControl : CompositeControl
 {
+    private const double technologyButtonSize = 128;
+
     private readonly GameStatusUI model;
     private readonly Binding<string> resourcesAmount = new();
-    private readonly Binding<string> waveNumber = new();
-    private readonly Binding<string> timeUntilSpawn = new();
-    private readonly Binding<bool> canSkipWaveTimer = new();
 
     public GameStatusUIControl(GameUIController gameUIController, GameStatusUI model)
     {
         this.model = model;
 
-        Add(new BackgroundBox());
-
-        var content = new CompositeControl().Anchor(a => a.MarginAllSides(4));
+        var contentBox = new BackgroundBox();
+        var content = new CompositeControl();
         content.BuildFixedColumn()
             .AddHeader($"{model.FactionName}", model.FactionColor)
             .AddValueLabel(
-                "Resources:", resourcesAmount, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor))
-            .AddButton(b => b.WithLabel("Research").WithOnClick(gameUIController.ShowTechnologyModal))
-            .AddValueLabel("Wave:", waveNumber)
-            .AddValueLabel("Next spawn:", timeUntilSpawn)
-            .AddButton(
-                b => b
-                    .WithLabel("Summon Wave")
-                    .WithOnClick(model.SkipWaveTimer)
-                    .WithEnabled(canSkipWaveTimer));
-        this.BuildLayout().ForContentBox().FillContent(content);
+                "Resources:", resourcesAmount, rightColor: Binding.Create(Constants.Game.GameUI.ResourcesColor));
+        contentBox.BuildLayout().ForInnerContent().FillContent(content);
+
+        this.BuildLayout()
+            .ForContentBox()
+            .DockFixedSizeToTop(
+                ButtonFactories.StandaloneIconButton(b => b
+                        .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
+                        .WithCustomSize(technologyButtonSize)
+                        .WithOnClick(gameUIController.ShowTechnologyModal))
+                    .WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
+                technologyButtonSize + 2 * Constants.UI.Button.Margin)
+            .FillContent(contentBox);
 
         model.StatusChanged += updateLabels;
     }
@@ -49,11 +50,6 @@ sealed class GameStatusUIControl : CompositeControl
                 $"{model.FactionResources.NumericValue} -> " +
                 $"{model.FactionResourcesAfterReservation.NumericValue}");
         }
-
-        waveNumber.SetFromSource(model.WaveName ?? "-");
-        timeUntilSpawn.SetFromSource(
-            model.TimeUntilWaveSpawn == null ? "-" : model.TimeUntilWaveSpawn.Value.ToDisplayString());
-        canSkipWaveTimer.SetFromSource(model.CanSummonNow);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);

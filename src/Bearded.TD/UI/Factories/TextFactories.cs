@@ -15,8 +15,9 @@ static class TextFactories
     public static Label Header(
         IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
     {
-        var label = new Label(text.Value)
+        var label = new Label
         {
+            Text = text.Value,
             Color = color?.Value ?? TextColor,
             FontSize = HeaderFontSize,
             TextAnchor = textAnchor ?? Controls.Label.TextAnchorLeft
@@ -78,12 +79,20 @@ static class TextFactories
         return label;
     }
 
-    public static Label Label(string text, Vector2d? textAnchor = null, Color? color = null) => new(text)
+    public static Label Label(string text, Vector2d? textAnchor = null, Color? color = null) => new()
     {
+        Text = text,
         Color = color ?? TextColor,
         FontSize = FontSize,
         TextAnchor = textAnchor ?? Controls.Label.TextAnchorCenter
     };
+
+    public static Layouts.IColumnLayout AddLabel(
+        this Layouts.IColumnLayout columnLayout,
+        IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
+    {
+        return columnLayout.Add(Label(text, textAnchor, color), LineHeight);
+    }
 
     public static Layouts.IColumnLayout AddLabel(
         this Layouts.IColumnLayout columnLayout, string text, Vector2d? textAnchor = null, Color? color = null)
