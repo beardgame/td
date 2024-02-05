@@ -4,16 +4,11 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls;
 
-class Border : Control
+sealed class Border : Control
 {
     private static readonly Color defaultColor = Color.White;
 
-    public virtual Color Color { get; }
-
-    public Border(Color? color = null)
-    {
-        Color = color ?? defaultColor;
-    }
+    public Color Color { get; set; } = defaultColor;
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 }

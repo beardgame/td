@@ -28,7 +28,8 @@ static partial class ButtonFactories
             return This;
         }
 
-        public T WithTooltip(TooltipFactory factory, string text) => WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
+        public T WithTooltip(TooltipFactory factory, string text) =>
+            WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
 
         public T WithTooltip(TooltipFactory factory, ICollection<string> text) =>
             WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
@@ -91,7 +92,11 @@ static partial class ButtonFactories
             });
 
             AddContent(button, color);
-            button.Add(new DynamicBorder(colorProvider));
+
+            var border = new Border();
+            button.Add(border);
+            color.SourceUpdated += c => border.Color = c;
+            border.Color = color.Value;
 
             if (progressBar.HasValue)
             {
@@ -123,15 +128,6 @@ static partial class ButtonFactories
                 button.Clicked += args => onClick(args);
             }
             return button;
-
-            Color colorProvider()
-            {
-                if (isError?.Value ?? false)
-                {
-                    return Constants.UI.Text.ErrorTextColor;
-                }
-                return button.IsEnabled ? Constants.UI.Text.TextColor : Constants.UI.Text.DisabledTextColor;
-            }
         }
 
         protected abstract void Validate();
