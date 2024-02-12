@@ -20,11 +20,6 @@ sealed class GameUIControl : CompositeControl
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
         nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar)
             .BindIsVisible(gameUI.GameUIController.ActionBarVisibility));
-        var gameStatusControl = new GameStatusUIControl(gameUI.GameUIController, gameUI.GameStatusUI)
-            .Anchor(a => a
-                .Right(width: 200)
-                .Top(margin: 0, height: 220));
-        nonDiegeticUIWrapper.Add(gameStatusControl);
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
             .Anchor(a => a
                 .Top(height: 480)

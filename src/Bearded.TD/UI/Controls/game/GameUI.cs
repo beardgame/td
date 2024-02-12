@@ -36,7 +36,6 @@ sealed class GameUI :
     public GameNotificationsUI NotificationsUI { get; }
     public ActionBar ActionBar { get; }
     public CoreStatsUI CoreStats { get; }
-    public GameStatusUI GameStatusUI { get; }
     public TechnologyWindow TechnologyUI { get; }
 
     public event VoidEventHandler? FocusReset;
@@ -55,7 +54,6 @@ sealed class GameUI :
         NotificationsUI = new GameNotificationsUI(GameUIController);
         ActionBar = new ActionBar();
         CoreStats = new CoreStatsUI();
-        GameStatusUI = new GameStatusUI();
         TechnologyUI = new TechnologyWindow();
     }
 
@@ -77,7 +75,6 @@ sealed class GameUI :
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game, shortcutCapturer);
         CoreStats.Initialize(Game, shortcutCapturer);
-        GameStatusUI.Initialize(Game);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, tooltipFactory);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
@@ -115,9 +112,8 @@ sealed class GameUI :
         TimeSource.Update(args);
         uiUpdater.Update(args);
 
-        CoreStats.Update();
+        ActionBar.Update();
         NotificationsUI.Update();
-        GameStatusUI.Update();
 
         updateGameDebugOverlayState();
     }

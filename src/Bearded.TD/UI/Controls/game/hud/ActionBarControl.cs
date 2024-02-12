@@ -20,10 +20,33 @@ sealed class ActionBarControl : CompositeControl
 
         model.Entries
             .CollectionSize<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>().SourceUpdated += updateButtonCount;
+
+        addResourceBox();
         updateButtonCount(model.Entries.Value.Length);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
+
+    private void addResourceBox()
+    {
+        var control = new CompositeControl { new BackgroundBox() };
+        var content = new CompositeControl();
+        var layout = content.BuildFixedColumn();
+        layout
+            .AddLabel("Resources", Label.TextAnchorLeft)
+            .AddLabel(
+                model.CurrentResources.Transform(r => r.NumericValue.ToString()),
+                Label.TextAnchorRight,
+                Binding.Constant(ResourcesColor));
+        control.Add(content
+            .WrapVerticallyCentered(layout.Height)
+            .Anchor(a => a.MarginAllSides(Constants.UI.LayoutMargin)));
+
+        control.Anchor(a => a
+            .Right(margin: -barLeftMargin + buttonBetweenMargin, width: resourceBoxWidth, relativePercentage: 0.5)
+            .Bottom(margin: buttonBottomMargin, height: buttonSize));
+        Add(control);
+    }
 
     private void updateButtonCount(int newCount)
     {
@@ -67,5 +90,6 @@ sealed class ActionBarControl : CompositeControl
     private const double buttonBetweenMargin = Constants.UI.Button.Margin;
     private const double buttonSize = Constants.UI.Button.SquareButtonSize;
     private const double barLeftMargin = -0.5 * ActionBarSize * (buttonSize + buttonBetweenMargin);
+    private const double resourceBoxWidth = 1.8 * buttonSize;
     private static double buttonLeftMargin(int i) => barLeftMargin + i * (buttonSize + buttonBetweenMargin);
 }
