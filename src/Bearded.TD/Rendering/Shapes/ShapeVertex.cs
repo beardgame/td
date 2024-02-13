@@ -35,6 +35,8 @@ readonly struct ShapeColors(Color? fill = null, Color? edge = null, Color? outer
     private readonly Color outerGlow = outerGlow ?? default;
     private readonly Color innerGlow = innerGlow ?? default;
 
+    public bool HasFill => fill != default;
+
     public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
     [
         MakeAttributeTemplate("v_shapeColors", VertexAttribPointerType.UnsignedInt, 4, 16, VertexAttributeFormat.Integer),

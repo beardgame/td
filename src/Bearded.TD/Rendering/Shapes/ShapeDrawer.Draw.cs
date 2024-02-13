@@ -1,13 +1,13 @@
-﻿
-using Bearded.Graphics.MeshBuilders;
+﻿using Bearded.Graphics.MeshBuilders;
 using OpenTK.Mathematics;
 using static System.Math;
+using static Bearded.TD.Rendering.Shapes.ShapeGeometry;
 
 namespace Bearded.TD.Rendering.Shapes;
 
 interface IShapeDrawer
 {
-    void DrawCircle(Vector3 xyz, float radius, ShapeColors colos, EdgeData edges = default);
+    void DrawCircle(Vector3 xyz, float radius, ShapeColors colors, EdgeData edges = default);
     void DrawRectangle(Vector3 xyz, Vector2 wh, ShapeColors colors, float cornerRadius = 0, EdgeData edges = default);
 }
 
@@ -17,8 +17,8 @@ sealed partial class ShapeDrawer : IShapeDrawer
     {
         var (x, y, z) = xyz;
         var r = radius + edges.OuterWidth + edges.OuterGlow;
-        var geometry = ShapeGeometry.CirclePointRadius(xyz.Xy, radius, edges);
-        addQuad(x - r, x + r, y - r, y + r, z, geometry, colors);
+        var geometry = CirclePointRadius(xyz.Xy, radius, edges);
+        addQuad(x - r, x + r, y - r, y + r, z, colors, geometry);
     }
 
     public void DrawRectangle(Vector3 xyz, Vector2 wh, ShapeColors colors, float cornerRadius = 0, EdgeData edges = default)
@@ -43,25 +43,23 @@ sealed partial class ShapeDrawer : IShapeDrawer
         var bottomInner = topInner + hInner;
         var bottomOuter = bottomInner + cornerRadius + outerRadius;
 
-        { // topLeft
-            var geometry = ShapeGeometry.CirclePointRadius(
-                new Vector2(leftInner, topInner), cornerRadius, edges);
-            addQuad(leftOuter, leftInner, topOuter, topInner, z, geometry, colors);
-        }
-        { // topRight
-            var geometry = ShapeGeometry.CirclePointRadius(
-                new Vector2(rightInner, topInner), cornerRadius, edges);
-            addQuad(rightInner, rightOuter, topOuter, topInner, z, geometry, colors);
-        }
-        { // bottomLeft
-            var geometry = ShapeGeometry.CirclePointRadius(
-                new Vector2(leftInner, bottomInner), cornerRadius, edges);
-            addQuad(leftOuter, leftInner, bottomInner, bottomOuter, z, geometry, colors);
-        }
-        { // bottomRight
-            var geometry = ShapeGeometry.CirclePointRadius(
-                new Vector2(rightInner, bottomInner), cornerRadius, edges);
-            addQuad(rightInner, rightOuter, bottomInner, bottomOuter, z, geometry, colors);
+        if (outerRadius + cornerRadius > 0)
+        {
+            // topLeft
+            addQuad(leftOuter, leftInner, topOuter, topInner, z, colors,
+                CirclePointRadius(new Vector2(leftInner, topInner), cornerRadius, edges));
+
+            // topRight
+            addQuad(rightInner, rightOuter, topOuter, topInner, z, colors,
+                CirclePointRadius(new Vector2(rightInner, topInner), cornerRadius, edges));
+
+            // bottomLeft
+            addQuad(leftOuter, leftInner, bottomInner, bottomOuter, z, colors,
+                CirclePointRadius(new Vector2(leftInner, bottomInner), cornerRadius, edges));
+
+            // bottomRight
+            addQuad(rightInner, rightOuter, bottomInner, bottomOuter, z, colors,
+                CirclePointRadius(new Vector2(rightInner, bottomInner), cornerRadius, edges));
         }
 
         var left = x;
@@ -69,34 +67,40 @@ sealed partial class ShapeDrawer : IShapeDrawer
         var top = y;
         var bottom = y + h;
 
-        { // top
-            var geometry = ShapeGeometry.LinePointToPoint(
+        if (hInner > 0)
+        {
+            // top
+            var geometry = LinePointToPoint(
                 new Vector2(left, top), new Vector2(right, top), edges);
-            addQuad(leftInner, rightInner, topOuter, topInner, z, geometry, colors);
-        }
-        { // bottom
-            var geometry = ShapeGeometry.LinePointToPoint(
+            addQuad(leftInner, rightInner, topOuter, topInner, z, colors, geometry);
+
+            // bottom
+            geometry = LinePointToPoint(
                 new Vector2(right, bottom), new Vector2(left, bottom), edges);
-            addQuad(leftInner, rightInner, bottomInner, bottomOuter, z, geometry, colors);
-        }
-        { // left
-            var geometry = ShapeGeometry.LinePointToPoint(
-                new Vector2(left, bottom), new Vector2(left, top), edges);
-            addQuad(leftOuter, leftInner, topInner, bottomInner, z, geometry, colors);
-        }
-        { // right
-            var geometry = ShapeGeometry.LinePointToPoint(
-                new Vector2(right, top), new Vector2(right, bottom), edges);
-            addQuad(rightInner, rightOuter, topInner, bottomInner, z, geometry, colors);
+            addQuad(leftInner, rightInner, bottomInner, bottomOuter, z, colors, geometry);
         }
 
+        if (wInner > 0)
+        {
+            // left
+            var geometry = LinePointToPoint(
+                new Vector2(left, bottom), new Vector2(left, top), edges);
+            addQuad(leftOuter, leftInner, topInner, bottomInner, z, colors, geometry);
+
+            // right
+            geometry = LinePointToPoint(
+                new Vector2(right, top), new Vector2(right, bottom), edges);
+            addQuad(rightInner, rightOuter, topInner, bottomInner, z, colors, geometry);
+        }
+
+        if (colors.HasFill)
         { // middle
-            var geometry = ShapeGeometry.Fill();
-            addQuad(leftInner, rightInner, topInner, bottomInner, z, geometry, colors);
+            var geometry = Fill();
+            addQuad(leftInner, rightInner, topInner, bottomInner, z, colors, geometry);
         }
     }
 
-    private void addQuad(float x0, float x1, float y0, float y1, float z, ShapeGeometry geometry, ShapeColors colors)
+    private void addQuad(float x0, float x1, float y0, float y1, float z, ShapeColors colors, ShapeGeometry geometry)
     {
         meshBuilder.AddQuad(
             new ShapeVertex(new Vector3(x0, y0, z), geometry, colors),
