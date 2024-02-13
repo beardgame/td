@@ -63,27 +63,36 @@ vec4 getColor(int index)
 struct Contribution
 {
     float alpha;
+    float t;
 };
 
-Contribution contributionOf(float minDistance, float maxDistance, float distance, float antiAliasWidth)
+Contribution contributionOf(float fromDistance, float toDistance, float distance, float antiAliasWidth)
 {
-    float edgeRadius = (maxDistance + minDistance + antiAliasWidth) / 2;
-    float edgeCenterOffset = (maxDistance - minDistance) / 2;
+    float edgeRadius = (toDistance - fromDistance + antiAliasWidth) / 2;
+    float edgeCenterOffset = (toDistance + fromDistance) / 2;
     float absoluteDistance = abs(distance - edgeCenterOffset);
 
     float alpha = clamp((edgeRadius - absoluteDistance) / antiAliasWidth, 0, 1);
+    float t = clamp((distance - fromDistance) / (toDistance - fromDistance), 0, 1);
     
-    return Contribution(alpha);
+    return Contribution(alpha, t);
 }
 
 vec4 edgeContribution(float distance, float antiAliasWidth)
 {
     float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
     float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
+    float edgeOuterGlow = p_edgeData[EDGE_OUTER_GLOW_I];
+    float edgeInnerGlow = p_edgeData[EDGE_INNER_GLOW_I];
     
-    Contribution c = contributionOf(edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
+    Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
+    Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
+    Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
     
-    return getColor(COLOR_EDGE_I) * c.alpha;
+    return
+        getColor(COLOR_EDGE_I) * edge.alpha
+        + getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * (1 - glowOuter.t)
+        + getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * glowInner.t;
 }
 
 vec4 fillContribution(float distance, float antiAliasWidth)
@@ -115,7 +124,7 @@ void main()
     vec4 fill = fillContribution(signedDistance, antiAliasWidth);
     vec4 edges = edgeContribution(signedDistance, antiAliasWidth);
 
-    fragColor += mix(fill, edges, edges.a);
+    fragColor += fill * (1 - edges.a) + edges;
 
     if (DEBUG_EDGES)
     {

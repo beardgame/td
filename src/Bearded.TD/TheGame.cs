@@ -278,6 +278,12 @@ sealed class TheGame : Window
         instance!.navigationController.Push<FontTest>();
     }
 
+    [Command("debug.reload-ui-renderers")]
+    private static void refreshUI(Logger logger, CommandParameters p)
+    {
+        instance!.uiRenderers.Reload();
+    }
+
     [Command("perf")]
     private static void togglePerformanceOverlay(Logger logger, CommandParameters? _)
     {

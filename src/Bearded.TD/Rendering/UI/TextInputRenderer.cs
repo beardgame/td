@@ -28,9 +28,9 @@ sealed class TextInputRenderer(IShapeDrawer drawer, TextDrawerWithDefaults<Color
         var topLeft = frame.TopLeft;
         var midLeft = topLeft + Vector2d.UnitY * .5 * frame.Size.Y;
 
-        var colors = new ShapeColors(fill: DimGray * 0.5f, edge: White);
-        var edges = new EdgeData(innerWidth: 1);
-        var radius = 4;
+        var colors = new ShapeColors(fill: DimGray * 0.5f, edge: White, innerGlow: Black * 0.5f);
+        var edges = new EdgeData(innerWidth: 1, innerGlow: 1.5f);
+        var radius = 3;
         drawer.DrawRectangle(frame.TopLeft, frame.Size, colors,radius, edges);
 
         var textBeforeCursor = textInput.Text.Substring(0, textInput.CursorPosition);
