@@ -21,6 +21,6 @@ sealed class ButtonBackgroundEffectRenderer(IShapeDrawer drawer) : IRenderer<But
 
         var color = control.MouseIsDown ? ActiveColor : HoverColor;
 
-        drawer.DrawRectangle(frame.TopLeft, frame.Size, color);
+        drawer.DrawRectangle(frame.TopLeft, frame.Size, new ShapeColors(fill: color));
     }
 }

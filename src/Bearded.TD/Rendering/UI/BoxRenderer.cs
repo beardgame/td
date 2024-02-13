@@ -11,6 +11,6 @@ class BoxRenderer(IShapeDrawer drawer, Color color) : IRenderer<Control>
     {
         var frame = control.Frame;
 
-        drawer.DrawRectangle(frame.TopLeft, frame.Size, color);
+        drawer.DrawRectangle(frame.TopLeft, frame.Size, new ShapeColors(fill: color));
     }
 }

@@ -13,6 +13,6 @@ sealed class DotRenderer(IShapeDrawer drawer) : IRenderer<Dot>
         drawer.DrawCircle(
             frame.TopLeft + frame.Size * 0.5,
             frame.Size.X * 0.5,
-            control.Color);
+            new ShapeColors(fill: control.Color));
     }
 }

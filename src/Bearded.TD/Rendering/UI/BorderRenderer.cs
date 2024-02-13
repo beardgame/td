@@ -15,8 +15,8 @@ sealed class BorderRenderer(IShapeDrawer drawer) : IRenderer<Border>
         drawer.DrawRectangle(
             frame.TopLeft,
             frame.Size,
-            control.Color,
-            10,
+            new ShapeColors(edge: control.Color),
+            5,
             edges);
     }
 }

@@ -9,15 +9,18 @@ const int EDGE_INNER_WIDTH_I = 1;
 const int EDGE_OUTER_GLOW_I = 2;
 const int EDGE_INNER_GLOW_I = 3;
 
-const float ANTI_ALIAS_WIDTH = 1;
+const int COLOR_FILL_I = 0;
+const int COLOR_EDGE_I = 1;
+const int COLOR_GLOW_OUTER_I = 2;
+const int COLOR_GLOW_INNER_I = 3;
 
-// TODO: deprecate and replace with gradient definition
-in vec4 p_color;
+const float ANTI_ALIAS_WIDTH = 1;
 
 in vec3 p_position;
 flat in int p_shapeType;
 flat in vec4 p_shapeData;
 flat in vec4 p_edgeData;
+flat in ivec4 p_shapeColors;
 
 out vec4 fragColor;
 
@@ -42,19 +45,53 @@ float signedDistanceToEdge()
     return 0;
 }
 
-vec4 edgeContribution(float distance, float antiAliasWidth)
+vec4 rgbaIntToVec4(int rgba)
 {
-    float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
-    float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
+    return vec4(
+    ((rgba >> 0) & 0xFF) / 255.0,
+    ((rgba >> 8) & 0xFF) / 255.0,
+    ((rgba >> 16) & 0xFF) / 255.0,
+    ((rgba >> 24) & 0xFF) / 255.0
+    );
+}
 
-    float edgeRadius = (edgeOuterWidth + edgeInnerWidth + antiAliasWidth) / 2;
-    float edgeCenterOffset = (edgeOuterWidth - edgeInnerWidth) / 2;
+vec4 getColor(int index)
+{
+    return rgbaIntToVec4(p_shapeColors[index]);
+}
+
+struct Contribution
+{
+    float alpha;
+};
+
+Contribution contributionOf(float minDistance, float maxDistance, float distance, float antiAliasWidth)
+{
+    float edgeRadius = (maxDistance + minDistance + antiAliasWidth) / 2;
+    float edgeCenterOffset = (maxDistance - minDistance) / 2;
     float absoluteDistance = abs(distance - edgeCenterOffset);
 
     float alpha = clamp((edgeRadius - absoluteDistance) / antiAliasWidth, 0, 1);
     
-    return p_color * alpha;
+    return Contribution(alpha);
 }
+
+vec4 edgeContribution(float distance, float antiAliasWidth)
+{
+    float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
+    float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
+    
+    Contribution c = contributionOf(edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
+    
+    return getColor(COLOR_EDGE_I) * c.alpha;
+}
+
+vec4 fillContribution(float distance, float antiAliasWidth)
+{
+    float alpha = clamp((0 - distance) / antiAliasWidth, 0, 1);
+    return getColor(COLOR_FILL_I) * alpha;
+}
+
 
 const bool DEBUG_EDGES = false;
 
@@ -64,7 +101,7 @@ void main()
     
     if (p_shapeType == SHAPE_TYPE_FILL)
     {
-        //fragColor = p_color;
+        fragColor = getColor(COLOR_FILL_I);
         if (DEBUG_EDGES)
         {
             fragColor = mix(fragColor, vec4(0, 0, 1, 1), 0.3);
@@ -73,13 +110,12 @@ void main()
     }
 
     float signedDistance = signedDistanceToEdge();
+    float antiAliasWidth = ANTI_ALIAS_WIDTH * length(vec2(dFdx(signedDistance), dFdy(signedDistance)));
     
-    float pixelDistance = length(vec2(dFdx(signedDistance), dFdy(signedDistance)));
-    float antiAliasWidth = ANTI_ALIAS_WIDTH * pixelDistance;
-    
-    vec4 edge = edgeContribution(signedDistance, antiAliasWidth);
-    
-    fragColor += edge;
+    vec4 fill = fillContribution(signedDistance, antiAliasWidth);
+    vec4 edges = edgeContribution(signedDistance, antiAliasWidth);
+
+    fragColor += mix(fill, edges, edges.a);
 
     if (DEBUG_EDGES)
     {

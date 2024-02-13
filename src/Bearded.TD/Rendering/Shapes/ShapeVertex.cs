@@ -3,27 +3,42 @@ using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Shapes;
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct ShapeVertex(Vector3 position, Color color, ShapeGeometry geometry)
+readonly struct ShapeVertex(Vector3 position, ShapeGeometry geometry, ShapeColors colors)
     : IVertexData
 {
     private readonly Vector3 position = position;
-    private readonly Color color = color;
     private readonly ShapeGeometry geometry = geometry;
+    private readonly ShapeColors colors = colors;
 
     static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; }
         = MakeAttributeArray(
             [
                 MakeAttributeTemplate<Vector3>("v_position"),
-                MakeAttributeTemplate<Color>("v_color"),
                 ..ShapeGeometry.VertexAttributeTemplates,
+                ..ShapeColors.VertexAttributeTemplates,
             ]
         );
+}
+
+[StructLayout(LayoutKind.Sequential)]
+readonly struct ShapeColors(Color? fill = null, Color? edge = null, Color? outerGlow = null, Color? innerGlow = null)
+{
+    private readonly Color fill = fill ?? default;
+    private readonly Color edge = edge ?? default;
+    private readonly Color outerGlow = outerGlow ?? default;
+    private readonly Color innerGlow = innerGlow ?? default;
+
+    public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
+    [
+        MakeAttributeTemplate("v_shapeColors", VertexAttribPointerType.UnsignedInt, 4, 16, VertexAttributeFormat.Integer),
+    ];
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -85,7 +100,7 @@ readonly struct ShapeData
 }
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct EdgeData(float outerWidth, float innerWidth, float outerGlow, float innerGlow)
+readonly struct EdgeData(float outerWidth = 0, float innerWidth = 0, float outerGlow = 0, float innerGlow = 0)
 {
     private readonly Vector4 data = new(outerWidth, innerWidth, outerGlow, innerGlow);
 

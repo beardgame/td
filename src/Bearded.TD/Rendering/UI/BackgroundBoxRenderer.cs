@@ -13,6 +13,6 @@ sealed class BackgroundBoxRenderer(IShapeDrawer drawer) : IRenderer<BackgroundBo
         drawer.DrawRectangle(
             frame.TopLeft,
             frame.Size,
-            control.Color);
+            new ShapeColors(fill: control.Color));
     }
 }
