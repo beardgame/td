@@ -1,6 +1,6 @@
 ﻿using Bearded.Graphics;
-using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
+using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
@@ -9,18 +9,13 @@ using static Bearded.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class TextInputRenderer : IRenderer<TextInput>
+sealed class TextInputRenderer(IShapeDrawer shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
+    : IRenderer<TextInput>
 {
     private const string cursorString = "|";
 
-    private readonly BoxRenderer boxRenderer;
-    private readonly TextDrawerWithDefaults<Color> textDrawer;
-
-    public TextInputRenderer(IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
-    {
-        boxRenderer = new BoxRenderer(shapeDrawer, White);
-        this.textDrawer = textDrawer.With(alignVertical: .5f);
-    }
+    private readonly BoxRenderer boxRenderer = new(shapeDrawer, White);
+    private readonly TextDrawerWithDefaults<Color> textDrawer = textDrawer.With(alignVertical: .5f);
 
     public void Render(TextInput textInput)
     {

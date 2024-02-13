@@ -1,6 +1,6 @@
 ﻿using Bearded.Graphics;
-using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
+using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
@@ -9,17 +9,10 @@ using static Bearded.Graphics.Color;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class AutoCompletingTextInputRenderer : IRenderer<AutoCompletingTextInput>
+sealed class AutoCompletingTextInputRenderer(IShapeDrawer shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
+    : IRenderer<AutoCompletingTextInput>
 {
-    private readonly TextInputRenderer internalRenderer;
-    private readonly TextDrawerWithDefaults<Color> textDrawer;
-
-    public AutoCompletingTextInputRenderer(
-        IShapeDrawer2<Color> shapeDrawer, TextDrawerWithDefaults<Color> textDrawer)
-    {
-        internalRenderer = new TextInputRenderer(shapeDrawer, textDrawer);
-        this.textDrawer = textDrawer;
-    }
+    private readonly TextInputRenderer internalRenderer = new(shapeDrawer, textDrawer);
 
     public void Render(AutoCompletingTextInput textInput)
     {
