@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
@@ -7,28 +8,18 @@ using static Bearded.Graphics.Vertices.VertexData;
 namespace Bearded.TD.Rendering.Deferred;
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct LevelVertex : IVertexData
+readonly struct LevelVertex(Vector3 position, Vector3 normal, Vector2 uv, Color color) : IVertexData
 {
-    // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
-    private readonly Vector3 position;
-    private readonly Vector3 normal;
-    private readonly Vector2 uv;
-    private readonly Color color;
+    private readonly Vector3 position = position;
+    private readonly Vector3 normal = normal;
+    private readonly Vector2 uv = uv;
+    private readonly Color color = color;
 
-    public LevelVertex(Vector3 position, Vector3 normal, Vector2 uv, Color color)
-    {
-        this.position = position;
-        this.normal = normal;
-        this.uv = uv;
-        this.color = color;
-    }
-
-    private static readonly VertexAttribute[] vertexAttributes = MakeAttributeArray(
-        MakeAttributeTemplate<Vector3>("vertexPosition"),
-        MakeAttributeTemplate<Vector3>("vertexNormal"),
-        MakeAttributeTemplate<Vector2>("vertexUV"),
-        MakeAttributeTemplate<Color>("vertexColor")
-    );
-
-    VertexAttribute[] IVertexData.VertexAttributes => vertexAttributes;
+    static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; }
+        = MakeAttributeArray(
+            MakeAttributeTemplate<Vector3>("vertexPosition"),
+            MakeAttributeTemplate<Vector3>("vertexNormal"),
+            MakeAttributeTemplate<Vector2>("vertexUV"),
+            MakeAttributeTemplate<Color>("vertexColor")
+        );
 }

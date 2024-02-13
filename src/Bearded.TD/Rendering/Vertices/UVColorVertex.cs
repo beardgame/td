@@ -1,33 +1,26 @@
+using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
 using OpenTK.Mathematics;
+using static Bearded.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Vertices;
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct UVColorVertex : IVertexData
+readonly struct UVColorVertex(Vector3 position, Vector2 uv, Color color) : IVertexData
 {
-    // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
-    private readonly Vector3 position;
-    private readonly Vector2 uv;
-    private readonly Color color;
+    private readonly Vector3 position = position;
+    private readonly Vector2 uv = uv;
+    private readonly Color color = color;
 
     public static CreateVertex<UVColorVertex, Color> Create { get; } =
         (p, uv, color) => new UVColorVertex(p, uv, color);
 
-    public UVColorVertex(Vector3 position, Vector2 uv, Color color)
-    {
-        this.position = position;
-        this.uv = uv;
-        this.color = color;
-    }
-
-    private static readonly VertexAttribute[] vertexAttributes = VertexData.MakeAttributeArray(
-        VertexData.MakeAttributeTemplate<Vector3>("v_position"),
-        VertexData.MakeAttributeTemplate<Vector2>("v_texcoord"),
-        VertexData.MakeAttributeTemplate<Color>("v_color")
-    );
-
-    VertexAttribute[] IVertexData.VertexAttributes => vertexAttributes;
+    static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; }
+        = MakeAttributeArray(
+            MakeAttributeTemplate<Vector3>("v_position"),
+            MakeAttributeTemplate<Vector2>("v_texcoord"),
+            MakeAttributeTemplate<Color>("v_color")
+        );
 }
