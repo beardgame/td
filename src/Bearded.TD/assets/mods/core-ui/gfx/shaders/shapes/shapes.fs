@@ -9,6 +9,8 @@ const int EDGE_INNER_WIDTH_I = 1;
 const int EDGE_OUTER_GLOW_I = 2;
 const int EDGE_INNER_GLOW_I = 3;
 
+const float ANTI_ALIAS_WIDTH = 1;
+
 // TODO: deprecate and replace with gradient definition
 in vec4 p_color;
 
@@ -40,44 +42,55 @@ float signedDistanceToEdge()
     return 0;
 }
 
-#define DEBUG_GEOMETRY false
+vec4 edgeContribution(float distance, float antiAliasWidth)
+{
+    float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
+    float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
+
+    float edgeRadius = (edgeOuterWidth + edgeInnerWidth + antiAliasWidth) / 2;
+    float edgeCenterOffset = (edgeOuterWidth - edgeInnerWidth) / 2;
+    float absoluteDistance = abs(distance - edgeCenterOffset);
+
+    float alpha = clamp((edgeRadius - absoluteDistance) / antiAliasWidth, 0, 1);
+    
+    return p_color * alpha;
+}
+
+const bool DEBUG_EDGES = false;
 
 void main()
 {
+    fragColor = vec4(0);
+    
     if (p_shapeType == SHAPE_TYPE_FILL)
     {
         //fragColor = p_color;
+        if (DEBUG_EDGES)
+        {
+            fragColor = mix(fragColor, vec4(0, 0, 1, 1), 0.3);
+        }
         return;
     }
-    #if DEBUG_GEOMETRY
-    if (p_shapeType == SHAPE_TYPE_LINE)
-    {
-        fragColor = vec4(1, 0, 0, 1);
-        return;
-    }
-    if (p_shapeType == SHAPE_TYPE_CIRCLE)
-    {
-        fragColor = vec4(0, 1, 0, 1);
-        return;
-    }
-    #endif
-    
-    float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
-    float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
-    float edgeOuterGlow = p_edgeData[EDGE_OUTER_GLOW_I];
-    float edgeInnerGlow = p_edgeData[EDGE_INNER_GLOW_I];
-    
-    float edgeDistance = signedDistanceToEdge() + 1.5;
 
-    float alpha = 1 - edgeDistance / length(vec2(dFdx(edgeDistance), dFdy(edgeDistance)));
+    float signedDistance = signedDistanceToEdge();
     
+    float pixelDistance = length(vec2(dFdx(signedDistance), dFdy(signedDistance)));
+    float antiAliasWidth = ANTI_ALIAS_WIDTH * pixelDistance;
     
-    alpha = 1 - abs(alpha);
+    vec4 edge = edgeContribution(signedDistance, antiAliasWidth);
     
-    if(alpha < 0)
+    fragColor += edge;
+
+    if (DEBUG_EDGES)
     {
-        discard;
+        float a = 0.8 + cos(signedDistance * 3.14) * 0.2;
+        if (p_shapeType == SHAPE_TYPE_LINE)
+        {
+            fragColor = mix(fragColor, vec4(1, 0, 0, 1) * a, 0.3);
+        }
+        if (p_shapeType == SHAPE_TYPE_CIRCLE)
+        {
+            fragColor = mix(fragColor, vec4(0, 1, 0, 1) * a, 0.3);
+        }
     }
-    
-    fragColor = p_color * alpha;
 }

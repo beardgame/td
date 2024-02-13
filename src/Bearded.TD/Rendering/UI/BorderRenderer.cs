@@ -10,10 +10,13 @@ sealed class BorderRenderer(IShapeDrawer drawer) : IRenderer<Border>
     {
         var frame = control.Frame;
 
+        var edges = new EdgeData(0, 1, 0, 0);
+
         drawer.DrawRectangle(
             frame.TopLeft,
             frame.Size,
             control.Color,
-            10);
+            10,
+            edges);
     }
 }
