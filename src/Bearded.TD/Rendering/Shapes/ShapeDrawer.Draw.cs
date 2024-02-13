@@ -70,33 +70,28 @@ sealed partial class ShapeDrawer : IShapeDrawer
         if (hInner > 0)
         {
             // top
-            var geometry = LinePointToPoint(
-                new Vector2(left, top), new Vector2(right, top), edges);
-            addQuad(leftInner, rightInner, topOuter, topInner, z, colors, geometry);
+            addQuad(leftInner, rightInner, topOuter, topInner, z, colors,
+                LinePointToPoint(new Vector2(left, top), new Vector2(right, top), edges));
 
             // bottom
-            geometry = LinePointToPoint(
-                new Vector2(right, bottom), new Vector2(left, bottom), edges);
-            addQuad(leftInner, rightInner, bottomInner, bottomOuter, z, colors, geometry);
+            addQuad(leftInner, rightInner, bottomInner, bottomOuter, z, colors,
+                LinePointToPoint(new Vector2(right, bottom), new Vector2(left, bottom), edges));
         }
 
         if (wInner > 0)
         {
             // left
-            var geometry = LinePointToPoint(
-                new Vector2(left, bottom), new Vector2(left, top), edges);
-            addQuad(leftOuter, leftInner, topInner, bottomInner, z, colors, geometry);
+            addQuad(leftOuter, leftInner, topInner, bottomInner, z, colors,
+                LinePointToPoint(new Vector2(left, bottom), new Vector2(left, top), edges));
 
             // right
-            geometry = LinePointToPoint(
-                new Vector2(right, top), new Vector2(right, bottom), edges);
-            addQuad(rightInner, rightOuter, topInner, bottomInner, z, colors, geometry);
+            addQuad(rightInner, rightOuter, topInner, bottomInner, z, colors,
+                LinePointToPoint(new Vector2(right, top), new Vector2(right, bottom), edges));
         }
 
         if (colors.HasFill)
         { // middle
-            var geometry = Fill();
-            addQuad(leftInner, rightInner, topInner, bottomInner, z, colors, geometry);
+            addQuad(leftInner, rightInner, topInner, bottomInner, z, colors, Fill());
         }
     }
 
