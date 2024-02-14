@@ -113,6 +113,7 @@ sealed class GameUI :
         uiUpdater.Update(args);
 
         ActionBar.Update();
+        CoreStats.Update();
         NotificationsUI.Update();
 
         updateGameDebugOverlayState();
