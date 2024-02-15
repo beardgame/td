@@ -72,6 +72,9 @@ readonly struct ShapeGeometry
 
     public static ShapeGeometry CirclePointRadius(Vector2 center, float radius, EdgeData edge)
         => new(ShapeType.CirclePointRadius, ShapeData.CirclePointRadius(center, radius), edge);
+
+    public static ShapeGeometry RectangleCornerSize(Vector2 topLeft, Vector2 size, float cornerRadius, EdgeData edge)
+        => new(ShapeType.RectangleCornerSize, ShapeData.RectangleCornerSize(topLeft, size, cornerRadius), edge);
 }
 
 enum ShapeType
@@ -79,26 +82,31 @@ enum ShapeType
     Fill = 0,
     LinePointToPoint = 1,
     CirclePointRadius = 2,
+    RectangleCornerSize = 3,
 }
 
 [StructLayout(LayoutKind.Sequential)]
 readonly struct ShapeData
 {
     private readonly Vector4 data;
+    private readonly float data4;
 
-    private ShapeData(float d0, float d1, float d2, float d3)
+    private ShapeData(float d0, float d1, float d2, float d3, float d4)
     {
         data = new Vector4(d0, d1, d2, d3);
+        data4 = d4;
     }
 
     public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
     [
         MakeAttributeTemplate<Vector4>("v_shapeData"),
+        MakeAttributeTemplate<float>("v_shapeData2"),
     ];
 
     public static ShapeData Fill() => default;
-    public static ShapeData LinePointToPoint(Vector2 start, Vector2 end) => new(start.X, start.Y, end.X, end.Y);
-    public static ShapeData CirclePointRadius(Vector2 center, float radius) => new(center.X, center.Y, radius, 0);
+    public static ShapeData LinePointToPoint(Vector2 start, Vector2 end) => new(start.X, start.Y, end.X, end.Y, 0);
+    public static ShapeData CirclePointRadius(Vector2 center, float radius) => new(center.X, center.Y, radius, 0, 0);
+    public static ShapeData RectangleCornerSize(Vector2 topLeft, Vector2 size, float cornerRadius) => new(topLeft.X, topLeft.Y, size.X, size.Y, cornerRadius);
 }
 
 [StructLayout(LayoutKind.Sequential)]

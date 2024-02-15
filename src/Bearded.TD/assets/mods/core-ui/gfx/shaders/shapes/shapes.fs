@@ -1,8 +1,11 @@
 ﻿#version 150
 
+uniform float uiTime;
+
 const int SHAPE_TYPE_FILL = 0;
 const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
+const int SHAPE_TYPE_RECTANGLE = 3; // top-left, width, height, corner radius
 
 const int EDGE_OUTER_WIDTH_I = 0;
 const int EDGE_INNER_WIDTH_I = 1;
@@ -19,6 +22,7 @@ const float ANTI_ALIAS_WIDTH = 1;
 in vec3 p_position;
 flat in int p_shapeType;
 flat in vec4 p_shapeData;
+flat in float p_shapeData2;
 flat in vec4 p_edgeData;
 flat in ivec4 p_shapeColors;
 
@@ -29,6 +33,7 @@ float signedDistanceToEdge()
     vec2 p0 = p_position.xy;
     switch(p_shapeType) {
         case SHAPE_TYPE_LINE:
+        {
             vec2 p1 = p_shapeData.xy;
             vec2 p2 = p_shapeData.zw;
             vec2 v12 = p2 - p1;
@@ -36,10 +41,24 @@ float signedDistanceToEdge()
             float numerator = v12.x * v01.y - v12.y * v01.x;
             float denominator = length(v12);
             return numerator / denominator;
+        }
         case SHAPE_TYPE_CIRCLE:
+        {
             vec2 center = p_shapeData.xy;
             float radius = p_shapeData.z;
             return length(p0 - center) - radius;
+        }
+        case SHAPE_TYPE_RECTANGLE:
+        {
+            vec2 topleft = p_shapeData.xy;
+            vec2 halfSize = p_shapeData.zw / 2;
+            float radius = p_shapeData2;
+            vec2 center = topleft + halfSize;
+            vec2 p = abs(p0 - center);
+            vec2 d = p - halfSize + vec2(radius);
+            float rectDistance = min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - radius;
+            return rectDistance;
+        }
     }
     
     return 0;
@@ -101,8 +120,7 @@ vec4 fillContribution(float distance, float antiAliasWidth)
     return getColor(COLOR_FILL_I) * alpha;
 }
 
-
-const bool DEBUG_EDGES = false;
+const float DEBUG_SHAPE = 0;
 
 void main()
 {
@@ -111,7 +129,7 @@ void main()
     if (p_shapeType == SHAPE_TYPE_FILL)
     {
         fragColor = getColor(COLOR_FILL_I);
-        if (DEBUG_EDGES)
+        if (DEBUG_SHAPE != 0)
         {
             fragColor = mix(fragColor, vec4(0, 0, 1, 1), 0.3);
         }
@@ -126,16 +144,40 @@ void main()
 
     fragColor += fill * (1 - edges.a) + edges;
 
-    if (DEBUG_EDGES)
+    if (DEBUG_SHAPE != 0)
     {
-        float a = 0.8 + cos(signedDistance * 3.14) * 0.2;
+        float a = 0.5 + cos(signedDistance * 3.14) * 0.3;
         if (p_shapeType == SHAPE_TYPE_LINE)
         {
-            fragColor = mix(fragColor, vec4(1, 0, 0, 1) * a, 0.3);
+            fragColor = mix(fragColor, vec4(1, 0, 0, 1) * a, DEBUG_SHAPE);
         }
         if (p_shapeType == SHAPE_TYPE_CIRCLE)
         {
-            fragColor = mix(fragColor, vec4(0, 1, 0, 1) * a, 0.3);
+            fragColor = mix(fragColor, vec4(0, 1, 0, 1) * a, DEBUG_SHAPE);
+        }
+        if (p_shapeType == SHAPE_TYPE_RECTANGLE)
+        {
+            vec2 xy = abs(fract(p_position.xy * vec2(0.2)) - vec2(0.5));
+            float d = length(xy);
+            
+            vec4 c;
+            float s;
+            if (signedDistance < 0)
+            {
+                c = vec4(1, 0, 1, 1);
+                s = smoothstep(0.1, 0, xy.y) * smoothstep(0.45, 0.4, d);
+            }
+            else if (signedDistance > 0)
+            {
+                c = vec4(1, 1, 0, 1);
+                s = smoothstep(0.1, 0, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
+            }
+            else
+            {
+                c = vec4(0, 1, 1, 1);
+                s = smoothstep(0.1, 0, abs(d - 0.35));
+            }
+            fragColor = mix(fragColor, c * a + vec4(1) * clamp(s, 0, 1), DEBUG_SHAPE);
         }
     }
 }

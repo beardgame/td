@@ -43,6 +43,13 @@ sealed partial class ShapeDrawer : IShapeDrawer
         var bottomInner = topInner + hInner;
         var bottomOuter = bottomInner + cornerRadius + outerRadius;
 
+        if (colors.HasFill || wInner * hInner == 0)
+        {
+            addQuad(leftOuter, rightOuter, topOuter, bottomOuter, z, colors,
+                RectangleCornerSize(xyz.Xy, wh, cornerRadius, edges));
+            return;
+        }
+
         if (outerRadius + cornerRadius > 0)
         {
             // topLeft
@@ -87,11 +94,6 @@ sealed partial class ShapeDrawer : IShapeDrawer
             // right
             addQuad(rightInner, rightOuter, topInner, bottomInner, z, colors,
                 LinePointToPoint(new Vector2(right, top), new Vector2(right, bottom), edges));
-        }
-
-        if (colors.HasFill)
-        { // middle
-            addQuad(leftInner, rightInner, topInner, bottomInner, z, colors, Fill());
         }
     }
 
