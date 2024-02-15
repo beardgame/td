@@ -17,6 +17,7 @@ sealed class CoreRenderSettings
     public Vector3Uniform CameraPosition { get; } = new("cameraPosition");
 
     public FloatUniform Time { get; } = new("time");
+    public FloatUniform UITime { get; } = new("uiTime");
 
     public void SetSettingsFor(IRenderLayer layer)
     {

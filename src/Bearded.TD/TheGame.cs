@@ -239,6 +239,7 @@ sealed class TheGame : Window
             tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(16));
         }
 
+        renderContext.Settings.UITime.Value = (float)e.TimeInS;
         renderContext.Compositor.PrepareForFrame();
         rootControl.Render(uiRenderers);
         renderContext.Compositor.FinalizeFrame();

@@ -58,6 +58,7 @@ sealed class DrawableRenderers : IDrawableRenderers
             settings.FarPlaneUnitX,
             settings.FarPlaneUnitY,
             settings.Time,
+            settings.UITime,
         ];
     }
 
