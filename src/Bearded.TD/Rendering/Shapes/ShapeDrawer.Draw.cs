@@ -43,6 +43,12 @@ sealed partial class ShapeDrawer : IShapeDrawer
         var bottomInner = topInner + hInner;
         var bottomOuter = bottomInner + cornerRadius + outerRadius;
 
+        const float padding = 0.5f;
+        topOuter -= padding;
+        bottomOuter += padding;
+        leftOuter -= padding;
+        rightOuter += padding;
+
         if (colors.HasFill || wInner * hInner == 0)
         {
             addQuad(leftOuter, rightOuter, topOuter, bottomOuter, z, colors,
