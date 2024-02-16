@@ -132,15 +132,26 @@ vec4 edgeContribution(float distance, float antiAliasWidth)
     float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
     float edgeOuterGlow = p_edgeData[EDGE_OUTER_GLOW_I];
     float edgeInnerGlow = p_edgeData[EDGE_INNER_GLOW_I];
-    
-    Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
-    Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
-    Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
-    
-    return
-        getColor(COLOR_EDGE_I) * edge.alpha
-        + getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * (1 - glowOuter.t)
-        + getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * glowInner.t;
+
+    vec4 ret = vec4(0);
+
+    if (edgeOuterWidth + edgeInnerWidth != 0)
+    {
+        Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
+        ret += getColor(COLOR_EDGE_I) * edge.alpha;
+    }
+    if (edgeOuterGlow != 0)
+    {
+        Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
+        ret += getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * (1 - glowOuter.t);
+    }
+    if (edgeInnerGlow != 0)
+    {
+        Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
+        ret += getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * glowInner.t;
+    }
+
+    return ret;
 }
 
 vec4 fillContribution(float distance, float antiAliasWidth)
