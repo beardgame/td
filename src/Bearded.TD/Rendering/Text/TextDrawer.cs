@@ -111,6 +111,8 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
             -alignHorizontal * line.Width,
             alignVertical - 1 // in line with previous behaviour
         );
+        alignOffset.Y += (1 - font.CapHeight) / 2; // center text around middle of cap height
+
         var origin = xyz + transform(alignOffset, unitX, unitY);
 
         var glyphs = line.Glyphs;

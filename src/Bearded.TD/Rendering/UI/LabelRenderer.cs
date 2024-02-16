@@ -7,15 +7,8 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class LabelRenderer : IRenderer<Label>
+sealed class LabelRenderer(UIFonts uiFonts) : IRenderer<Label>
 {
-    private readonly UIFonts uiFonts;
-
-    public LabelRenderer(UIFonts uiFonts)
-    {
-        this.uiFonts = uiFonts;
-    }
-
     public void Render(Label label)
     {
         var argb = label.Color;

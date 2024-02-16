@@ -13,6 +13,7 @@ sealed class FontDefinition : IConvertsTo<Content.Models.Fonts.FontDefinition, V
 {
     public string Name { get; set; }
     public AtlasParameters Atlas { get; set; }
+    public float? CapHeight { get; set; }
     public List<Glyph> Glyphs { get; set; }
     public List<Kerning>? Kerning { get; set; }
 
@@ -20,10 +21,29 @@ sealed class FontDefinition : IConvertsTo<Content.Models.Fonts.FontDefinition, V
     {
         return new Content.Models.Fonts.FontDefinition(
             ModAwareId.FromNameInMod(Name ?? throw new InvalidDataException(), modMetadata),
+            CapHeight ?? estimateCapHeight(),
             new Vector2(Atlas.DistanceRange / (float)Atlas.Width, Atlas.DistanceRange / (float)Atlas.Height),
             Glyphs.Select(g => g.ToGlyph(Atlas)),
             Kerning?.Select(k => ((char)k.Unicode1, (char)k.Unicode2, k.Advance))
                 ?? Enumerable.Empty<(char, char, float)>()
         );
+    }
+
+    private float estimateCapHeight()
+    {
+        const string capHeightCharacters = "HITM0";
+
+        foreach (var character in capHeightCharacters)
+        {
+            foreach (var glyph in Glyphs)
+            {
+                if (glyph.Unicode == character)
+                {
+                    return glyph.PlaneBounds.Top + glyph.PlaneBounds.Bottom;
+                }
+            }
+        }
+
+        return 1;
     }
 }
