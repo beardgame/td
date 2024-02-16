@@ -49,10 +49,17 @@ sealed partial class ShapeDrawer : IShapeDrawer
         leftOuter -= padding;
         rightOuter += padding;
 
-        if (colors.HasFill || wInner * hInner == 0)
+        // TODO: the optimised case below this block is currently broken if radius < inner edge width
+        // to fix that, we may have to generate trapezoids or similar geometry to cover that case
+        // profiling shows that this would improve gpu performance, though cpu impact has not been measured
+        // hence it's unclear if that is worth it
+        // though we'll eventually need more complex code like that if we want to support non rectangular shapes
+        //if (colors.HasFillOrInnerGlow || wInner * hInner == 0)
         {
             addQuad(leftOuter, rightOuter, topOuter, bottomOuter, z, colors,
-                RectangleCornerSize(xyz.Xy, wh, cornerRadius, edges));
+                // squircleness parameters are hardcoded to subjectively most pleasing values for now
+                // though setting both to 0 would be more performant where possible
+                RectangleCornerSize(xyz.Xy, wh, cornerRadius, edges, 0.5f, 1));
             return;
         }
 

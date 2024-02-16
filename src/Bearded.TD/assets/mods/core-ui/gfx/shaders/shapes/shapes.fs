@@ -1,7 +1,5 @@
 ﻿#version 150
 
-uniform float uiTime;
-
 const int SHAPE_TYPE_FILL = 0;
 const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
@@ -22,7 +20,7 @@ const float ANTI_ALIAS_WIDTH = 1;
 in vec3 p_position;
 flat in int p_shapeType;
 flat in vec4 p_shapeData;
-flat in float p_shapeData2;
+flat in vec3 p_shapeData2;
 flat in vec4 p_edgeData;
 flat in ivec4 p_shapeColors;
 
@@ -52,12 +50,43 @@ float signedDistanceToEdge()
         {
             vec2 topleft = p_shapeData.xy;
             vec2 halfSize = p_shapeData.zw / 2;
-            float radius = p_shapeData2;
+            float radius = p_shapeData2.x;
             vec2 center = topleft + halfSize;
             vec2 p = abs(p0 - center);
             vec2 d = p - halfSize + vec2(radius);
             float rectDistance = min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - radius;
-            return rectDistance;
+
+            float cornerTransitionRoundness = p_shapeData2.y;
+            float innerGlowRoundness = p_shapeData2.z;
+
+            if (cornerTransitionRoundness == 0 && innerGlowRoundness == 0)
+            {
+                return rectDistance;
+            }
+            
+            float smallestSize = min(halfSize.x, halfSize.y);
+            
+            float power = smallestSize / max(max(radius, -rectDistance), 1);
+            vec2 power2 = vec2(power);
+            if (halfSize.x > halfSize.y)
+            {
+                power2.x *= halfSize.x / halfSize.y;
+            }
+            else
+            {
+                power2.y *= halfSize.y / halfSize.x;
+            }
+            float ovalDistanceRelative = pow(length(pow(p / halfSize, power2)), 1 / power) - 1;
+            float ovalDistance = ovalDistanceRelative * min(halfSize.x, halfSize.y);
+            
+            float edgeToCenter = clamp(-rectDistance / smallestSize * 2, 0, 1);
+            float edgeToOuter = clamp(rectDistance / smallestSize * 2, 0, 1);
+            
+            float ovalNess = mix(cornerTransitionRoundness, innerGlowRoundness, edgeToCenter);
+            ovalNess *= 1 - edgeToOuter;
+            
+            float mixedDistance = mix(rectDistance, ovalDistance, ovalNess);
+            return mixedDistance;
         }
     }
     

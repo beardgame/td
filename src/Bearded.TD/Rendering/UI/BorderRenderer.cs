@@ -16,7 +16,7 @@ sealed class BorderRenderer(IShapeDrawer drawer) : IRenderer<Border>
             frame.TopLeft,
             frame.Size,
             new ShapeColors(edge: control.Color),
-            5,
+            2,
             edges);
     }
 }
