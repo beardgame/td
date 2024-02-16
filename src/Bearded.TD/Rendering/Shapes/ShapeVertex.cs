@@ -75,9 +75,9 @@ readonly struct ShapeGeometry
 
     public static ShapeGeometry RectangleCornerSize(
         Vector2 topLeft, Vector2 size, float cornerRadius, EdgeData edge,
-        float cornerSquicleness, float innerGlowSmoothness)
+        float cornerSquircleness, float innerGlowSmoothness)
         => new(ShapeType.RectangleCornerSize, ShapeData
-            .RectangleCornerSize(topLeft, size, cornerRadius, cornerSquicleness, innerGlowSmoothness), edge);
+            .RectangleCornerSize(topLeft, size, cornerRadius, cornerSquircleness, innerGlowSmoothness), edge);
 }
 
 enum ShapeType
@@ -110,8 +110,8 @@ readonly struct ShapeData
     public static ShapeData LinePointToPoint(Vector2 start, Vector2 end) => new(start.X, start.Y, end.X, end.Y, 0, 0, 0);
     public static ShapeData CirclePointRadius(Vector2 center, float radius) => new(center.X, center.Y, radius, 0, 0, 0, 0);
     public static ShapeData RectangleCornerSize(
-        Vector2 topLeft, Vector2 size, float cornerRadius, float cornerSquicleness, float innerGlowSmoothness)
-        => new(topLeft.X, topLeft.Y, size.X, size.Y, cornerRadius, cornerSquicleness, innerGlowSmoothness);
+        Vector2 topLeft, Vector2 size, float cornerRadius, float cornerSquircleness, float innerGlowSmoothness)
+        => new(topLeft.X, topLeft.Y, size.X, size.Y, cornerRadius, cornerSquircleness, innerGlowSmoothness);
 }
 
 [StructLayout(LayoutKind.Sequential)]
