@@ -6,7 +6,7 @@ namespace Bearded.TD;
 
 static partial class Constants
 {
-    public static class UI
+    public static partial class UI
     {
         public const double LayoutMarginSmall = 4;
         public const double LayoutMargin = 8;
@@ -22,8 +22,8 @@ static partial class Constants
 
             public const double SquareButtonSize = 64;
 
-            public static readonly Color ActiveColor = Color.White * 0.5f;
-            public static readonly Color HoverColor = Color.White * 0.25f;
+            public static readonly Color ActiveColor = Colors.Get(BackgroundColor.ActiveElement);
+            public static readonly Color HoverColor = Colors.Get(BackgroundColor.Hover);
         }
 
         public static class Checkbox
@@ -78,9 +78,9 @@ static partial class Constants
             public const float FontSize = 16;
             public const float LineHeight = 20;
 
-            public static readonly Color TextColor = Color.White;
+            public static readonly Color TextColor = Colors.Get(ForeGroundColor.Text);
             public static readonly Color ErrorTextColor = Color.Red;
-            public static readonly Color DisabledTextColor = TextColor * 0.7f;
+            public static readonly Color DisabledTextColor = Colors.Get(ForeGroundColor.DisabledText);
         }
 
         public static class Tooltip

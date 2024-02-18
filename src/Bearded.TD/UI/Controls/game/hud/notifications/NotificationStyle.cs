@@ -12,7 +12,7 @@ record struct NotificationStyle(NotificationStyle.NotificationBackgroundColor Ba
 
     public static readonly NotificationStyle Default = new()
     {
-        Background = () => BackgroundBox.DefaultColor
+        Background = () => Constants.UI.Colors.Get(BackgroundColor.Default),
     };
 
     public static readonly NotificationStyle Action =

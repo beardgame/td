@@ -6,9 +6,7 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class Border : Control
 {
-    private static readonly Color defaultColor = Color.White;
-
-    public Color Color { get; set; } = defaultColor;
+    public Color Color { get; set; } = Constants.UI.Colors.Get(ForeGroundColor.Highlight);
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 }
