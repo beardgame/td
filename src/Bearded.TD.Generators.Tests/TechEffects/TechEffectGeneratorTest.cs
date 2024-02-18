@@ -10,7 +10,6 @@ using static Bearded.TD.Generators.Tests.StaticConfig;
 
 namespace Bearded.TD.Generators.Tests.TechEffects
 {
-    [UsesVerify]
     public sealed class TechEffectGeneratorTest
     {
         [Fact]
