@@ -156,7 +156,7 @@ vec4 edgeContribution(float distance, float antiAliasWidth)
 
 vec4 fillContribution(float distance, float antiAliasWidth)
 {
-    float alpha = clamp((0 - distance) / antiAliasWidth, 0, 1);
+    float alpha = clamp((antiAliasWidth / 2 - distance) / antiAliasWidth, 0, 1);
     return getColor(COLOR_FILL_I) * alpha;
 }
 
