@@ -13,7 +13,14 @@ static class FormControlFactories
 {
     public static Control Checkbox(Binding<bool> valueBinding)
     {
-        var checkbox = new Button();
+        var checkbox = ButtonFactories.IconButtonBuilder
+            .ForStandaloneButton()
+            .WithCustomSize(Constants.UI.Checkbox.Size)
+            .WithIcon(Constants.Content.CoreUI.Sprites.CheckMark)
+            .Build();
+
+        var check = checkbox.Children.First(c => c is Sprite);
+
         checkbox.Clicked += _ => toggleCheckboxState();
         valueBinding.SourceUpdated += _ => updateCheckboxState();
         updateCheckboxState();
@@ -27,12 +34,7 @@ static class FormControlFactories
 
         void updateCheckboxState()
         {
-            checkbox.RemoveAllChildren();
-            checkbox.Add(new Border());
-            if (valueBinding.Value)
-            {
-                checkbox.Add(new Sprite { SpriteId = Constants.Content.CoreUI.Sprites.CheckMark } );
-            }
+            check.IsVisible = valueBinding.Value;
         }
     }
 
