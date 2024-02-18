@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
@@ -83,7 +84,7 @@ static partial class ButtonFactories
 
             // ReSharper disable once UseObjectOrCollectionInitializer
             var button = new Button();
-            var color = Binding.Combine(isEnabled, isError, (enabled, error) =>
+            var contentColor = Binding.Combine(isEnabled, isError, (enabled, error) =>
             {
                 if (error)
                 {
@@ -92,12 +93,16 @@ static partial class ButtonFactories
                 return enabled ? Constants.UI.Text.TextColor : Constants.UI.Text.DisabledTextColor;
             });
 
-            AddContent(button, color);
+            AddContent(button, contentColor);
 
-            var border = new Border();
-            button.Add(border);
-            color.SourceUpdated += c => border.Color = c;
-            border.Color = color.Value;
+            var box = new ComplexBox
+            {
+                CornerRadius = 2,
+                EdgeInnerWidth = 1,
+            };
+            button.Add(box);
+            contentColor.SourceUpdated += c => box.EdgeColor = c;
+            box.EdgeColor = contentColor.Value;
 
             if (progressBar.HasValue)
             {
@@ -111,24 +116,36 @@ static partial class ButtonFactories
                     new TooltipTarget(tooltip.Value.Factory, tooltip.Value.Definition, TooltipAnchor.Direction.Right));
             }
 
-            var bg = new BackgroundBox();
-            button.Add(bg);
-            isActive.SourceUpdated += updateColor;
-            isActive.ControlUpdated += updateColor;
-            updateColor(isActive.Value);
-            void updateColor(bool active) => bg.Color = active ? Constants.UI.Button.ActiveColor : Color.Transparent;
-
-            button.Add(new ButtonBackgroundEffect(() =>
-                button.IsEnabled && (progressBar?.Progress.Value ?? 0) == 0 && !isActive.Value));
+            var mouseState = new MouseStateObserver(button);
 
             isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
             button.IsEnabled = isEnabled.Value;
+
+            isActive.SourceUpdated += _ => updateColor();
+            isActive.ControlUpdated += _ => updateColor();
+            isEnabled.SourceUpdated += _ => updateColor();
+            mouseState.StateChanged += updateColor;
+            updateColor();
 
             if (onClick != null)
             {
                 button.Clicked += args => onClick(args);
             }
             return button;
+
+            void updateColor()
+            {
+                var color = (button, mouseState) switch
+                {
+                    ({ IsEnabled: false }, _) => BackgroundColor.InactiveElement,
+                    (_, { MouseIsDown: true }) => BackgroundColor.ActiveElement,
+                    (_, { MouseIsOver: true }) => BackgroundColor.Hover,
+                    _ when isActive.Value => BackgroundColor.ActiveElement,
+                    _ => BackgroundColor.Element,
+                };
+
+                box.FillColor = Constants.UI.Colors.Get(color);
+            }
         }
 
         protected abstract void Validate();

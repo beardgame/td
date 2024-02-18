@@ -50,6 +50,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
             (typeof(Sprite), new SpriteRenderer(content, renderers, spriteShader)),
             (typeof(Border), new BorderRenderer(shapeDrawer)),
             (typeof(BackgroundBox), new BackgroundBoxRenderer(shapeDrawer)),
+            (typeof(ComplexBox), new ComplexBoxRenderer(shapeDrawer)),
             (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(shapeDrawer)),
             (typeof(Dot), new DotRenderer(shapeDrawer)),
             (typeof(Control), new FallbackBoxRenderer(shapeDrawer)),

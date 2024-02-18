@@ -7,6 +7,7 @@ using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
 namespace Bearded.TD.UI.Controls;
 
+[Obsolete("Use MouseStateObserver instead.")]
 sealed class ButtonBackgroundEffect : Control
 {
     private readonly Func<bool> isButtonEnabled;
