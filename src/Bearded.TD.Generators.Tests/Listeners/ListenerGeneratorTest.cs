@@ -10,7 +10,6 @@ using static Bearded.TD.Generators.Tests.StaticConfig;
 
 namespace Bearded.TD.Generators.Tests.Listeners
 {
-    [UsesVerify]
     public sealed class ListenerGeneratorTest
     {
         [Fact]
