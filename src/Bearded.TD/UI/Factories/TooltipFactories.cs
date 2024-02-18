@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Tooltips;
 using Bearded.UI.Controls;
@@ -51,6 +52,21 @@ static class TooltipFactories
 
     private static Control tooltip(Control content)
     {
-        return new BackgroundBox { content.Anchor(a => a.MarginAllSides(Margin)) };
+        return new CompositeControl
+        {
+            new ComplexBox
+            {
+                CornerRadius = 2,
+
+                FillColor = Constants.UI.Colors.Get(BackgroundColor.Tooltip),
+
+                EdgeOuterWidth = 1,
+                EdgeColor = Constants.UI.Colors.Get(BackgroundColor.SubtleOutline),
+
+                GlowOuterWidth = 5,
+                GlowOuterColor = Color.Black * 0.2f,
+            },
+            content.Anchor(a => a.MarginAllSides(Margin)),
+        };
     }
 }

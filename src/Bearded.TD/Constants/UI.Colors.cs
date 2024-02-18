@@ -7,7 +7,9 @@ public enum BackgroundColor
 {
     Default = 0,
     InactiveElement = 1,
+    Tooltip = 1,
     ActiveElement = 2,
+    SubtleOutline = 2,
     Element = 4,
     Hover = 5,
 }
