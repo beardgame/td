@@ -2,82 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Text;
-using Bearded.Graphics.Textures;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Models.Fonts;
 using Bearded.TD.Rendering.Vertices;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using Font = Bearded.TD.Content.Models.Fonts.Font;
 
 namespace Bearded.TD.Rendering.Text;
-
-static class FontExtensions
-{
-    public static TextDrawer<TVertex, TVertexParameters> MakeConcreteWith<TVertex, TVertexParameters>(
-        this Font font,
-        IDrawableRenderers drawableRenderers,
-        DrawOrderGroup drawGroup,
-        int drawGroupOrderKey,
-        CreateVertex<TVertex, TVertexParameters> createVertex,
-        Shader? shader = null)
-        where TVertex : struct, IVertexData
-    {
-        shader ??= font.Material.Shader;
-        return drawableRenderers.GetOrCreateDrawableFor(
-            font, shader, drawGroup, drawGroupOrderKey,
-            () => TextDrawer.Create(font, createVertex, shader)
-        );
-    }
-}
-
-static class TextDrawer
-{
-    public static TextDrawer<TVertex, TVertexParameters> Create<TVertex, TVertexParameters>(
-        Font font,
-        CreateVertex<TVertex, TVertexParameters> createVertex,
-        Shader shader)
-        where TVertex : struct, IVertexData
-    {
-        var disposables = new List<IDisposable>(font.Material.Textures.Count + 1);
-        var settings = new List<IRenderSetting>(font.Material.Textures.Count + 1);
-
-        var i = 0;
-        foreach (var (name, image) in font.Material.Textures)
-        {
-            // TODO: these textures should be cached
-            // - cache in font, similar to how textures are cached in PackedSpriteSet?
-            // - could still cause duplication if same material is used for different purposes...
-            var texture = Texture.From(ImageTextureData.From(image), c =>
-                {
-                    c.SetFilterMode(TextureMinFilter.Linear, TextureMagFilter.Linear);
-                }
-            );
-            disposables.Add(texture);
-            settings.Add(new TextureUniform(name, TextureUnit.Texture0 + i, texture));
-            i++;
-        }
-
-        var meshBuilder = new ExpandingIndexedTrianglesMeshBuilder<TVertex>();
-        disposables.Add(meshBuilder);
-        settings.Add(new Vector2Uniform("unitRange", font.Definition.UnitRange));
-
-        return new TextDrawer<TVertex, TVertexParameters>(
-            font.Definition,
-            settings,
-            shader,
-            meshBuilder,
-            createVertex,
-            disposables
-            );
-    }
-}
 
 sealed class TextDrawer<TVertex, TVertexParameters>(
     IFontDefinition font,
@@ -109,12 +44,15 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         var unitY = unitDownDP * -fontHeight; // negated, because unitY points UP, relative to font
         var alignOffset = new Vector2(
             -alignHorizontal * line.Width,
-            alignVertical - 1 // in line with previous behaviour
+            alignVertical - 0.5f - font.CapHeight / 2 // center text around middle of cap height
         );
-        alignOffset.Y += (1 - font.CapHeight) / 2; // center text around middle of cap height
-
         var origin = xyz + transform(alignOffset, unitX, unitY);
 
+        DrawLine(line, origin, unitX, unitY, parameters);
+    }
+
+    public void DrawLine(GlyphLine line, Vector3 origin, Vector3 unitX, Vector3 unitY, TVertexParameters parameters)
+    {
         var glyphs = line.Glyphs;
         meshBuilder.Add(
             glyphs.Length * 4, glyphs.Length * 6,
