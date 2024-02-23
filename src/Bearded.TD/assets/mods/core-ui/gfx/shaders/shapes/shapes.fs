@@ -137,6 +137,11 @@ vec4 addPremultiplied(vec4 a, vec4 b)
     return a * (1 - b.a) + b;
 }
 
+float smoother(float x)
+{
+    return x * x * (3 - 2 * x);
+}
+
 Separated edgeContribution(float distance, float antiAliasWidth)
 {
     float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
@@ -149,12 +154,12 @@ Separated edgeContribution(float distance, float antiAliasWidth)
     if (edgeOuterGlow != 0)
     {
         Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
-        ret.outer = getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * (1 - glowOuter.t);
+        ret.outer = getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * smoother(1 - glowOuter.t);
     }
     if (edgeInnerGlow != 0)
     {
         Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
-        ret.inner = getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * glowInner.t;
+        ret.inner = getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * smoother(glowInner.t);
     }
 
     if (edgeOuterWidth + edgeInnerWidth != 0)
