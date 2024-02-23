@@ -52,20 +52,24 @@ static class TooltipFactories
 
     private static Control tooltip(Control content)
     {
+        var box = new ComplexBox
+        {
+            CornerRadius = 2,
+
+            FillColor = Constants.UI.Colors.Get(BackgroundColor.Tooltip),
+
+            EdgeOuterWidth = 1,
+            EdgeColor = Constants.UI.Colors.Get(BackgroundColor.SubtleOutline),
+        };
         return new CompositeControl
         {
-            new ComplexBox
+            new BoxShadow
             {
-                CornerRadius = 2,
-
-                FillColor = Constants.UI.Colors.Get(BackgroundColor.Tooltip),
-
-                EdgeOuterWidth = 1,
-                EdgeColor = Constants.UI.Colors.Get(BackgroundColor.SubtleOutline),
-
-                GlowOuterWidth = 5,
-                GlowOuterColor = Color.Black * 0.2f,
-            },
+                Color = Color.Black * 0.5f,
+                Offset = new(0, 2, 0),
+                BlurRadius = 5,
+            }.WithCornerRadiusSource(box),
+            box,
             content.Anchor(a => a.MarginAllSides(Margin)),
         };
     }

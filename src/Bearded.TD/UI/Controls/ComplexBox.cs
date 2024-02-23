@@ -5,7 +5,7 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class ComplexBox : Control
+sealed class ComplexBox : Control, ICornerRadiusSource
 {
     public double CornerRadius { get; set; }
 

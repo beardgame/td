@@ -19,20 +19,20 @@ readonly record struct TooltipAnchor(Control Reference, TooltipAnchor.Direction 
         {
             case Direction.Right:
                 return AnchorTemplate.Default
-                    .Left(Reference.Frame.X.End, width)
+                    .Left(Reference.Frame.X.End + Constants.UI.Tooltip.AnchorMargin, width)
                     .Top(Reference.Frame.Y.Start, height);
             case Direction.Top:
                 return AnchorTemplate.Default
                     .Left(Reference.Frame.X.Start, width)
-                    .Bottom(Reference.Frame.Y.Start, height);
+                    .Bottom(Reference.Frame.Y.Start + Constants.UI.Tooltip.AnchorMargin, height);
             case Direction.Left:
                 return AnchorTemplate.Default
-                    .Right(Reference.Frame.X.Start, width)
+                    .Right(Reference.Frame.X.Start + Constants.UI.Tooltip.AnchorMargin, width)
                     .Top(Reference.Frame.Y.Start, height);
             case Direction.Bottom:
                 return AnchorTemplate.Default
                     .Left(Reference.Frame.X.Start, width)
-                    .Top(Reference.Frame.Y.End, height);
+                    .Top(Reference.Frame.Y.End + Constants.UI.Tooltip.AnchorMargin, height);
             default:
                 throw new ArgumentOutOfRangeException();
         }

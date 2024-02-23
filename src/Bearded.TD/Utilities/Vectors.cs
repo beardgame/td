@@ -4,7 +4,7 @@ using static System.MathF;
 
 namespace Bearded.TD.Utilities;
 
-sealed class Vectors
+static class Vectors
 {
     public static Vector3 GetRandomUnitVector3()
     {
@@ -17,4 +17,7 @@ sealed class Vectors
             Cos(phi)
         );
     }
+
+    public static Vector3d WithZ(this Vector2d xy, double z = 0)
+        => new(xy.X, xy.Y, z);
 }

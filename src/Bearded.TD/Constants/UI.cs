@@ -87,6 +87,7 @@ static partial class Constants
         {
             public const double DefaultWidth = 300;
             public const double Margin = 4;
+            public const double AnchorMargin = 4;
         }
 
         public static class Window
