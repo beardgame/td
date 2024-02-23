@@ -66,7 +66,7 @@ float signedDistanceToEdge()
             
             float smallestSize = min(halfSize.x, halfSize.y);
             
-            float power = smallestSize / max(max(radius, -rectDistance), 1);
+            float power = smallestSize / max(max(radius, -rectDistance), rectDistance);
             vec2 power2 = vec2(power);
             if (halfSize.x > halfSize.y)
             {
