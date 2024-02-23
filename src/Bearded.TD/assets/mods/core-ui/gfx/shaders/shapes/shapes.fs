@@ -114,6 +114,12 @@ struct Contribution
     float t;
 };
 
+struct Separated
+{
+    vec4 inner;
+    vec4 outer;
+};
+
 Contribution contributionOf(float fromDistance, float toDistance, float distance, float antiAliasWidth)
 {
     float edgeRadius = (toDistance - fromDistance + antiAliasWidth) / 2;
@@ -126,37 +132,44 @@ Contribution contributionOf(float fromDistance, float toDistance, float distance
     return Contribution(alpha, t);
 }
 
-vec4 edgeContribution(float distance, float antiAliasWidth)
+vec4 addPremultiplied(vec4 a, vec4 b)
+{
+    return a * (1 - b.a) + b;
+}
+
+Separated edgeContribution(float distance, float antiAliasWidth)
 {
     float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
     float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
     float edgeOuterGlow = p_edgeData[EDGE_OUTER_GLOW_I];
     float edgeInnerGlow = p_edgeData[EDGE_INNER_GLOW_I];
 
-    vec4 ret = vec4(0);
+    Separated ret = Separated(vec4(0), vec4(0));
 
-    if (edgeOuterWidth + edgeInnerWidth != 0)
-    {
-        Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
-        ret += getColor(COLOR_EDGE_I) * edge.alpha;
-    }
     if (edgeOuterGlow != 0)
     {
         Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
-        ret += getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * (1 - glowOuter.t);
+        ret.outer = getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * (1 - glowOuter.t);
     }
     if (edgeInnerGlow != 0)
     {
         Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
-        ret += getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * glowInner.t;
+        ret.inner = getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * glowInner.t;
+    }
+
+    if (edgeOuterWidth + edgeInnerWidth != 0)
+    {
+        Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
+        vec4 e = getColor(COLOR_EDGE_I) * edge.alpha;
+        ret.outer = addPremultiplied(ret.outer, e);
+        ret.inner = addPremultiplied(ret.inner, e);
     }
 
     return ret;
 }
 
-vec4 fillContribution(float distance, float antiAliasWidth)
+vec4 fillContribution(float distance, float alpha)
 {
-    float alpha = clamp((antiAliasWidth / 2 - distance) / antiAliasWidth, 0, 1);
     return getColor(COLOR_FILL_I) * alpha;
 }
 
@@ -178,11 +191,14 @@ void main()
 
     float signedDistance = signedDistanceToEdge();
     float antiAliasWidth = ANTI_ALIAS_WIDTH * length(vec2(dFdx(signedDistance), dFdy(signedDistance)));
+    float outsideToInside = clamp((antiAliasWidth / 2 - signedDistance) / antiAliasWidth, 0, 1);
     
-    vec4 fill = fillContribution(signedDistance, antiAliasWidth);
-    vec4 edges = edgeContribution(signedDistance, antiAliasWidth);
+    vec4 fill = fillContribution(signedDistance, outsideToInside);
+    Separated edges = edgeContribution(signedDistance, antiAliasWidth);
+    
+    vec4 inner = addPremultiplied(fill, edges.inner);
 
-    fragColor += fill * (1 - edges.a) + edges;
+    fragColor = edges.outer + inner;
 
     if (DEBUG_SHAPE != 0)
     {
