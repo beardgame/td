@@ -72,9 +72,11 @@ static class TextFactories
     {
         var label = Label(text.Value, textAnchor, color?.Value);
         text.SourceUpdated += newText => label.Text = newText;
+        text.ControlUpdated += newText => label.Text = newText;
         if (color != null)
         {
             color.SourceUpdated += newColor => label.Color = newColor;
+            color.ControlUpdated += newColor => label.Color = newColor;
         }
         return label;
     }

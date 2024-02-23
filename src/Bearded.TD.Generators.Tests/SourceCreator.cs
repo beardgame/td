@@ -12,7 +12,7 @@ namespace Bearded.TD.Generators.Tests
 {
     static class SourceCreator
     {
-        private static readonly string dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+        private static readonly string dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
 
         public static readonly ImmutableArray<MetadataReference> References = ImmutableArray.Create<MetadataReference>(
             // .NET assemblies are finicky and need to be loaded in a special way.

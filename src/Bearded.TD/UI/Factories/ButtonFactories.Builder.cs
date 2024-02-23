@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
@@ -124,6 +123,7 @@ static partial class ButtonFactories
             isActive.SourceUpdated += _ => updateColor();
             isActive.ControlUpdated += _ => updateColor();
             isEnabled.SourceUpdated += _ => updateColor();
+            isEnabled.ControlUpdated += _ => updateColor();
             mouseState.StateChanged += updateColor;
             updateColor();
 
