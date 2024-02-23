@@ -8,7 +8,7 @@ sealed class MainMenuControl : CompositeControl
 {
     public MainMenuControl(MainMenu model)
     {
-        Add(new BackgroundBox(Color.DarkSlateBlue));
+        Add(new BackgroundBox(Constants.UI.Colors.Get(BackgroundColor.MainMenuBackground)));
         this.BuildLayout().AddMenu(b => b
             .AddMenuAction("Quick game", model.OnQuickGameButtonClicked)
             .AddMenuAction("Host game", model.OnHostGameButtonClicked)

@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Bearded.Graphics;
 
 namespace Bearded.TD;
@@ -12,6 +16,9 @@ public enum BackgroundColor
     SubtleOutline = 2,
     Element = 4,
     Hover = 5,
+
+
+    MainMenuBackground = 5,
 }
 
 public enum ForeGroundColor
@@ -62,10 +69,39 @@ static partial class Constants
                 new Color(0xFF1e100b),
             ];
 
+            private static readonly ImmutableArray<Color> copper =
+                split("""
+                      #ffd8c7
+                      #ecd9b3
+                      #d6d89f
+                      #aec58d
+                      #87b27b
+                      #6a9e72
+                      #5a8b73
+                      #4b7873
+                      #3d5a64
+                      #2f3c51
+                      #23233e
+                      #1e172a
+                      #140c17
+                      """);
+
             public static Color Get(BackgroundColor level)
-                => purples[^((int)level + 1)];
+                => copper[^((int)level + 1)];
+
             public static Color Get(ForeGroundColor level)
                 => yellows[(int)level];
+
+            private static ImmutableArray<Color> split(string colors)
+            {
+                return [
+                    ..match("[a-fA-F0-9]{8}"),
+                    ..match("[a-fA-F0-9]{6}").Select(c => c.WithAlpha(0xFF)),
+                ];
+
+                IEnumerable<Color> match(string pattern) =>
+                    Regex.Matches(colors, pattern).Select(m => new Color(Convert.ToUInt32(m.Value, 16)));
+            }
         }
     }
 }
