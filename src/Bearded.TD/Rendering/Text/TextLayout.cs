@@ -68,7 +68,8 @@ static class TextLayout
         }
         laidOutGlyph = new LaidOutGlyph(
             glyph.VertexBounds.TranslateX(advanced),
-            glyph.UVBounds);
+            glyph.UVBounds,
+            advanced);
         advanced += glyph.Advance;
     }
 

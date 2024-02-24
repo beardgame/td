@@ -15,7 +15,7 @@ namespace Bearded.TD.Rendering.Text;
 static class TextDrawer
 {
     public static TextDrawer<TVertex, TVertexParameters> Create<TVertex, TVertexParameters>(
-        Font font,
+        Font font, TextDrawerConfiguration config,
         CreateVertex<TVertex, TVertexParameters> createVertex,
         Shader shader)
         where TVertex : struct, IVertexData
@@ -49,7 +49,8 @@ static class TextDrawer
             shader,
             meshBuilder,
             createVertex,
-            disposables
+            disposables,
+            config
         );
     }
 }

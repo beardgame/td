@@ -4,4 +4,5 @@ namespace Bearded.TD.Rendering.Text;
 
 readonly record struct LaidOutGlyph(
     Bounds VertexBounds,
-    Bounds UVBounds);
+    Bounds UVBounds,
+    float Advanced);

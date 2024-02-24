@@ -14,13 +14,16 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Text;
 
+readonly record struct TextDrawerConfiguration(Vector2? AlignGrid = null, Vector2 Offset = default);
+
 sealed class TextDrawer<TVertex, TVertexParameters>(
     IFontDefinition font,
     IEnumerable<IRenderSetting> settings,
     Shader shader,
     ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder,
     CreateVertex<TVertex, TVertexParameters> createTextVertex,
-    IEnumerable<IDisposable> disposables)
+    IEnumerable<IDisposable> disposables,
+    TextDrawerConfiguration config)
     : ITextDrawer<TVertexParameters>, IDrawable
     where TVertex : struct, IVertexData
 {
@@ -62,9 +65,29 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         var index = 0;
         var vertexIndex = indexOffset;
 
+        if (config.AlignGrid is { } align)
+        {
+            var cell = origin.Xy / align;
+            origin.Xy = new Vector2((int)cell.X, (int)cell.Y) * align;
+        }
+        origin.Xy += config.Offset;
+
+        var advCorrection = 0f;
+
         foreach (ref var glyph in glyphs)
         {
-            var (xy, uv) = glyph;
+            var (xy, uv, adv) = glyph;
+
+            if (config.AlignGrid is { X: var alignX })
+            {
+                alignX /= unitX.X;
+                var cell = (adv + advCorrection) / alignX;
+                var newAdv = (int)(cell + 0.5f) * alignX;
+
+                advCorrection = newAdv - adv;
+
+                xy = xy.TranslateX(advCorrection);
+            }
 
             var bottomLeft = origin + transform(xy.BottomLeft, unitX, unitY);
             var stepRight = xy.Width * unitX;

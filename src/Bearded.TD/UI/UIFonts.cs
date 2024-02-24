@@ -23,6 +23,8 @@ sealed class UIFonts
             { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize) },
         }.AsReadOnly();
 
+    private static readonly TextDrawerConfiguration defaultConfig = new(new Vector2(1, 1), new Vector2(0.5f, 0));
+
     public static UIFonts Load(Blueprints blueprints, IDrawableRenderers renderers)
     {
         var fontDrawers = textStyles.ToImmutableDictionary(
@@ -32,7 +34,7 @@ sealed class UIFonts
                 var def = kvp.Value;
                 var font = blueprints.Fonts[def.Font];
                 var drawer = font
-                    .MakeConcreteWith(renderers, DrawOrderGroup.UIFont, 0, UVColorVertex.Create)
+                    .MakeConcreteWith(defaultConfig, renderers, DrawOrderGroup.UIFont, 0, UVColorVertex.Create)
                     .WithDefaults(def.DefaultSize, 0, 0, Vector3.UnitX, Vector3.UnitY, Color.White);
                 return drawer;
             });
