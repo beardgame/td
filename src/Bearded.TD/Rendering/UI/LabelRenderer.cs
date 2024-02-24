@@ -1,4 +1,5 @@
-﻿using Bearded.TD.UI;
+﻿using System;
+using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
@@ -18,15 +19,15 @@ sealed class LabelRenderer(UIFonts uiFonts) : IRenderer<Label>
             argb *= 0.5f;
         }
 
-        var (anchorX, anchorY) = label.TextAnchor;
+        var textAnchor = label.TextAnchor;
         var frame = label.Frame;
-        var anchor = frame.TopLeft + frame.Size * label.TextAnchor;
+        var anchor = frame.TopLeft + frame.Size * textAnchor;
 
         uiFonts.ForStyle(label.TextStyle).DrawLine(
             xyz: ((Vector2) anchor).WithZ(),
             text: label.Text,
-            alignHorizontal: (float) anchorX,
-            alignVertical: (float) anchorY,
+            alignHorizontal: (float) textAnchor.X,
+            alignVertical: (float) textAnchor.Y,
             fontHeight: (float) label.FontSize,
             parameters: argb
         );
