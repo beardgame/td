@@ -56,7 +56,9 @@ void main() {
     }
     
     
-    float opacity = clamp(pixelDistance + 0.5, 0.0, 1.0);
+    float opacity = clamp(pixelDistance + 0.4, 0.0, 1.0);
+    
+    opacity = smoothstep(0.0, 1.0, opacity);
 
     fragColor = p_color * opacity;
 }
