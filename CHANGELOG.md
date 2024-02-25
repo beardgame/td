@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.25
+
+* Completely rewrote UI skin
+  * New solid backgrounds & colours for UI elements
+  * Rounded corners for UI elements
+  * Revised theming for common UI controls
+  * Added drop shadows to tooltips
+* In-game UI layout completely changed:
+  * Action bar and resource information have been moved to the bottom of the screen
+  * Wave information has moved to the top of the screen, together with a new layout for the Core statistics
+  * The player information (list of players + pings) has been removed entirely
+* Changed EMP shortcut from E to ctrl+E
+* Fixed vertical alignment of text labels
+* Updated debug console font to monospace
+* Building status is now always shown when hovering over a building with the cursor
+* Bug fix: backslashes are drawn again in the debug console
+
 ## v0.24
 
 * Replaced UI font rendering
