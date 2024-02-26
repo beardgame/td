@@ -40,6 +40,14 @@ static partial class Constants
 
                 public static readonly ModAwareSpriteId Technology = hud("microscope-lens");
             }
+
+            public static class MainMenu
+            {
+                private static ModAwareSpriteId foreground(string id) => new(new ModAwareId(ModId, "menu-foreground"), id);
+
+                public static readonly ModAwareSpriteId Turret = foreground("turret");
+                public static readonly ModAwareId Background = new (ModId, "menu-background");
+            }
         }
     }
 }

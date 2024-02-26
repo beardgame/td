@@ -25,8 +25,8 @@ sealed class SpriteRenderer(
         var center = frame.TopLeft + frame.Size * 0.5;
 
         drawable.DrawWithWidth(
-            ((Vector2) center).WithZ(),
-            (float) control.Size,
+            ((Vector2)center).WithZ(),
+            (float)control.Size,
             control.Color);
     }
 }

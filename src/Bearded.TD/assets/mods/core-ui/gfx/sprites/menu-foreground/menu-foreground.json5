@@ -1,0 +1,9 @@
+﻿{
+    id: "menu-foreground",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
+}

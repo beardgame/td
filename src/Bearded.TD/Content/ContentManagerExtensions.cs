@@ -14,4 +14,13 @@ static class ContentManagerExtensions
         }
         return contentManager.GetModUnsafe(id.ModId).Blueprints.Sprites[id];
     }
+
+    public static Material ResolveMaterial(this ContentManager contentManager, ModAwareId id)
+    {
+        if (!id.IsValid)
+        {
+            throw new ArgumentException("Invalid ID for material", nameof(id));
+        }
+        return contentManager.GetModUnsafe(id.ModId).Blueprints.Materials[id];
+    }
 }
