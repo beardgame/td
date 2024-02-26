@@ -11,6 +11,7 @@ namespace Bearded.TD.UI.Factories;
 
 static class EntityStatusFactories
 {
+    [Obsolete("Use in-game overlays")]
     public static Layouts.Layout AddEntityStatus(
         this Layouts.Layout layout, BuilderFunc<Builder> builderFunc, out Disposer disposer)
     {

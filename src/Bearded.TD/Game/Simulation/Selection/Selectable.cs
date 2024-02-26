@@ -28,6 +28,7 @@ sealed class Selectable :
     public bool IsSelectable => visibility?.Visibility.IsVisible() ?? true;
     public IReportSubject Subject =>
         Owner.GetComponents<IReportSubject>().SingleOrDefault() ?? new EmptyReportSubject();
+    public GameObject Object => Owner;
 
     protected override void OnAdded()
     {

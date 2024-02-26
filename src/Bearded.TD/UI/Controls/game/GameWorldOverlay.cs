@@ -5,10 +5,29 @@ using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
+using static Bearded.TD.UI.Controls.IGameWorldOverlay;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class GameWorldOverlay(GameCamera camera) : OnTopCompositeControl
+interface IGameWorldOverlay
+{
+    public void AddControl(Control control, Vector2d size, OverlayAnchor anchor);
+
+    public void RemoveControl(Control control);
+
+    public readonly record struct OverlayAnchor(
+        Position2 WorldPosition,
+        OverlayDirection Direction,
+        double Margin = Constants.UI.LayoutMargin);
+
+    public readonly record struct OverlayDirection(double Horizontal, double Vertical, Vector2d MarginDirection)
+    {
+        public static readonly OverlayDirection Right = new(0, 0.5, Vector2d.UnitX);
+    }
+}
+
+sealed class GameWorldOverlay(GameCamera camera)
+    : OnTopCompositeControl, IGameWorldOverlay
 {
     private readonly List<OverlayControl> controls = [];
 
@@ -65,14 +84,4 @@ sealed class GameWorldOverlay(GameCamera camera) : OnTopCompositeControl
     }
 
     private sealed record OverlayControl(Control Control, Vector2d Size, OverlayAnchor Anchor);
-
-    public readonly record struct OverlayAnchor(
-        Position2 WorldPosition,
-        OverlayDirection Direction,
-        double Margin = Constants.UI.LayoutMargin);
-
-    public readonly record struct OverlayDirection(double Horizontal, double Vertical, Vector2d MarginDirection)
-    {
-        public static readonly OverlayDirection Right = new(0, 0.5, Vector2d.UnitX);
-    }
 }

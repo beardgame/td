@@ -6,6 +6,8 @@ sealed class SelectionManager
 {
     public delegate void UndoDelegate();
 
+    public event GenericEventHandler<ISelectable>? ObjectFocused;
+    public event GenericEventHandler<ISelectable>? ObjectUnfocused;
     public event GenericEventHandler<ISelectable>? ObjectSelected;
     public event GenericEventHandler<ISelectable>? ObjectDeselected;
 
@@ -35,6 +37,7 @@ sealed class SelectionManager
         ResetFocus();
         focusedObject = obj;
         obj.Focus(ResetFocus);
+        ObjectFocused?.Invoke(obj);
     }
 
     public void ResetSelection()
@@ -52,7 +55,12 @@ sealed class SelectionManager
 
     public void ResetFocus()
     {
-        focusedObject?.ResetSelection();
+        if (focusedObject != null)
+        {
+            focusedObject.ResetSelection();
+            ObjectUnfocused?.Invoke(focusedObject);
+        }
+
         focusedObject = null;
     }
 }

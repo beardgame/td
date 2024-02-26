@@ -40,6 +40,7 @@ sealed class GameUIControl : CompositeControl
         var overlayControl = CreateClickThrough();
         Add(overlayControl);
         gameUI.SetOverlayControl(overlayControl);
+        gameUI.SetWorldOverlay(gameWorldOverlay);
 
         Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
             .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */
