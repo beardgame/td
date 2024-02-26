@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Bearded.TD.Utilities;
 using Bearded.UI;
 using Bearded.UI.Controls;
@@ -37,5 +38,13 @@ static class Extensions
         isVisible.SourceUpdated += visible => control.IsVisible = visible;
         isVisible.ControlUpdated += visible => control.IsVisible = visible;
         return control;
+    }
+
+    public static void Add(this CompositeControl parent, IEnumerable<Control> children)
+    {
+        foreach (var child in children)
+        {
+            parent.Add(child);
+        }
     }
 }
