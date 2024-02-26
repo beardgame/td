@@ -23,6 +23,8 @@ sealed class UIFonts
             { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize) },
         }.AsReadOnly();
 
+    // TODO: this doesn't take UI scale into account
+    // TODO: it's also used for in-game numbers and debug drawing, which is thus broken
     private static readonly TextDrawerConfiguration defaultConfig = new(new Vector2(1, 1), new Vector2(0.5f, 0));
 
     public static UIFonts Load(Blueprints blueprints, IDrawableRenderers renderers)

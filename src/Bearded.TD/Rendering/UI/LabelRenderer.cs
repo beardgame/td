@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.TD.UI;
+﻿using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
