@@ -23,6 +23,7 @@ static class MenuFactories
     {
         private ButtonAction? closeAction;
         private readonly List<ButtonAction> menuActions = new();
+        private Control? background;
 
         public Builder WithCloseAction(VoidEventHandler onClose) => WithCloseAction("Close", onClose);
 
@@ -38,6 +39,12 @@ static class MenuFactories
             return this;
         }
 
+        public Builder WithBackground(Control background)
+        {
+            this.background = background;
+            return this;
+        }
+
         public Control Build()
         {
             if (closeAction == null)
@@ -47,7 +54,7 @@ static class MenuFactories
 
             var control = new CompositeControl
             {
-                new BackgroundBox()
+                background ?? new BackgroundBox(),
             };
             var layout = control.BuildLayout()
                 .ForContentBox()
@@ -58,12 +65,12 @@ static class MenuFactories
                 .ClearSpaceBottom(Constants.UI.Button.Height + Constants.UI.LayoutMargin);
 
             // Cast to enumerable so the Reverse cannot be mistaken for the list.Reverse method.
-            var actionEnumerable = (IEnumerable<ButtonAction>) menuActions;
+            var actionEnumerable = (IEnumerable<ButtonAction>)menuActions;
             foreach (var action in actionEnumerable.Reverse())
             {
                 layout.DockFixedSizeToBottom(
                     ButtonFactories
-                        .Button(b => b.WithLabel(action.Label).WithOnClick(action.OnClick))
+                        .Button(b => b.WithLabel(action.Label).WithOnClick(action.OnClick).WithShadow())
                         .BindIsEnabled(action.IsEnabled), Constants.UI.Button.Height);
             }
 

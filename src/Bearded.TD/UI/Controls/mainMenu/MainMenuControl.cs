@@ -1,6 +1,6 @@
-﻿using Bearded.Graphics;
-using Bearded.TD.UI.Factories;
+﻿using Bearded.TD.UI.Factories;
 using Bearded.UI.Controls;
+using static Bearded.TD.Constants.UI;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -8,8 +8,14 @@ sealed class MainMenuControl : CompositeControl
 {
     public MainMenuControl(MainMenu model)
     {
-        Add(new BackgroundBox(Constants.UI.Colors.Get(BackgroundColor.MainMenuBackground)));
+        Add(new BackgroundBox(Colors.Get(BackgroundColor.MainMenuBackground)));
         this.BuildLayout().AddMenu(b => b
+            .WithBackground(new ComplexBox
+            {
+                FillColor = Colors.Get(BackgroundColor.Default),
+                GlowOuterWidth = 15,
+                GlowOuterColor = Shadows.Default.Color * 0.5f,
+            })
             .AddMenuAction("Quick game", model.OnQuickGameButtonClicked)
             .AddMenuAction("Host game", model.OnHostGameButtonClicked)
             .AddMenuAction("Join game", model.OnJoinGameButtonClicked)
