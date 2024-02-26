@@ -26,10 +26,16 @@ interface IGameWorldOverlay
     }
 }
 
-sealed class GameWorldOverlay(GameCamera camera)
-    : OnTopCompositeControl, IGameWorldOverlay
+sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
 {
+    private readonly GameCamera camera;
     private readonly List<OverlayControl> controls = [];
+
+    public GameWorldOverlay(GameCamera camera)
+    {
+        this.camera = camera;
+        IsClickThrough = true;
+    }
 
     public void AddControl(Control control, Vector2d size, OverlayAnchor anchor)
     {
