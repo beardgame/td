@@ -9,12 +9,14 @@ sealed class GameUIControl : CompositeControl
 
     public GameUIControl(GameUI gameUI, RenderContext renderContext)
     {
-        GameWorldControl gameWorldControl;
+        var gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource);
+        var gameWorldOverlay = new GameWorldOverlay(gameUI.Game.Camera);
+
         this.gameUI = gameUI;
 
         CanBeFocused = true;
 
-        Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource));
+        Add(gameWorldControl);
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
@@ -24,6 +26,7 @@ sealed class GameUIControl : CompositeControl
             .Anchor(a => a
                 .Top(height: 480)
                 .Left(margin: -240, width: 480, relativePercentage: .5)));
+        nonDiegeticUIWrapper.Add(gameWorldOverlay);
         Add(nonDiegeticUIWrapper);
 
         Add(new GameMenuControl()
@@ -37,6 +40,7 @@ sealed class GameUIControl : CompositeControl
         var overlayControl = CreateClickThrough();
         Add(overlayControl);
         gameUI.SetOverlayControl(overlayControl);
+        gameUI.SetWorldOverlay(gameWorldOverlay);
 
         Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
             .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */

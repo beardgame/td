@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Bearded.Graphics;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Meta;
@@ -14,6 +15,7 @@ using Bearded.UI.Controls;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.Input;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -145,6 +147,7 @@ sealed class GameUI :
         }
     }
 
+    [Obsolete("Will be replaced by building status")]
     public void SetOverlayControl(IControlParent overlay)
     {
         DebugAssert.State.Satisfies(entityStatusNavigation == null, "Can only initialize entity status UI once.");
@@ -164,6 +167,11 @@ sealed class GameUI :
             models,
             views);
         entityStatusNavigation!.Exited += Game.SelectionManager.ResetSelection;
+    }
+
+    public void SetWorldOverlay(IGameWorldOverlay overlay)
+    {
+        BuildingStatusObserver.Create(overlay, Game.SelectionManager);
     }
 
     private void onObjectSelected(ISelectable selectedObject)
