@@ -30,12 +30,12 @@ readonly struct ShapeVertex(Vector3 position, ShapeGeometry geometry, ShapeColor
 [StructLayout(LayoutKind.Sequential)]
 readonly struct ShapeColors(Color? fill = null, Color? edge = null, Color? outerGlow = null, Color? innerGlow = null)
 {
-    private readonly Color fill = fill ?? default;
-    private readonly Color edge = edge ?? default;
-    private readonly Color outerGlow = outerGlow ?? default;
-    private readonly Color innerGlow = innerGlow ?? default;
+    public readonly Color Fill = fill ?? default;
+    public readonly Color Edge = edge ?? default;
+    public readonly Color OuterGlow = outerGlow ?? default;
+    public readonly Color InnerGlow = innerGlow ?? default;
 
-    public bool HasFillOrInnerGlow => fill != default || innerGlow != default;
+    public bool HasFillOrInnerGlow => Fill != default || InnerGlow != default;
 
     public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
     [

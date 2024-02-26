@@ -1,15 +1,13 @@
-﻿using Bearded.TD.Content;
+﻿using System;
+using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
-using Bearded.TD.UI.Controls;
-using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Content.CoreUI;
-using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD.Rendering.UI;
 
@@ -39,22 +37,23 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
 
         router = new CachedRendererRouter(
         [
-            (typeof(UIDebugOverlayControl.Highlight),
-                new UIDebugOverlayHighlightRenderer(context.Drawers.ConsoleBackground, uiFonts.Default)),
-            (typeof(RenderLayerCompositeControl),
-                new RenderLayerCompositeControlRenderer(context.Compositor)),
-            (typeof(AutoCompletingTextInput),
-                new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts.Default)),
-            (typeof(TextInput), new TextInputRenderer(shapeDrawer, uiFonts.Default)),
-            (typeof(Label), new LabelRenderer(uiFonts)),
-            (typeof(Sprite), new SpriteRenderer(content, renderers, spriteShader)),
-            (typeof(Border), new BorderRenderer(shapeDrawer)),
-            (typeof(BackgroundBox), new BackgroundBoxRenderer(shapeDrawer)),
-            (typeof(ComplexBox), new ComplexBoxRenderer(shapeDrawer)),
-            (typeof(BoxShadow), new BoxShadowRenderer(shapeDrawer)),
-            (typeof(ButtonBackgroundEffect), new ButtonBackgroundEffectRenderer(shapeDrawer)),
-            (typeof(Dot), new DotRenderer(shapeDrawer)),
-            (typeof(Control), new FallbackBoxRenderer(shapeDrawer)),
+            validate(new UIDebugOverlayHighlightRenderer(context.Drawers.ConsoleBackground, uiFonts.Default)),
+            validate(new RenderLayerCompositeControlRenderer(context.Compositor)),
+            validate(new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts.Default)),
+            validate(new TextInputRenderer(shapeDrawer, uiFonts.Default)),
+            validate(new LabelRenderer(uiFonts)),
+            validate(new SpriteRenderer(content, renderers, spriteShader)),
+            validate(new BorderRenderer(shapeDrawer)),
+            validate(new BackgroundBoxRenderer(shapeDrawer)),
+            validate(new ComplexBoxRenderer(shapeDrawer)),
+            validate(new DropShadowRenderer(shapeDrawer)),
+            validate(new ButtonBackgroundEffectRenderer(shapeDrawer)),
+            validate(new DotRenderer(shapeDrawer)),
+            validate(new FallbackBoxRenderer(shapeDrawer)),
         ]);
     }
+
+    private static (Type ControlType, object Renderer) validate<TControl>(IRenderer<TControl> renderer)
+        where TControl : Control
+        => (typeof(TControl), renderer);
 }
