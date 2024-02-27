@@ -1,5 +1,6 @@
 ﻿using System;
 using Bearded.Graphics;
+using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Textures;
 using OpenTK.Graphics.OpenGL;
 
@@ -18,7 +19,8 @@ sealed class Gradients : IDisposable
         bufferTexture = BufferTexture.ForBuffer(buffer, SizedInternalFormat.Rg32i);
     }
 
-    public GradientId AddGradient(Gradient gradient) => AddGradient(gradient.Stops);
+    public IRenderSetting TextureUniform(string name, TextureUnit textureUnit = TextureUnit.Texture0)
+        => new BufferTextureUniform(name, textureUnit, bufferTexture);
 
     public GradientId AddGradient(ReadOnlySpan<GradientStop> stops)
     {
@@ -27,10 +29,8 @@ sealed class Gradients : IDisposable
         return id;
     }
 
-    // TODO: call in pipeline? or introduce a render setting into all consumers that calls this?
     public void Flush() => bufferStream.FlushIfDirty(BufferTarget.TextureBuffer);
 
-    // TODO: call wherever else other things are cleared (in pipeline, if also flushing there?)
     public void Clear() => bufferStream.Clear();
 
     public void Dispose()

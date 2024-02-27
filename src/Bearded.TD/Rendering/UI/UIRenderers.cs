@@ -3,6 +3,7 @@ using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering.Shapes;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
@@ -33,7 +34,9 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
         var spriteShader = coreBlueprints.Shaders[DefaultShaders.Sprite];
         var shapeShader = coreBlueprints.Shaders[DefaultShaders.Shapes];
 
-        var shapeDrawer = ShapeDrawer.GetOrCreate(renderers, shapeShader, DrawOrderGroup.UIBackground, 0);
+        var gradients = context.Renderers.Gradients;
+        var gradientDrawer = new GradientDrawer(gradients);
+        var shapeDrawer = ShapeDrawer.GetOrCreate(renderers, gradients, shapeShader, DrawOrderGroup.UIBackground, 0);
 
         router = new CachedRendererRouter(
         [

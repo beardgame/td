@@ -2,6 +2,7 @@ using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.Text;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Rendering;
@@ -16,6 +17,8 @@ sealed class CoreRenderers
 
     public IDrawableRenderers DrawableRenderers { get; }
     public TextDrawerWithDefaults<Color> InGameConsoleFont { get; private set; } = null!;
+
+    public Gradients Gradients { get; } = new();
 
     public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings, IDrawableRenderers renderers)
     {
@@ -37,10 +40,16 @@ sealed class CoreRenderers
         InGameConsoleFont = font;
     }
 
+    public void FlushGradients()
+    {
+        Gradients.Flush();
+    }
+
     public void ClearAll()
     {
         Primitives.Clear();
         ConsoleBackground.Clear();
         DrawableRenderers.ClearAll();
+        Gradients.Clear();
     }
 }
