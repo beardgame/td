@@ -1,19 +1,24 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.UI.Gradients;
 
 readonly struct GradientId(uint value)
 {
-    public readonly uint Value = value;
+    public readonly uint Value = value < 0xFFFFFF ? value : throw new ArgumentOutOfRangeException(nameof(value));
 }
 
 enum GradientType : byte
 {
+    // Single Color
     Constant = 0,
-    Linear = 1,
-    Radial = 2,
-    AlongEdgeNormal = 3,
+    SimpleGlow = 1,
+
+    // Full Gradients
+    Linear = 20,
+    Radial = 21,
+    AlongEdgeNormal = 22,
 }
 
 readonly struct GradientParameters
@@ -28,7 +33,10 @@ readonly struct GradientParameters
     }
 
     public static GradientParameters Constant(Color color)
-        => new(GradientType.Constant, default, color.AsRGBAVector);
+        => new(GradientType.Constant, default, (BitConverter.UInt32BitsToSingle(color.ARGB), 0, 0, 0));
+
+    public static GradientParameters SimpleGlow(Color color)
+        => new(GradientType.SimpleGlow, default, (BitConverter.UInt32BitsToSingle(color.ARGB), 0, 0, 0));
 
     public static GradientParameters Linear(GradientId gradientId, Vector2 start, Vector2 end)
         => new(GradientType.Linear, gradientId, (start.X, start.Y, end.X, end.Y));
