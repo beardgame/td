@@ -1,6 +1,6 @@
 ﻿using System;
-using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using static Bearded.TD.Rendering.Shapes.Shapes;
@@ -16,10 +16,10 @@ abstract class ComplexShapeControl : Control, ICornerRadiusSource
     public float GlowOuterWidth { get; set; }
     public float GlowInnerWidth { get; set; }
 
-    public Color FillColor { get; set; }
-    public Color EdgeColor { get; set; }
-    public Color GlowOuterColor { get; set; }
-    public Color GlowInnerColor { get; set; }
+    public GradientParameters FillColor { get; set; }
+    public GradientParameters EdgeColor { get; set; }
+    public GradientParameters GlowOuterColor { get; set; }
+    public GradientParameters GlowInnerColor { get; set; }
 
     public EdgeData Edges
     {

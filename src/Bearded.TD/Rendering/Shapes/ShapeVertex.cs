@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
-using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
-using OpenTK.Graphics.OpenGL;
+using Bearded.TD.Rendering.UI.Gradients;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
 
@@ -28,18 +27,25 @@ readonly struct ShapeVertex(Vector3 position, ShapeGeometry geometry, ShapeColor
 }
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct ShapeColors(Color? fill = null, Color? edge = null, Color? outerGlow = null, Color? innerGlow = null)
+readonly struct ShapeColors(
+    GradientParameters fill = default,
+    GradientParameters edge = default,
+    GradientParameters outerGlow = default,
+    GradientParameters innerGlow = default)
 {
-    public readonly Color Fill = fill ?? default;
-    public readonly Color Edge = edge ?? default;
-    public readonly Color OuterGlow = outerGlow ?? default;
-    public readonly Color InnerGlow = innerGlow ?? default;
+    public readonly GradientParameters Fill = fill;
+    public readonly GradientParameters Edge = edge;
+    public readonly GradientParameters OuterGlow = outerGlow;
+    public readonly GradientParameters InnerGlow = innerGlow;
 
-    public bool HasFillOrInnerGlow => Fill != default || InnerGlow != default;
+    public bool HasFillOrInnerGlow => !Fill.IsNone || !InnerGlow.IsNone;
 
     public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
     [
-        MakeAttributeTemplate("v_shapeColors", VertexAttribPointerType.UnsignedInt, 4, 16, VertexAttributeFormat.Integer),
+        ..GradientParameters.VertexAttributeTemplates("fill"),
+        ..GradientParameters.VertexAttributeTemplates("edge"),
+        ..GradientParameters.VertexAttributeTemplates("outerGlow"),
+        ..GradientParameters.VertexAttributeTemplates("innerGlow"),
     ];
 }
 
@@ -107,8 +113,13 @@ readonly struct ShapeData
     ];
 
     public static ShapeData Fill() => default;
-    public static ShapeData LinePointToPoint(Vector2 start, Vector2 end) => new(start.X, start.Y, end.X, end.Y, 0, 0, 0);
-    public static ShapeData CirclePointRadius(Vector2 center, float radius) => new(center.X, center.Y, radius, 0, 0, 0, 0);
+
+    public static ShapeData LinePointToPoint(Vector2 start, Vector2 end) =>
+        new(start.X, start.Y, end.X, end.Y, 0, 0, 0);
+
+    public static ShapeData CirclePointRadius(Vector2 center, float radius) =>
+        new(center.X, center.Y, radius, 0, 0, 0, 0);
+
     public static ShapeData RectangleCornerSize(
         Vector2 topLeft, Vector2 size, float cornerRadius, float cornerSquircleness, float innerGlowSmoothness)
         => new(topLeft.X, topLeft.Y, size.X, size.Y, cornerRadius, cornerSquircleness, innerGlowSmoothness);

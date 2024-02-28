@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Bearded.Graphics;
+using Bearded.Graphics.Vertices;
 using OpenTK.Mathematics;
+using static Bearded.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.UI.Gradients;
 
@@ -11,9 +14,11 @@ readonly struct GradientId(uint value)
 
 enum GradientType : byte
 {
+    None = 0,
+
     // Single Color
-    Constant = 0,
-    SimpleGlow = 1,
+    Constant = 1,
+    SimpleGlow = 2,
 
     // Full Gradients
     Linear = 20,
@@ -28,9 +33,19 @@ readonly struct GradientParameters
 
     private GradientParameters(GradientType type, GradientId gradientId, Vector4 parameters)
     {
-        type1gradientIndex3 = (uint) type | (gradientId.Value << 8);
+        type1gradientIndex3 = (uint)type | (gradientId.Value << 8);
         this.parameters = parameters;
     }
+
+    public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates(string prefix) =>
+    [
+        MakeAttributeTemplate<uint>($"v_{prefix}GradientTypeIndex"),
+        MakeAttributeTemplate<Vector4>($"v_{prefix}GradientParameters"),
+    ];
+
+    public bool IsNone => (GradientType)(type1gradientIndex3 & 0xFF) == GradientType.None;
+
+    public static implicit operator GradientParameters(Color color) => Constant(color);
 
     public static GradientParameters Constant(Color color)
         => new(GradientType.Constant, default, (BitConverter.UInt32BitsToSingle(color.ARGB), 0, 0, 0));

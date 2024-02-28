@@ -1,4 +1,4 @@
-﻿#version 150
+﻿#version 400
 
 const int SHAPE_TYPE_FILL = 0;
 const int SHAPE_TYPE_LINE = 1; // point to point
@@ -22,7 +22,16 @@ flat in int p_shapeType;
 flat in vec4 p_shapeData;
 flat in vec3 p_shapeData2;
 flat in vec4 p_edgeData;
-flat in ivec4 p_shapeColors;
+
+flat in uint p_fillGradientTypeIndex;
+flat in uint p_edgeGradientTypeIndex;
+flat in uint p_outerGlowGradientTypeIndex;
+flat in uint p_innerGlowGradientTypeIndex;
+
+flat in vec4 p_fillGradientParameters;
+flat in vec4 p_edgeGradientParameters;
+flat in vec4 p_outerGlowGradientParameters;
+flat in vec4 p_innerGlowGradientParameters;
 
 out vec4 fragColor;
 
@@ -96,16 +105,32 @@ float signedDistanceToEdge()
 vec4 rgbaIntToVec4(int rgba)
 {
     return vec4(
-    ((rgba >> 0) & 0xFF) / 255.0,
-    ((rgba >> 8) & 0xFF) / 255.0,
     ((rgba >> 16) & 0xFF) / 255.0,
+    ((rgba >> 8) & 0xFF) / 255.0,
+    ((rgba >> 0) & 0xFF) / 255.0,
     ((rgba >> 24) & 0xFF) / 255.0
     );
 }
 
+vec4 rgbaFloatToVec4(float rgba)
+{
+    return rgbaIntToVec4(floatBitsToInt(rgba));
+}
+
 vec4 getColor(int index)
 {
-    return rgbaIntToVec4(p_shapeColors[index]);
+    switch(index) {
+        case COLOR_FILL_I:
+            return rgbaFloatToVec4(p_fillGradientParameters.x);
+        case COLOR_EDGE_I:
+            return rgbaFloatToVec4(p_edgeGradientParameters.x);
+        case COLOR_GLOW_OUTER_I:
+            return rgbaFloatToVec4(p_outerGlowGradientParameters.x);
+        case COLOR_GLOW_INNER_I:
+            return rgbaFloatToVec4(p_innerGlowGradientParameters.x);
+        default:
+            return vec4(0);
+    }
 }
 
 struct Contribution
@@ -226,17 +251,17 @@ void main()
             if (signedDistance < 0)
             {
                 c = vec4(1, 0, 1, 1);
-                s = smoothstep(0.1, 0, xy.y) * smoothstep(0.45, 0.4, d);
+                s = smoothstep(0.1, 0f, xy.y) * smoothstep(0.45, 0.4, d);
             }
             else if (signedDistance > 0)
             {
                 c = vec4(1, 1, 0, 1);
-                s = smoothstep(0.1, 0, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
+                s = smoothstep(0.1, 0f, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
             }
             else
             {
                 c = vec4(0, 1, 1, 1);
-                s = smoothstep(0.1, 0, abs(d - 0.35));
+                s = smoothstep(0.1, 0f, abs(d - 0.35));
             }
             fragColor = mix(fragColor, c * a + vec4(1) * clamp(s, 0, 1), DEBUG_SHAPE);
         }
