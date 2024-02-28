@@ -1,5 +1,10 @@
 ﻿#version 400
 
+const int PART_FILL_I = 0;
+const int PART_EDGE_I = 1;
+const int PART_GLOW_OUTER_I = 2;
+const int PART_GLOW_INNER_I = 3;
+
 uniform mat4 projection;
 uniform mat4 view;
 
@@ -26,15 +31,8 @@ flat out vec4 p_shapeData;
 flat out vec3 p_shapeData2;
 flat out vec4 p_edgeData;
 
-flat out uint p_fillGradientTypeIndex;
-flat out uint p_edgeGradientTypeIndex;
-flat out uint p_outerGlowGradientTypeIndex;
-flat out uint p_innerGlowGradientTypeIndex;
-
-flat out vec4 p_fillGradientParameters;
-flat out vec4 p_edgeGradientParameters;
-flat out vec4 p_outerGlowGradientParameters;
-flat out vec4 p_innerGlowGradientParameters;
+flat out uint p_gradientTypeIndices[4];
+flat out vec4 p_gradientParameters[4];
 
 void main()
 {
@@ -45,14 +43,14 @@ void main()
 	p_shapeData = v_shapeData;
 	p_shapeData2 = v_shapeData2;
 	p_edgeData = v_edgeData;
+
+	p_gradientTypeIndices[PART_FILL_I] = v_fillGradientTypeIndex;
+	p_gradientTypeIndices[PART_EDGE_I] = v_edgeGradientTypeIndex;
+	p_gradientTypeIndices[PART_GLOW_OUTER_I] = v_outerGlowGradientTypeIndex;
+	p_gradientTypeIndices[PART_GLOW_INNER_I] = v_innerGlowGradientTypeIndex;
 	
-	p_fillGradientTypeIndex = v_fillGradientTypeIndex;
-	p_edgeGradientTypeIndex = v_edgeGradientTypeIndex;
-	p_outerGlowGradientTypeIndex = v_outerGlowGradientTypeIndex;
-	p_innerGlowGradientTypeIndex = v_innerGlowGradientTypeIndex;
-	
-	p_fillGradientParameters = v_fillGradientParameters;
-	p_edgeGradientParameters = v_edgeGradientParameters;
-	p_outerGlowGradientParameters = v_outerGlowGradientParameters;
-	p_innerGlowGradientParameters = v_innerGlowGradientParameters;
+	p_gradientParameters[PART_FILL_I] = v_fillGradientParameters;
+	p_gradientParameters[PART_EDGE_I] = v_edgeGradientParameters;
+	p_gradientParameters[PART_GLOW_OUTER_I] = v_outerGlowGradientParameters;
+	p_gradientParameters[PART_GLOW_INNER_I] = v_innerGlowGradientParameters;
 }

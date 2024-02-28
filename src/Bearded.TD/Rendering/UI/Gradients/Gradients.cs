@@ -16,7 +16,7 @@ sealed class Gradients : IDisposable
     {
         buffer = new Buffer<GradientStop>();
         bufferStream = new BufferStream<GradientStop>(buffer);
-        bufferTexture = BufferTexture.ForBuffer(buffer, SizedInternalFormat.Rg32i);
+        bufferTexture = BufferTexture.ForBuffer(buffer, SizedInternalFormat.Rg32ui);
     }
 
     public IRenderSetting TextureUniform(string name, TextureUnit textureUnit = TextureUnit.Texture0)

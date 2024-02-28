@@ -10,12 +10,14 @@ const int EDGE_INNER_WIDTH_I = 1;
 const int EDGE_OUTER_GLOW_I = 2;
 const int EDGE_INNER_GLOW_I = 3;
 
-const int COLOR_FILL_I = 0;
-const int COLOR_EDGE_I = 1;
-const int COLOR_GLOW_OUTER_I = 2;
-const int COLOR_GLOW_INNER_I = 3;
+const int PART_FILL_I = 0;
+const int PART_EDGE_I = 1;
+const int PART_GLOW_OUTER_I = 2;
+const int PART_GLOW_INNER_I = 3;
 
 const float ANTI_ALIAS_WIDTH = 1;
+
+uniform usamplerBuffer gradientBuffer;
 
 in vec3 p_position;
 flat in int p_shapeType;
@@ -23,15 +25,8 @@ flat in vec4 p_shapeData;
 flat in vec3 p_shapeData2;
 flat in vec4 p_edgeData;
 
-flat in uint p_fillGradientTypeIndex;
-flat in uint p_edgeGradientTypeIndex;
-flat in uint p_outerGlowGradientTypeIndex;
-flat in uint p_innerGlowGradientTypeIndex;
-
-flat in vec4 p_fillGradientParameters;
-flat in vec4 p_edgeGradientParameters;
-flat in vec4 p_outerGlowGradientParameters;
-flat in vec4 p_innerGlowGradientParameters;
+flat in uint p_gradientTypeIndices[4];
+flat in vec4 p_gradientParameters[4];
 
 out vec4 fragColor;
 
@@ -102,35 +97,47 @@ float signedDistanceToEdge()
     return 0;
 }
 
-vec4 rgbaIntToVec4(int rgba)
+vec4 rgbaIntToVec4(uint rgba)
 {
     return vec4(
-    ((rgba >> 16) & 0xFF) / 255.0,
-    ((rgba >> 8) & 0xFF) / 255.0,
-    ((rgba >> 0) & 0xFF) / 255.0,
-    ((rgba >> 24) & 0xFF) / 255.0
+    ((rgba >> 16) & 0xFFu) / 255.0,
+    ((rgba >> 8) & 0xFFu) / 255.0,
+    ((rgba >> 0) & 0xFFu) / 255.0,
+    ((rgba >> 24) & 0xFFu) / 255.0
     );
 }
 
 vec4 rgbaFloatToVec4(float rgba)
 {
-    return rgbaIntToVec4(floatBitsToInt(rgba));
+    return rgbaIntToVec4(floatBitsToUint(rgba));
 }
 
-vec4 getColor(int index)
+vec4 getConstantColorFromGradientParameters(int index)
 {
-    switch(index) {
-        case COLOR_FILL_I:
-            return rgbaFloatToVec4(p_fillGradientParameters.x);
-        case COLOR_EDGE_I:
-            return rgbaFloatToVec4(p_edgeGradientParameters.x);
-        case COLOR_GLOW_OUTER_I:
-            return rgbaFloatToVec4(p_outerGlowGradientParameters.x);
-        case COLOR_GLOW_INNER_I:
-            return rgbaFloatToVec4(p_innerGlowGradientParameters.x);
-        default:
-            return vec4(0);
+    return rgbaFloatToVec4(p_gradientParameters[index].x);
+}
+
+float smoother(float x)
+{
+    return x * x * (3 - 2 * x);
+}
+
+vec4 getColor(int partIndex, float t)
+{
+    uint typeIndex = p_gradientTypeIndices[partIndex];
+    uint type = typeIndex & 0xFFu;
+    uint index = typeIndex >> 8;
+    
+    vec4 parameters = p_gradientParameters[partIndex];
+    
+    // TODO: switch on type, etc. instead
+    vec4 color = getConstantColorFromGradientParameters(partIndex);
+    
+    if (partIndex == PART_GLOW_INNER_I || partIndex == PART_GLOW_OUTER_I)
+    {
+        color *= smoother(t);
     }
+    return color;
 }
 
 struct Contribution
@@ -162,11 +169,6 @@ vec4 addPremultiplied(vec4 a, vec4 b)
     return a * (1 - b.a) + b;
 }
 
-float smoother(float x)
-{
-    return x * x * (3 - 2 * x);
-}
-
 Separated edgeContribution(float distance, float antiAliasWidth)
 {
     float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
@@ -179,18 +181,18 @@ Separated edgeContribution(float distance, float antiAliasWidth)
     if (edgeOuterGlow != 0)
     {
         Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
-        ret.outer = getColor(COLOR_GLOW_OUTER_I) * glowOuter.alpha * smoother(1 - glowOuter.t);
+        ret.outer = getColor(PART_GLOW_OUTER_I, 1 - glowOuter.t) * glowOuter.alpha;
     }
     if (edgeInnerGlow != 0)
     {
         Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
-        ret.inner = getColor(COLOR_GLOW_INNER_I) * glowInner.alpha * smoother(glowInner.t);
+        ret.inner = getColor(PART_GLOW_INNER_I, glowInner.t) * glowInner.alpha;
     }
 
     if (edgeOuterWidth + edgeInnerWidth != 0)
     {
         Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
-        vec4 e = getColor(COLOR_EDGE_I) * edge.alpha;
+        vec4 e = getColor(PART_EDGE_I, edge.t) * edge.alpha;
         ret.outer = addPremultiplied(ret.outer, e);
         ret.inner = addPremultiplied(ret.inner, e);
     }
@@ -200,7 +202,7 @@ Separated edgeContribution(float distance, float antiAliasWidth)
 
 vec4 fillContribution(float distance, float alpha)
 {
-    return getColor(COLOR_FILL_I) * alpha;
+    return getColor(PART_FILL_I, 0) * alpha;
 }
 
 const float DEBUG_SHAPE = 0;
@@ -211,7 +213,7 @@ void main()
     
     if (p_shapeType == SHAPE_TYPE_FILL)
     {
-        fragColor = getColor(COLOR_FILL_I);
+        fragColor = getConstantColorFromGradientParameters(PART_FILL_I);
         if (DEBUG_SHAPE != 0)
         {
             fragColor = mix(fragColor, vec4(0, 0, 1, 1), 0.3);
