@@ -2,7 +2,6 @@
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
-using OpenTK.Mathematics;
 using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD;
@@ -17,6 +16,7 @@ static partial class Constants
         public static class Shadows
         {
             public static readonly Shadow Default = Shadow((0, 2, 0), 5, new Color(0, 3, 13, 255) * 0.5f);
+            public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 50, new Color(0, 3, 13, 255) * 0.5f);
         }
 
         public static class Button

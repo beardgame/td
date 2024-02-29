@@ -1,4 +1,5 @@
 using System;
+using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
@@ -31,6 +32,7 @@ static class WindowFactories
     {
         private VoidEventHandler? onClose;
         private Control? content;
+        private Shadow? shadow;
 
         public Builder WithOnClose(VoidEventHandler onClose)
         {
@@ -44,9 +46,21 @@ static class WindowFactories
             return this;
         }
 
+        public Builder WithShadow(Shadow? shadow = null)
+        {
+            this.shadow = shadow ?? Constants.UI.Shadows.LargeWindow;
+            return this;
+        }
+
         public Control Build()
         {
             validate();
+
+            var control = new OnTopCompositeControl();
+            var background = new BackgroundBox();
+            control.Add(shadow != null
+                ? background.WithDropShadow(shadow.Value)
+                : [background]);
 
             var titleBar = new CompositeControl();
             titleBar
@@ -54,7 +68,6 @@ static class WindowFactories
                 .AddHeaderLeft("Research", 100)
                 .AddButtonRight(b => b.WithLabel("close").WithOnClick(onClose!));
 
-            var control = new OnTopCompositeControl { new BackgroundBox() };
             control.BuildLayout()
                 .ForFullScreen()
                 .DockFixedSizeToTop(titleBar, TitlebarHeight)
@@ -69,6 +82,7 @@ static class WindowFactories
             {
                 throw new InvalidOperationException("Cannot make a window without action on close");
             }
+
             if (content is null)
             {
                 throw new InvalidOperationException("Cannot make a window without content");

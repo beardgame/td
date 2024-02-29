@@ -23,7 +23,7 @@ sealed class TechnologyWindowControl : CompositeControl
         this.model = model;
         IsClickThrough = true;
         Add(WindowFactories
-            .Window(b => b.WithOnClose(model.CloseWindow).WithContent(buildContent()))
+            .Window(b => b.WithOnClose(model.CloseWindow).WithContent(buildContent()).WithShadow())
             .AnchorAsWindow(contentWidth, contentHeight));
     }
 
