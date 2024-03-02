@@ -1,10 +1,13 @@
 ﻿using Bearded.TD.Rendering;
+using Bearded.TD.UI.Factories;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class GameUIControl : CompositeControl
 {
+    private const double technologyButtonSize = 128;
+
     private readonly GameUI gameUI;
 
     public GameUIControl(GameUI gameUI, RenderContext renderContext)
@@ -34,6 +37,17 @@ sealed class GameUIControl : CompositeControl
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
             .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
 
+        this.BuildLayout()
+            .ForFullScreen()
+            .DockFixedSizeToTop(
+                ButtonFactories.StandaloneIconButton(b => b
+                        .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
+                        .WithCustomSize(technologyButtonSize)
+                        .MakeCircle()
+                        .WithShadow()
+                        .WithOnClick(gameUI.GameUIController.ShowTechnologyModal))
+                    .WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
+                technologyButtonSize + 2 * Constants.UI.Button.Margin);
         Add(new TechnologyWindowControl(gameUI.TechnologyUI)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
