@@ -135,6 +135,8 @@ vec4 getColor(int partIndex, float t)
     
     if (partIndex == PART_GLOW_INNER_I || partIndex == PART_GLOW_OUTER_I)
     {
+        // TODO: maybe fine for default case, but otherwise we will have to pass in additional information
+        // like position, edge normal, etc. to handle different types of gradients
         color *= smoother(t);
     }
     return color;
