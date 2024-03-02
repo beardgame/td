@@ -14,6 +14,7 @@ sealed class VersionOverlayControl : CompositeControl
             Text = versionOverlay.VersionCodeString,
             FontSize = 14,
             TextAnchor = Vector2d.One,
+            IsClickThrough = true
         });
     }
 
