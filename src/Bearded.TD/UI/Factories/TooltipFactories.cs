@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Tooltips;
 using Bearded.UI.Controls;
+using OpenTK.Mathematics;
 using static Bearded.TD.Constants.UI.Tooltip;
 using static Bearded.TD.UI.Factories.TextFactories;
 
@@ -52,24 +52,17 @@ static class TooltipFactories
 
     private static Control tooltip(Control content)
     {
-        var box = new ComplexBox
-        {
-            CornerRadius = 2,
-
-            FillColor = Constants.UI.Colors.Get(BackgroundColor.Tooltip),
-
-            EdgeOuterWidth = 1,
-            EdgeColor = Constants.UI.Colors.Get(BackgroundColor.SubtleOutline),
-        };
         return new CompositeControl
         {
-            new BoxShadow
+            new ComplexBox
             {
-                Color = Color.Black * 0.5f,
-                Offset = new(0, 2, 0),
-                BlurRadius = 5,
-            }.WithCornerRadiusSource(box),
-            box,
+                CornerRadius = 2,
+
+                FillColor = Constants.UI.Colors.Get(BackgroundColor.Tooltip),
+
+                EdgeOuterWidth = 1,
+                EdgeColor = Constants.UI.Colors.Get(BackgroundColor.SubtleOutline),
+            }.WithDropShadow(),
             content.Anchor(a => a.MarginAllSides(Margin)),
         };
     }

@@ -2,7 +2,7 @@
 
 enum DrawOrderGroup
 {
-    // When adding new groups, make sure the DeferredRenderer knows about them, or they won't render
+    // When adding new groups, make sure the LayerRenderer or DeferredRenderer know about them, or they won't render
     Unknown,
     SolidLevelDetails,
     LevelDetail,

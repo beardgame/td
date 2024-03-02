@@ -1,20 +1,25 @@
 ﻿using Bearded.TD.Rendering;
+using Bearded.TD.UI.Factories;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class GameUIControl : CompositeControl
 {
+    private const double technologyButtonSize = 128;
+
     private readonly GameUI gameUI;
 
     public GameUIControl(GameUI gameUI, RenderContext renderContext)
     {
-        GameWorldControl gameWorldControl;
+        var gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource);
+        var gameWorldOverlay = new GameWorldOverlay(gameUI.Game.Camera);
+
         this.gameUI = gameUI;
 
         CanBeFocused = true;
 
-        Add(gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource));
+        Add(gameWorldControl);
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
@@ -24,6 +29,7 @@ sealed class GameUIControl : CompositeControl
             .Anchor(a => a
                 .Top(height: 480)
                 .Left(margin: -240, width: 480, relativePercentage: .5)));
+        nonDiegeticUIWrapper.Add(gameWorldOverlay);
         Add(nonDiegeticUIWrapper);
 
         Add(new GameMenuControl()
@@ -31,12 +37,24 @@ sealed class GameUIControl : CompositeControl
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
             .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
 
+        this.BuildLayout()
+            .ForFullScreen()
+            .DockFixedSizeToTop(
+                ButtonFactories.StandaloneIconButton(b => b
+                        .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
+                        .WithCustomSize(technologyButtonSize)
+                        .MakeCircle()
+                        .WithShadow()
+                        .WithOnClick(gameUI.GameUIController.ShowTechnologyModal))
+                    .WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
+                technologyButtonSize + 2 * Constants.UI.Button.Margin);
         Add(new TechnologyWindowControl(gameUI.TechnologyUI)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
         var overlayControl = CreateClickThrough();
         Add(overlayControl);
         gameUI.SetOverlayControl(overlayControl);
+        gameUI.SetWorldOverlay(gameWorldOverlay);
 
         Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
             .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */

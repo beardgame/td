@@ -79,6 +79,7 @@ sealed class ActionBarControl : CompositeControl
             .WithEnabled(binding.Transform(e => e is not null))
             .WithIcon(binding.Transform(e => e?.Icon ?? default))
             .WithOnClick(() => binding.Value?.OnClick())
+            .WithShadow()
         ).Anchor(a => a
             .Left(margin: buttonLeftMargin(i), width: buttonSize, relativePercentage: 0.5)
             .Bottom(margin: buttonBottomMargin, height: buttonSize)

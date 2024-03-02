@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Rendering;
@@ -179,13 +181,11 @@ sealed class DeferredRenderer
             fullRender);
     }
 
-    private static IPipeline<RenderState> renderDrawGroups(DrawOrderGroup[] drawGroups)
+    private static IPipeline<RenderState> renderDrawGroups(IEnumerable<DrawOrderGroup> drawGroups)
     {
-        return Do(s =>
-        {
-            foreach (var spriteDrawGroup in drawGroups)
-                s.Content.RenderDrawGroup(spriteDrawGroup);
-        });
+        return InOrder(drawGroups.Select(group =>
+            WithContext(c => c.SetDebugName($"Group {group}"), Do(s => s.Content.RenderDrawGroup(group)))
+        ));
     }
 
     private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(

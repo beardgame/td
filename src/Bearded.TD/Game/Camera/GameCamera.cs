@@ -62,6 +62,11 @@ abstract class GameCamera
 
     public abstract Position2 TransformScreenToWorldPos(Vector2 screenPos);
 
+    public abstract Vector2 TransformWorldToNormalizedScreenPos(Position2 worldPos);
+
+    public Vector2 TransformWorldToScreenPos(Position2 worldPos) =>
+        getViewportScreenPosition(TransformWorldToNormalizedScreenPos(worldPos));
+
     protected Difference2 GetNormalizedScreenPosition(Vector2 screenPos)
     {
         var ret = new Vector2(
@@ -70,5 +75,14 @@ abstract class GameCamera
         );
         ret.X *= ViewportSize.AspectRatio;
         return new Difference2(ret);
+    }
+
+    private Vector2 getViewportScreenPosition(Vector2 normalizedScreenPos)
+    {
+        normalizedScreenPos.X /= ViewportSize.AspectRatio;
+        return new Vector2(
+            (normalizedScreenPos.X + 1) * 0.5f * ViewportSize.Width,
+            (1 - normalizedScreenPos.Y) * 0.5f * ViewportSize.Height
+        );
     }
 }

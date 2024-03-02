@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.Textures;
@@ -22,17 +24,7 @@ sealed class LayerRenderer
         UISpritesTop,
     ];
 
-    public readonly struct State
-    {
-        public IRenderLayer Layer { get; }
-        public RenderTarget Target { get; }
-
-        public State(IRenderLayer layer, RenderTarget target)
-        {
-            Layer = layer;
-            Target = target;
-        }
-    }
+    public readonly record struct State(IRenderLayer Layer, RenderTarget Target);
 
     private readonly DeferredRenderer deferredRenderer;
     private readonly IPipeline renderLayer;
@@ -48,14 +40,15 @@ sealed class LayerRenderer
             InOrder(
                 Do(s => settings.SetSettingsFor(s.Layer)),
                 Do(tryRenderDeferred),
-                WithContext(c =>c.SetBlendMode(Premultiplied),
+                Do(renderers.FlushGradients),
+                WithContext(c => c.SetBlendMode(Premultiplied),
                     InOrder(
                         WithContext(c => c.SetDebugName("Render primitives"),
                             Render(
                                 renderers.PrimitivesRenderer,
                                 renderers.ConsoleBackgroundRenderer)
                         ),
-                        WithContext(c => c.SetDebugName("Render UI and fonts"),
+                        WithContext(c => c.SetDebugName("Render UI"),
                             renderDrawGroups(renderers.DrawableRenderers, uiDrawGroups)
                         )
                     )),
@@ -64,13 +57,11 @@ sealed class LayerRenderer
         );
     }
 
-    private static IPipeline renderDrawGroups(IDrawableRenderers renderers, DrawOrderGroup[] drawGroups)
+    private static IPipeline renderDrawGroups(IDrawableRenderers renderers, IEnumerable<DrawOrderGroup> drawGroups)
     {
-        return Do(_ =>
-        {
-            foreach (var spriteDrawGroup in drawGroups)
-                renderers.RenderDrawGroup(spriteDrawGroup);
-        });
+        return InOrder(drawGroups.Select(group =>
+            WithContext(c => c.SetDebugName($"Group {group}"), Do(_ => renderers.RenderDrawGroup(group)))
+        ));
     }
 
     private void tryRenderDeferred(State state)
@@ -79,11 +70,6 @@ sealed class LayerRenderer
             return;
 
         deferredRenderer.RenderLayer(deferredLayer, state.Target);
-
-        // TODO: not implemented yet
-        //if (UserSettings.Instance.Debug.Deferred)
-        //    deferredRenderer.RenderDebug();
-
         deferredRenderer.ClearAll();
     }
 

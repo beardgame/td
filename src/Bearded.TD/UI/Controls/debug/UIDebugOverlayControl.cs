@@ -20,6 +20,7 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
     public sealed class Highlight : Control
     {
         public string Name { get; private set; } = "";
+        public bool PassThrough { get; private set; }
         public float Alpha { get; private set; }
         public double TextY { get; private set; }
 
@@ -29,6 +30,7 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
             this.Anchor(a => a.Left(frame.X.Start, frame.X.Size).Top(frame.Y.Start, frame.Y.Size));
 
             Name = control.GetType().Name;
+            PassThrough = control.IsClickThrough;
 
             Alpha = (float) (number + totalNumber) / (totalNumber * 2);
 
@@ -117,23 +119,35 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
         var root = getRootControl();
 
         var chain = new List<Control>();
-
-        object current = root;
-
-        while (current is IControlParent parent)
-        {
-            var child = parent.Children
-                .LastOrDefault(c => c != this && c.IsVisible && frameContainsPoint(c.Frame, point));
-
-            if (child == null)
-                break;
-
-            chain.Add(child);
-
-            current = child;
-        }
-
+        traverse(root);
+        chain.Reverse();
         return chain;
+
+        bool traverse(IControlParent parent)
+        {
+            foreach (var c in parent.Children.Reverse())
+            {
+                if (c == this) continue;
+                if (!c.IsVisible || !frameContainsPoint(c.Frame, point)) continue;
+
+                if (c is IControlParent cParent)
+                {
+                    if (!traverse(cParent) && c.IsClickThrough)
+                    {
+                        continue;
+                    }
+                }
+                else if (c.IsClickThrough)
+                {
+                    continue;
+                }
+
+                chain.Add(c);
+                return true;
+            }
+
+            return false;
+        }
     }
 
     private bool frameContainsPoint(Frame frame, Vector2d point)
@@ -197,8 +211,9 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
         public double HeightOfItemAt(int index) => 14;
 
         public Control CreateItemControlFor(int index)
-            => new Label(controls[index].GetType().Name)
+            => new Label
             {
+                Text = controls[index].GetType().Name,
                 Color = Color.IndianRed,
                 FontSize = 14,
                 TextAnchor = new Vector2d(0, 0.5)

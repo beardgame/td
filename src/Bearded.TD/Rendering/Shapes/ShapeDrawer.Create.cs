@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.UI.Gradients;
 
 namespace Bearded.TD.Rendering.Shapes;
 
@@ -11,13 +12,14 @@ sealed partial class ShapeDrawer
 
     public static ShapeDrawer GetOrCreate(
         IDrawableRenderers renderers,
+        Gradients gradients,
         Shader shader,
         DrawOrderGroup drawGroup,
         int drawGroupOrderKey)
     {
         return renderers.GetOrCreateDrawableFor(
             DrawableTemplate.Instance, shader, drawGroup, drawGroupOrderKey,
-            () => new ShapeDrawer(shader)
+            () => new ShapeDrawer(shader, gradients)
         );
     }
 }

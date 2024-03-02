@@ -5,6 +5,7 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.UI.Gradients;
 
 namespace Bearded.TD.Rendering.Shapes;
 
@@ -15,10 +16,10 @@ sealed partial class ShapeDrawer : IDrawable
     private readonly IEnumerable<IRenderSetting> settings;
     private readonly IEnumerable<IDisposable> disposables;
 
-    private ShapeDrawer(Shader shader)
+    private ShapeDrawer(Shader shader, Gradients gradients)
     {
         this.shader = shader;
-        settings = [];
+        settings = [gradients.TextureUniform("gradientBuffer")];
         disposables = [meshBuilder];
     }
 

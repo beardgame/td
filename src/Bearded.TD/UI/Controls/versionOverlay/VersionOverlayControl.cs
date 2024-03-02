@@ -8,11 +8,13 @@ sealed class VersionOverlayControl : CompositeControl
 {
     public VersionOverlayControl(VersionOverlay versionOverlay)
     {
+        IsClickThrough = true;
         Add(new Label
         {
             Text = versionOverlay.VersionCodeString,
             FontSize = 14,
             TextAnchor = Vector2d.One,
+            IsClickThrough = true
         });
     }
 

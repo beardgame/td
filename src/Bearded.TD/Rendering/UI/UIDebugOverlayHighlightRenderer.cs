@@ -22,7 +22,8 @@ sealed class UIDebugOverlayHighlightRenderer : IRenderer<UIDebugOverlayControl.H
 
     public void Render(UIDebugOverlayControl.Highlight control)
     {
-        var argb = Color.IndianRed * control.Alpha;
+        var rgb = control.PassThrough ? Color.Silver : Color.IndianRed;
+        var argb = rgb * control.Alpha;
         shapeDrawer.DrawRectangle((Vector2)control.Frame.TopLeft, (Vector2)control.Frame.Size, 1, argb);
 
         var xy = new Vector2d(control.Frame.X.Start, control.TextY);

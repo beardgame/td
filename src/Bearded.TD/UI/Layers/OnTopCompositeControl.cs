@@ -4,6 +4,14 @@ namespace Bearded.TD.UI.Layers;
 
 class OnTopCompositeControl : DefaultRenderLayerControl
 {
+    public new static OnTopCompositeControl CreateClickThrough()
+    {
+        return new OnTopCompositeControl
+        {
+            IsClickThrough = true
+        };
+    }
+
     protected override void RenderAsLayerBeforeAncestorLayer(IRendererRouter router)
     {
         SkipNextRender();

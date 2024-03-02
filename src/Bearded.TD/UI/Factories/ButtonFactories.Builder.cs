@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
@@ -20,6 +21,8 @@ static partial class ButtonFactories
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
+        private bool isCircle;
+        private Shadow? shadow;
 
         protected abstract T This { get; }
 
@@ -71,9 +74,21 @@ static partial class ButtonFactories
             return This;
         }
 
+        public T WithShadow(Shadow? shadow = null)
+        {
+            this.shadow = shadow ?? Constants.UI.Button.DefaultShadow;
+            return This;
+        }
+
         public T MakeDisabled()
         {
             isEnabled = Binding.Constant(false);
+            return This;
+        }
+
+        public T MakeCircle()
+        {
+            isCircle = true;
             return This;
         }
 
@@ -89,19 +104,29 @@ static partial class ButtonFactories
                 {
                     return Constants.UI.Text.ErrorTextColor;
                 }
+
                 return enabled ? Constants.UI.Text.TextColor : Constants.UI.Text.DisabledTextColor;
             });
 
             AddContent(button, contentColor);
 
-            var box = new ComplexBox
+            var shape = isCircle
+                ? (ComplexShapeControl)new ComplexCircle()
+                : new ComplexBox { CornerRadius = 2 };
+            shape.EdgeOuterWidth = 1;
+
+            if (shadow is { } s)
             {
-                CornerRadius = 2,
-                EdgeInnerWidth = 1,
-            };
-            button.Add(box);
-            contentColor.SourceUpdated += c => box.EdgeColor = c;
-            box.EdgeColor = contentColor.Value;
+                button.Add(new DropShadow
+                {
+                    SourceControl = shape,
+                    Shadow = s,
+                });
+            }
+
+            button.Add(shape);
+            contentColor.SourceUpdated += c => shape.EdgeColor = c;
+            shape.EdgeColor = contentColor.Value;
 
             if (progressBar.HasValue)
             {
@@ -131,6 +156,7 @@ static partial class ButtonFactories
             {
                 button.Clicked += args => onClick(args);
             }
+
             return button;
 
             void updateColor()
@@ -144,7 +170,7 @@ static partial class ButtonFactories
                     _ => BackgroundColor.Element,
                 };
 
-                box.FillColor = Constants.UI.Colors.Get(color);
+                shape.FillColor = Constants.UI.Colors.Get(color);
             }
         }
 
@@ -199,7 +225,8 @@ static partial class ButtonFactories
                 labelControl.Anchor(a => a.Top(margin: Constants.UI.Button.Margin).Bottom(relativePercentage: .4));
                 var costLabel = TextFactories.Label(cost!);
                 costLabel.FontSize = Constants.UI.Button.CostFontSize;
-                control.Add(costLabel.Anchor(a => a.Bottom(margin: Constants.UI.Button.Margin).Top(relativePercentage: .6)));
+                control.Add(costLabel.Anchor(a =>
+                    a.Bottom(margin: Constants.UI.Button.Margin).Top(relativePercentage: .6)));
             }
         }
     }

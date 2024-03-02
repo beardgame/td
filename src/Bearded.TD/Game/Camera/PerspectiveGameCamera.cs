@@ -57,4 +57,9 @@ sealed class PerspectiveGameCamera : GameCamera
         //   along the infinite extension of cameraPosition in the Z axis.
         return Position + VisibleRadius * GetNormalizedScreenPosition(screenPos);
     }
+
+    public override Vector2 TransformWorldToNormalizedScreenPos(Position2 worldPos)
+    {
+        return ((worldPos - Position) / VisibleRadius).NumericValue;
+    }
 }
