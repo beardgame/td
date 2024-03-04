@@ -54,8 +54,7 @@ static partial class OnFire
 
         protected override ElementalStatus MakeStatus(Blueprints blueprints)
         {
-            var sprite = blueprints.LoadStatusIconSprite("fire");
-            return new ElementalStatus(sprite);
+            return new ElementalStatus("fire".ToStatusIconSpriteId());
         }
     }
 }

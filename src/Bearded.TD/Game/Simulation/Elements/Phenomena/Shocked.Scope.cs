@@ -71,7 +71,7 @@ static partial class Shocked
         protected override ElementalStatus MakeStatus(Blueprints blueprints)
         {
             var sprite = blueprints.LoadStatusIconSprite("snail");
-            return new ElementalStatus(sprite);
+            return new ElementalStatus("snail".ToStatusIconSpriteId());
         }
     }
 }
