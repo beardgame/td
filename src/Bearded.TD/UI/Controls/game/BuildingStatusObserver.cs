@@ -1,6 +1,7 @@
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -75,11 +76,12 @@ sealed class BuildingStatusObserver
     {
         var status = new BuildingStatus();
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, new BuildingStatusControl(status));
-        // TODO: anchor to the right edge of the building rather than its center
+        var objectPos = t.Object.Position.XY();
+        var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);
         overlay.AddControl(
             currentlyShown.Control,
             BuildingStatusControl.Size,
-            new IGameWorldOverlay.OverlayAnchor(t.Object.Position.XY(), IGameWorldOverlay.OverlayDirection.Right));
+            new IGameWorldOverlay.OverlayAnchor(anchorPos, IGameWorldOverlay.OverlayDirection.Right));
     }
 
     private void resetCurrentlyShown()
