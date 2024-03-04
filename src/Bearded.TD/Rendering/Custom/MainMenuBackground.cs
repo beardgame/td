@@ -42,7 +42,7 @@ sealed class MainMenuBackground(
                     c =>
                     {
                         c.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
-                        c.SetWrapMode(TextureWrapMode.Repeat, TextureWrapMode.Repeat);
+                        c.SetWrapMode(TextureWrapMode.ClampToBorder, TextureWrapMode.ClampToBorder);
                         c.GenerateMipmap();
                     }
                 );

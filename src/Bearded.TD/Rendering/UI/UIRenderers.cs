@@ -52,8 +52,8 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
             validate(new DropShadowRenderer(shapeDrawer)),
             validate(new ButtonBackgroundEffectRenderer(shapeDrawer)),
             validate(new DotRenderer(shapeDrawer)),
+            validate(new MainMenuBackgroundRenderer(content, renderers)),
             validate(new FallbackBoxRenderer(shapeDrawer)),
-            validate(new MainMenuBackgroundRenderer(content, renderers))
         ]);
     }
 

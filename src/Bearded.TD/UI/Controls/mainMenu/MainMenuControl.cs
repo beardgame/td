@@ -9,15 +9,16 @@ sealed class MainMenuControl : CompositeControl
 {
     public MainMenuControl(MainMenu model)
     {
-        Add(new MainMenuBackground());
+        Add(new MainMenuBackground().Anchor(
+            a => a.Right(50)));
 
         //Add(new Sprite { SpriteId = Constants.Content.CoreUI.MainMenu.Turret, Size = 500 }.Anchor(
-         //   a => a.Bottom(-20, 300).Left(-20, 500)));
+        //    a => a.Bottom(-20, 300).Left(-20, 500)));
 
         this.BuildLayout().AddMenu(b => b
             .WithBackground(new ComplexBox
             {
-                FillColor = Colors.Get(BackgroundColor.Default),
+                FillColor = Colors.Get(BackgroundColor.Default) * 0.8f,
                 GlowOuterWidth = 15,
                 GlowOuterColor = Shadows.Default.Color * 0.5f,
             })

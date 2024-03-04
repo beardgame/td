@@ -1,8 +1,9 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Content;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.Utilities;
 using Bearded.UI.Rendering;
-using Bearded.Utilities;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.UI;
@@ -19,10 +20,13 @@ sealed class MainMenuBackgroundRenderer(ContentManager content, IDrawableRendere
 
         var drawer = Custom.MainMenuBackground.GetOrCreate(material, renderers);
 
+        var center = frame.TopLeft + frame.Size / 2;
+        var size = new Vector2d(Math.Max(frame.Size.X, frame.Size.Y));
+
         drawer.DrawRectangle(
-            ((Vector2)frame.TopLeft).WithZ(),
-            (Vector2)frame.Size,
-            Color.White
+            (Vector3)(center - size / 2).WithZ(),
+            (Vector2)size,
+            new Color(0, 3, 13)
         );
     }
 }
