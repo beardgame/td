@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Damage;
@@ -9,18 +8,12 @@ using static Bearded.TD.Constants.Game.GameUI.StatusDisplay;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
 
-sealed partial class StatusDisplay
+sealed partial class StatusRenderer
 {
-    private readonly List<HitPointsBar> hitPointsBars = new();
-
-    public void AddHitPointsBar(HitPointsBar bar)
-    {
-        hitPointsBars.Add(bar);
-        hitPointsBars.Sort(Comparer.Comparing<HitPointsBar, int>(b => (int) b.Shell));
-    }
-
     private void drawHitPointsBars(IShapeDrawer2<Color> drawer)
     {
+        var hitPointsBars = tracker.HitPointsBars;
+
         // TODO: consider combining bars of the same shells in the some row
         // ReSharper disable once CompareOfFloatsByEqualityOperator
         // given the implementation of current/total, this is guaranteed by IEEE754

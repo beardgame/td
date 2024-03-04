@@ -23,7 +23,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     }
 
     private ActiveJam? activeJam;
-    private IStatusDisplay? statusDisplay;
+    private IStatusTracker? statusDisplay;
     private ISpriteBlueprint? sprite;
 
     public WeaponJamming(IParameters parameters) : base(parameters) { }

@@ -15,7 +15,7 @@ sealed partial class Capacitor
         private IStatusReceipt? status;
         private float chargePercentage;
 
-        public CapacitorStatus(GameState game, IStatusDisplay statusDisplay)
+        public CapacitorStatus(GameState game, IStatusTracker statusTracker)
         {
             var iconDrawer = new BucketedIconDrawer(
                 ImmutableArray.Create(
@@ -26,7 +26,7 @@ sealed partial class Capacitor
                     iconStatusDrawer(game, "battery-100")),
                 () => chargePercentage);
             var progressDrawer = new ProgressStatusDrawer(iconDrawer, () => chargePercentage);
-            status = statusDisplay.AddStatus(new StatusSpec(StatusType.Neutral, progressDrawer), null);
+            status = statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, progressDrawer), null);
         }
 
         private static IStatusDrawer iconStatusDrawer(GameState game, string iconName) =>

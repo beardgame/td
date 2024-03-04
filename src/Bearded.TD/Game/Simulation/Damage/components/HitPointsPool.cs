@@ -30,7 +30,7 @@ abstract partial class HitPointsPool<T> : Component<T>,
     public override void Activate()
     {
         base.Activate();
-        if (!Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
+        if (!Owner.TryGetSingleComponent<IStatusTracker>(out var statusDisplay))
         {
             return;
         }

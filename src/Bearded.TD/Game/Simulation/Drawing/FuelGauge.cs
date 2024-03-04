@@ -19,7 +19,7 @@ sealed class FuelGauge : Component
     private IFuelTank? tank;
     private float displayLevel;
     private IBuildingStateProvider? building;
-    private IStatusDisplay? statusDisplay;
+    private IStatusTracker? statusDisplay;
     private IStatusReceipt? status;
 
     private bool isVisible => building?.State.IsCompleted != false;
@@ -28,7 +28,7 @@ sealed class FuelGauge : Component
     {
         ComponentDependencies.Depend<IFuelTank>(Owner, Events, t => tank = t);
         ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, b => building = b);
-        ComponentDependencies.Depend<IStatusDisplay>(Owner, Events, d => statusDisplay = d);
+        ComponentDependencies.Depend<IStatusTracker>(Owner, Events, d => statusDisplay = d);
     }
 
     public override void Activate() { }

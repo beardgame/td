@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.IScope<TEffect> where TEffect : IElementalEffect
 {
     private readonly GameObject target;
-    private readonly IStatusDisplay? statusDisplay;
+    private readonly IStatusTracker? statusDisplay;
     private readonly List<EffectWithExpiry> activeEffects = new();
     private IStatusDrawer? cachedStatusDrawer;
     private ActiveEffect? activeEffect;

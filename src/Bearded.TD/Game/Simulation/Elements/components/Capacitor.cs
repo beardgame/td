@@ -40,7 +40,7 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
     public override void Activate()
     {
         base.Activate();
-        if (Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
+        if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusDisplay))
         {
             status = new CapacitorStatus(Owner.Game, statusDisplay);
         }

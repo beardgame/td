@@ -31,6 +31,8 @@ static class BuildingFactory
             building.AddComponent(new BackupSink());
         }
 
+        var statuses = new StatusTracker();
+
         building.AddComponent(new GhostBuildingRenderer());
         building.AddComponent(new BuildingStateManager());
         building.AddComponent(new BuildingUpgradeManager());
@@ -48,7 +50,7 @@ static class BuildingFactory
         building.AddComponent(new Selectable());
         building.AddComponent(new StaticFootprintTileNotifier(footprint));
         building.AddComponent(new StatisticCollector());
-        building.AddComponent(new StatusDisplay(new BuildingStatusDisplayCondition()));
+        building.AddComponent(new StatusRenderer(statuses, new BuildingStatusDisplayCondition()));
         building.AddComponent(new TemperatureProperty());
         building.AddComponent(new TileBasedVisibility());
         building.AddComponent(new EventReceiver<TakeHit>());

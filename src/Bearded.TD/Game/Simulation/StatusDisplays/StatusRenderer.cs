@@ -6,14 +6,16 @@ using static Bearded.TD.Constants.Game.GameUI.StatusDisplay;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
 
-sealed partial class StatusDisplay : Component, IStatusDisplay, IListener<DrawComponents>
+sealed partial class StatusRenderer : Component, IListener<DrawComponents>
 {
+    private readonly IStatusTracker tracker;
     private readonly IStatusDisplayCondition? condition;
 
     private Position3 center => Owner.Position + Offset;
 
-    public StatusDisplay(IStatusDisplayCondition? condition)
+    public StatusRenderer(IStatusTracker tracker, IStatusDisplayCondition? condition)
     {
+        this.tracker = tracker;
         this.condition = condition;
     }
 
@@ -27,10 +29,7 @@ sealed partial class StatusDisplay : Component, IStatusDisplay, IListener<DrawCo
         condition?.Activate(Owner, Events);
     }
 
-    public override void Update(TimeSpan elapsedTime)
-    {
-        statuses.RemoveAll(s => s.Expiry is { } expiry && expiry <= Owner.Game.Time);
-    }
+    public override void Update(TimeSpan elapsedTime) {}
 
     public void HandleEvent(DrawComponents @event)
     {
