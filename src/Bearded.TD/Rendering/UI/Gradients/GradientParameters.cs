@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
 using OpenTK.Mathematics;
@@ -48,10 +49,10 @@ readonly struct GradientParameters
     public static implicit operator GradientParameters(Color color) => Constant(color);
 
     public static GradientParameters Constant(Color color)
-        => new(GradientType.Constant, default, (BitConverter.UInt32BitsToSingle(color.ARGB), 0, 0, 0));
+        => new(GradientType.Constant, default, (Unsafe.BitCast<Color, float>(color), 0, 0, 0));
 
     public static GradientParameters SimpleGlow(Color color)
-        => new(GradientType.SimpleGlow, default, (BitConverter.UInt32BitsToSingle(color.ARGB), 0, 0, 0));
+        => new(GradientType.SimpleGlow, default, (Unsafe.BitCast<Color, float>(color), 0, 0, 0));
 
     public static GradientParameters Linear(GradientId gradientId, Vector2 start, Vector2 end)
         => new(GradientType.Linear, gradientId, (start.X, start.Y, end.X, end.Y));

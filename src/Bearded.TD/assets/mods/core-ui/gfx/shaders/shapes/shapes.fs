@@ -5,6 +5,13 @@ const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
 const int SHAPE_TYPE_RECTANGLE = 3; // top-left, width, height, corner radius
 
+const int GRADIENT_TYPE_NONE = 0;
+const int GRADIENT_TYPE_CONSTANT = 1;
+const int GRADIENT_TYPE_SIMPLE_GLOW = 2;
+const int GRADIENT_TYPE_LINEAR = 20; // point to point
+const int GRADIENT_TYPE_RADIAL = 21; // center and radius
+const int GRADIENT_TYPE_ALONG_EDGE_NORMAL = 22;
+
 const int EDGE_OUTER_WIDTH_I = 0;
 const int EDGE_INNER_WIDTH_I = 1;
 const int EDGE_OUTER_GLOW_I = 2;
@@ -100,9 +107,9 @@ float signedDistanceToEdge()
 vec4 rgbaIntToVec4(uint rgba)
 {
     return vec4(
-    ((rgba >> 16) & 0xFFu) / 255.0,
-    ((rgba >> 8) & 0xFFu) / 255.0,
     ((rgba >> 0) & 0xFFu) / 255.0,
+    ((rgba >> 8) & 0xFFu) / 255.0,
+    ((rgba >> 16) & 0xFFu) / 255.0,
     ((rgba >> 24) & 0xFFu) / 255.0
     );
 }
@@ -122,6 +129,56 @@ float smoother(float x)
     return x * x * (3 - 2 * x);
 }
 
+struct Stop
+{
+    uint data;
+    float position;
+    uint rgba;
+};
+
+Stop getStop(uint index)
+{
+    uvec3 data = texelFetch(gradientBuffer, int(index)).xyz;
+    return Stop(
+        data.x,
+        uintBitsToFloat(data.y),
+        data.z
+    );
+}
+
+vec4 stopColor(Stop stop)
+{
+    return rgbaIntToVec4(stop.rgba);
+}
+
+uint remainingStops(Stop stop)
+{
+    return stop.data & 0xFFFFu;
+}
+
+vec4 getColorInGradient(uint index, float t)
+{
+    Stop current = getStop(index);
+    
+    uint otherStopsCount = remainingStops(current);
+    
+    for (uint i = 1; i < otherStopsCount; i++)
+    {
+        Stop next = getStop(index + i);
+        if (next.position >= t)
+        {
+            return mix(
+                stopColor(current),
+                stopColor(next),
+                (t - current.position) / (next.position - current.position)
+            );
+        }
+        current = next;
+    }
+
+    return stopColor(current);
+}
+
 vec4 getColor(int partIndex, float t)
 {
     uint typeIndex = p_gradientTypeIndices[partIndex];
@@ -130,16 +187,38 @@ vec4 getColor(int partIndex, float t)
     
     vec4 parameters = p_gradientParameters[partIndex];
     
-    // TODO: switch on type, etc. instead
-    vec4 color = getConstantColorFromGradientParameters(partIndex);
-    
-    if (partIndex == PART_GLOW_INNER_I || partIndex == PART_GLOW_OUTER_I)
+    switch(type)
     {
-        // TODO: maybe fine for default case, but otherwise we will have to pass in additional information
-        // like position, edge normal, etc. to handle different types of gradients
-        color *= smoother(t);
+        case GRADIENT_TYPE_CONSTANT:
+        {
+            return getConstantColorFromGradientParameters(partIndex);
+        }
+        case GRADIENT_TYPE_SIMPLE_GLOW:
+        {
+            return getConstantColorFromGradientParameters(partIndex) * smoother(t);
+        }
+        case GRADIENT_TYPE_LINEAR:
+        {
+            vec2 p0 = parameters.xy;
+            vec2 p1 = parameters.zw;
+            vec2 d = p1 - p0;
+            float projection = dot(d, p_position.xy - p0) / dot(d, d);
+            return getColorInGradient(index, projection);
+        }
+        case GRADIENT_TYPE_RADIAL:
+        {
+            vec2 center = parameters.xy;
+            float radius = parameters.z;
+            float distance = length(p_position.xy - center) / radius;
+            return getColorInGradient(index, distance);
+        }
+        case GRADIENT_TYPE_ALONG_EDGE_NORMAL:
+        {
+            return getColorInGradient(index, t);
+        }
     }
-    return color;
+    
+    return vec4(1, 0, 1, 0.5);
 }
 
 struct Contribution

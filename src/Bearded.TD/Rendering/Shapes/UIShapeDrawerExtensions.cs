@@ -1,5 +1,6 @@
 using System;
 using Bearded.Graphics;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
@@ -46,7 +47,7 @@ static class UIShapeDrawerExtensions
             : (-umbraRadius, shadow.Color * antumbraAlpha(-umbraRadius, shadow.PenumbraRadius));
 
         var penumbra = new EdgeData(outerGlow: (float)shadow.PenumbraRadius * 2);
-        var colors = new ShapeColors(fill: innerColor, outerGlow: innerColor);
+        var colors = new ShapeColors(fill: innerColor, outerGlow: GradientParameters.SimpleGlow(innerColor));
         return (innerRadius, penumbra, colors);
     }
 

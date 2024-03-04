@@ -1,4 +1,5 @@
-﻿using Bearded.TD.UI.Factories;
+﻿using Bearded.TD.Rendering.UI.Gradients;
+using Bearded.TD.UI.Factories;
 using Bearded.UI.Controls;
 using static Bearded.TD.Constants.UI;
 
@@ -14,7 +15,7 @@ sealed class MainMenuControl : CompositeControl
             {
                 FillColor = Colors.Get(BackgroundColor.Default),
                 GlowOuterWidth = 15,
-                GlowOuterColor = Shadows.Default.Color * 0.5f,
+                GlowOuterColor = GradientParameters.SimpleGlow(Shadows.Default.Color * 0.5f),
             })
             .AddMenuAction("Quick game", model.OnQuickGameButtonClicked)
             .AddMenuAction("Host game", model.OnHostGameButtonClicked)
