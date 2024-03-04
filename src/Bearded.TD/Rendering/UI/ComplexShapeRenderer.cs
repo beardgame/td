@@ -6,7 +6,7 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class ComplexBoxRenderer(IShapeDrawer drawer) : IRenderer<ComplexShapeControl>
+sealed class ComplexShapeRenderer(IShapeDrawer drawer) : IRenderer<ComplexShapeControl>
 {
     public void Render(ComplexShapeControl control)
     {

@@ -48,7 +48,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
             validate(new SpriteRenderer(content, renderers, spriteShader)),
             validate(new BorderRenderer(shapeDrawer)),
             validate(new BackgroundBoxRenderer(shapeDrawer)),
-            validate(new ComplexBoxRenderer(shapeDrawer)),
+            validate(new ComplexShapeRenderer(shapeDrawer)),
             validate(new DropShadowRenderer(shapeDrawer)),
             validate(new ButtonBackgroundEffectRenderer(shapeDrawer)),
             validate(new DotRenderer(shapeDrawer)),
