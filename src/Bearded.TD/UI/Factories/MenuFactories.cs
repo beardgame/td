@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -54,7 +55,14 @@ static class MenuFactories
 
             var control = new CompositeControl
             {
-                background ?? new BackgroundBox(),
+                background ?? new ComplexBox
+                {
+                    FillColor = Constants.UI.Colors.Get(BackgroundColor.Default) * 0.8f,
+                    EdgeOuterWidth = 1,
+                    EdgeColor = Constants.UI.Colors.Get(BackgroundColor.BackgroundOutline),
+                    GlowOuterWidth = 15,
+                    GlowOuterColor = GradientParameters.SimpleGlow(Constants.UI.Shadows.Default.Color * 0.5f),
+                },
             };
             var layout = control.BuildLayout()
                 .ForContentBox()
