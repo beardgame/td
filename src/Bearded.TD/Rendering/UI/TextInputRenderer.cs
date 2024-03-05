@@ -1,11 +1,13 @@
 ﻿using Bearded.Graphics;
 using Bearded.Graphics.Text;
 using Bearded.TD.Rendering.Shapes;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Color;
+using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
@@ -18,20 +20,28 @@ sealed class TextInputRenderer(IShapeDrawer drawer, TextDrawerWithDefaults<Color
 
     public void Render(TextInput textInput)
     {
-        var argb = White;
-        if (!textInput.IsEnabled)
-        {
-            argb *= .5f;
-        }
+        var textColor = Constants.UI.Colors.Get(textInput.IsEnabled ? ForeGroundColor.Text : ForeGroundColor.DisabledText);
 
         var frame = textInput.Frame;
         var topLeft = frame.TopLeft;
-        var midLeft = topLeft + Vector2d.UnitY * .5 * frame.Size.Y;
+        var midLeft = topLeft + new Vector2d(4, textInput.Frame.Size.Y * .5);
 
-        var colors = new ShapeColors(fill: DimGray * 0.5f, edge: White, innerGlow: Black * 0.5f);
+        var backgroundColor = (textInput, textInput.MouseState) switch
+        {
+            ({ IsEnabled: false }, _) => BackgroundColor.InactiveElement,
+            (_, { MouseIsDown: true }) => BackgroundColor.ActiveElement,
+            (_, { MouseIsOver: true }) => BackgroundColor.Hover,
+            ({ IsFocused: true }, _) => BackgroundColor.ActiveElement,
+            _ => BackgroundColor.Element,
+        };
+
+        var colors = new ShapeColors(
+            fill: Constants.UI.Colors.Get(backgroundColor),
+            edge: Constants.UI.Colors.Get(ForeGroundColor.Edge),
+            innerGlow: GradientParameters.SimpleGlow(Constants.UI.Colors.Get(BackgroundColor.Default))
+            );
         var edges = new EdgeData(innerWidth: 1, innerGlow: 1.5f);
-        var radius = 3;
-        drawer.DrawRectangle(frame.TopLeft, frame.Size, colors,radius, edges);
+        drawer.Draw(Rectangle(frame.TopLeft, frame.Size, 2), colors, edges);
 
         var textBeforeCursor = textInput.Text.Substring(0, textInput.CursorPosition);
         var stringOffset = textDrawer.StringWidth(textBeforeCursor, (float) textInput.FontSize);
@@ -40,7 +50,7 @@ sealed class TextInputRenderer(IShapeDrawer drawer, TextDrawerWithDefaults<Color
             xyz: ((Vector2) midLeft).WithZ(),
             text: textInput.Text,
             fontHeight: (float) textInput.FontSize,
-            parameters: argb
+            parameters: textColor
         );
 
         if (textInput.IsFocused)
@@ -50,7 +60,7 @@ sealed class TextInputRenderer(IShapeDrawer drawer, TextDrawerWithDefaults<Color
                 text: cursorString,
                 fontHeight: (float) textInput.FontSize,
                 alignHorizontal: .5f,
-                parameters: argb
+                parameters: textColor
             );
         }
     }

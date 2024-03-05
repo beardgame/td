@@ -32,7 +32,7 @@ sealed class AutoCompletingTextInputRenderer(IShapeDrawer shapeDrawer, TextDrawe
 
         var str = textInput.AutoCompletionText[textInput.Text.Length..];
 
-        var midLeft = textInput.Frame.TopLeft + new Vector2d(0, textInput.Frame.Size.Y * .5);
+        var midLeft = textInput.Frame.TopLeft + new Vector2d(4, textInput.Frame.Size.Y * .5);
         textDrawer.DrawLine(
             xyz: ((Vector2) midLeft).WithZ() + stringOffset,
             text: str,
