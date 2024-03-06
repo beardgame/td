@@ -1,48 +1,59 @@
 ﻿using System.Collections.Generic;
 using Bearded.Graphics;
+using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities.IO;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using static Bearded.Graphics.Color;
+using static Bearded.TD.Constants.UI;
+using static Bearded.Utilities.IO.Logger.Severity;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class DebugConsoleControl : ViewportClippingLayerControl
 {
     private const int logHistoryLength = 100;
-    private static readonly IReadOnlyDictionary<Logger.Severity, Color> colorBySeverity =
-        new Dictionary<Logger.Severity, Color>()
-        {
 
-            {Logger.Severity.Fatal, Color.DeepPink},
-            {Logger.Severity.Error, Color.Red},
-            {Logger.Severity.Warning, Color.Yellow},
-            {Logger.Severity.Info, Color.White},
-            {Logger.Severity.Debug, Color.SpringGreen},
-            {Logger.Severity.Trace, Color.SkyBlue},
+    private static readonly IReadOnlyDictionary<Logger.Severity, Color> colorBySeverity =
+        new Dictionary<Logger.Severity, Color>
+        {
+            { Fatal, DeepPink },
+            { Error, Red },
+            { Warning, Yellow },
+            { Info, White },
+            { Debug, SpringGreen },
+            { Trace, SkyBlue },
         }.AsReadOnly();
 
     private readonly DebugConsole debug;
-    private readonly ListControl logBox;
+    private readonly ListControl logBox = new(new ViewportClippingLayerControl(), startStuckToBottom: true);
     private readonly RotatingListItemSource<Logger.Entry> listItemSource;
     private readonly TextInput commandInput;
 
     public DebugConsoleControl(DebugConsole debug)
     {
         this.debug = debug;
-        commandInput = new AutoCompletingTextInput(str => debug.AutoCompleteCommand(str, false)) { FontSize = 16 }
-            .Anchor(a => a.Bottom(margin: 0, height: 20));
-        logBox = new ListControl(new ViewportClippingLayerControl(), startStuckToBottom: true)
-            .Anchor(a => a.Bottom(margin: 20));
+
         listItemSource = new RotatingListItemSource<Logger.Entry>(
-            logBox, debug.GetLastLogEntries(logHistoryLength / 2), getControlForEntry, 20, logHistoryLength);
+            logBox, debug.GetLastLogEntries(logHistoryLength / 2), getControlForEntry, Console.LogEntryHeight, logHistoryLength);
         logBox.ItemSource = listItemSource;
 
-        Add(new BackgroundBox());
-        Add(logBox);
-        Add(commandInput);
+        commandInput = new AutoCompletingTextInput(str => debug.AutoCompleteCommand(str, false))
+            { FontSize = Console.FontSize, TextStyle = Console.Font };
+
+        this.Add([
+            new ComplexBox
+            {
+                FillColor = Colors.Get(BackgroundColor.Default) * 0.9f,
+                GlowOuterWidth = Menu.ShadowWidth,
+                GlowOuterColor = GradientParameters.SimpleGlow(Menu.ShadowColor),
+            }.Anchor(a => a.Bottom(Menu.ShadowWidth + 1)),
+            logBox.Anchor(a => a.Bottom(margin: Menu.ShadowWidth + Console.InputHeight)),
+            commandInput.Anchor(a => a.Bottom(margin: Menu.ShadowWidth, height: Console.InputHeight)),
+        ]);
 
         debug.Enabled += onDebugEnabled;
         debug.Disabled += onDebugDisabled;
@@ -84,7 +95,7 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
             Color = colorBySeverity[entry.Severity],
             FontSize = 16,
             TextAnchor = .5 * Vector2d.UnitY,
-            TextStyle = TextStyle.Monospace
+            TextStyle = Console.Font,
         };
     }
 

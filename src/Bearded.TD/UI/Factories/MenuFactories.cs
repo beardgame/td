@@ -60,8 +60,8 @@ static class MenuFactories
                     FillColor = Constants.UI.Colors.Get(BackgroundColor.Default) * 0.8f,
                     EdgeOuterWidth = 1,
                     EdgeColor = Constants.UI.Colors.Get(BackgroundColor.BackgroundOutline),
-                    GlowOuterWidth = 15,
-                    GlowOuterColor = GradientParameters.SimpleGlow(Constants.UI.Shadows.Default.Color * 0.5f),
+                    GlowOuterWidth = Constants.UI.Menu.ShadowWidth,
+                    GlowOuterColor = GradientParameters.SimpleGlow(Constants.UI.Menu.ShadowColor),
                 },
             };
             var layout = control.BuildLayout()

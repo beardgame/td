@@ -42,8 +42,8 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
         [
             validate(new UIDebugOverlayHighlightRenderer(context.Drawers.ConsoleBackground, uiFonts.Default)),
             validate(new RenderLayerCompositeControlRenderer(context.Compositor)),
-            validate(new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts.Default)),
-            validate(new TextInputRenderer(shapeDrawer, uiFonts.Default)),
+            validate(new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts)),
+            validate(new TextInputRenderer(shapeDrawer, uiFonts)),
             validate(new LabelRenderer(uiFonts)),
             validate(new SpriteRenderer(content, renderers, spriteShader)),
             validate(new BorderRenderer(shapeDrawer)),

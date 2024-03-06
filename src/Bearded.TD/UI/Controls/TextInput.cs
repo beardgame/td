@@ -10,6 +10,7 @@ class TextInput : Bearded.UI.Controls.TextInput
     private static readonly HashSet<char> allowedChars = new HashSet<char> { ' ', '-', '_', '.', '+', '"', ':', '@' };
 
     public double FontSize { get; set; } = 24;
+    public TextStyle TextStyle { get; set; } = TextStyle.Default;
 
     public bool AllowDigits { get; set; } = true;
     public bool AllowLetters { get; set; } = true;

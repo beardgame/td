@@ -1,5 +1,6 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
+using Bearded.TD.UI;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Rendering.Shapes.Shapes;
@@ -41,6 +42,14 @@ static partial class Constants
             public const double Size = Button.Height;
         }
 
+        public static class Console
+        {
+            public const double LogEntryHeight = 20;
+            public const double InputHeight = 24;
+            public const double FontSize = 16;
+            public const TextStyle Font = TextStyle.Monospace;
+        }
+
         public static class Form
         {
             public const double DenseFormRowHeight = 36;
@@ -52,6 +61,8 @@ static partial class Constants
 
         public static class Menu
         {
+            public const float ShadowWidth = 15;
+            public static readonly Color ShadowColor = Shadows.Default.Color * 0.5f;
             public const double Width = 300;
         }
 

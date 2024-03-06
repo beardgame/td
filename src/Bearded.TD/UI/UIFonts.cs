@@ -16,16 +16,20 @@ namespace Bearded.TD.UI;
 
 sealed class UIFonts
 {
+    private static readonly TextDrawerConfiguration defaultConfig
+        = new(AlignGrid: (1, 1), Offset: (0.5f, 0));
+    private static readonly TextDrawerConfiguration uiMonospaceConfig
+        = new(IgnoreKerning: true);
+
+    // TODO: use this for in-game numbers which currently use the above
+    private static readonly TextDrawerConfiguration inGameConfig = new();
+
     private static readonly IReadOnlyDictionary<TextStyle, TextStyleDefinition> textStyles =
         new Dictionary<TextStyle, TextStyleDefinition>
         {
             { TextStyle.Default, new TextStyleDefinition(Fonts.DefaultText, Text.FontSize) },
-            { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize) },
+            { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize, uiMonospaceConfig) },
         }.AsReadOnly();
-
-    // TODO: this doesn't take UI scale into account
-    // TODO: it's also used for in-game numbers and debug drawing, which is thus broken
-    private static readonly TextDrawerConfiguration defaultConfig = new(new Vector2(1, 1), new Vector2(0.5f, 0));
 
     public static UIFonts Load(Blueprints blueprints, IDrawableRenderers renderers)
     {
@@ -35,8 +39,9 @@ sealed class UIFonts
             {
                 var def = kvp.Value;
                 var font = blueprints.Fonts[def.Font];
+                var config = def.Configuration ?? defaultConfig;
                 var drawer = font
-                    .MakeConcreteWith(defaultConfig, renderers, DrawOrderGroup.UIFont, 0, UVColorVertex.Create)
+                    .MakeConcreteWith(config, renderers, DrawOrderGroup.UIFont, 0, UVColorVertex.Create)
                     .WithDefaults(def.DefaultSize, 0, 0, Vector3.UnitX, Vector3.UnitY, Color.White);
                 return drawer;
             });
@@ -54,5 +59,8 @@ sealed class UIFonts
 
     public TextDrawerWithDefaults<Color> ForStyle(TextStyle style) => fontDrawers[style];
 
-    private sealed record TextStyleDefinition(ModAwareId Font, float DefaultSize);
+    private sealed record TextStyleDefinition(
+        ModAwareId Font,
+        float DefaultSize,
+        TextDrawerConfiguration? Configuration = null);
 }
