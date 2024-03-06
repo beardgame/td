@@ -189,6 +189,10 @@ vec4 getColor(int partIndex, float t)
     
     switch(type)
     {
+        case GRADIENT_TYPE_NONE:
+        {
+            return vec4(0);
+        }
         case GRADIENT_TYPE_CONSTANT:
         {
             return getConstantColorFromGradientParameters(partIndex);
