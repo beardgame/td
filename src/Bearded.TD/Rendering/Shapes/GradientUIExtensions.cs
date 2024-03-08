@@ -1,38 +1,59 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using Bearded.Graphics;
 using Bearded.TD.UI.Shapes;
+using Bearded.UI;
+using OpenTK.Mathematics;
+using static Bearded.TD.UI.Shapes.GradientType;
 
 namespace Bearded.TD.Rendering.Shapes;
 
 static class GradientUIExtensions
 {
-    public static ShapeComponentsForDrawing ForDrawingWith(this ShapeComponents components, GradientDrawer gradients)
-        => new(components, gradients);
+    public static ShapeComponentsForDrawing ForDrawingWith(
+        this ShapeComponents components, GradientDrawer gradients, Frame frame)
+        => new(components, gradients, frame);
 
     public static ShapeComponentsForDrawing ForDrawingAssumingNoGradients(this ShapeComponents components)
-        => new(components, null);
+        => new(components, null, default);
 
-    public static GradientParameters ForDrawingWith(this ShapeColor color, GradientDrawer gradients)
+    public static GradientParameters ForDrawingWith(this ShapeColor color, GradientDrawer gradients, Frame frame)
     {
         var gradientId = color.Gradient.IsDefaultOrEmpty
             ? GradientId.None
             : gradients.AddGradient(color.Gradient.AsSpan());
-        return color.Definition.ToGradientParameters(gradientId);
+        return color.Definition.ForDrawing(gradientId, frame);
     }
 
     public static GradientParameters ForDrawingWithoutGradients(this ShapeColor color)
-        => color.Definition.ToGradientParameters(GradientId.None);
+        => color.Definition.ForDrawing(GradientId.None, default);
 
-    public static GradientParameters ToGradientParameters(this GradientDefinition definition,  GradientId gradientId)
+    public static GradientParameters ForDrawing(this GradientDefinition def,  GradientId gradientId, Frame frame)
     {
-        validateGradientParameters(definition, gradientId);
+        validateGradientParameters(def, gradientId);
 
-        return new GradientParameters(definition.Type, gradientId, definition.Parameters);
+        var parameters = def.Type switch
+        {
+            None => default,
+            Constant => (encodeColor(def.Color), 0, 0, 0),
+            SimpleGlow => (encodeColor(def.Color), 0, 0, 0),
+            Linear => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
+            Radial => v4(def.Point1.CalculatePointWithin(frame), (def.Radius, 0)),
+            AlongEdgeNormal => (0, 0, 0, 0),
+            _ => throw new ArgumentOutOfRangeException(nameof(def.Type)),
+        };
+
+        return new GradientParameters(def.Type, gradientId, parameters);
+
+        static float encodeColor(Color color) => Unsafe.BitCast<Color, float>(color);
+        static Vector4 v4(Vector2 a, Vector2 b) => new(a.X, a.Y, b.X, b.Y);
     }
 
     [Conditional("DEBUG")]
     private static void validateGradientParameters(GradientDefinition definition, GradientId gradientId)
     {
-        var expectsGradient = definition.Type >= GradientType.Linear;
+        var expectsGradient = definition.Type >= Linear;
         var gotGradient = !gradientId.IsNone;
 
         Debug.Assert(expectsGradient == gotGradient,

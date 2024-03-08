@@ -1,42 +1,42 @@
-﻿using System.Runtime.CompilerServices;
-using Bearded.Graphics;
-using OpenTK.Mathematics;
+﻿using Bearded.Graphics;
 
 namespace Bearded.TD.UI.Shapes;
 
 readonly struct GradientDefinition
 {
-    public readonly GradientType Type;
-    public readonly Vector4 Parameters;
+    public GradientType Type { get; }
+    public Color Color { get; private init; }
+    public AnchorPoint Point1 { get; private init; }
+    public AnchorPoint Point2 { get; private init; }
+    public float Radius { get; private init; }
 
-    private GradientDefinition(GradientType type, Vector4 parameters)
+    private GradientDefinition(GradientType type)
     {
         Type = type;
-        Parameters = parameters;
     }
 
     public bool IsNone => Type == GradientType.None;
 
     public static SingleColor Constant(Color color)
-        => new(GradientTypeSingleColor.Constant, (Unsafe.BitCast<Color, float>(color), 0, 0, 0));
+        => new(GradientTypeSingleColor.Constant, color);
 
     public static SingleColor SimpleGlow(Color color)
-        => new(GradientTypeSingleColor.SimpleGlow, (Unsafe.BitCast<Color, float>(color), 0, 0, 0));
+        => new(GradientTypeSingleColor.SimpleGlow, color);
 
 
-    public static GradientDefinition Linear(Vector2 start, Vector2 end)
-        => new(GradientType.Linear, (start.X, start.Y, end.X, end.Y));
+    public static GradientDefinition Linear(AnchorPoint start, AnchorPoint end)
+        => new(GradientType.Linear) { Point1 = start, Point2 = end };
 
-    public static GradientDefinition Radial(Vector2 center, float radius)
-        => new(GradientType.Radial, (center.X, center.Y, radius, 0));
+    public static GradientDefinition Radial(AnchorPoint center, float radius)
+        => new(GradientType.Radial) { Point1 = center, Radius = radius };
 
     public static GradientDefinition AlongEdgeNormal()
-        => new(GradientType.AlongEdgeNormal, default);
+        => new(GradientType.AlongEdgeNormal);
 
 
-    public readonly struct SingleColor(GradientTypeSingleColor type, Vector4 parameters)
+    public readonly struct SingleColor(GradientTypeSingleColor type, Color color)
     {
-        public readonly GradientDefinition Definition = new((GradientType)type, parameters);
+        public GradientDefinition Definition { get; } = new((GradientType)type) { Color = color };
 
         public static implicit operator GradientDefinition(SingleColor definition) => definition.Definition;
     }

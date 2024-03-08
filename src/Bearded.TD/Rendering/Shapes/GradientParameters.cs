@@ -24,5 +24,5 @@ readonly struct GradientParameters
     ];
 
     public static implicit operator GradientParameters(GradientDefinition.SingleColor definition)
-        => definition.Definition.ToGradientParameters(GradientId.None);
+        => definition.Definition.ForDrawing(GradientId.None, default);
 }

@@ -11,7 +11,7 @@ sealed class ComplexShapeRenderer(IShapeDrawer shapes, GradientDrawer gradients)
     public void Render(ComplexShapeControl control)
     {
         var frame = control.Frame;
-        var components = control.Components.ForDrawingWith(gradients);
+        var components = control.Components.ForDrawingWith(gradients, frame);
 
         switch (control)
         {

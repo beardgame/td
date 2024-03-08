@@ -1,8 +1,9 @@
 ﻿using Bearded.TD.UI.Shapes;
+using Bearded.UI;
 
 namespace Bearded.TD.Rendering.Shapes;
 
-readonly struct ShapeComponentsForDrawing(ShapeComponents components, GradientDrawer? gradients)
+readonly struct ShapeComponentsForDrawing(ShapeComponents components, GradientDrawer? gradients, Frame frame)
 {
     public EdgeData Edges
         => new(
@@ -21,9 +22,9 @@ readonly struct ShapeComponentsForDrawing(ShapeComponents components, GradientDr
                 components.InnerGlow.Color.ForDrawingWithoutGradients()
             )
             : new ShapeGradients(
-                components.Fill.Color.ForDrawingWith(gradients),
-                components.Edge.Color.ForDrawingWith(gradients),
-                components.OuterGlow.Color.ForDrawingWith(gradients),
-                components.InnerGlow.Color.ForDrawingWith(gradients)
+                components.Fill.Color.ForDrawingWith(gradients, frame),
+                components.Edge.Color.ForDrawingWith(gradients, frame),
+                components.OuterGlow.Color.ForDrawingWith(gradients, frame),
+                components.InnerGlow.Color.ForDrawingWith(gradients, frame)
             );
 }
