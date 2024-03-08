@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI.Rendering;
 
 namespace Bearded.TD.Rendering.UI;
@@ -10,13 +11,9 @@ sealed class BorderRenderer(IShapeDrawer drawer) : IRenderer<Border>
     {
         var frame = control.Frame;
 
-        var edges = new EdgeData(0, 1, 0, 0);
+        var shape = Shapes.Shapes.Rectangle(frame.TopLeft, frame.Size);
+        var components = new ShapeComponents(Edge: Edge.Inner(1, control.Color)).ForDrawingAssumingNoGradients();
 
-        drawer.DrawRectangle(
-            frame.TopLeft,
-            frame.Size,
-            new ShapeColors(edge: control.Color),
-            2,
-            edges);
+        drawer.Draw(shape, components);
     }
 }

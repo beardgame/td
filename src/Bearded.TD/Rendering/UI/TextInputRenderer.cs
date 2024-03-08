@@ -1,9 +1,7 @@
-﻿using Bearded.Graphics;
-using Bearded.Graphics.Text;
-using Bearded.TD.Rendering.Shapes;
-using Bearded.TD.Rendering.UI.Gradients;
+﻿using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
@@ -33,13 +31,13 @@ sealed class TextInputRenderer(IShapeDrawer drawer, UIFonts fonts)
             _ => BackgroundColor.Element,
         };
 
-        var colors = new ShapeColors(
-            fill: Constants.UI.Colors.Get(backgroundColor),
-            edge: Constants.UI.Colors.Get(ForeGroundColor.Edge),
-            innerGlow: GradientParameters.SimpleGlow(Constants.UI.Colors.Get(BackgroundColor.Default))
-            );
-        var edges = new EdgeData(innerWidth: 1, innerGlow: 1.5f);
-        drawer.Draw(Rectangle(frame.TopLeft, frame.Size, 2), colors, edges);
+        var components = new ShapeComponents(
+            Fill: Constants.UI.Colors.Get(backgroundColor),
+            Edge: Edge.Inner(1, Constants.UI.Colors.Get(ForeGroundColor.Edge)),
+            InnerGlow: (1.5f, Constants.UI.Colors.Get(BackgroundColor.Default))
+        ).ForDrawingAssumingNoGradients();
+
+        drawer.Draw(Rectangle(frame.TopLeft, frame.Size, 2), components);
 
         var textDrawer = fonts.ForStyle(textInput.TextStyle);
 

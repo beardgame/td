@@ -4,6 +4,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -113,7 +114,7 @@ static partial class ButtonFactories
             var shape = isCircle
                 ? (ComplexShapeControl)new ComplexCircle()
                 : new ComplexBox { CornerRadius = 2 };
-            shape.EdgeOuterWidth = 1;
+            shape.Edge = Edge.Outer(1, contentColor.Value);
 
             if (shadow is { } s)
             {
@@ -125,8 +126,7 @@ static partial class ButtonFactories
             }
 
             button.Add(shape);
-            contentColor.SourceUpdated += c => shape.EdgeColor = c;
-            shape.EdgeColor = contentColor.Value;
+            contentColor.SourceUpdated += c => shape.Edge = shape.Edge with { Color = c };
 
             if (progressBar.HasValue)
             {
@@ -170,7 +170,7 @@ static partial class ButtonFactories
                     _ => BackgroundColor.Element,
                 };
 
-                shape.FillColor = Constants.UI.Colors.Get(color);
+                shape.Fill = Constants.UI.Colors.Get(color);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
@@ -21,6 +22,9 @@ sealed class ButtonBackgroundEffectRenderer(IShapeDrawer drawer) : IRenderer<But
 
         var color = control.MouseIsDown ? ActiveColor : HoverColor;
 
-        drawer.DrawRectangle(frame.TopLeft, frame.Size, new ShapeColors(fill: color));
+        var shape = Shapes.Shapes.Rectangle(frame.TopLeft, frame.Size);
+        var components = new ShapeComponents(Fill: color).ForDrawingAssumingNoGradients();
+
+        drawer.Draw(shape, components);
     }
 }

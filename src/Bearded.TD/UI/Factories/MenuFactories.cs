@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -57,11 +57,9 @@ static class MenuFactories
             {
                 background ?? new ComplexBox
                 {
-                    FillColor = Constants.UI.Colors.Get(BackgroundColor.Default) * 0.8f,
-                    EdgeOuterWidth = 1,
-                    EdgeColor = Constants.UI.Colors.Get(BackgroundColor.BackgroundOutline),
-                    GlowOuterWidth = Constants.UI.Menu.ShadowWidth,
-                    GlowOuterColor = GradientParameters.SimpleGlow(Constants.UI.Menu.ShadowColor),
+                    Fill = Constants.UI.Colors.Get(BackgroundColor.Default) * 0.8f,
+                    Edge = Edge.Outer(1, Constants.UI.Colors.Get(BackgroundColor.BackgroundOutline)),
+                    OuterGlow = (Constants.UI.Menu.ShadowWidth, Constants.UI.Menu.ShadowColor),
                 },
             };
             var layout = control.BuildLayout()

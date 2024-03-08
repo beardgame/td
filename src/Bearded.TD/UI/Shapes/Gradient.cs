@@ -1,7 +1,7 @@
 ﻿using System;
 using Bearded.Graphics;
 
-namespace Bearded.TD.Rendering.UI.Gradients;
+namespace Bearded.TD.UI.Shapes;
 
 readonly struct GradientStop(float position, Color color)
 {

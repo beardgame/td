@@ -2,9 +2,10 @@
 using Bearded.Graphics;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Textures;
+using Bearded.TD.UI.Shapes;
 using OpenTK.Graphics.OpenGL;
 
-namespace Bearded.TD.Rendering.UI.Gradients;
+namespace Bearded.TD.Rendering.Shapes;
 
 sealed class Gradients : IDisposable
 {

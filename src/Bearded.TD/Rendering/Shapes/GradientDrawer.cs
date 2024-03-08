@@ -1,6 +1,7 @@
 ﻿using System;
+using Bearded.TD.UI.Shapes;
 
-namespace Bearded.TD.Rendering.UI.Gradients;
+namespace Bearded.TD.Rendering.Shapes;
 
 sealed class GradientDrawer(Gradients gradients)
 {

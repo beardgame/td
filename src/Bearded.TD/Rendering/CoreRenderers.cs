@@ -2,7 +2,7 @@ using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.Text;
-using Bearded.TD.Rendering.UI.Gradients;
+using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Rendering;

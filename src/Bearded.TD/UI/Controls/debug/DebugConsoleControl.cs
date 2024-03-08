@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Bearded.Graphics;
-using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
@@ -47,9 +46,8 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
         this.Add([
             new ComplexBox
             {
-                FillColor = Colors.Get(BackgroundColor.Default) * 0.9f,
-                GlowOuterWidth = Menu.ShadowWidth,
-                GlowOuterColor = GradientParameters.SimpleGlow(Menu.ShadowColor),
+                Fill = Colors.Get(BackgroundColor.Default) * 0.9f,
+                OuterGlow = (Menu.ShadowWidth, Menu.ShadowColor),
             }.Anchor(a => a.Bottom(Menu.ShadowWidth + 1)),
             logBox.Anchor(a => a.Bottom(margin: Menu.ShadowWidth + Console.InputHeight)),
             commandInput.Anchor(a => a.Bottom(margin: Menu.ShadowWidth, height: Console.InputHeight)),

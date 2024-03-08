@@ -1,23 +1,21 @@
-using System;
-using Bearded.Graphics;
-using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using OpenTK.Mathematics;
 using static System.Math;
-using static Bearded.TD.Rendering.Shapes.Shapes;
+using static Bearded.TD.UI.Shapes.GradientDefinition;
 
 namespace Bearded.TD.Rendering.Shapes;
 
 static class UIShapeDrawerExtensions
 {
     public static void Draw(
-        this IShapeDrawer drawer, Circle circle, ShapeColors colors, EdgeData edges = default)
-        => drawer.DrawCircle((Vector3)circle.Center, (float)circle.Radius, colors, edges);
+        this IShapeDrawer drawer, Circle circle, ShapeComponentsForDrawing components)
+        => drawer.DrawCircle((Vector3)circle.Center, (float)circle.Radius, components.Gradients, components.Edges);
 
     public static void Draw(
-        this IShapeDrawer drawer, Rectangle rectangle, ShapeColors colors, EdgeData edges = default)
-        => drawer.DrawRectangle((Vector3)rectangle.TopLeft, (Vector2)rectangle.Size, colors, (float)rectangle.CornerRadius, edges);
+        this IShapeDrawer drawer, Rectangle rectangle, ShapeComponentsForDrawing components)
+        => drawer.drawRectangle(
+            rectangle.TopLeft, rectangle.Size,
+            components.Gradients, rectangle.CornerRadius, components.Edges);
 
     public static void DrawShadowFor(this IShapeDrawer drawer, Rectangle rectangle, Shadow shadow)
     {
@@ -29,16 +27,17 @@ static class UIShapeDrawerExtensions
         var umbraToBoxEdge = minDimension / 2 - innerRadius;
 
         var tl = (rectangle.TopLeft.Xy + new Vector2d(umbraToBoxEdge)).WithZ(rectangle.TopLeft.Z);
-        drawer.Draw(Rectangle(tl + shadow.Offset, innerSize, rectangle.CornerRadius), colors, edges: penumbra);
+        drawer.drawRectangle(tl + shadow.Offset, innerSize, colors, rectangle.CornerRadius, penumbra);
     }
 
     public static void DrawShadowFor(this IShapeDrawer drawer, Circle circle, Shadow shadow)
     {
         var (innerRadius, penumbra, colors) = shadowParameters(circle.Radius, shadow);
-        drawer.Draw(Circle(circle.Center + shadow.Offset, innerRadius), colors, edges: penumbra);
+        drawer.drawCircle(circle.Center + shadow.Offset, innerRadius, colors, edges: penumbra);
     }
 
-    private static (double innerRadius, EdgeData penumbra, ShapeColors colors) shadowParameters(double radius, Shadow shadow)
+    private static (double innerRadius, EdgeData penumbra, ShapeGradients colors)
+        shadowParameters(double radius, Shadow shadow)
     {
         var umbraRadius = radius - shadow.PenumbraRadius;
 
@@ -47,7 +46,7 @@ static class UIShapeDrawerExtensions
             : (-umbraRadius, shadow.Color * antumbraAlpha(-umbraRadius, shadow.PenumbraRadius));
 
         var penumbra = new EdgeData(outerGlow: (float)shadow.PenumbraRadius * 2);
-        var colors = new ShapeColors(fill: innerColor, outerGlow: GradientParameters.SimpleGlow(innerColor));
+        var colors = new ShapeGradients(fill: Constant(innerColor), outerGlow: SimpleGlow(innerColor));
         return (innerRadius, penumbra, colors);
     }
 
@@ -56,25 +55,12 @@ static class UIShapeDrawerExtensions
         return (float)(1 - antumbraRadius / penumbraRadius);
     }
 
-    [Obsolete("Use Draw(Shapes.Circle()) instead")]
-    public static void DrawCircle(
-        this IShapeDrawer drawer, Vector2d xy, double radius, ShapeColors colors, EdgeData edges = default)
-        => drawer.DrawCircle(((Vector2)xy).WithZ(), (float)radius, colors, edges);
+    private static void drawCircle(
+        this IShapeDrawer drawer, Vector3d xyz, double radius, ShapeGradients gradients, EdgeData edges = default)
+        => drawer.DrawCircle((Vector3)xyz, (float)radius, gradients, edges);
 
-    [Obsolete("Use Draw(Shapes.Circle()) instead")]
-    public static void DrawCircle(
-        this IShapeDrawer drawer, Vector3d xyz, double radius, ShapeColors colors, EdgeData edges = default)
-        => drawer.DrawCircle((Vector3)xyz, (float)radius, colors, edges);
-
-    [Obsolete("Use Draw(Shapes.Rectangle()) instead")]
-    public static void DrawRectangle(
-        this IShapeDrawer drawer, Vector2d xy, Vector2d wh, ShapeColors colors, double cornerRadius = 0,
+    private static void drawRectangle(
+        this IShapeDrawer drawer, Vector3d xyz, Vector2d wh, ShapeGradients gradients, double cornerRadius = 0,
         EdgeData edges = default)
-        => drawer.DrawRectangle(((Vector2)xy).WithZ(), (Vector2)wh, colors, (float)cornerRadius, edges);
-
-    [Obsolete("Use Draw(Shapes.Rectangle()) instead")]
-    public static void DrawRectangle(
-        this IShapeDrawer drawer, Vector3d xyz, Vector2d wh, ShapeColors colors, double cornerRadius = 0,
-        EdgeData edges = default)
-        => drawer.DrawRectangle((Vector3)xyz, (Vector2)wh, colors, (float)cornerRadius, edges);
+        => drawer.DrawRectangle((Vector3)xyz, (Vector2)wh, gradients, (float)cornerRadius, edges);
 }
