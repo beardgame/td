@@ -9,8 +9,9 @@ const int GRADIENT_TYPE_NONE = 0;
 const int GRADIENT_TYPE_CONSTANT = 1;
 const int GRADIENT_TYPE_SIMPLE_GLOW = 2;
 const int GRADIENT_TYPE_LINEAR = 20; // point to point
-const int GRADIENT_TYPE_RADIAL = 21; // center and radius
-const int GRADIENT_TYPE_ALONG_EDGE_NORMAL = 22;
+const int GRADIENT_TYPE_RADIAL_RADIUS = 21; // center and radius
+const int GRADIENT_TYPE_RADIAL_POINT_ON_EDGE = 22; // center and point on edge
+const int GRADIENT_TYPE_ALONG_EDGE_NORMAL = 23;
 
 const int EDGE_OUTER_WIDTH_I = 0;
 const int EDGE_INNER_WIDTH_I = 1;
@@ -209,10 +210,18 @@ vec4 getColor(int partIndex, float t)
             float projection = dot(d, p_position.xy - p0) / dot(d, d);
             return getColorInGradient(index, projection);
         }
-        case GRADIENT_TYPE_RADIAL:
+        case GRADIENT_TYPE_RADIAL_RADIUS:
         {
             vec2 center = parameters.xy;
             float radius = parameters.z;
+            float distance = length(p_position.xy - center) / radius;
+            return getColorInGradient(index, distance);
+        }
+        case GRADIENT_TYPE_RADIAL_POINT_ON_EDGE:
+        {
+            vec2 center = parameters.xy;
+            vec2 pointOnEdge = p_shapeData.xy;
+            float radius = length(pointOnEdge - center);
             float distance = length(p_position.xy - center) / radius;
             return getColorInGradient(index, distance);
         }

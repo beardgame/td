@@ -39,7 +39,8 @@ static class GradientUIExtensions
             Constant => (encodeColor(def.Color), 0, 0, 0),
             SimpleGlow => (encodeColor(def.Color), 0, 0, 0),
             Linear => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
-            Radial => v4(def.Point1.CalculatePointWithin(frame), (def.Radius, 0)),
+            RadialWithRadius => v4(def.Point1.CalculatePointWithin(frame), (def.Radius, 0)),
+            RadialToPoint => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
             AlongEdgeNormal => (0, 0, 0, 0),
             _ => throw new ArgumentOutOfRangeException(nameof(def.Type)),
         };

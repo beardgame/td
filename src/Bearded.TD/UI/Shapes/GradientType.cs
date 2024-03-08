@@ -10,8 +10,9 @@ enum GradientType : byte
 
     // Full Gradients
     Linear = 20,
-    Radial = 21,
-    AlongEdgeNormal = 22,
+    RadialWithRadius = 21,
+    RadialToPoint = 22,
+    AlongEdgeNormal = 23,
 }
 
 enum GradientTypeSingleColor : byte

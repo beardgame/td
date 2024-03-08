@@ -28,7 +28,10 @@ readonly struct GradientDefinition
         => new(GradientType.Linear) { Point1 = start, Point2 = end };
 
     public static GradientDefinition Radial(AnchorPoint center, float radius)
-        => new(GradientType.Radial) { Point1 = center, Radius = radius };
+        => new(GradientType.RadialWithRadius) { Point1 = center, Radius = radius };
+
+    public static GradientDefinition Radial(AnchorPoint center, AnchorPoint pointOnEdge)
+        => new(GradientType.RadialToPoint) { Point1 = center, Point2 = pointOnEdge };
 
     public static GradientDefinition AlongEdgeNormal()
         => new(GradientType.AlongEdgeNormal);
