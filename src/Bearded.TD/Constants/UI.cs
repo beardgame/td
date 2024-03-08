@@ -1,6 +1,7 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Rendering.Shapes.Shapes;
@@ -109,6 +110,17 @@ static partial class Constants
             public const double DefaultWidth = 300;
             public const double Margin = 4;
             public const double AnchorMargin = 4;
+
+            public static readonly ShapeComponents Background = new(
+                Fill: ShapeColor.From(
+                    [(0, Colors.Get(BackgroundColor.Tooltip)), (1, Color.Transparent)],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
+                ),
+                Edge: Edge.Outer(1, ShapeColor.From(
+                    [(0, Colors.Get(BackgroundColor.SubtleOutline)), (1, Color.Transparent)],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.85f, 0)))
+                ))
+            );
         }
 
         public static class Window

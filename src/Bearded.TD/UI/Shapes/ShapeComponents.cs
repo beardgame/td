@@ -25,9 +25,9 @@ record struct Glow(float Width, ShapeColor Color)
 
 record struct Fill(ShapeColor Color)
 {
-    public static Fill From(ShapeColor color) => new(color);
-
     public static implicit operator Fill(GradientDefinition.SingleColor gradient) => new(gradient);
 
     public static implicit operator Fill(Color color) => new(GradientDefinition.Constant(color));
+
+    public static implicit operator Fill(ShapeColor color) => new(color);
 }

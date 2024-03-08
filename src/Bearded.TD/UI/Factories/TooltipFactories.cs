@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.UI.Controls;
-using OpenTK.Mathematics;
 using static Bearded.TD.Constants.UI;
 using static Bearded.TD.Constants.UI.Tooltip;
 using static Bearded.TD.UI.Factories.TextFactories;
@@ -60,10 +60,8 @@ static class TooltipFactories
             new ComplexBox
             {
                 CornerRadius = 2,
-
-                Fill = Colors.Get(BackgroundColor.Tooltip),
-                Edge = Edge.Outer(1, Colors.Get(BackgroundColor.SubtleOutline)),
-            }.WithDropShadow(),
+                Components = Background,
+            },
             content.Anchor(a => a.MarginAllSides(Margin)),
         };
     }
