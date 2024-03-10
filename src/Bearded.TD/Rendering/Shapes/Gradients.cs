@@ -17,6 +17,7 @@ sealed class Gradients : IDisposable
     {
         buffer = new Buffer<IndexedGradientStop>();
         bufferStream = new BufferStream<IndexedGradientStop>(buffer);
+        bufferStream.Add(default(IndexedGradientStop));
         bufferTexture = BufferTexture.ForBuffer(buffer, SizedInternalFormat.Rgb32ui);
     }
 
