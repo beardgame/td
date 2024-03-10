@@ -1,5 +1,8 @@
 ﻿#version 400
 
+const float PI = 3.14159265359;
+const float TAU = 6.28318530718;
+
 const int SHAPE_TYPE_FILL = 0;
 const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
@@ -12,6 +15,7 @@ const int GRADIENT_TYPE_LINEAR = 20; // point to point
 const int GRADIENT_TYPE_RADIAL_RADIUS = 21; // center and radius
 const int GRADIENT_TYPE_RADIAL_POINT_ON_EDGE = 22; // center and point on edge
 const int GRADIENT_TYPE_ALONG_EDGE_NORMAL = 23;
+const int GRADIENT_ARC_AROUND_POINT = 24; // center, start and total angle in radians
 
 const int EDGE_OUTER_WIDTH_I = 0;
 const int EDGE_INNER_WIDTH_I = 1;
@@ -171,7 +175,7 @@ vec4 getColorInGradient(uint index, float t)
             return mix(
                 stopColor(current),
                 stopColor(next),
-                (t - current.position) / (next.position - current.position)
+                clamp((t - current.position) / (next.position - current.position), 0, 1)
             );
         }
         current = next;
@@ -229,6 +233,16 @@ vec4 getColor(int partIndex, float t)
         {
             return getColorInGradient(index, t);
         }
+        case GRADIENT_ARC_AROUND_POINT:
+        {
+            vec2 center = parameters.xy;
+            float startAngle = parameters.z;
+            float totalAngle = parameters.w;
+            vec2 d = p_position.xy - center;
+            float angle = atan(d.y, d.x);            
+            float normalizedAngle = mod(angle + startAngle, TAU) / totalAngle;
+            return getColorInGradient(index, normalizedAngle);
+        }
     }
     
     return vec4(1, 0, 1, 0.5);
@@ -282,21 +296,22 @@ Separated edgeContribution(float distance, float antiAliasWidth)
         Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
         ret.inner = getColor(PART_GLOW_INNER_I, glowInner.t) * glowInner.alpha;
     }
-
     if (edgeOuterWidth + edgeInnerWidth != 0)
     {
         Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
         vec4 e = getColor(PART_EDGE_I, edge.t) * edge.alpha;
-        ret.outer = addPremultiplied(ret.outer, e);
-        ret.inner = addPremultiplied(ret.inner, e);
+        if (edgeOuterWidth > 0)
+            ret.outer = addPremultiplied(ret.outer, e);
+        if (edgeInnerWidth > 0)
+            ret.inner = addPremultiplied(ret.inner, e);
     }
 
     return ret;
 }
 
-vec4 fillContribution(float distance, float alpha)
+vec4 fillContribution(float distance)
 {
-    return getColor(PART_FILL_I, 0) * alpha;
+    return getColor(PART_FILL_I, 0);
 }
 
 const float DEBUG_SHAPE = 0;
@@ -316,15 +331,15 @@ void main()
     }
 
     float signedDistance = signedDistanceToEdge();
-    float antiAliasWidth = ANTI_ALIAS_WIDTH * length(vec2(dFdx(signedDistance), dFdy(signedDistance)));
+    float antiAliasWidth = ANTI_ALIAS_WIDTH * fwidth(signedDistance);
     float outsideToInside = clamp((antiAliasWidth / 2 - signedDistance) / antiAliasWidth, 0, 1);
     
-    vec4 fill = fillContribution(signedDistance, outsideToInside);
+    vec4 fill = fillContribution(signedDistance);
     Separated edges = edgeContribution(signedDistance, antiAliasWidth);
     
     vec4 inner = addPremultiplied(fill, edges.inner);
 
-    fragColor = edges.outer + inner;
+    fragColor = mix(edges.outer, inner, outsideToInside);
 
     if (DEBUG_SHAPE != 0)
     {

@@ -8,6 +8,8 @@ readonly record struct AnchorPoint(
     Vector2 RelativeOffset,
     Vector2 RelativeContribution)
 {
+    public static AnchorPoint FrameCenter => Relative((0.5f, 0.5f));
+
     public AnchorPoint(Vector2 absoluteOffset = default, Vector2 relativeOffset = default)
         : this(AbsoluteOffset: absoluteOffset, RelativeOffset: relativeOffset, RelativeContribution: Vector2.One) { }
 

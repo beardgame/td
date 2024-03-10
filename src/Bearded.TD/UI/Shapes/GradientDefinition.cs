@@ -1,4 +1,5 @@
 ﻿using Bearded.Graphics;
+using Bearded.Utilities.Geometry;
 
 namespace Bearded.TD.UI.Shapes;
 
@@ -9,6 +10,8 @@ readonly struct GradientDefinition
     public AnchorPoint Point1 { get; private init; }
     public AnchorPoint Point2 { get; private init; }
     public float Radius { get; private init; }
+    public Direction2 StartAngle { get; private init; }
+    public Angle Length { get; private init; }
 
     private GradientDefinition(GradientType type)
     {
@@ -36,6 +39,9 @@ readonly struct GradientDefinition
     public static GradientDefinition AlongEdgeNormal()
         => new(GradientType.AlongEdgeNormal);
 
+    public static GradientDefinition ArcAroundPoint(AnchorPoint center, Direction2 start, Angle length)
+        => new(GradientType.ArcAroundPoint) { Point1 = center, StartAngle = start, Length = length };
+
 
     public readonly struct SingleColor(GradientTypeSingleColor type, Color color)
     {
@@ -55,6 +61,7 @@ readonly struct GradientDefinition
             GradientType.RadialWithRadius => $"{Type}({Point1} with radius {Radius})",
             GradientType.RadialToPoint => $"{Type}({Point1} -> {Point2})",
             GradientType.AlongEdgeNormal => $"{Type}",
+            GradientType.ArcAroundPoint => $"{Type}({Point1} from {StartAngle} for {Length})",
             _ => $"{Type}(?)",
         };
     }

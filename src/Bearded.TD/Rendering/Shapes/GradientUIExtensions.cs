@@ -42,6 +42,7 @@ static class GradientUIExtensions
             RadialWithRadius => v4(def.Point1.CalculatePointWithin(frame), (def.Radius, 0)),
             RadialToPoint => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
             AlongEdgeNormal => (0, 0, 0, 0),
+            ArcAroundPoint => v4(def.Point1.CalculatePointWithin(frame), (def.StartAngle.Radians, def.Length.Radians)),
             _ => throw new ArgumentOutOfRangeException(nameof(def.Type)),
         };
 
