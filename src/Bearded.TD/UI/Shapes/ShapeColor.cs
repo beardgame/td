@@ -27,4 +27,7 @@ readonly struct ShapeColor
 
     public static ShapeColor From(ImmutableArray<GradientStop> gradient, GradientDefinition parameters)
         => new(gradient, parameters);
+
+    public override string ToString()
+        => $"{Definition.Type} with {(Gradient.IsDefault ? "NULL" : Gradient.Length)} stops";
 }

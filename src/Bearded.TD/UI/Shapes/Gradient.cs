@@ -10,6 +10,8 @@ readonly struct GradientStop(float position, Color color)
 
     public static implicit operator GradientStop((float position, Color color) tuple)
         => new(tuple.position, tuple.color);
+
+    public override string ToString() => $"({Color}, {Position})";
 }
 
 readonly ref struct Gradient(ReadOnlySpan<GradientStop> stops)

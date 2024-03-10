@@ -43,4 +43,19 @@ readonly struct GradientDefinition
 
         public static implicit operator GradientDefinition(SingleColor definition) => definition.Definition;
     }
+
+    public override string ToString()
+    {
+        return Type switch
+        {
+            GradientType.None => "{Type}",
+            GradientType.Constant => $"{Type}({Color})",
+            GradientType.SimpleGlow => $"{Type}({Color})",
+            GradientType.Linear => $"{Type}({Point1} -> {Point2})",
+            GradientType.RadialWithRadius => $"{Type}({Point1} with radius {Radius})",
+            GradientType.RadialToPoint => $"{Type}({Point1} -> {Point2})",
+            GradientType.AlongEdgeNormal => $"{Type}",
+            _ => $"{Type}(?)",
+        };
+    }
 }

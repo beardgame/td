@@ -19,4 +19,7 @@ readonly record struct AnchorPoint(
     public static AnchorPoint Relative(Vector2 point) => new(relativeOffset: point);
 
     public static implicit operator AnchorPoint(Vector2 point) => Absolute(point);
+
+    public override string ToString()
+        => $"(tl + wh * {RelativeOffset}) * {RelativeContribution} + {AbsoluteOffset}";
 }
