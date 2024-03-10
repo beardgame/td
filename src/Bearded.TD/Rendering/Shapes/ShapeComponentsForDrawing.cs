@@ -5,16 +5,16 @@ namespace Bearded.TD.Rendering.Shapes;
 
 readonly struct ShapeComponentsForDrawing(ShapeComponents components, GradientDrawer? gradients, Frame frame)
 {
-    public EdgeData Edges
-        => new(
+    public EdgeData Edges { get; }
+        = new(
             components.Edge.OuterWidth,
             components.Edge.InnerWidth,
             components.OuterGlow.Width,
             components.InnerGlow.Width
         );
 
-    public ShapeGradients Gradients =>
-        gradients == null
+    public ShapeGradients Gradients { get; }
+        = gradients == null
             ? new ShapeGradients(
                 components.Fill.Color.ForDrawingWithoutGradients(),
                 components.Edge.Color.ForDrawingWithoutGradients(),
