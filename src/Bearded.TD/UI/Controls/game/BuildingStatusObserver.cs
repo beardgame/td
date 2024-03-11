@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities;
@@ -80,8 +81,14 @@ sealed class BuildingStatusObserver
             DebugAssert.State.IsInvalid("Selectable is missing a status tracker, cannot show overlay.");
             return;
         }
+        if (!t.Object.TryGetSingleComponent<IBuildingUpgradeManager>(out var upgradeManager) ||
+            !t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots))
+        {
+            // TODO: still show the overlay, just not the upgrade part of it
+            return;
+        }
 
-        var status = new BuildingStatus(statusTracker);
+        var status = new BuildingStatus(statusTracker, upgradeSlots, upgradeManager);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, new BuildingStatusControl(status));
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);

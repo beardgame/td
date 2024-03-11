@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.StatusDisplays;
@@ -10,58 +11,74 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class BuildingStatusControl : CompositeControl
 {
-    public static readonly Vector2d Size = (100, 20);
-
-    private readonly BuildingStatus model;
-    private readonly List<Control> statusIcons = [];
+    public static readonly Vector2d Size = (200, headerSize + 2 * (buttonSize + buttonBetweenMargin));
 
     public BuildingStatusControl(BuildingStatus model)
     {
-        this.model = model;
+        // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
         Add(new BackgroundBox());
-        Add(TextFactories.Label(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview")));
 
-        model.Statuses.CollectionSize<ImmutableArray<Status>, Status>().SourceUpdated += updateStatusIconCount;
-        updateStatusIconCount(model.Statuses.Value.Length);
+        var column = this.BuildFixedColumn();
+        column
+            .AddHeader(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview"))
+            .Add(new IconRow<Status>(model.Statuses, StatusIconFactories.StatusIcon), buttonSize + buttonBetweenMargin)
+            .Add(new IconRow<UpgradeSlot>(model.Upgrades, StatusIconFactories.UpgradeSlot), buttonSize + buttonBetweenMargin);
     }
 
-    private void updateStatusIconCount(int newCount)
+    private sealed class IconRow<T> : CompositeControl
     {
-        var currentCount = statusIcons.Count;
-        if (currentCount == newCount) return;
+        private readonly IReadonlyBinding<ImmutableArray<T>> source;
+        private readonly Func<IReadonlyBinding<T?>, Control> controlFactory;
+        private readonly List<Control> iconControls = [];
 
-        if (currentCount > newCount)
+        public IconRow(IReadonlyBinding<ImmutableArray<T>> source, Func<IReadonlyBinding<T?>, Control> controlFactory)
         {
-            for (var i = newCount; i < currentCount; i++)
-            {
-                Remove(statusIcons[i]);
-            }
+            this.source = source;
+            this.controlFactory = controlFactory;
 
-            statusIcons.RemoveRange(newCount, currentCount - newCount);
+            source.CollectionSize<ImmutableArray<T>, T>().SourceUpdated += updateIconCount;
+            updateIconCount(source.Value.Length);
         }
-        else
+
+        private void updateIconCount(int newCount)
         {
-            for (var i = currentCount; i < newCount; i++)
+            var currentCount = iconControls.Count;
+            if (currentCount == newCount) return;
+
+            if (currentCount > newCount)
             {
-                var button = statusIconForIndex(i);
-                statusIcons.Add(button);
-                Add(button);
+                for (var i = newCount; i < currentCount; i++)
+                {
+                    Remove(iconControls[i]);
+                }
+
+                iconControls.RemoveRange(newCount, currentCount - newCount);
             }
+            else
+            {
+                for (var i = currentCount; i < newCount; i++)
+                {
+                    var button = iconControl(i);
+                    iconControls.Add(button);
+                    Add(button);
+                }
+            }
+        }
+
+        private Control iconControl(int i)
+        {
+            var binding = source.ListElementByIndex<ImmutableArray<T>, T>(i);
+            var control = controlFactory(binding);
+            control.Anchor(a => a
+                .Left(margin: buttonLeftMargin(i), width: buttonSize)
+                .Top(relativePercentage: 0.5, margin: -0.5 * buttonSize, height: buttonSize)
+            );
+            return control;
         }
     }
 
-    private Control statusIconForIndex(int i)
-    {
-        var binding = model.Statuses.ListElementByIndex<ImmutableArray<Status>, Status>(i);
-        var control = StatusIconFactories.StatusIcon(binding);
-        control.Anchor(a => a
-            .Left(margin: buttonLeftMargin(i), width: buttonSize)
-            .Top(relativePercentage: 0.5, margin: -0.5 * buttonSize, height: buttonSize)
-        );
-        return control;
-    }
-
+    private const double headerSize = Constants.UI.Text.HeaderLineHeight;
     private const double buttonBetweenMargin = Constants.UI.Button.Margin;
     private const double buttonSize = Constants.UI.Button.SquareButtonSize;
     private static double buttonLeftMargin(int i) => i * (buttonSize + buttonBetweenMargin);

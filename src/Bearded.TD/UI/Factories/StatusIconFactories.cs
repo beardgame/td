@@ -43,7 +43,35 @@ static class StatusIconFactories
     {
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
-            .WithIcon(status.Transform(s => s!.DrawSpec.Icon))
+            .WithIcon(status.Transform(s => s?.DrawSpec.Icon ?? Constants.Content.CoreUI.Sprites.Technology))
             .MakeCircle());
     }
+
+    /**
+     * Specifications:
+     * - See above
+     * - Upgrade slots are immutable records, with the exception of the progress which may change per frame
+     * - Current relevant properties and what they mean:
+     *   - Upgrade: if not null, the upgrade that's been put in this slot.
+     *   - UnlockProgress: if not null, the slot is not available yet. The object itself may be mutable and indicate the
+     *     current progression towards unlocking this slot.
+     * - Future expansions:
+     *   - A reference to the veterancy rank to which the slot is tied.
+     * - The slot is interactive if both Upgrade and UnlockProgress are null. In the future we may distinguish the first
+     *   empty upgrade slot from subsequent slots since you should always fill slots from left to right.
+     * - Feel free to add further property getters to the types if that leads to nicer code.
+     */
+    public static Control UpgradeSlot(IReadonlyBinding<UpgradeSlot?> upgradeSlot)
+    {
+        // TODO: replace entirely
+        return ButtonFactories.Button(b => b
+            .WithLabel(upgradeSlot.Transform(slot => slot?.Upgrade?.Name[..1] ?? ""))
+            .MakeCircle());
+    }
+
+    /*
+     * Open comments:
+     * - If we need to make the bindings so that the objects inside are fully immutable and we update the contents even
+     *   for currently mutable things such as icon and progress, this would require more work but can be done.
+     */
 }
