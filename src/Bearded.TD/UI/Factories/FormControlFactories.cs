@@ -15,7 +15,6 @@ static class FormControlFactories
     {
         var checkbox = ButtonFactories.IconButtonBuilder
             .ForStandaloneButton()
-            .WithCustomSize(Constants.UI.Checkbox.Size)
             .WithIcon(Constants.Content.CoreUI.Sprites.CheckMark)
             .Build();
 

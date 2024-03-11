@@ -22,14 +22,7 @@ sealed class SpriteRenderer(
             renderers, DrawOrderGroup.UISpritesTop, 0, UVColorVertex.Create, shader);
 
         var frame = control.Frame;
-
         var rect = new Rectangle((Vector2)frame.TopLeft, (float)frame.Size.X, (float)frame.Size.Y);
-
-        drawable.Draw(
-            new SpriteLayout(rect, SpriteSize.ContainInFrame,
-                scale: new Vector2(1, -1) * 0.75f
-            ),
-            control.Color
-        );
+        drawable.Draw(control.Layout with { Frame = rect }, control.Color);
     }
 }

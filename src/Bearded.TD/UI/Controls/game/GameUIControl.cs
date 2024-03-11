@@ -42,7 +42,6 @@ sealed class GameUIControl : CompositeControl
             .DockFixedSizeToTop(
                 ButtonFactories.StandaloneIconButton(b => b
                         .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
-                        .WithCustomSize(technologyButtonSize)
                         .MakeCircle()
                         .WithShadow()
                         .WithOnClick(gameUI.GameUIController.ShowTechnologyModal))
