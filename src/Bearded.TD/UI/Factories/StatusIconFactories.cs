@@ -1,0 +1,45 @@
+using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Utilities;
+using Bearded.UI.Controls;
+
+namespace Bearded.TD.UI.Factories;
+
+static class StatusIconFactories
+{
+    /**
+     * Specifications:
+     * - This gets called once to create a UI element displaying a status
+     * - Changes the status can come in two ways:
+     *   - Statuses aren't immutable: elements such as the icon and the progress may change frame to frame
+     *   - The status may be swapped out entirely: if a status gets removed from the list of statuses, instead of moving
+     *     the controls, the content of the statuses is moved over instead.
+     * - Current relevant properties and what they mean:
+     *   - Type: whether the status is neutral, positive, or negative. Should be represented somehow, e.g. by the colour
+     *     of the outline.
+     *   - DrawSpec: draw-specific information, populated by the component who owns the status
+     *     - Icon: ModAwareSpriteId of the icon to draw
+     *     - Progress: a nullable double that indicates the current progress, if any (null means no progress is drawn)
+     *   - Expiry: not used right now and does not have to be rendered
+     * - Currently missing properties that will likely be added in the future:
+     *   - Interactive: whether an icon can be clicked to trigger an action
+     *   - Tooltip: some kind of specification for a tooltip that's shown on hover
+     *   - (Maybe) Progress colour: we may separate progress bar colours, e.g. to clearly distinguish hot and cold
+     * - Expected appearance: a round (hex in the future?) outlined circle that will be shown on a black semi-
+     *   transparent overlay on top of the game. Progress is shown as a circular progressbar along the inside of the
+     *   border.
+     * - Future expansions:
+     *   - We expect the same UI to contain very similar looking icons, but not for statuses
+     *     - Upgrades: both upgrades that are currently active, as well as buttons to select a new upgrade
+     *     - Empty upgrade slots: both the next slot that can be filled (enabled), further slots that can be filled (can
+     *       perhaps not be clicked), and the next slot to be unlocked (disabled, shows next veterancy rank icon with
+     *       low transparency and progress to next rank).
+     *   - May want to reuse elements of the controls for those as well, since they'll be visually similar
+     */
+    public static Control StatusIcon(Binding<Status> status)
+    {
+        // TODO: replace entirely
+        return ButtonFactories.StandaloneIconButton(b => b
+            .WithIcon(status.Transform(s => s.DrawSpec.Icon))
+            .MakeCircle());
+    }
+}
