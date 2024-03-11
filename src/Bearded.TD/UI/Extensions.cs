@@ -40,6 +40,14 @@ static class Extensions
         return control;
     }
 
+    public static Control BindIsClickThrough(this Control control, IReadonlyBinding<bool> isClickThrough)
+    {
+        control.IsClickThrough = isClickThrough.Value;
+        isClickThrough.SourceUpdated += clickThrough => control.IsClickThrough = clickThrough;
+        isClickThrough.ControlUpdated += clickThrough => control.IsClickThrough = clickThrough;
+        return control;
+    }
+
     public static void Add(this CompositeControl parent, IEnumerable<Control> children)
     {
         foreach (var child in children)

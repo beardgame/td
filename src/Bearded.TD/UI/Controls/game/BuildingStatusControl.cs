@@ -11,6 +11,7 @@ sealed class BuildingStatusControl : CompositeControl
 
     public BuildingStatusControl(BuildingStatus model)
     {
+        this.BindIsClickThrough(model.ShowExpanded.Negate());
         Add(new BackgroundBox());
         Add(TextFactories.Label(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview")));
     }
