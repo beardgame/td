@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -74,7 +75,13 @@ sealed class BuildingStatusObserver
 
     private void show(ISelectable t)
     {
-        var status = new BuildingStatus();
+        if (!t.Object.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
+        {
+            DebugAssert.State.IsInvalid("Selectable is missing a status tracker, cannot show overlay.");
+            return;
+        }
+
+        var status = new BuildingStatus(statusTracker);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, new BuildingStatusControl(status));
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);
@@ -88,6 +95,7 @@ sealed class BuildingStatusObserver
     {
         if (currentlyShown is null) return;
         overlay.RemoveControl(currentlyShown.Control);
+        currentlyShown.Status.Dispose();
         currentlyShown = null;
     }
 
