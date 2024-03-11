@@ -70,10 +70,7 @@ interface IDrawableSprite<TVertex, in TVertexData> : IDrawableSprite<TVertexData
 
 interface IDrawableSprite<in TVertexData>
 {
-    void Draw(SpriteLayout parameters, TVertexData data);
-
-    [Obsolete("Use Draw(SpriteLayout.CenteredAt, ..) instead.")]
-    void DrawWithWidth(Vector3 center, float width, Angle angle, TVertexData data);
+    void Draw(SpriteLayout layout, TVertexData data);
 
     void DrawQuad(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft, TVertexData data);
 

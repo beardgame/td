@@ -19,30 +19,25 @@ sealed class DrawableSprite<TVertex, TVertexData>(
     private readonly UVRectangle uv = spriteParameters.UV;
     private readonly Vector2 baseSize = spriteParameters.BaseSize;
 
-    public void Draw(SpriteLayout parameters, TVertexData data)
+    public void Draw(SpriteLayout layout, TVertexData data)
     {
-        var frame = parameters.Frame;
-        var size = parameters.Size switch
+        var frame = layout.Frame;
+        var size = layout.Size switch
         {
             SpriteSize.FrameAgnostic => baseSize,
             SpriteSize.StretchToFrame => (frame.Width, frame.Height),
             SpriteSize.ContainInFrame => baseSize * Math.Min(frame.Width / baseSize.X, frame.Height / baseSize.Y),
             SpriteSize.CoverFrame => baseSize * Math.Max(frame.Width / baseSize.X, frame.Height / baseSize.Y),
-            _ => throw new ArgumentOutOfRangeException(nameof(parameters.Size)),
+            _ => throw new ArgumentOutOfRangeException(nameof(layout.Size)),
         };
 
-        var frameAnchor = frame.TopLeft + new Vector2(frame.Width, frame.Height) * parameters.FrameAlign;
-        var spriteAnchor = size * (parameters.SpriteAlign - new Vector2(0.5f));
+        var frameAnchor = frame.TopLeft + new Vector2(frame.Width, frame.Height) * layout.FrameAlign;
+        var spriteAnchor = size * (layout.SpriteAlign - new Vector2(0.5f));
         var center = frameAnchor - spriteAnchor;
 
-        size *= parameters.Scale;
+        size *= layout.Scale;
 
-        draw(center.WithZ(parameters.Z), size.X, size.Y, parameters.Angle, data);
-    }
-
-    public void DrawWithWidth(Vector3 center, float width, Angle angle, TVertexData data)
-    {
-        Draw(SpriteLayout.CenteredAt(center, width, angle), data);
+        draw(center.WithZ(layout.Z), size.X, size.Y, layout.Angle, data);
     }
 
     private void draw(Vector3 center, float width, float height, Angle angle, TVertexData data)
