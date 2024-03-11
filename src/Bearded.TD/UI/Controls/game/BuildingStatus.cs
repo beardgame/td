@@ -8,6 +8,7 @@ namespace Bearded.TD.UI.Controls;
 sealed class BuildingStatus : IDisposable
 {
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
+    public IReadonlyBinding<ImmutableArray<Status>> Statuses => statuses;
 
     private readonly IStatusTracker statusTracker;
 

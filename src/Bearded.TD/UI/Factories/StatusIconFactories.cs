@@ -13,6 +13,8 @@ static class StatusIconFactories
      *   - Statuses aren't immutable: elements such as the icon and the progress may change frame to frame
      *   - The status may be swapped out entirely: if a status gets removed from the list of statuses, instead of moving
      *     the controls, the content of the statuses is moved over instead.
+     * - Status value may be set to null; however it is not expected at this time the control will continue to be drawn
+     *   and you can use it as a signal that you can unsubscribe from the event.
      * - Current relevant properties and what they mean:
      *   - Type: whether the status is neutral, positive, or negative. Should be represented somehow, e.g. by the colour
      *     of the outline.
@@ -24,9 +26,11 @@ static class StatusIconFactories
      *   - Interactive: whether an icon can be clicked to trigger an action
      *   - Tooltip: some kind of specification for a tooltip that's shown on hover
      *   - (Maybe) Progress colour: we may separate progress bar colours, e.g. to clearly distinguish hot and cold
-     * - Expected appearance: a round (hex in the future?) outlined circle that will be shown on a black semi-
-     *   transparent overlay on top of the game. Progress is shown as a circular progressbar along the inside of the
-     *   border.
+     * - Expected appearance:
+     *   - A round (hex in the future?) outlined circle that will be shown on a black semi-transparent overlay on top of
+     *     the game
+     *   - Progress is shown as a circular progressbar along the inside of the border
+     *   - Expected size by the caller is Constants.UI.Button.SquareButtonSize (same as action bar icons)
      * - Future expansions:
      *   - We expect the same UI to contain very similar looking icons, but not for statuses
      *     - Upgrades: both upgrades that are currently active, as well as buttons to select a new upgrade
@@ -35,11 +39,11 @@ static class StatusIconFactories
      *       low transparency and progress to next rank).
      *   - May want to reuse elements of the controls for those as well, since they'll be visually similar
      */
-    public static Control StatusIcon(Binding<Status> status)
+    public static Control StatusIcon(IReadonlyBinding<Status?> status)
     {
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
-            .WithIcon(status.Transform(s => s.DrawSpec.Icon))
+            .WithIcon(status.Transform(s => s!.DrawSpec.Icon))
             .MakeCircle());
     }
 }
