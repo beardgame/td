@@ -15,6 +15,6 @@ sealed partial class StatusTracker : Component, IStatusTracker
 
     public override void Update(TimeSpan elapsedTime)
     {
-        statuses.RemoveAll(s => s.Expiry is { } expiry && expiry <= Owner.Game.Time);
+        removedExpiredStatuses();
     }
 }

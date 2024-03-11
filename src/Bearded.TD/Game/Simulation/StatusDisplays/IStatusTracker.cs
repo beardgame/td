@@ -8,6 +8,9 @@ interface IStatusTracker
     IReadOnlyList<HitPointsBar> HitPointsBars { get; }
     IReadOnlyList<Status> Statuses { get; }
 
+    event StatusEventHandler StatusAdded;
+    event StatusEventHandler StatusRemoved;
+
     void AddHitPointsBar(HitPointsBar bar);
     IStatusReceipt AddStatus(StatusSpec status, Instant? expiryTime);
 }
