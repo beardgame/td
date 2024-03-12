@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Camera;
+using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -83,6 +84,7 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
                 control.Anchor.Direction.Vertical * control.Size.Y
             ) +
             control.Anchor.Margin * control.Anchor.Direction.MarginDirection;
+        topLeftScreen /= UserSettings.Instance.UI.UIScale;
         var topLeft = topLeftScreen - Frame.TopLeft;
         control.Control.Anchor(a => a
             .Left(topLeft.X, control.Size.X)
