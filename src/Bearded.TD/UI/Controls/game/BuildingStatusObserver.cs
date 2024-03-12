@@ -63,7 +63,7 @@ sealed class BuildingStatusObserver
         {
             show(t);
         }
-        currentlyShown!.Status.PromoteToExpandedView();
+        currentlyShown?.Status.PromoteToExpandedView();
     }
 
     private void onObjectDeselected(ISelectable t)
