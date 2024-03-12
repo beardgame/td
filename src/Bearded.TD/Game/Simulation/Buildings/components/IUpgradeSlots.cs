@@ -4,13 +4,7 @@ interface IUpgradeSlots
 {
     int TotalSlotsCount { get; }
     int FilledSlotsCount { get; }
-    int ReservedSlotsCount { get; }
-    bool HasAvailableSlot => FilledSlotsCount + ReservedSlotsCount < TotalSlotsCount;
+    bool HasAvailableSlot => FilledSlotsCount < TotalSlotsCount;
 
-    IUpgradeSlotReservation ReserveSlot();
-}
-
-interface IUpgradeSlotReservation
-{
-    void Fill();
+    void FillSlot();
 }

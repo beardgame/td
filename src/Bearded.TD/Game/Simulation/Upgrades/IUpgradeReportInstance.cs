@@ -9,7 +9,7 @@ interface IUpgradeReportInstance : IDisposable
 {
     bool CanPlayerUpgradeBuilding { get; }
     ResourceAmount PlayerResources { get; }
-    IReadOnlyCollection<IUpgradeModel> Upgrades { get; }
+    IReadOnlyCollection<IPermanentUpgrade> Upgrades { get; }
     IReadOnlyCollection<IPermanentUpgrade> AvailableUpgrades { get; }
     int OccupiedUpgradeSlots { get; }
     int UnlockedUpgradeSlots { get; }
@@ -17,12 +17,5 @@ interface IUpgradeReportInstance : IDisposable
     event VoidEventHandler? UpgradesUpdated;
     event VoidEventHandler? AvailableUpgradesUpdated;
 
-    void QueueUpgrade(IPermanentUpgrade upgrade);
-
-    interface IUpgradeModel
-    {
-        IPermanentUpgrade Blueprint { get; }
-        double Progress { get; }
-        bool IsFinished { get; }
-    }
+    void ApplyUpgrade(IPermanentUpgrade upgrade);
 }

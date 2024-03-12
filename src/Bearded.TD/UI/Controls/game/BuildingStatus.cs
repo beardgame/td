@@ -40,22 +40,12 @@ sealed class BuildingStatus : IDisposable
 
     private ImmutableArray<UpgradeSlot> buildInitialUpgradeSlots()
     {
-        // TODO: there is some leftover tech debt from when we still allowed queueing upgrades.
-        // Explicitly crash right now if we find ourselves in that old state.
-        DebugAssert.State.Satisfies(upgradeSlots.ReservedSlotsCount == 0);
         var appliedUpgrades = upgradeManager.AppliedUpgrades.ToList();
         DebugAssert.State.Satisfies(appliedUpgrades.Count == upgradeSlots.FilledSlotsCount);
 
         return Enumerable.Range(0, upgradeSlots.TotalSlotsCount)
             .Select(i =>
-            {
-                if (i >= appliedUpgrades.Count)
-                {
-                    return new UpgradeSlot(null, null);
-                }
-
-                return new UpgradeSlot(appliedUpgrades[i], null);
-            })
+                i >= appliedUpgrades.Count ? new UpgradeSlot(null, null) : new UpgradeSlot(appliedUpgrades[i], null))
             .ToImmutableArray();
     }
 

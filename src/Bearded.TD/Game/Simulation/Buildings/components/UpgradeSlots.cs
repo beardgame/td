@@ -17,11 +17,10 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
         ImmutableArray<ITrigger> AdditionalSlotTriggers { get; }
     }
 
-    private readonly List<ITriggerSubscription> triggerSubscriptions = new();
+    private readonly List<ITriggerSubscription> triggerSubscriptions = [];
 
     public int TotalSlotsCount { get; private set; }
     public int FilledSlotsCount { get; private set; }
-    public int ReservedSlotsCount { get; private set; }
 
     public UpgradeSlots(IParameters parameters) : base(parameters) { }
 
@@ -52,36 +51,15 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
         TotalSlotsCount++;
     }
 
-    public IUpgradeSlotReservation ReserveSlot()
+    public void FillSlot()
     {
-        if (FilledSlotsCount + ReservedSlotsCount >= TotalSlotsCount)
+        if (FilledSlotsCount >= TotalSlotsCount)
         {
-            throw new InvalidOperationException("Cannot reserve a slot when none are available.");
+            throw new InvalidOperationException("Cannot fill a slot when none are available.");
         }
 
-        ReservedSlotsCount++;
-        return new SlotReservation(this);
+        FilledSlotsCount++;
     }
 
     public override void Update(TimeSpan elapsedTime) { }
-
-    private sealed class SlotReservation : IUpgradeSlotReservation
-    {
-        private readonly UpgradeSlots slots;
-        private bool filled;
-
-        public SlotReservation(UpgradeSlots slots)
-        {
-            this.slots = slots;
-        }
-
-        public void Fill()
-        {
-            // fills are idempotent
-            if (filled) return;
-            slots.ReservedSlotsCount--;
-            slots.FilledSlotsCount++;
-            filled = true;
-        }
-    }
 }
