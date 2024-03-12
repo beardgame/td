@@ -55,8 +55,8 @@ static class UpgradeBuilding
 
         public override void Execute()
         {
-            var upgradeManager = building.GetComponents<IBuildingUpgradeManager>().Single();
-            upgradeManager.Upgrade(upgrade);
+            var upgradeSlots = building.GetComponents<IUpgradeSlots>().Single();
+            upgradeSlots.FillSlot(upgrade);
 
             building.FindFaction().TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
             var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(upgrade.Cost));

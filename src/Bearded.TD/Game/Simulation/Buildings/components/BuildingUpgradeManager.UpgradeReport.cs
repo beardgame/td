@@ -20,7 +20,7 @@ sealed partial class BuildingUpgradeManager
 
         public IUpgradeReportInstance CreateInstance(GameInstance game)
         {
-            return new UpgradeReportInstance(source.Owner, source, source.upgradeSlots, game);
+            return new UpgradeReportInstance(source.Owner, source, game);
         }
 
         private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>
@@ -52,12 +52,11 @@ sealed partial class BuildingUpgradeManager
             public UpgradeReportInstance(
                 GameObject subject,
                 IBuildingUpgradeManager upgradeManager,
-                IUpgradeSlots? upgradeSlots,
                 GameInstance game)
             {
                 this.subject = subject;
                 this.upgradeManager = upgradeManager;
-                this.upgradeSlots = upgradeSlots;
+                subject.TryGetSingleComponent(out upgradeSlots);
                 this.game = game;
                 events = game.Meta.Events;
                 playerFaction = game.Me.Faction;

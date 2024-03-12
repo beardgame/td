@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Factions;
@@ -20,7 +19,6 @@ sealed partial class BuildingUpgradeManager
 {
     private ObjectAttributes attributes = ObjectAttributes.Default;
     private IFactionProvider? factionProvider;
-    private IUpgradeSlots? upgradeSlots;
     private readonly List<IPermanentUpgrade> appliedUpgrades = [];
     public IReadOnlyCollection<IPermanentUpgrade> AppliedUpgrades { get; }
 
@@ -51,7 +49,6 @@ sealed partial class BuildingUpgradeManager
         ReportAggregator.Register(Events, new UpgradeReport(this));
         ComponentDependencies.Depend<ObjectAttributes>(Owner, Events, attr => attributes = attr);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
-        ComponentDependencies.Depend<IUpgradeSlots>(Owner, Events, slots => upgradeSlots = slots);
     }
 
     public bool CanBeUpgradedBy(Faction faction) =>
@@ -64,12 +61,7 @@ sealed partial class BuildingUpgradeManager
 
     public void Upgrade(IPermanentUpgrade upgrade)
     {
-        if (upgradeSlots == null)
-        {
-            throw new InvalidOperationException("Cannot queue upgrade if there are no upgrade slots.");
-        }
         applyUpgrade(upgrade);
-        upgradeSlots.FillSlot();
     }
 
     private void applyUpgrade(IPermanentUpgrade upgrade)
