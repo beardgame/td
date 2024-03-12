@@ -18,6 +18,8 @@ public enum BackgroundColor
     Element = 4,
     Hover = 5,
 
+    WindowBackground = 1,
+    HeaderBackground = 2,
 
     MainMenuBackground = 5,
 }

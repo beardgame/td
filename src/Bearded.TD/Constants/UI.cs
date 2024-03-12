@@ -18,7 +18,7 @@ static partial class Constants
         public static class Shadows
         {
             public static readonly Shadow Default = Shadow((0, 2, 0), 5, new Color(0, 3, 13, 255) * 0.5f);
-            public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 50, new Color(0, 3, 13, 255) * 0.5f);
+            public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 75, new Color(0, 3, 13, 255) * 0.75f);
         }
 
         public static class Button
@@ -92,13 +92,17 @@ static partial class Constants
         public static class Text
         {
             public const float HeaderFontSize = 24;
-            public const float HeaderLineHeight = 32;
+            public const float HeaderLineHeight = 36;
 
             public const float SubHeaderFontSize = 20;
             public const float SubHeaderLineHeight = 24;
 
             public const float FontSize = 16;
             public const float LineHeight = 20;
+
+            public const double LabelInBackgroundMargin = LayoutMarginSmall;
+
+            public static readonly Color HeaderColor = Colors.Get(ForeGroundColor.Headline);
 
             public static readonly Color TextColor = Colors.Get(ForeGroundColor.Text);
             public static readonly Color ErrorTextColor = Color.Red;
@@ -126,6 +130,21 @@ static partial class Constants
         public static class Window
         {
             public const double TitlebarHeight = NavBar.Height;
+
+            public const float CornerRadius = 4;
+
+            public static readonly ShapeComponents BackgroundComponents = new(
+                Fill: ShapeColor.From(
+                    [
+                        (0, Colors.Get(BackgroundColor.WindowBackground) * 0.9f),
+                        (1, Colors.Get(BackgroundColor.Default) * 0.9f),
+                    ],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0.3f, 0)), AnchorPoint.Relative((0.6f, 1)))
+                ),
+                Edge: Edge.Inner(1, Colors.Get(BackgroundColor.BackgroundOutline))
+            );
+
+            public static readonly Shadow Shadow = Shadows.LargeWindow;
         }
     }
 }

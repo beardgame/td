@@ -45,6 +45,12 @@ interface IReadonlyBinding<out T>
 
 static class Binding
 {
+    public static T ReturnCurrentAndKeepUpdated<T>(this IReadonlyBinding<T> binding, Action<T> update)
+    {
+        binding.SourceUpdated += t => update(t);
+        return binding.Value;
+    }
+
     public static IReadonlyBinding<T> Constant<T>(T value) => Create(value);
 
     public static Binding<T> Create<T>(T initialValue) => new(initialValue);

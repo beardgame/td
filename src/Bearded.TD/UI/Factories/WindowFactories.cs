@@ -30,9 +30,16 @@ static class WindowFactories
 
     public sealed class Builder
     {
+        private string? title;
         private VoidEventHandler? onClose;
         private Control? content;
         private Shadow? shadow;
+
+        public Builder WithTitle(string title)
+        {
+            this.title = title;
+            return this;
+        }
 
         public Builder WithOnClose(VoidEventHandler onClose)
         {
@@ -48,7 +55,7 @@ static class WindowFactories
 
         public Builder WithShadow(Shadow? shadow = null)
         {
-            this.shadow = shadow ?? Constants.UI.Shadows.LargeWindow;
+            this.shadow = shadow ?? Constants.UI.Window.Shadow;
             return this;
         }
 
@@ -57,16 +64,20 @@ static class WindowFactories
             validate();
 
             var control = new OnTopCompositeControl();
-            var background = new BackgroundBox();
+            var background = new ComplexBox
+            {
+                CornerRadius = CornerRadius,
+                Components = BackgroundComponents,
+            };
             control.Add(shadow != null
                 ? background.WithDropShadow(shadow.Value)
                 : [background]);
 
             var titleBar = new CompositeControl();
-            titleBar
-                .BuildFixedRow()
-                .AddHeaderLeft("Research", 100)
+            var titleRow = titleBar.BuildFixedRow()
                 .AddButtonRight(b => b.WithLabel("close").WithOnClick(onClose!));
+            if (title != null)
+                titleRow.AddHeaderLeft(title, 100);
 
             control.BuildLayout()
                 .ForFullScreen()

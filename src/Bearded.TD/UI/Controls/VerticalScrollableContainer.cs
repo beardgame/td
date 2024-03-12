@@ -46,7 +46,7 @@ sealed class VerticalScrollableContainer : CompositeControl
         if (contentHeight == 0) return;
 
         var amountScrolled = eventArgs.DeltaScroll * -30;
-        scrollOffset += amountScrolled;
+        ScrollOffset += amountScrolled;
         eventArgs.Handled = true;
     }
 

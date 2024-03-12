@@ -11,6 +11,9 @@ readonly struct GradientStop(float position, Color color)
     public static implicit operator GradientStop((float position, Color color) tuple)
         => new(tuple.position, tuple.color);
 
+    public static implicit operator GradientStop((double position, Color color) tuple)
+        => new((float)tuple.position, tuple.color);
+
     public override string ToString() => $"({Color}, {Position})";
 }
 

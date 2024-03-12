@@ -1,5 +1,6 @@
 using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
@@ -9,26 +10,146 @@ namespace Bearded.TD.UI.Factories;
 
 static class TextFactories
 {
-    public static Label Header(string text, Vector2d? textAnchor = null, Color? color = null) =>
-        Header(Binding.Create(text), textAnchor, color == null ? null : Binding.Create(color.Value));
-
-    public static Label Header(
-        IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
+    public static Control Header(
+        IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null,
+        ShapeColor? backgroundColor = null)
     {
-        var label = new Label
-        {
-            Text = text.Value,
-            Color = color?.Value ?? TextColor,
-            FontSize = HeaderFontSize,
-            TextAnchor = textAnchor ?? Controls.Label.TextAnchorLeft
-        };
-        text.SourceUpdated += newText => label.Text = newText;
+        var builder = new HeaderBuilder().WithText(text);
+
+        if (textAnchor != null)
+            builder.WithTextAnchor(textAnchor.Value);
+
         if (color != null)
+            builder.WithColor(color.Value);
+
+        if (backgroundColor != null)
+            builder.WithBackground(backgroundColor.Value);
+
+        return builder.Build();
+    }
+
+    public static Control Header(
+        string text, Vector2d? textAnchor = null, Color? color = null, ShapeColor? backgroundColor = null)
+    {
+        var builder = new HeaderBuilder().WithText(text);
+
+        if (textAnchor != null)
+            builder.WithTextAnchor(textAnchor.Value);
+
+        if (color != null)
+            builder.WithColor(color.Value);
+
+        if (backgroundColor != null)
+            builder.WithBackground(backgroundColor.Value);
+
+        return builder.Build();
+    }
+
+    public sealed class HeaderBuilder
+    {
+        private object? text;
+        private Vector2d? textAnchor;
+        private object? color;
+        private object? background;
+
+        public HeaderBuilder WithText(string text)
         {
-            color.SourceUpdated += newColor => label.Color = newColor;
+            this.text = text;
+            return this;
         }
 
-        return label;
+        public HeaderBuilder WithText(IReadonlyBinding<string> text)
+        {
+            this.text = text;
+            return this;
+        }
+
+        public HeaderBuilder WithTextAnchor(Vector2d textAnchor)
+        {
+            this.textAnchor = textAnchor;
+            return this;
+        }
+
+        public HeaderBuilder WithColor(Color color)
+        {
+            this.color = color;
+            return this;
+        }
+
+        public HeaderBuilder WithColor(IReadonlyBinding<Color> color)
+        {
+            this.color = color;
+            return this;
+        }
+
+        public HeaderBuilder WithBackground(Control control)
+        {
+            background = control;
+            return this;
+        }
+
+        public HeaderBuilder WithBackground(ShapeColor fill)
+        {
+            background = fill;
+            return this;
+        }
+
+        public HeaderBuilder WithBackground(ShapeComponents components)
+        {
+            background = components;
+            return this;
+        }
+
+        public HeaderBuilder WithBackground(IReadonlyBinding<ShapeComponents> components)
+        {
+            background = components;
+            return this;
+        }
+
+        public Control Build()
+        {
+            var label = new Label
+            {
+                FontSize = HeaderFontSize,
+                TextAnchor = textAnchor ?? Controls.Label.TextAnchorLeft,
+                TextStyle = TextStyle.Header,
+            };
+            label.Text = text switch
+            {
+                string s => s,
+                IReadonlyBinding<string> b => b.ReturnCurrentAndKeepUpdated(s => label.Text = s),
+                _ => "",
+            };
+            label.Color = color switch
+            {
+                Color c => c,
+                IReadonlyBinding<Color> b => b.ReturnCurrentAndKeepUpdated(c => label.Color = c),
+                _ => TextColor,
+            };
+
+            var backgroundControl = background switch
+            {
+                Control c => c,
+                ShapeColor fill => new ComplexBox { Fill = fill },
+                ShapeComponents components => new ComplexBox { Components = components },
+                IReadonlyBinding<ShapeComponents> componentBinding => new ComplexBox { Components = componentBinding.Value },
+                _ => null,
+            };
+
+            if (backgroundControl == null)
+                return label;
+
+            if (background is IReadonlyBinding<ShapeComponents> backgroundBinding)
+            {
+                backgroundBinding.SourceUpdated += newComponents => ((ComplexBox)backgroundControl).Components = newComponents;
+            }
+
+            return new CompositeControl
+            {
+                backgroundControl,
+                label.Anchor(a => a.MarginAllSides(LabelInBackgroundMargin)),
+            };
+        }
     }
 
     public static Layouts.IColumnLayout AddHeader(
@@ -78,6 +199,7 @@ static class TextFactories
             color.SourceUpdated += newColor => label.Color = newColor;
             color.ControlUpdated += newColor => label.Color = newColor;
         }
+
         return label;
     }
 

@@ -28,6 +28,7 @@ sealed class UIFonts
         new Dictionary<TextStyle, TextStyleDefinition>
         {
             { TextStyle.Default, new TextStyleDefinition(Fonts.DefaultText, Text.FontSize) },
+            { TextStyle.Header, new TextStyleDefinition(Fonts.DefaultText, Text.HeaderFontSize) },
             { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize, uiMonospaceConfig) },
         }.AsReadOnly();
 
