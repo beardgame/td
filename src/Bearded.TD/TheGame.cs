@@ -15,6 +15,7 @@ using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.UI;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.UI.Shortcuts;
@@ -62,10 +63,13 @@ sealed class TheGame : Window
     private UIRenderers uiRenderers = null!;
     private RootControl rootControl = null!;
     private UIUpdater uiUpdater = null!;
+    private AnimationUpdater uiAnimationUpdater = new ();
     private EventManager eventManager = null!;
     private NavigationController navigationController = null!;
 
     private ViewportSize viewportSize;
+
+    private readonly TimeSource gameTime = new ();
 
     public TheGame(Logger logger, Intent intent)
     {
@@ -153,7 +157,7 @@ sealed class TheGame : Window
         rootControl.Add(uiOverlay);
 
         eventManager = new EventManager(rootControl, inputManager, shortcuts);
-        var (models, views) = UILibrary.CreateFactories(renderContext);
+        var (models, views) = UILibrary.CreateFactories(renderContext, new Animations(gameTime, uiAnimationUpdater));
         navigationController =
             new NavigationController(navigationRoot, dependencyResolver, models, views);
         navigationController.Push<MainMenu, Intent>(intent);
@@ -189,6 +193,8 @@ sealed class TheGame : Window
             return;
 
         var size = NativeWindow.ClientSize;
+
+        logger.Trace?.Log($"Resizing game window to {size}");
 
         glActionQueue.Queue(() =>
         {
@@ -234,12 +240,19 @@ sealed class TheGame : Window
     {
         using var discard = activityTimer.Start(Activity.RenderGame);
 
+        gameTime.SetTo(new Instant(e.TimeInS));
+
+        using (activityTimer.Start(Activity.UIAnimations))
+        {
+            uiAnimationUpdater.Update();
+        }
+
         using (activityTimer.Start(Activity.GLQueueHandler))
         {
             tryRunQueuedGlActionsFor(TimeSpan.FromMilliseconds(16));
         }
 
-        renderContext.Settings.UITime.Value = (float)e.TimeInS;
+        renderContext.Settings.UITime.Value = (float)gameTime.Time.NumericValue;
         renderContext.Compositor.PrepareForFrame();
         rootControl.Render(uiRenderers);
         renderContext.Compositor.FinalizeFrame();

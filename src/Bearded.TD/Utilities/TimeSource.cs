@@ -11,4 +11,9 @@ sealed class TimeSource : ITimeSource
     {
         Time += args.ElapsedTimeInS.S();
     }
+
+    public void SetTo(Instant time)
+    {
+        Time = time;
+    }
 }

@@ -7,4 +7,5 @@ enum Activity
     RenderGame,
     SwapBuffer,
     GLQueueHandler,
+    UIAnimations,
 }

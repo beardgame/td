@@ -1,6 +1,8 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
+using Bearded.TD.UI.Animation;
+using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -49,6 +51,11 @@ static partial class Constants
             public const double InputHeight = 24;
             public const double FontSize = 16;
             public const TextStyle Font = TextStyle.Monospace;
+
+            public static readonly TimeSpan NewEntryBackgroundAnimationDuration = 0.4.S();
+            public static readonly AnimationFunction<(BackgroundBox, Color)> NewEntryBackgroundAnimation
+                = AnimationFunction.BackgroundBoxColorFromTo(NewEntryBackgroundAnimationDuration)
+                    .Substitute((BackgroundBox control, Color color) => (control, color * 0.33f, Color.Transparent));
         }
 
         public static class Form
