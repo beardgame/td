@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
@@ -25,6 +26,13 @@ static class MenuFactories
         private ButtonAction? closeAction;
         private readonly List<ButtonAction> menuActions = new();
         private Control? background;
+        private Animations? animations;
+
+        public Builder WithAnimations(Animations? animations)
+        {
+            this.animations = animations;
+            return this;
+        }
 
         public Builder WithCloseAction(VoidEventHandler onClose) => WithCloseAction("Close", onClose);
 
@@ -64,23 +72,28 @@ static class MenuFactories
             };
             var layout = control.BuildLayout()
                 .ForContentBox()
-                .DockFixedSizeToBottom(
-                    ButtonFactories
-                        .Button(b => b.WithLabel(closeAction.Label).WithOnClick(closeAction.OnClick))
-                        .BindIsEnabled(closeAction.IsEnabled), Constants.UI.Button.Height)
+                .DockFixedSizeToBottom(buttonFor(closeAction), Constants.UI.Button.Height)
                 .ClearSpaceBottom(Constants.UI.Button.Height + Constants.UI.LayoutMargin);
 
             // Cast to enumerable so the Reverse cannot be mistaken for the list.Reverse method.
             var actionEnumerable = (IEnumerable<ButtonAction>)menuActions;
             foreach (var action in actionEnumerable.Reverse())
             {
-                layout.DockFixedSizeToBottom(
-                    ButtonFactories
-                        .Button(b => b.WithLabel(action.Label).WithOnClick(action.OnClick).WithShadow())
-                        .BindIsEnabled(action.IsEnabled), Constants.UI.Button.Height);
+                layout.DockFixedSizeToBottom(buttonFor(action), Constants.UI.Button.Height);
             }
 
             return control;
+
+            Button buttonFor(ButtonAction action)
+            {
+                return ButtonFactories
+                    .Button(b => b
+                        .WithLabel(action.Label)
+                        .WithOnClick(action.OnClick)
+                        .WithShadow()
+                        .WithAnimations(animations)
+                    ).BindIsEnabled(action.IsEnabled);
+            }
         }
     }
 }

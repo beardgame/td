@@ -35,6 +35,20 @@ readonly record struct AnimationFunction<TState>(
 
 static class AnimationFunction
 {
+    public static AnimationFunction<Void> ComplexShapeFillColorFromCurrentTo(TimeSpan duration, ComplexShapeControl box, Color to)
+    {
+        var from = box.Fill.Color.Definition.Color;
+        return ComplexShapeFillColorFromTo(duration).Substitute((Void _) => (box, from, to));
+    }
+
+    public static AnimationFunction<(ComplexShapeControl, Color from, Color to)> ComplexShapeFillColorFromTo(TimeSpan duration)
+    {
+        return ZeroToOne<(ComplexShapeControl box, Color from, Color to)>(
+            duration,
+            (state, t) => state.box.Fill = Color.Lerp(state.from, state.to, t)
+        );
+    }
+
     public static AnimationFunction<(BackgroundBox, Color from, Color to)> BackgroundBoxColorFromTo(TimeSpan duration)
     {
         return ZeroToOne<(BackgroundBox box, Color from, Color to)>(

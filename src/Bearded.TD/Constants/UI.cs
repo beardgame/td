@@ -5,6 +5,7 @@ using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Rendering.Shapes.Shapes;
 
@@ -38,6 +39,9 @@ static partial class Constants
             public static readonly Color HoverColor = Colors.Get(BackgroundColor.Hover);
 
             public static readonly Shadow DefaultShadow = Shadows.Default;
+
+            public static AnimationFunction<Void> BackgroundColorAnimation(ComplexShapeControl box, BackgroundColor color)
+                => AnimationFunction.ComplexShapeFillColorFromCurrentTo(0.1.S(), box, Colors.Get(color));
         }
 
         public static class Checkbox

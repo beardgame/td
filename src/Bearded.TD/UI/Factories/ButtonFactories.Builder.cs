@@ -3,6 +3,7 @@ using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering.Shapes;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
@@ -24,8 +25,15 @@ static partial class ButtonFactories
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
         private bool isCircle;
         private Shadow? shadow;
+        private Animations? animations;
 
         protected abstract T This { get; }
+
+        public T WithAnimations(Animations? animations)
+        {
+            this.animations = animations;
+            return This;
+        }
 
         public T WithProgressBar(Binding<double> progress, Color? color = null)
         {
@@ -145,21 +153,23 @@ static partial class ButtonFactories
             isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
             button.IsEnabled = isEnabled.Value;
 
+            IAnimationController? backgroundAnimation = null;
             isActive.SourceUpdated += _ => updateColor();
             isActive.ControlUpdated += _ => updateColor();
             isEnabled.SourceUpdated += _ => updateColor();
             isEnabled.ControlUpdated += _ => updateColor();
-            mouseState.StateChanged += updateColor;
-            updateColor();
+            mouseState.StateChanged += () => updateColor();
+            updateColor(true);
 
             if (onClick != null)
             {
                 button.Clicked += args => onClick(args);
             }
 
+
             return button;
 
-            void updateColor()
+            void updateColor(bool skipAnimation = false)
             {
                 var color = (button, mouseState) switch
                 {
@@ -170,7 +180,13 @@ static partial class ButtonFactories
                     _ => BackgroundColor.Element,
                 };
 
-                shape.Fill = Constants.UI.Colors.Get(color);
+                if (skipAnimation || animations == null)
+                {
+                    shape.Fill = Constants.UI.Colors.Get(color);
+                    return;
+                }
+                backgroundAnimation?.Cancel();
+                backgroundAnimation = animations.Start(Constants.UI.Button.BackgroundColorAnimation(shape, color));
             }
         }
 
