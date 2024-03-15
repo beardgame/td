@@ -8,12 +8,12 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class MainMenuBackgroundRenderer(ContentManager content, IDrawableRenderers renderers)
+sealed class CaveBackgroundRenderer(ContentManager content, IDrawableRenderers renderers)
     : IRenderer<MainMenuBackground>
 {
     public void Render(MainMenuBackground control)
     {
-        var id = Constants.Content.CoreUI.MainMenu.Background;
+        var id = Constants.Content.CoreUI.MainMenu.CaveBackground;
         var material = content.ResolveMaterial(id);
 
         var frame = control.Frame;
@@ -21,7 +21,7 @@ sealed class MainMenuBackgroundRenderer(ContentManager content, IDrawableRendere
         var drawer = Custom.MainMenuBackground.GetOrCreate(material, renderers);
 
         var center = frame.TopLeft + frame.Size / 2;
-        var size = new Vector2d(Math.Max(frame.Size.X, frame.Size.Y));
+        var size = new Vector2d(Math.Max(frame.Size.X, frame.Size.Y * (16f / 9f)));
 
         drawer.DrawRectangle(
             (Vector3)(center - size / 2).WithZ(),

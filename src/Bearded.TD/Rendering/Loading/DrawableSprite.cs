@@ -31,8 +31,9 @@ sealed class DrawableSprite<TVertex, TVertexData>(
             _ => throw new ArgumentOutOfRangeException(nameof(layout.Size)),
         };
 
+        var absoluteScale = new Vector2(Math.Abs(layout.Scale.X), Math.Abs(layout.Scale.Y));
         var frameAnchor = frame.TopLeft + new Vector2(frame.Width, frame.Height) * layout.FrameAlign;
-        var spriteAnchor = size * (layout.SpriteAlign - new Vector2(0.5f));
+        var spriteAnchor = size * (layout.SpriteAlign - new Vector2(0.5f)) * absoluteScale;
         var center = frameAnchor - spriteAnchor;
 
         size *= layout.Scale;

@@ -124,7 +124,7 @@ vec4 multiSample(sampler2D sampler, vec2 uv, float lod, float multiSampleStrengt
 vec4 sampleCave()
 {
     float distanceFromCenter = length(p_backgroundUV - vec2(0.5, 0.6));
-    float edgeBlur = 10;//(sin(uiTime*2) * 0.5 + 0.5) * 10;
+    float edgeBlur = 7;//(sin(uiTime*2) * 0.5 + 0.5) * 10;
     float centerBlur = -0.5;
     float lod = mix(centerBlur, edgeBlur, distanceFromCenter);
     

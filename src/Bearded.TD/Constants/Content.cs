@@ -46,7 +46,7 @@ static partial class Constants
                 private static ModAwareSpriteId foreground(string id) => new(new ModAwareId(ModId, "menu-foreground"), id);
 
                 public static readonly ModAwareSpriteId Turret = foreground("turret");
-                public static readonly ModAwareId Background = new (ModId, "menu-background");
+                public static readonly ModAwareId CaveBackground = new (ModId, "menu-background");
             }
         }
     }
