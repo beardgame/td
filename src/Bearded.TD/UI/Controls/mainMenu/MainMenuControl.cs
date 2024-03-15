@@ -10,7 +10,10 @@ sealed class MainMenuControl : CompositeControl
     {
         Add(new MainMenuBackground());
 
-        this.BuildLayout().AddMenu(b => b
+        var menuFrame = new CompositeControl();
+        Add(menuFrame);
+
+        menuFrame.BuildLayout().AddMenu(b => b
             .AddMenuAction("Quick game", model.OnQuickGameButtonClicked)
             .AddMenuAction("Host game", model.OnHostGameButtonClicked)
             .AddMenuAction("Join game", model.OnJoinGameButtonClicked)
@@ -18,5 +21,7 @@ sealed class MainMenuControl : CompositeControl
             .WithCloseAction("Exit", model.OnQuitGameButtonClicked)
             .WithAnimations(animations)
         );
+
+        animations.Start(Constants.UI.Menu.SlideInAnimation, menuFrame);
     }
 }

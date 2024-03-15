@@ -5,9 +5,11 @@ using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using Bearded.UI.Controls;
 using static Bearded.TD.Rendering.Shapes.Shapes;
+using static Bearded.Utilities.Interpolate;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD;
 
@@ -76,6 +78,11 @@ static partial class Constants
             public const float ShadowWidth = 15;
             public static readonly Color ShadowColor = Shadows.Default.Color * 0.5f;
             public const double Width = 300;
+
+            public static readonly AnimationFunction<Control> SlideInAnimation
+                = AnimationFunction.ZeroToOne(0.5.S(), (Control control, float t) => control.Anchor(
+                    a => a.Right(margin: -Width * (1 - Hermite(0, 0.42f, 1, 0, t)))
+                ));
         }
 
         public static class NavBar
