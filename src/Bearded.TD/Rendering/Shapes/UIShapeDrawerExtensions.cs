@@ -8,6 +8,11 @@ namespace Bearded.TD.Rendering.Shapes;
 static class UIShapeDrawerExtensions
 {
     public static void Draw(
+        this IShapeDrawer drawer, Hexagon hexagon, ShapeComponentsForDrawing components)
+        => drawer.DrawHexagon((Vector3)hexagon.Center, (float)hexagon.Radius, components.Gradients,
+            (float)hexagon.CornerRadius, components.Edges);
+
+    public static void Draw(
         this IShapeDrawer drawer, Circle circle, ShapeComponentsForDrawing components)
         => drawer.DrawCircle((Vector3)circle.Center, (float)circle.Radius, components.Gradients, components.Edges);
 
@@ -36,6 +41,12 @@ static class UIShapeDrawerExtensions
         drawer.drawCircle(circle.Center + shadow.Offset, innerRadius, colors, edges: penumbra);
     }
 
+    public static void DrawShadowFor(this IShapeDrawer drawer, Hexagon hexagon, Shadow shadow)
+    {
+        var (innerRadius, penumbra, colors) = shadowParameters(hexagon.Radius, shadow);
+        drawer.drawHexagon(hexagon.Center + shadow.Offset, innerRadius, colors, hexagon.CornerRadius, edges: penumbra);
+    }
+
     private static (double innerRadius, EdgeData penumbra, ShapeGradients colors)
         shadowParameters(double radius, Shadow shadow)
     {
@@ -58,6 +69,11 @@ static class UIShapeDrawerExtensions
     private static void drawCircle(
         this IShapeDrawer drawer, Vector3d xyz, double radius, ShapeGradients gradients, EdgeData edges = default)
         => drawer.DrawCircle((Vector3)xyz, (float)radius, gradients, edges);
+
+    private static void drawHexagon(
+        this IShapeDrawer drawer, Vector3d xyz, double radius, ShapeGradients gradients, double cornerRadius = 0,
+        EdgeData edges = default)
+        => drawer.DrawHexagon((Vector3)xyz, (float)radius, gradients, (float)cornerRadius, edges);
 
     private static void drawRectangle(
         this IShapeDrawer drawer, Vector3d xyz, Vector2d wh, ShapeGradients gradients, double cornerRadius = 0,

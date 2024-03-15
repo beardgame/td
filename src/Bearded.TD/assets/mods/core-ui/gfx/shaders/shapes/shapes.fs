@@ -7,6 +7,7 @@ const int SHAPE_TYPE_FILL = 0;
 const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
 const int SHAPE_TYPE_RECTANGLE = 3; // top-left, width, height, corner radius
+const int SHAPE_TYPE_HEXAGON = 4; // center and radius
 
 const int GRADIENT_TYPE_NONE = 0;
 const int GRADIENT_TYPE_CONSTANT = 1;
@@ -103,6 +104,31 @@ float signedDistanceToEdge()
             
             float mixedDistance = mix(rectDistance, ovalDistance, ovalNess);
             return mixedDistance;
+        }
+        case SHAPE_TYPE_HEXAGON:
+        {
+            const vec3 k = vec3(-0.866025404, 0.5, 0.577350269);
+            vec2 center = p_shapeData.xy;
+            float cornerR = p_shapeData.w;
+            float radius = p_shapeData.z;
+            vec2 p = p0 - center;
+            
+            float innerGlowRoundness = p_shapeData2.x + 0.5;
+            float centerRoundness = p_shapeData2.y + 0.5;
+
+            float d = length(p);
+            float cornersToCenter = 1 - clamp(d / radius * -k.x, 0, 1);
+            float roundness = mix(innerGlowRoundness, centerRoundness, cornersToCenter);
+            cornerR += radius * roundness * cornersToCenter;
+            cornerR = min(cornerR, radius);
+            
+            float r = radius - cornerR;
+            vec2 d2 = abs(p.yx);
+            d2 -= 2.0 * min(dot(k.xy, d2), 0.0) * k.xy;
+            d2 -= vec2(clamp(d2.x, -k.z * r, k.z * r), r);
+            float hexDistance = length(d2) * sign(d2.y);
+            
+            return hexDistance - cornerR;
         }
     }
     
@@ -337,7 +363,7 @@ void main()
         {
             fragColor = mix(fragColor, vec4(1, 0, 0, 1) * a, DEBUG_SHAPE);
         }
-        if (p_shapeType == SHAPE_TYPE_CIRCLE)
+        if (p_shapeType == SHAPE_TYPE_CIRCLE || p_shapeType == SHAPE_TYPE_HEXAGON)
         {
             fragColor = mix(fragColor, vec4(0, 1, 0, 1) * a, DEBUG_SHAPE);
         }

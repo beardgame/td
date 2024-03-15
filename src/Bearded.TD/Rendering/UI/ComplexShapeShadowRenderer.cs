@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Rendering.Shapes;
+﻿using Bearded.Graphics;
+using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using static Bearded.TD.Rendering.Shapes.Shapes;
@@ -14,9 +15,14 @@ sealed class DropShadowRenderer(IShapeDrawer drawer) : IRenderer<DropShadow>
 
         switch (control.SourceControl)
         {
-            case ComplexCircle { Shape: var shape }:
+            case ComplexCircle { Shape: var circle }:
             {
-                drawer.DrawShadowFor(shape, control.Shadow);
+                drawer.DrawShadowFor(circle, control.Shadow);
+                break;
+            }
+            case ComplexHexagon { Shape: var hexagon }:
+            {
+                drawer.DrawShadowFor(hexagon, control.Shadow);
                 break;
             }
             default:

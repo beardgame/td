@@ -44,7 +44,7 @@ static class StatusIconFactories
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
             .WithIcon(status.Transform(s => s?.DrawSpec.Icon ?? Constants.Content.CoreUI.Sprites.Technology))
-            .MakeCircle());
+            .MakeHexagon());
     }
 
     /**
@@ -66,7 +66,7 @@ static class StatusIconFactories
         // TODO: replace entirely
         return ButtonFactories.Button(b => b
             .WithLabel(upgradeSlot.Transform(slot => slot?.Upgrade?.Name[..1] ?? ""))
-            .MakeCircle());
+            .MakeHexagon());
     }
 
     /*

@@ -38,3 +38,8 @@ sealed class ComplexCircle : ComplexShapeControl
 
     public Circle Shape => Circle(Frame.TopLeft + Frame.Size * 0.5, Math.Min(Frame.Size.X, Frame.Size.Y) * 0.5);
 }
+
+sealed class ComplexHexagon : ComplexShapeControl
+{
+    public Hexagon Shape => Hexagon(Frame.TopLeft + Frame.Size * 0.5, Math.Min(Frame.Size.X, Frame.Size.Y) * 0.5);
+}

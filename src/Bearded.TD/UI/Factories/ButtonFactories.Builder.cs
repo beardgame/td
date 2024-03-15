@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
@@ -17,13 +18,20 @@ static partial class ButtonFactories
 {
     public abstract class Builder<T> where T : Builder<T>
     {
+        private enum Shape
+        {
+            Rectangle = 0,
+            Circle,
+            Hexagon,
+        }
+
         private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
         private GenericEventHandler<Button.ClickEventArgs>? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
-        private bool isCircle;
+        private Shape shape;
         private Shadow? shadow;
         private Animations? animations;
 
@@ -97,7 +105,12 @@ static partial class ButtonFactories
 
         public T MakeCircle()
         {
-            isCircle = true;
+            shape = Shape.Circle;
+            return This;
+        }
+        public T MakeHexagon()
+        {
+            shape = Shape.Hexagon;
             return This;
         }
 
@@ -119,9 +132,13 @@ static partial class ButtonFactories
 
             AddContent(button, contentColor);
 
-            var shape = isCircle
-                ? (ComplexShapeControl)new ComplexCircle()
-                : new ComplexBox { CornerRadius = 2 };
+            var shape = this.shape switch
+            {
+                Shape.Rectangle => (ComplexShapeControl)new ComplexBox { CornerRadius = 2 },
+                Shape.Circle => new ComplexCircle(),
+                Shape.Hexagon => new ComplexHexagon { CornerRadius = 2 },
+                _ => throw new ArgumentOutOfRangeException(),
+            };
             shape.Edge = Edge.Outer(1, contentColor.Value);
 
             if (shadow is { } s)
@@ -250,6 +267,7 @@ static partial class ButtonFactories
     public sealed class IconButtonBuilder : Builder<IconButtonBuilder>
     {
         private IReadonlyBinding<ModAwareSpriteId>? icon;
+        private float scale = 1;
 
         protected override IconButtonBuilder This => this;
 
@@ -267,6 +285,12 @@ static partial class ButtonFactories
             return this;
         }
 
+        public IconButtonBuilder WithIconScale(float scale)
+        {
+            this.scale = scale;
+            return this;
+        }
+
         protected override void Validate()
         {
             DebugAssert.State.Satisfies(icon != null);
@@ -275,6 +299,8 @@ static partial class ButtonFactories
         protected override void AddContent(IControlParent control, IReadonlyBinding<Color> color)
         {
             var iconControl = new Sprite { SpriteId = icon!.Value, Color = color.Value };
+            var l = iconControl.Layout;
+            iconControl.Layout = l with { Scale = l.Scale * scale };
             control.Add(iconControl);
 
             icon.SourceUpdated += id => iconControl.SpriteId = id;

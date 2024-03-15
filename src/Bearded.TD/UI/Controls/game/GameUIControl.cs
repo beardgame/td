@@ -42,11 +42,11 @@ sealed class GameUIControl : CompositeControl
             .DockFixedSizeToTop(
                 ButtonFactories.StandaloneIconButton(b => b
                         .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
-                        .MakeCircle()
+                        .MakeHexagon()
                         .WithShadow()
                         .WithOnClick(gameUI.GameUIController.ShowTechnologyModal))
                     .WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
-                technologyButtonSize + 2 * Constants.UI.Button.Margin);
+                technologyButtonSize + 4 * Constants.UI.Button.Margin);
         Add(new TechnologyWindowControl(gameUI.TechnologyUI)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 

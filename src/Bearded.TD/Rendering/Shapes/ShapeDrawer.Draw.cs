@@ -8,11 +8,22 @@ namespace Bearded.TD.Rendering.Shapes;
 interface IShapeDrawer
 {
     void DrawCircle(Vector3 xyz, float radius, ShapeGradients gradients, EdgeData edges = default);
+    void DrawHexagon(Vector3 xyz, float radius, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default);
     void DrawRectangle(Vector3 xyz, Vector2 wh, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default);
 }
 
 sealed partial class ShapeDrawer : IShapeDrawer
 {
+    public void DrawHexagon(Vector3 xyz, float radius, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default)
+    {
+        var (x, y, z) = xyz;
+        var w = radius + edges.OuterWidth + edges.OuterGlow;
+        var h = w * (1 / 0.86602540378f);
+        cornerRadius = Min(radius, cornerRadius);
+        var geometry = HexagonPointRadius(xyz.Xy, radius, cornerRadius, edges, 0.5f, 1);
+        addQuad(x - w, x + w, y - h, y + h, z, gradients, geometry);
+    }
+
     public void DrawCircle(Vector3 xyz, float radius, ShapeGradients gradients, EdgeData edges = default)
     {
         var (x, y, z) = xyz;

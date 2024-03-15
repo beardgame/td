@@ -28,6 +28,14 @@ sealed class ComplexShapeRenderer(IShapeDrawer shapes, GradientDrawer gradients)
                 shapes.Draw(Circle(center, radius), components);
                 break;
             }
+            case ComplexHexagon:
+            {
+                var center = frame.TopLeft + frame.Size * 0.5;
+                var radius = Min(frame.Size.X, frame.Size.Y) * 0.5;
+
+                shapes.Draw(Hexagon(center, radius, control.CornerRadius), components);
+                break;
+            }
         }
     }
 }

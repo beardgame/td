@@ -78,7 +78,9 @@ sealed class ActionBarControl : CompositeControl
         var button = ButtonFactories.StandaloneIconButton(b => b
             .WithEnabled(binding.Transform(e => e is not null))
             .WithIcon(binding.Transform(e => e?.Icon ?? default))
+            .WithIconScale(0.75f)
             .WithOnClick(() => binding.Value?.OnClick())
+            .MakeHexagon()
             .WithShadow()
         ).Anchor(a => a
             .Left(margin: buttonLeftMargin(i), width: buttonSize, relativePercentage: 0.5)
@@ -87,7 +89,7 @@ sealed class ActionBarControl : CompositeControl
         return button;
     }
 
-    private const double buttonBottomMargin = Constants.UI.Button.Margin;
+    private const double buttonBottomMargin = Constants.UI.Button.Margin * 2;
     private const double buttonBetweenMargin = Constants.UI.Button.Margin;
     private const double buttonSize = Constants.UI.Button.SquareButtonSize;
     private const double barLeftMargin = -0.5 * ActionBarSize * (buttonSize + buttonBetweenMargin);

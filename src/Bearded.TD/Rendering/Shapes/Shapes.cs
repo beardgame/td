@@ -6,6 +6,7 @@ namespace Bearded.TD.Rendering.Shapes;
 
 readonly record struct Rectangle(Vector3d TopLeft, Vector2d Size, double CornerRadius);
 readonly record struct Circle(Vector3d Center, double Radius);
+readonly record struct Hexagon(Vector3d Center, double Radius, double CornerRadius);
 readonly record struct Shadow(Vector3d Offset, double PenumbraRadius, Color Color);
 
 static class Shapes
@@ -16,6 +17,9 @@ static class Shapes
     public static Circle Circle(Vector3d center, double radius)
         => new(center, radius);
 
+    public static Hexagon Hexagon(Vector3d center, double radius, double cornerRadius = 0)
+        => new(center, radius, cornerRadius);
+
     public static Shadow Shadow(Vector3d offset, double blurRadius, Color color)
         => new(offset, blurRadius, color);
 
@@ -24,6 +28,9 @@ static class Shapes
 
     public static Circle Circle(Vector2d center, double radius)
         => new(center.WithZ(), radius);
+
+    public static Hexagon Hexagon(Vector2d center, double radius, double cornerRadius = 0)
+        => new(center.WithZ(), radius, cornerRadius);
 
     public static Shadow Shadow(Vector2d offset, double blurRadius, Color color)
         => new(offset.WithZ(), blurRadius, color);
