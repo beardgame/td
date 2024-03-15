@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Rendering;
+﻿using Bearded.Graphics;
+using Bearded.TD.Rendering;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
@@ -10,7 +11,7 @@ sealed class MainMenuBackground : CompositeControl
     public MainMenuBackground()
     {
         Add(new CaveBackground().Anchor(
-            a => a.Right(50)));
+            a => a.Right(relativePercentage: 0.96)));
 
         const float turretSpriteEdgeMarginPercentage = -0.05f;
         const float turretScale = 0.7f;

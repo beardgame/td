@@ -10,7 +10,7 @@ sealed class MainMenuControl : CompositeControl
     {
         Add(new MainMenuBackground());
 
-        var menuFrame = new CompositeControl();
+        var menuFrame = CreateClickThrough();
         Add(menuFrame);
 
         menuFrame.BuildLayout().AddMenu(b => b

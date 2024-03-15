@@ -14,7 +14,7 @@ public enum BackgroundColor
     Tooltip = 1,
     ActiveElement = 2,
     SubtleOutline = 2,
-    BackgroundOutline = 3,
+    BackgroundOutline = 1,
     Element = 4,
     Hover = 5,
 

@@ -9,9 +9,9 @@ using OpenTK.Mathematics;
 namespace Bearded.TD.Rendering.UI;
 
 sealed class CaveBackgroundRenderer(ContentManager content, IDrawableRenderers renderers)
-    : IRenderer<MainMenuBackground>
+    : IRenderer<CaveBackground>
 {
-    public void Render(MainMenuBackground control)
+    public void Render(CaveBackground control)
     {
         var id = Constants.Content.CoreUI.MainMenu.CaveBackground;
         var material = content.ResolveMaterial(id);
