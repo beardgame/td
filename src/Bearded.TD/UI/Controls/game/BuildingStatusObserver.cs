@@ -1,6 +1,9 @@
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -60,7 +63,7 @@ sealed class BuildingStatusObserver
         {
             show(t);
         }
-        currentlyShown!.Status.PromoteToExpandedView();
+        currentlyShown?.Status.PromoteToExpandedView();
     }
 
     private void onObjectDeselected(ISelectable t)
@@ -73,19 +76,33 @@ sealed class BuildingStatusObserver
 
     private void show(ISelectable t)
     {
-        var status = new BuildingStatus();
+        if (!t.Object.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
+        {
+            DebugAssert.State.IsInvalid("Selectable is missing a status tracker, cannot show overlay.");
+            return;
+        }
+        if (!t.Object.TryGetSingleComponent<IBuildingUpgradeManager>(out var upgradeManager) ||
+            !t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots))
+        {
+            // TODO: still show the overlay, just not the upgrade part of it
+            return;
+        }
+
+        var status = new BuildingStatus(statusTracker, upgradeSlots, upgradeManager);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, new BuildingStatusControl(status));
-        // TODO: anchor to the right edge of the building rather than its center
+        var objectPos = t.Object.Position.XY();
+        var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);
         overlay.AddControl(
             currentlyShown.Control,
             BuildingStatusControl.Size,
-            new IGameWorldOverlay.OverlayAnchor(t.Object.Position.XY(), IGameWorldOverlay.OverlayDirection.Right));
+            new IGameWorldOverlay.OverlayAnchor(anchorPos, IGameWorldOverlay.OverlayDirection.Right));
     }
 
     private void resetCurrentlyShown()
     {
         if (currentlyShown is null) return;
         overlay.RemoveControl(currentlyShown.Control);
+        currentlyShown.Status.Dispose();
         currentlyShown = null;
     }
 

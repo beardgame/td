@@ -1,9 +1,21 @@
 ﻿#version 400
 
+const float PI = 3.14159265359;
+const float TAU = 6.28318530718;
+
 const int SHAPE_TYPE_FILL = 0;
 const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
 const int SHAPE_TYPE_RECTANGLE = 3; // top-left, width, height, corner radius
+
+const int GRADIENT_TYPE_NONE = 0;
+const int GRADIENT_TYPE_CONSTANT = 1;
+const int GRADIENT_TYPE_SIMPLE_GLOW = 2;
+const int GRADIENT_TYPE_LINEAR = 20; // point to point
+const int GRADIENT_TYPE_RADIAL_RADIUS = 21; // center and radius
+const int GRADIENT_TYPE_RADIAL_POINT_ON_EDGE = 22; // center and point on edge
+const int GRADIENT_TYPE_ALONG_EDGE_NORMAL = 23;
+const int GRADIENT_ARC_AROUND_POINT = 24; // center, start and total angle in radians
 
 const int EDGE_OUTER_WIDTH_I = 0;
 const int EDGE_INNER_WIDTH_I = 1;
@@ -100,9 +112,9 @@ float signedDistanceToEdge()
 vec4 rgbaIntToVec4(uint rgba)
 {
     return vec4(
-    ((rgba >> 16) & 0xFFu) / 255.0,
-    ((rgba >> 8) & 0xFFu) / 255.0,
     ((rgba >> 0) & 0xFFu) / 255.0,
+    ((rgba >> 8) & 0xFFu) / 255.0,
+    ((rgba >> 16) & 0xFFu) / 255.0,
     ((rgba >> 24) & 0xFFu) / 255.0
     );
 }
@@ -122,6 +134,56 @@ float smoother(float x)
     return x * x * (3 - 2 * x);
 }
 
+struct Stop
+{
+    uint data;
+    float position;
+    uint rgba;
+};
+
+Stop getStop(uint index)
+{
+    uvec3 data = texelFetch(gradientBuffer, int(index)).xyz;
+    return Stop(
+        data.x,
+        uintBitsToFloat(data.y),
+        data.z
+    );
+}
+
+vec4 stopColor(Stop stop)
+{
+    return rgbaIntToVec4(stop.rgba);
+}
+
+uint remainingStops(Stop stop)
+{
+    return stop.data & 0xFFFFu;
+}
+
+vec4 getColorInGradient(uint index, float t)
+{
+    Stop current = getStop(index);
+    
+    uint otherStopsCount = remainingStops(current);
+    
+    for (uint i = 1; i < otherStopsCount; i++)
+    {
+        Stop next = getStop(index + i);
+        if (next.position >= t)
+        {
+            return mix(
+                stopColor(current),
+                stopColor(next),
+                clamp((t - current.position) / (next.position - current.position), 0, 1)
+            );
+        }
+        current = next;
+    }
+
+    return stopColor(current);
+}
+
 vec4 getColor(int partIndex, float t)
 {
     uint typeIndex = p_gradientTypeIndices[partIndex];
@@ -130,28 +192,66 @@ vec4 getColor(int partIndex, float t)
     
     vec4 parameters = p_gradientParameters[partIndex];
     
-    // TODO: switch on type, etc. instead
-    vec4 color = getConstantColorFromGradientParameters(partIndex);
-    
-    if (partIndex == PART_GLOW_INNER_I || partIndex == PART_GLOW_OUTER_I)
+    switch(type)
     {
-        // TODO: maybe fine for default case, but otherwise we will have to pass in additional information
-        // like position, edge normal, etc. to handle different types of gradients
-        color *= smoother(t);
+        case GRADIENT_TYPE_NONE:
+        {
+            return vec4(0);
+        }
+        case GRADIENT_TYPE_CONSTANT:
+        {
+            return getConstantColorFromGradientParameters(partIndex);
+        }
+        case GRADIENT_TYPE_SIMPLE_GLOW:
+        {
+            return getConstantColorFromGradientParameters(partIndex) * smoother(t);
+        }
+        case GRADIENT_TYPE_LINEAR:
+        {
+            vec2 p0 = parameters.xy;
+            vec2 p1 = parameters.zw;
+            vec2 d = p1 - p0;
+            float projection = dot(d, p_position.xy - p0) / dot(d, d);
+            return getColorInGradient(index, projection);
+        }
+        case GRADIENT_TYPE_RADIAL_RADIUS:
+        {
+            vec2 center = parameters.xy;
+            float radius = parameters.z;
+            float distance = length(p_position.xy - center) / radius;
+            return getColorInGradient(index, distance);
+        }
+        case GRADIENT_TYPE_RADIAL_POINT_ON_EDGE:
+        {
+            vec2 center = parameters.xy;
+            vec2 pointOnEdge = p_shapeData.xy;
+            float radius = length(pointOnEdge - center);
+            float distance = length(p_position.xy - center) / radius;
+            return getColorInGradient(index, distance);
+        }
+        case GRADIENT_TYPE_ALONG_EDGE_NORMAL:
+        {
+            return getColorInGradient(index, t);
+        }
+        case GRADIENT_ARC_AROUND_POINT:
+        {
+            vec2 center = parameters.xy;
+            float startAngle = parameters.z;
+            float totalAngle = parameters.w;
+            vec2 d = p_position.xy - center;
+            float angle = atan(d.y, d.x);            
+            float normalizedAngle = mod(angle + startAngle, TAU) / totalAngle;
+            return getColorInGradient(index, normalizedAngle);
+        }
     }
-    return color;
+    
+    return vec4(1, 0, 1, 0.5);
 }
 
 struct Contribution
 {
     float alpha;
     float t;
-};
-
-struct Separated
-{
-    vec4 inner;
-    vec4 outer;
 };
 
 Contribution contributionOf(float fromDistance, float toDistance, float distance, float antiAliasWidth)
@@ -171,40 +271,37 @@ vec4 addPremultiplied(vec4 a, vec4 b)
     return a * (1 - b.a) + b;
 }
 
-Separated edgeContribution(float distance, float antiAliasWidth)
+vec4 edgeContribution(float distance, float antiAliasWidth)
 {
     float edgeOuterWidth = p_edgeData[EDGE_OUTER_WIDTH_I];
     float edgeInnerWidth = p_edgeData[EDGE_INNER_WIDTH_I];
     float edgeOuterGlow = p_edgeData[EDGE_OUTER_GLOW_I];
     float edgeInnerGlow = p_edgeData[EDGE_INNER_GLOW_I];
 
-    Separated ret = Separated(vec4(0), vec4(0));
+    vec4 ret = vec4(0);
 
     if (edgeOuterGlow != 0)
     {
         Contribution glowOuter = contributionOf(edgeOuterWidth, edgeOuterWidth + edgeOuterGlow, distance, antiAliasWidth);
-        ret.outer = getColor(PART_GLOW_OUTER_I, 1 - glowOuter.t) * glowOuter.alpha;
+        ret += getColor(PART_GLOW_OUTER_I, 1 - glowOuter.t) * glowOuter.alpha;
     }
     if (edgeInnerGlow != 0)
     {
         Contribution glowInner = contributionOf(-edgeInnerWidth - edgeInnerGlow, -edgeInnerWidth, distance, antiAliasWidth);
-        ret.inner = getColor(PART_GLOW_INNER_I, glowInner.t) * glowInner.alpha;
+        ret += getColor(PART_GLOW_INNER_I, glowInner.t) * glowInner.alpha;
     }
-
     if (edgeOuterWidth + edgeInnerWidth != 0)
     {
         Contribution edge = contributionOf(-edgeInnerWidth, edgeOuterWidth, distance, antiAliasWidth);
-        vec4 e = getColor(PART_EDGE_I, edge.t) * edge.alpha;
-        ret.outer = addPremultiplied(ret.outer, e);
-        ret.inner = addPremultiplied(ret.inner, e);
+        ret += getColor(PART_EDGE_I, edge.t) * edge.alpha;
     }
 
     return ret;
 }
 
-vec4 fillContribution(float distance, float alpha)
+vec4 fillContribution(float distance)
 {
-    return getColor(PART_FILL_I, 0) * alpha;
+    return getColor(PART_FILL_I, 0);
 }
 
 const float DEBUG_SHAPE = 0;
@@ -224,15 +321,14 @@ void main()
     }
 
     float signedDistance = signedDistanceToEdge();
-    float antiAliasWidth = ANTI_ALIAS_WIDTH * length(vec2(dFdx(signedDistance), dFdy(signedDistance)));
+    float antiAliasWidth = ANTI_ALIAS_WIDTH * fwidth(signedDistance) * 1;
     float outsideToInside = clamp((antiAliasWidth / 2 - signedDistance) / antiAliasWidth, 0, 1);
     
-    vec4 fill = fillContribution(signedDistance, outsideToInside);
-    Separated edges = edgeContribution(signedDistance, antiAliasWidth);
-    
-    vec4 inner = addPremultiplied(fill, edges.inner);
+    vec4 fill = fillContribution(signedDistance) * outsideToInside;
+    vec4 edges = edgeContribution(signedDistance, antiAliasWidth);
+    vec4 fullPremultiplied = addPremultiplied(fill, edges);
 
-    fragColor = edges.outer + inner;
+    fragColor = fullPremultiplied;
 
     if (DEBUG_SHAPE != 0)
     {

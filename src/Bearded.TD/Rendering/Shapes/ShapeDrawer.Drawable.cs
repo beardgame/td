@@ -5,7 +5,6 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
-using Bearded.TD.Rendering.UI.Gradients;
 
 namespace Bearded.TD.Rendering.Shapes;
 

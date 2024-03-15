@@ -30,7 +30,7 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
     {
         base.Activate();
         tickCycle = new TickCycle(Owner.Game, applyTick);
-        if (Owner.TryGetSingleComponent<IStatusDisplay>(out var statusDisplay))
+        if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusDisplay))
         {
             status = new TemperatureStatus(Owner.Game, statusDisplay);
         }

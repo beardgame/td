@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Exploration;
@@ -8,6 +9,9 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Constants.Game.World;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Selection;
@@ -19,6 +23,7 @@ sealed class Selectable :
     IListener<ObjectDeleting>
 {
     private readonly Disposer disposer = new();
+    private readonly List<Tile> tiles = new();
     private IVisibility? visibility;
     private SelectionLayer? selectionLayer;
     private SelectionState selectionState;
@@ -29,6 +34,7 @@ sealed class Selectable :
     public IReportSubject Subject =>
         Owner.GetComponents<IReportSubject>().SingleOrDefault() ?? new EmptyReportSubject();
     public GameObject Object => Owner;
+    public Rectangle BoundingBox { get; private set; }
 
     protected override void OnAdded()
     {
@@ -99,11 +105,41 @@ sealed class Selectable :
     private void registerTile(Tile tile)
     {
         selectionLayer?.RegisterSelectable(tile, this);
+        tiles.Add(tile);
+        updateBoundingBox();
     }
 
     private void unregisterTile(Tile tile)
     {
         selectionLayer?.UnregisterSelectable(tile, this);
+        if (tiles.Remove(tile))
+        {
+            updateBoundingBox();
+        }
+    }
+
+    private void updateBoundingBox()
+    {
+        if (tiles.Count == 0)
+        {
+            BoundingBox = Rectangle.WithSides(0, 0, 0, 0);
+            return;
+        }
+
+        var top = float.MaxValue;
+        var right = float.MinValue;
+        var bottom = float.MinValue;
+        var left = float.MaxValue;
+
+        foreach (var pos in tiles.Select(Level.GetPosition))
+        {
+            top = Math.Min(top, (pos.Y - HexagonDistanceY.U()).NumericValue);
+            right = Math.Max(right, (pos.X + HexagonInnerRadius).NumericValue);
+            bottom = Math.Max(bottom, (pos.Y + HexagonDistanceY.U()).NumericValue);
+            left = Math.Min(left, (pos.X - HexagonInnerRadius).NumericValue);
+        }
+
+        BoundingBox = Rectangle.WithSides(top, right, bottom, left);
     }
 
     public override void Update(TimeSpan elapsedTime) {}

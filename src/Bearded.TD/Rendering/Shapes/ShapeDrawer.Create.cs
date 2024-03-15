@@ -1,5 +1,4 @@
 ﻿using Bearded.TD.Content.Models;
-using Bearded.TD.Rendering.UI.Gradients;
 
 namespace Bearded.TD.Rendering.Shapes;
 

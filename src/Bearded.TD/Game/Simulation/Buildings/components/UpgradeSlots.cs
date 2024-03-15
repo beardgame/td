@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -17,19 +18,26 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
         ImmutableArray<ITrigger> AdditionalSlotTriggers { get; }
     }
 
-    private readonly List<ITriggerSubscription> triggerSubscriptions = new();
+    private readonly List<ITriggerSubscription> triggerSubscriptions = [];
+    private readonly List<Slot> slots = [];
 
-    public int TotalSlotsCount { get; private set; }
-    public int FilledSlotsCount { get; private set; }
-    public int ReservedSlotsCount { get; private set; }
+    private IBuildingUpgradeManager? upgradeManager;
 
-    public UpgradeSlots(IParameters parameters) : base(parameters) { }
+    public IReadOnlyList<IUpgradeSlot> Slots { get; }
 
-    protected override void OnAdded() { }
+    public UpgradeSlots(IParameters parameters) : base(parameters)
+    {
+        Slots = slots.AsReadOnly();
+    }
+
+    protected override void OnAdded()
+    {
+        ComponentDependencies.Depend<IBuildingUpgradeManager>(Owner, Events, um => upgradeManager = um);
+    }
 
     public override void Activate()
     {
-        TotalSlotsCount = Parameters.InitialSlots;
+        slots.AddRange(Enumerable.Range(0, Parameters.InitialSlots).Select(i => new Slot(this, i)));
         if (!Parameters.AdditionalSlotTriggers.IsDefault)
         {
             triggerSubscriptions.AddRange(
@@ -39,6 +47,7 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
 
     public override void OnRemoved()
     {
+        // TODO: should we undo all upgrades as well?
         foreach (var subscription in triggerSubscriptions)
         {
             subscription.Unsubscribe(Events);
@@ -49,39 +58,41 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
 
     private void unlockSlot()
     {
-        TotalSlotsCount++;
+        slots.Add(new Slot(this, slots.Count));
     }
 
-    public IUpgradeSlotReservation ReserveSlot()
+    public void FillSlot(IPermanentUpgrade upgrade)
     {
-        if (FilledSlotsCount + ReservedSlotsCount >= TotalSlotsCount)
+        var slot = Slots.FirstOrDefault(s => !s.Filled);
+        if (slot is null)
         {
-            throw new InvalidOperationException("Cannot reserve a slot when none are available.");
+            throw new InvalidOperationException("Cannot fill a slot if no slots are available");
         }
-
-        ReservedSlotsCount++;
-        return new SlotReservation(this);
+        slot.Fill(upgrade);
     }
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    private sealed class SlotReservation : IUpgradeSlotReservation
+    private sealed class Slot(UpgradeSlots slots, int index) : IUpgradeSlot
     {
-        private readonly UpgradeSlots slots;
-        private bool filled;
+        public IPermanentUpgrade? Upgrade { get; private set; }
 
-        public SlotReservation(UpgradeSlots slots)
+        public void Fill(IPermanentUpgrade upgrade)
         {
-            this.slots = slots;
-        }
+            if (Upgrade is not null)
+            {
+                throw new InvalidOperationException("Cannot override an existing upgrade in a slot");
+            }
 
-        public void Fill()
-        {
-            // fills are idempotent
-            if (filled) return;
-            slots.ReservedSlotsCount--;
-            slots.FilledSlotsCount++;
-            filled = true;
+            if (slots.upgradeManager is null)
+            {
+                slots.Owner.Game.Meta.Logger.Warning?.Log(
+                    $"Attempted to apply {upgrade.Name} to {slots.Owner} but no upgrade manager was present, making " +
+                    $"this a no-op. Slot was still filled.");
+            }
+            slots.upgradeManager?.Upgrade(upgrade);
+
+            Upgrade = upgrade;
         }
     }
 }

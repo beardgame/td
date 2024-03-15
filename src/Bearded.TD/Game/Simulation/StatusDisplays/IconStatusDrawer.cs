@@ -1,3 +1,4 @@
+using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Drawing;
@@ -8,6 +9,7 @@ using static Bearded.TD.Constants.Game.GameUI.StatusDisplay;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
 
+[Obsolete]
 sealed class IconStatusDrawer : IStatusDrawer
 {
     private readonly SpriteDrawInfo<UVColorVertex, Color> sprite;

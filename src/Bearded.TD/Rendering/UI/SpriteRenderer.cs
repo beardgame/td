@@ -3,7 +3,7 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
-using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.UI;
@@ -22,11 +22,7 @@ sealed class SpriteRenderer(
             renderers, DrawOrderGroup.UISpritesTop, 0, UVColorVertex.Create, shader);
 
         var frame = control.Frame;
-        var center = frame.TopLeft + frame.Size * 0.5;
-
-        drawable.DrawWithWidth(
-            ((Vector2)center).WithZ(),
-            (float)control.Size,
-            control.Color);
+        var rect = new Rectangle((Vector2)frame.TopLeft, (float)frame.Size.X, (float)frame.Size.Y);
+        drawable.Draw(control.Layout with { Frame = rect }, control.Color);
     }
 }

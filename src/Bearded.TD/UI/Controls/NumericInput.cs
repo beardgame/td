@@ -1,4 +1,5 @@
-﻿using Bearded.UI.Controls;
+﻿using Bearded.TD.UI.Factories;
+using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 
@@ -83,16 +84,16 @@ sealed class NumericInput : CompositeControl
             AllowSpecialCharacters = false,
             AllowLetters = false
         };
-        plusButton = new Button { new Label("+") };
-        minusButton = new Button { new Label("-") };
+        plusButton = ButtonFactories.Button("+");
+        minusButton = ButtonFactories.Button("-");
 
         plusButton.Clicked += _ => stepUp();
         minusButton.Clicked += _ => stepDown();
         textInput.TextChanged += textChanged;
 
-        Add(textInput.Anchor(a => a.Right(20)));
-        Add(plusButton.Anchor(a => a.Right(0, 20).Bottom(0, null, 0.5)));
-        Add(minusButton.Anchor(a => a.Right(0, 20).Top(0, null, 0.5)));
+        Add(textInput.Anchor(a => a.Left(1).Right(17)));
+        Add(plusButton.Anchor(a => a.Right(1, 18).Top(1).Bottom(0.5, null, 0.5)));
+        Add(minusButton.Anchor(a => a.Right(1, 18).Bottom(1).Top(0.5, null, 0.5)));
 
         isEnabled = true;
         Value = value;

@@ -3,7 +3,6 @@ using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Rendering.Shapes;
-using Bearded.TD.Rendering.UI.Gradients;
 using Bearded.TD.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
@@ -42,13 +41,13 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
         [
             validate(new UIDebugOverlayHighlightRenderer(context.Drawers.ConsoleBackground, uiFonts.Default)),
             validate(new RenderLayerCompositeControlRenderer(context.Compositor)),
-            validate(new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts.Default)),
-            validate(new TextInputRenderer(shapeDrawer, uiFonts.Default)),
+            validate(new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts)),
+            validate(new TextInputRenderer(shapeDrawer, uiFonts)),
             validate(new LabelRenderer(uiFonts)),
             validate(new SpriteRenderer(content, renderers, spriteShader)),
             validate(new BorderRenderer(shapeDrawer)),
             validate(new BackgroundBoxRenderer(shapeDrawer)),
-            validate(new ComplexBoxRenderer(shapeDrawer)),
+            validate(new ComplexShapeRenderer(shapeDrawer, gradientDrawer)),
             validate(new DropShadowRenderer(shapeDrawer)),
             validate(new ButtonBackgroundEffectRenderer(shapeDrawer)),
             validate(new DotRenderer(shapeDrawer)),

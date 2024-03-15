@@ -1,5 +1,7 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
+using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 
@@ -11,6 +13,9 @@ class BoxRenderer(IShapeDrawer drawer, Color color) : IRenderer<Control>
     {
         var frame = control.Frame;
 
-        drawer.DrawRectangle(frame.TopLeft, frame.Size, new ShapeColors(fill: color));
+        var shape = Shapes.Shapes.Rectangle(frame.TopLeft, frame.Size);
+        var components = new ShapeComponents(Fill: color).ForDrawingAssumingNoGradients();
+
+        drawer.Draw(shape, components);
     }
 }

@@ -64,8 +64,6 @@ static class BuildingFactionExtensions
         {
             foreach (var upgrade in upgradeManager.AppliedUpgrades)
                 resourcesToRefund += upgrade.Cost;
-            foreach (var upgrade in upgradeManager.UpgradesInProgress)
-                resourcesToRefund += upgrade.ResourcesInvestedSoFar;
         }
 
         return resourcesToRefund;

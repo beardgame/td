@@ -14,9 +14,12 @@ public enum BackgroundColor
     Tooltip = 1,
     ActiveElement = 2,
     SubtleOutline = 2,
+    BackgroundOutline = 3,
     Element = 4,
     Hover = 5,
 
+    WindowBackground = 1,
+    HeaderBackground = 2,
 
     MainMenuBackground = 5,
 }
@@ -25,6 +28,7 @@ public enum ForeGroundColor
 {
     Highlight = 0,
     Text = 1,
+    Edge = 1,
     Headline = 2,
     DisabledText = 6,
 }

@@ -41,13 +41,16 @@ static class EnemyFactory
             ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         obj.AddComponent(new CapsuleCollider(new CapsuleColliderParametersTemplate(radius, radius * 2, true)));
 
+        var statuses = new StatusTracker();
+
         obj.AddComponent(new DamageAttributor());
         obj.AddComponent(new DamageSource());
         obj.AddComponent(new ElementSystemEntity());
         obj.AddComponent(new EnemyLife());
         obj.AddComponent(new HealthEventReceiver());
         obj.AddComponent(new Killable());
-        obj.AddComponent(new StatusDisplay(new InputAwareStatusDisplayCondition()));
+        obj.AddComponent(statuses);
+        obj.AddComponent(new StatusRenderer(statuses, new InputAwareStatusDisplayCondition()));
         obj.AddComponent(new EventReceiver<TakeHit>());
 
         obj.AddComponent(new Syncer());

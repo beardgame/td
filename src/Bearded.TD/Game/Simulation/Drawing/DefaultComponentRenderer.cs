@@ -39,7 +39,6 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
     {
     }
 
-
     public void Render(CoreDrawers drawers)
     {
         if (visibility?.Visibility.IsVisible() == false)
@@ -52,7 +51,7 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         SpriteDrawInfo<TVertex, TVertexData> sprite, Vector3 position, float size, Angle angle, TVertexData data)
         where TVertex : struct, IVertexData
     {
-        Drawable(sprite).DrawWithWidth(position, size, angle, data);
+        Drawable(sprite).Draw(SpriteLayout.CenteredAt(position, size, angle), data);
     }
 
     public void DrawQuad<TVertex, TVertexData>(
@@ -61,15 +60,6 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         where TVertex : struct, IVertexData
     {
         Drawable(sprite).DrawQuad(topLeft, topRight, bottomRight, bottomLeft, data);
-    }
-
-    public void DrawQuad<TVertex, TVertexData>(
-        SpriteDrawInfo<TVertex, TVertexData> sprite,
-        Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0,
-        Vector2 uv1, Vector2 uv2, Vector2 uv3, TVertexData data)
-        where TVertex : struct, IVertexData
-    {
-        Drawable(sprite).DrawQuad(p0, p1, p2, p3, uv0, uv1, uv2, uv3, data);
     }
 
     public void DrawIndexedVertices<TVertex, TVertexData>(

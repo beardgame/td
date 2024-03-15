@@ -6,14 +6,17 @@ namespace Bearded.TD.Rendering.Text;
 
 static class TextLayout
 {
-    public static float LineWidth(string text, IFontDefinition font)
+    public record struct Config(bool IgnoreKerning = false);
+
+    public static float LineWidth(string text, IFontDefinition font, Config config = default)
     {
         var advanced = 0f;
         var previous = (char)0;
 
         foreach (var current in text)
         {
-            applyKerning(font, previous, current, ref advanced);
+            if (!config.IgnoreKerning)
+                applyKerning(font, previous, current, ref advanced);
             advance(font, current, ref advanced);
             previous = current;
         }
@@ -21,12 +24,13 @@ static class TextLayout
         return advanced;
     }
 
-    public static GlyphLine LayoutLine(string text, IFontDefinition font)
+    public static GlyphLine LayoutLine(string text, IFontDefinition font, Config config = default)
     {
         return LayoutLine(text, font, new LaidOutGlyph[text.Length]);
     }
 
-    public static GlyphLine LayoutLine(string text, IFontDefinition font, Span<LaidOutGlyph> glyphSpan)
+    public static GlyphLine LayoutLine(
+        string text, IFontDefinition font, Span<LaidOutGlyph> glyphSpan, Config config = default)
     {
         if (text.Length != glyphSpan.Length)
             throw new ArgumentException("Span must be of same length as text.");
@@ -40,7 +44,8 @@ static class TextLayout
         for (var i = 0; i < text.Length; i++)
         {
             var current = text[i];
-            applyKerning(font, previous, current, ref advanced);
+            if (!config.IgnoreKerning)
+                applyKerning(font, previous, current, ref advanced);
             layoutAndAdvance(font, current, out glyphSpan[i], ref advanced);
             previous = current;
         }

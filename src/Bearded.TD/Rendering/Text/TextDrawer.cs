@@ -14,7 +14,10 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Text;
 
-readonly record struct TextDrawerConfiguration(Vector2? AlignGrid = null, Vector2 Offset = default);
+readonly record struct TextDrawerConfiguration(
+    Vector2? AlignGrid = null,
+    Vector2 Offset = default,
+    bool IgnoreKerning = false);
 
 sealed class TextDrawer<TVertex, TVertexParameters>(
     IFontDefinition font,
@@ -27,13 +30,15 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
     : ITextDrawer<TVertexParameters>, IDrawable
     where TVertex : struct, IVertexData
 {
+    private readonly TextLayout.Config layoutConfig = new(IgnoreKerning: config.IgnoreKerning);
+
     public void DrawLine(
         Vector3 xyz, string text,
         float fontHeight, float alignHorizontal, float alignVertical,
         Vector3 unitRightDP, Vector3 unitDownDP, TVertexParameters parameters)
     {
         Span<LaidOutGlyph> glyphs = stackalloc LaidOutGlyph[text.Length];
-        var line = TextLayout.LayoutLine(text, font, glyphs);
+        var line = TextLayout.LayoutLine(text, font, glyphs, layoutConfig);
 
         DrawLine(line, xyz, fontHeight, alignHorizontal, alignVertical, unitRightDP, unitDownDP, parameters);
     }
@@ -70,6 +75,7 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
             var cell = origin.Xy / align;
             origin.Xy = new Vector2((int)cell.X, (int)cell.Y) * align;
         }
+
         origin.Xy += config.Offset;
 
         var advCorrection = 0f;
@@ -116,7 +122,7 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         => (StringWidth(text, fontHeight, unitRightDP), StringHeight(fontHeight, unitDownDP));
 
     public Vector3 StringWidth(string text, float fontHeight, Vector3 unitRightDP)
-        => TextLayout.LineWidth(text, font) * fontHeight * unitRightDP;
+        => TextLayout.LineWidth(text, font, layoutConfig) * fontHeight * unitRightDP;
 
     public Vector3 StringHeight(float fontHeight, Vector3 unitDownDP)
         => fontHeight * unitDownDP;

@@ -4,6 +4,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -113,7 +114,7 @@ static partial class ButtonFactories
             var shape = isCircle
                 ? (ComplexShapeControl)new ComplexCircle()
                 : new ComplexBox { CornerRadius = 2 };
-            shape.EdgeOuterWidth = 1;
+            shape.Edge = Edge.Outer(1, contentColor.Value);
 
             if (shadow is { } s)
             {
@@ -125,8 +126,7 @@ static partial class ButtonFactories
             }
 
             button.Add(shape);
-            contentColor.SourceUpdated += c => shape.EdgeColor = c;
-            shape.EdgeColor = contentColor.Value;
+            contentColor.SourceUpdated += c => shape.Edge = shape.Edge with { Color = c };
 
             if (progressBar.HasValue)
             {
@@ -170,7 +170,7 @@ static partial class ButtonFactories
                     _ => BackgroundColor.Element,
                 };
 
-                shape.FillColor = Constants.UI.Colors.Get(color);
+                shape.Fill = Constants.UI.Colors.Get(color);
             }
         }
 
@@ -233,18 +233,11 @@ static partial class ButtonFactories
 
     public sealed class IconButtonBuilder : Builder<IconButtonBuilder>
     {
-        private ButtonSize size;
         private IReadonlyBinding<ModAwareSpriteId>? icon;
 
         protected override IconButtonBuilder This => this;
 
-        public static IconButtonBuilder ForInlineButton() => new(inlineButtonSize);
-        public static IconButtonBuilder ForStandaloneButton() => new(standaloneButtonSize);
-
-        private IconButtonBuilder(ButtonSize size)
-        {
-            this.size = size;
-        }
+        public static IconButtonBuilder ForStandaloneButton() => new();
 
         public IconButtonBuilder WithIcon(ModAwareSpriteId icon)
         {
@@ -258,12 +251,6 @@ static partial class ButtonFactories
             return this;
         }
 
-        public IconButtonBuilder WithCustomSize(double buttonSize)
-        {
-            size = new ButtonSize(buttonSize, buttonSize);
-            return this;
-        }
-
         protected override void Validate()
         {
             DebugAssert.State.Satisfies(icon != null);
@@ -271,7 +258,7 @@ static partial class ButtonFactories
 
         protected override void AddContent(IControlParent control, IReadonlyBinding<Color> color)
         {
-            var iconControl = new Sprite { SpriteId = icon!.Value, Color = color.Value, Size = size.SpriteSize };
+            var iconControl = new Sprite { SpriteId = icon!.Value, Color = color.Value };
             control.Add(iconControl);
 
             icon.SourceUpdated += id => iconControl.SpriteId = id;
@@ -279,19 +266,5 @@ static partial class ButtonFactories
 
             iconControl.BindIsVisible(icon.Transform(id => id.SpriteSet.IsValid && !string.IsNullOrWhiteSpace(id.Id)));
         }
-
-        public Button Build(out double buttonSize)
-        {
-            buttonSize = size.Size;
-            return Build();
-        }
-
-        private readonly record struct ButtonSize(double Size, double SpriteSize);
-
-        private static readonly ButtonSize inlineButtonSize =
-            new(Constants.UI.Text.LineHeight, Constants.UI.Text.LineHeight);
-
-        private static readonly ButtonSize standaloneButtonSize =
-            new(Constants.UI.Button.SquareButtonSize, Constants.UI.Button.SquareButtonSize);
     }
 }

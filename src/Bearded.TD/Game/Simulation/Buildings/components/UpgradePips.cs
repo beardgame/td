@@ -41,7 +41,7 @@ sealed class UpgradePips : Component, IListener<DrawComponents>
             return;
         }
 
-        var halfPipCount = upgradeSlots.ReservedSlotsCount;
+        var halfPipCount = 0;
         var fullPipCount = upgradeSlots.FilledSlotsCount;
         var totalPipCount = upgradeSlots.TotalSlotsCount;
         var emptyPipCount = totalPipCount - fullPipCount - halfPipCount;

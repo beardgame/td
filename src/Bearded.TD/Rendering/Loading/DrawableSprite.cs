@@ -19,11 +19,37 @@ sealed class DrawableSprite<TVertex, TVertexData>(
     private readonly UVRectangle uv = spriteParameters.UV;
     private readonly Vector2 baseSize = spriteParameters.BaseSize;
 
-    public void DrawWithWidth(Vector3 center, float width, Angle angle, TVertexData data)
+    public void Draw(SpriteLayout layout, TVertexData data)
     {
-        ((IDrawableSprite<TVertexData>)this).Draw(
-            center, baseSize.X * width, baseSize.Y * width, angle, data
-        );
+        var frame = layout.Frame;
+        var size = layout.Size switch
+        {
+            SpriteSize.FrameAgnostic => baseSize,
+            SpriteSize.StretchToFrame => (frame.Width, frame.Height),
+            SpriteSize.ContainInFrame => baseSize * Math.Min(frame.Width / baseSize.X, frame.Height / baseSize.Y),
+            SpriteSize.CoverFrame => baseSize * Math.Max(frame.Width / baseSize.X, frame.Height / baseSize.Y),
+            _ => throw new ArgumentOutOfRangeException(nameof(layout.Size)),
+        };
+
+        var frameAnchor = frame.TopLeft + new Vector2(frame.Width, frame.Height) * layout.FrameAlign;
+        var spriteAnchor = size * (layout.SpriteAlign - new Vector2(0.5f));
+        var center = frameAnchor - spriteAnchor;
+
+        size *= layout.Scale;
+
+        draw(center.WithZ(layout.Z), size.X, size.Y, layout.Angle, data);
+    }
+
+    private void draw(Vector3 center, float width, float height, Angle angle, TVertexData data)
+    {
+        var halfWidth = width * 0.5f;
+        var halfHeight = height * 0.5f;
+
+        var radians = angle.Radians;
+        var unitX = new Vector2((float)Math.Cos(radians), (float)Math.Sin(radians));
+        var unitY = new Vector2(-unitX.Y, unitX.X);
+
+        Draw(center, unitX * halfWidth, unitY * halfHeight, data);
     }
 
     public void Draw(Vector3 center, Vector2 radiusX, Vector2 radiusY, TVertexData data)
@@ -41,24 +67,22 @@ sealed class DrawableSprite<TVertex, TVertexData>(
 
         var z = center.Z;
 
-        ((IDrawableSprite<TVertexData>)this).DrawQuad(
-            v0.WithZ(z), v1.WithZ(z), v2.WithZ(z), v3.WithZ(z), data
-        );
+        DrawQuad(v0.WithZ(z), v1.WithZ(z), v2.WithZ(z), v3.WithZ(z), data);
     }
 
-    public void DrawQuad(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft,
-        TVertexData topLeftData, TVertexData topRightData, TVertexData bottomRightData, TVertexData bottomLeftData)
+    public void DrawQuad(Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector3 bottomLeft, TVertexData data)
     {
         meshBuilder.AddQuad(
-            createVertex(topLeft, uv.TopLeft, topLeftData),
-            createVertex(topRight, uv.TopRight, topRightData),
-            createVertex(bottomRight, uv.BottomRight, bottomRightData),
-            createVertex(bottomLeft, uv.BottomLeft, bottomLeftData)
+            createVertex(topLeft, uv.TopLeft, data),
+            createVertex(topRight, uv.TopRight, data),
+            createVertex(bottomRight, uv.BottomRight, data),
+            createVertex(bottomLeft, uv.BottomLeft, data)
         );
     }
 
-    public void DrawQuad(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector2 uv0, Vector2 uv1, Vector2 uv2,
-        Vector2 uv3,
+    public void DrawQuad(
+        Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3,
+        Vector2 uv0, Vector2 uv1, Vector2 uv2, Vector2 uv3,
         TVertexData data0, TVertexData data1, TVertexData data2, TVertexData data3)
     {
         meshBuilder.AddQuad(

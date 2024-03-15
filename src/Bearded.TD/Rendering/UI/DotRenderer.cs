@@ -1,6 +1,8 @@
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI.Rendering;
+using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
@@ -10,9 +12,9 @@ sealed class DotRenderer(IShapeDrawer drawer) : IRenderer<Dot>
     {
         var frame = control.Frame;
 
-        drawer.DrawCircle(
-            frame.TopLeft + frame.Size * 0.5,
-            frame.Size.X * 0.5,
-            new ShapeColors(fill: control.Color));
+        var shape = Circle(frame.TopLeft + frame.Size * 0.5, frame.Size.X * 0.5);
+        var components = new ShapeComponents(Fill: control.Color).ForDrawingAssumingNoGradients();
+
+        drawer.Draw(shape, components);
     }
 }

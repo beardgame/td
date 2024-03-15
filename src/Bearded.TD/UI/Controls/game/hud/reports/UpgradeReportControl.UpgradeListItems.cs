@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Factories;
@@ -12,8 +11,7 @@ sealed partial class UpgradeReportControl
 {
     private sealed class UpgradeListItems : IListItemSource
     {
-        private readonly Dictionary<int, Binding<double>> progressBindings = new();
-        public ImmutableArray<IUpgradeReportInstance.IUpgradeModel> AppliedUpgrades { get; }
+        public ImmutableArray<IPermanentUpgrade> AppliedUpgrades { get; }
         private readonly Binding<bool> canUpgrade;
         private readonly Binding<string> slots;
 
@@ -22,7 +20,7 @@ sealed partial class UpgradeReportControl
         public event VoidEventHandler? ChooseUpgradeButtonClicked;
 
         public UpgradeListItems(
-            ImmutableArray<IUpgradeReportInstance.IUpgradeModel> upgrades,
+            ImmutableArray<IPermanentUpgrade> upgrades,
             Binding<bool> canUpgrade,
             Binding<string> slots)
         {
@@ -51,44 +49,10 @@ sealed partial class UpgradeReportControl
             }
 
             var model = AppliedUpgrades[index - 1];
-            var progressBinding = model.IsFinished ? null : Binding.Create(model.Progress);
-            if (progressBinding != null)
-            {
-                progressBindings[index - 1] = progressBinding;
-            }
 
-            return ButtonFactories.Button(b =>
-            {
-                b.WithLabel(model.Blueprint.Name);
-                if (progressBinding == null)
-                {
-                    b.MakeDisabled();
-                }
-                else
-                {
-                    b.WithProgressBar(progressBinding);
-                }
-
-                return b;
-            });
+            return ButtonFactories.Button(b => b.WithLabel(model.Name).MakeDisabled());
         }
 
-        public void UpdateProgress()
-        {
-            foreach (var (i, binding) in progressBindings)
-            {
-                binding.SetFromSource(AppliedUpgrades[i].Progress);
-            }
-        }
-
-        public void DestroyAll()
-        {
-            progressBindings.Clear();
-        }
-
-        public void DestroyItemControlAt(int index, Control control)
-        {
-            progressBindings.Remove(index);
-        }
+        public void DestroyItemControlAt(int index, Control control) {}
     }
 }

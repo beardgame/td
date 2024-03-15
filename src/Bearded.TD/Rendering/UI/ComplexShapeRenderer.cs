@@ -6,17 +6,18 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class ComplexBoxRenderer(IShapeDrawer drawer) : IRenderer<ComplexShapeControl>
+sealed class ComplexShapeRenderer(IShapeDrawer shapes, GradientDrawer gradients) : IRenderer<ComplexShapeControl>
 {
     public void Render(ComplexShapeControl control)
     {
         var frame = control.Frame;
+        var components = control.Components.ForDrawingWith(gradients, frame);
 
         switch (control)
         {
             case ComplexBox:
             {
-                drawer.Draw(Rectangle(frame.TopLeft, frame.Size, control.CornerRadius), control.Colors, control.Edges);
+                shapes.Draw(Rectangle(frame.TopLeft, frame.Size, control.CornerRadius), components);
                 break;
             }
             case ComplexCircle:
@@ -24,7 +25,7 @@ sealed class ComplexBoxRenderer(IShapeDrawer drawer) : IRenderer<ComplexShapeCon
                 var center = frame.TopLeft + frame.Size * 0.5;
                 var radius = Min(frame.Size.X, frame.Size.Y) * 0.5;
 
-                drawer.Draw(Circle(center, radius), control.Colors, control.Edges);
+                shapes.Draw(Circle(center, radius), components);
                 break;
             }
         }

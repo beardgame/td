@@ -23,7 +23,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     }
 
     private ActiveJam? activeJam;
-    private IStatusDisplay? statusDisplay;
+    private IStatusTracker? statusDisplay;
     private ISpriteBlueprint? sprite;
 
     public WeaponJamming(IParameters parameters) : base(parameters) { }
@@ -55,7 +55,10 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
         {
             sprite ??= Owner.Game.Meta.Blueprints.LoadStatusIconSprite("spanner");
             statusDisplay.AddStatus(
-                new StatusSpec(StatusType.Negative, IconStatusDrawer.FromSpriteBlueprint(Owner.Game, sprite)),
+                new StatusSpec(
+                    StatusType.Negative,
+                    StatusDrawSpec.StaticIcon("spanner".ToStatusIconSpriteId()),
+                    IconStatusDrawer.FromSpriteBlueprint(Owner.Game, sprite)),
                 newJam.End);
         }
 

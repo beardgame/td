@@ -7,6 +7,7 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
 
+[Obsolete]
 sealed class ProgressStatusDrawer(IStatusDrawer inner, Func<float> getProgress) : IStatusDrawer
 {
     public void Draw(CoreDrawers core, IComponentDrawer drawer, Vector3 position, float size)

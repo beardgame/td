@@ -45,6 +45,12 @@ interface IReadonlyBinding<out T>
 
 static class Binding
 {
+    public static T ReturnCurrentAndKeepUpdated<T>(this IReadonlyBinding<T> binding, Action<T> update)
+    {
+        binding.SourceUpdated += t => update(t);
+        return binding.Value;
+    }
+
     public static IReadonlyBinding<T> Constant<T>(T value) => Create(value);
 
     public static Binding<T> Create<T>(T initialValue) => new(initialValue);
@@ -111,7 +117,8 @@ static class Binding
         return aggregated;
     }
 
-    public static IReadonlyBinding<int> CollectionSize<TCollection, TElement>(this Binding<TCollection> collection)
+    public static IReadonlyBinding<int> CollectionSize<TCollection, TElement>(
+        this IReadonlyBinding<TCollection> collection)
         where TCollection : ICollection<TElement>
     {
         var count = new Binding<int>(collection.Value.Count);
@@ -120,7 +127,8 @@ static class Binding
         return count;
     }
 
-    public static IReadonlyBinding<TElement?> ListElementByIndex<TList, TElement>(this Binding<TList> list, int index)
+    public static IReadonlyBinding<TElement?> ListElementByIndex<TList, TElement>(
+        this IReadonlyBinding<TList> list, int index)
         where TList : IList<TElement>
     {
         var element = new Binding<TElement?>(elementOrDefault(list.Value));

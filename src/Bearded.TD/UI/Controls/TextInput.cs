@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Bearded.TD.UI.Factories;
 using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
 
@@ -9,10 +10,18 @@ class TextInput : Bearded.UI.Controls.TextInput
     private static readonly HashSet<char> allowedChars = new HashSet<char> { ' ', '-', '_', '.', '+', '"', ':', '@' };
 
     public double FontSize { get; set; } = 24;
+    public TextStyle TextStyle { get; set; } = TextStyle.Default;
 
     public bool AllowDigits { get; set; } = true;
     public bool AllowLetters { get; set; } = true;
     public bool AllowSpecialCharacters { get; set; } = true;
+
+    public MouseStateObserver MouseState { get; }
+
+    public TextInput()
+    {
+        MouseState = new MouseStateObserver(this);
+    }
 
     public override void CharacterTyped(CharEventArgs eventArgs)
     {

@@ -9,7 +9,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.IScope<TEffect> where TEffect : IElementalEffect
 {
     private readonly GameObject target;
-    private readonly IStatusDisplay? statusDisplay;
+    private readonly IStatusTracker? statusDisplay;
     private readonly List<EffectWithExpiry> activeEffects = new();
     private IStatusDrawer? cachedStatusDrawer;
     private ActiveEffect? activeEffect;
@@ -58,9 +58,15 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
     private IStatusReceipt? reportStatus()
     {
+        var elementalStatus = MakeStatus(target.Game.Meta.Blueprints);
         cachedStatusDrawer ??=
-            IconStatusDrawer.FromSpriteBlueprint(target.Game, MakeStatus(target.Game.Meta.Blueprints).Sprite);
-        var statusReceipt = statusDisplay?.AddStatus(new StatusSpec(StatusType.Negative, cachedStatusDrawer), null);
+            IconStatusDrawer.FromSpriteBlueprint(
+                target.Game,
+                target.Game.Meta.Blueprints.Sprites[elementalStatus.Sprite.SpriteSet]
+                    .GetSprite(elementalStatus.Sprite.Id));
+        var statusReceipt = statusDisplay?.AddStatus(
+            new StatusSpec(StatusType.Negative, StatusDrawSpec.StaticIcon(elementalStatus.Sprite), cachedStatusDrawer),
+            null);
         return statusReceipt;
     }
 

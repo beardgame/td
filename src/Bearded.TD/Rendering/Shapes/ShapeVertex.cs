@@ -2,32 +2,31 @@
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Bearded.Graphics.Vertices;
-using Bearded.TD.Rendering.UI.Gradients;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
 
 namespace Bearded.TD.Rendering.Shapes;
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct ShapeVertex(Vector3 position, ShapeGeometry geometry, ShapeColors colors)
+readonly struct ShapeVertex(Vector3 position, ShapeGeometry geometry, ShapeGradients gradients)
     : IVertexData
 {
     private readonly Vector3 position = position;
     private readonly ShapeGeometry geometry = geometry;
-    private readonly ShapeColors colors = colors;
+    private readonly ShapeGradients gradients = gradients;
 
     static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; }
         = MakeAttributeArray(
             [
                 MakeAttributeTemplate<Vector3>("v_position"),
                 ..ShapeGeometry.VertexAttributeTemplates,
-                ..ShapeColors.VertexAttributeTemplates,
+                ..ShapeGradients.VertexAttributeTemplates,
             ]
         );
 }
 
 [StructLayout(LayoutKind.Sequential)]
-readonly struct ShapeColors(
+readonly struct ShapeGradients(
     GradientParameters fill = default,
     GradientParameters edge = default,
     GradientParameters outerGlow = default,
@@ -37,8 +36,6 @@ readonly struct ShapeColors(
     public readonly GradientParameters Edge = edge;
     public readonly GradientParameters OuterGlow = outerGlow;
     public readonly GradientParameters InnerGlow = innerGlow;
-
-    public bool HasFillOrInnerGlow => !Fill.IsNone || !InnerGlow.IsNone;
 
     public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
     [

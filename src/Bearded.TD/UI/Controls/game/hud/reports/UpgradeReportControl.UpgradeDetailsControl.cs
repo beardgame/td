@@ -41,7 +41,7 @@ sealed partial class UpgradeReportControl
                         .WithLabel(u.Name)
                         .WithEnabled(canUpgrade.And(canAfford))
                         .WithResourceCost(u.Cost)
-                        .WithOnClick(() => reportInstance.QueueUpgrade(u))),
+                        .WithOnClick(() => reportInstance.ApplyUpgrade(u))),
                     Constants.UI.Button.Height);
             }
         }

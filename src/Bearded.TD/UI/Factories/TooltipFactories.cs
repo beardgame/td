@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.UI.Controls;
-using OpenTK.Mathematics;
+using static Bearded.TD.Constants.UI;
 using static Bearded.TD.Constants.UI.Tooltip;
 using static Bearded.TD.UI.Factories.TextFactories;
+using Tooltip = Bearded.TD.UI.Tooltips.Tooltip;
 
 namespace Bearded.TD.UI.Factories;
 
@@ -26,11 +29,14 @@ static class TooltipFactories
     public static TooltipDefinition SimpleTooltip(string text, double? width = null)
     {
         Control createControl() => tooltip(Label(text, Controls.Label.TextAnchorLeft));
-        return new TooltipDefinition(createControl, width ?? DefaultWidth, Constants.UI.Text.LineHeight + 2 * Margin);
+        return new TooltipDefinition(createControl, width ?? DefaultWidth, Text.LineHeight + 2 * Margin);
     }
 
     public static TooltipDefinition SimpleTooltip(ICollection<string> text, double? width = null)
     {
+        return new TooltipDefinition(
+            createControl, width ?? DefaultWidth, text.Count * Text.LineHeight + 2 * Margin);
+
         Control createControl() => tooltip(l =>
         {
             foreach (var line in text)
@@ -38,9 +44,6 @@ static class TooltipFactories
                 l.AddLabel(line, Controls.Label.TextAnchorLeft);
             }
         });
-
-        return new TooltipDefinition(
-            createControl, width ?? DefaultWidth, text.Count * Constants.UI.Text.LineHeight + 2 * Margin);
     }
 
     private static Control tooltip(Action<Layouts.FixedColumnLayout> layoutBuilder)
@@ -57,12 +60,8 @@ static class TooltipFactories
             new ComplexBox
             {
                 CornerRadius = 2,
-
-                FillColor = Constants.UI.Colors.Get(BackgroundColor.Tooltip),
-
-                EdgeOuterWidth = 1,
-                EdgeColor = Constants.UI.Colors.Get(BackgroundColor.SubtleOutline),
-            }.WithDropShadow(),
+                Components = Background,
+            },
             content.Anchor(a => a.MarginAllSides(Margin)),
         };
     }

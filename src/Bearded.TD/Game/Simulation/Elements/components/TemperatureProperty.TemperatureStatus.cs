@@ -6,7 +6,7 @@ sealed partial class TemperatureProperty
 {
     private sealed class TemperatureStatus
     {
-        private readonly IStatusDisplay statusDisplay;
+        private readonly IStatusTracker statusTracker;
         private readonly IStatusDrawer coldDrawer;
         private readonly IStatusDrawer hotDrawer;
         private readonly IStatusDrawer overheatedDrawer;
@@ -15,9 +15,9 @@ sealed partial class TemperatureProperty
         private IStatusReceipt? overheatedStatus;
         private float progress;
 
-        public TemperatureStatus(GameState game, IStatusDisplay statusDisplay)
+        public TemperatureStatus(GameState game, IStatusTracker statusTracker)
         {
-            this.statusDisplay = statusDisplay;
+            this.statusTracker = statusTracker;
             coldDrawer = new ProgressStatusDrawer(iconStatusDrawer(game, "thermometer-cold"), () => progress);
             hotDrawer = new ProgressStatusDrawer(iconStatusDrawer(game, "thermometer-hot"), () => progress);
             overheatedDrawer = iconStatusDrawer(game, "hot-surface");
@@ -30,7 +30,10 @@ sealed partial class TemperatureProperty
         {
             if (newTemperature < Constants.Game.Elements.MinNormalTemperature)
             {
-                coldStatus ??= statusDisplay.AddStatus(new StatusSpec(StatusType.Neutral, coldDrawer), null);
+                var coldDrawSpec =
+                    StatusDrawSpec.StaticIconWithProgress("thermometer-cold".ToStatusIconSpriteId(), () => progress);
+                coldStatus ??=
+                    statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, coldDrawSpec, coldDrawer), null);
                 progress = (newTemperature - Constants.Game.Elements.MinNormalTemperature) /
                     (Constants.Game.Elements.MinTemperature - Constants.Game.Elements.MinNormalTemperature);
             }
@@ -42,7 +45,9 @@ sealed partial class TemperatureProperty
 
             if (newTemperature > Constants.Game.Elements.MaxNormalTemperature)
             {
-                hotStatus ??= statusDisplay.AddStatus(new StatusSpec(StatusType.Neutral, hotDrawer), null);
+                var hotDrawSpec =
+                    StatusDrawSpec.StaticIconWithProgress("thermometer-hot".ToStatusIconSpriteId(), () => progress);
+                hotStatus ??= statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, hotDrawSpec, hotDrawer), null);
                 progress = (newTemperature - Constants.Game.Elements.MaxNormalTemperature) /
                     (Constants.Game.Elements.MaxTemperature - Constants.Game.Elements.MaxNormalTemperature);
             }
@@ -55,7 +60,12 @@ sealed partial class TemperatureProperty
 
         public void BeginOverheat()
         {
-            overheatedStatus = statusDisplay.AddStatus(new StatusSpec(StatusType.Negative, overheatedDrawer), null);
+            overheatedStatus = statusTracker.AddStatus(
+                new StatusSpec(
+                    StatusType.Negative,
+                    StatusDrawSpec.StaticIcon("hot-surface".ToStatusIconSpriteId()),
+                    overheatedDrawer),
+                null);
         }
 
         public void EndOverheat()

@@ -1,7 +1,7 @@
 ﻿using System;
 using Bearded.Graphics;
 
-namespace Bearded.TD.Rendering.UI.Gradients;
+namespace Bearded.TD.UI.Shapes;
 
 readonly struct GradientStop(float position, Color color)
 {
@@ -10,6 +10,11 @@ readonly struct GradientStop(float position, Color color)
 
     public static implicit operator GradientStop((float position, Color color) tuple)
         => new(tuple.position, tuple.color);
+
+    public static implicit operator GradientStop((double position, Color color) tuple)
+        => new((float)tuple.position, tuple.color);
+
+    public override string ToString() => $"({Color}, {Position})";
 }
 
 readonly ref struct Gradient(ReadOnlySpan<GradientStop> stops)

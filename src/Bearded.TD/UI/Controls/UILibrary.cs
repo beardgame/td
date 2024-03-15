@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.TD.Rendering;
+using Bearded.TD.UI.Animation;
 using Bearded.UI.Navigation;
 using Void = Bearded.Utilities.Void;
 
@@ -8,11 +9,12 @@ namespace Bearded.TD.UI.Controls;
 
 static class UILibrary
 {
-    public static (IDictionary<Type, object> models, IDictionary<Type, object> views) CreateFactories(RenderContext renderContext)
+    public static (IDictionary<Type, object> models, IDictionary<Type, object> views) CreateFactories(
+        RenderContext renderContext, Animations animations)
     {
         // Please keep alphabetically sorted.
         return NavigationFactories.ForBoth()
-            .Add<DebugConsole, Void>(m => new DebugConsoleControl(m))
+            .Add<DebugConsole, Void>(m => new DebugConsoleControl(m, animations))
             .Add<GameDebugOverlay, Void>(m => new GameDebugOverlayControl(m))
             .Add<GameUI, GameUI.Parameters>(m => new GameUIControl(m, renderContext))
             .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))

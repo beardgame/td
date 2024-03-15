@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
@@ -10,27 +8,19 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed partial class BuildingUpgradeManager
 {
-    private sealed class UpgradeReport : IUpgradeReport
+    private sealed class UpgradeReport(BuildingUpgradeManager source) : IUpgradeReport
     {
         public ReportType Type => ReportType.Upgrades;
 
-        private readonly BuildingUpgradeManager source;
-
-        public UpgradeReport(BuildingUpgradeManager source)
-        {
-            this.source = source;
-        }
-
         public IUpgradeReportInstance CreateInstance(GameInstance game)
         {
-            return new UpgradeReportInstance(source.Owner, source, source.upgradeSlots, game);
+            return new UpgradeReportInstance(source.Owner, source, game);
         }
 
         private sealed class UpgradeReportInstance : IUpgradeReportInstance, IListener<UpgradeTechnologyUnlocked>
@@ -43,13 +33,12 @@ sealed partial class BuildingUpgradeManager
             private readonly Faction playerFaction;
             private readonly FactionResources? factionResources;
 
-            private readonly List<BuildingUpgradeModel> buildingUpgrades = new();
-            private readonly List<IPermanentUpgrade> buildingAvailableUpgrades = new();
+            private readonly List<IPermanentUpgrade> buildingUpgrades = [];
+            private readonly List<IPermanentUpgrade> buildingAvailableUpgrades = [];
 
-            public IReadOnlyCollection<IUpgradeReportInstance.IUpgradeModel> Upgrades { get; }
+            public IReadOnlyCollection<IPermanentUpgrade> Upgrades { get; }
             public IReadOnlyCollection<IPermanentUpgrade> AvailableUpgrades { get; }
-            public int OccupiedUpgradeSlots =>
-                upgradeSlots == null ? 0 : upgradeSlots.FilledSlotsCount + upgradeSlots.ReservedSlotsCount;
+            public int OccupiedUpgradeSlots => upgradeSlots?.FilledSlotsCount ?? 0;
             public int UnlockedUpgradeSlots => upgradeSlots?.TotalSlotsCount ?? 0;
 
             public bool CanPlayerUpgradeBuilding =>
@@ -63,36 +52,20 @@ sealed partial class BuildingUpgradeManager
             public UpgradeReportInstance(
                 GameObject subject,
                 IBuildingUpgradeManager upgradeManager,
-                IUpgradeSlots? upgradeSlots,
                 GameInstance game)
             {
                 this.subject = subject;
                 this.upgradeManager = upgradeManager;
-                this.upgradeSlots = upgradeSlots;
+                subject.TryGetSingleComponent(out upgradeSlots);
                 this.game = game;
                 events = game.Meta.Events;
                 playerFaction = game.Me.Faction;
                 playerFaction.TryGetBehaviorIncludingAncestors(out factionResources);
 
-                upgradeManager.UpgradeQueued += onUpgradeQueued;
                 upgradeManager.UpgradeCompleted += onUpgradeCompleted;
                 events.Subscribe(this);
 
-                var appliedUpgrades = this.upgradeManager.AppliedUpgrades;
-                var upgradesInProgress = this.upgradeManager.UpgradesInProgress;
-
-                var finishedUpgrades = appliedUpgrades.WhereNot(u => upgradesInProgress.Any(t => t.Upgrade == u));
-
-                foreach (var u in finishedUpgrades)
-                {
-                    buildingUpgrades.Add(new BuildingUpgradeModel(u, null));
-                }
-
-                foreach (var task in upgradesInProgress)
-                {
-                    buildingUpgrades.Add(new BuildingUpgradeModel(task.Upgrade, task));
-                }
-
+                buildingUpgrades.AddRange(upgradeManager.AppliedUpgrades);
                 Upgrades = buildingUpgrades.AsReadOnly();
                 AvailableUpgrades = buildingAvailableUpgrades.AsReadOnly();
                 updateAvailableUpgrades();
@@ -100,31 +73,16 @@ sealed partial class BuildingUpgradeManager
 
             public void Dispose()
             {
-                upgradeManager.UpgradeQueued -= onUpgradeQueued;
                 upgradeManager.UpgradeCompleted -= onUpgradeCompleted;
                 events.Unsubscribe(this);
             }
 
             private void onUpgradeCompleted(IPermanentUpgrade upgrade)
             {
-                var i = buildingUpgrades.FindIndex(model => model.Blueprint == upgrade);
-                if (i != -1)
-                {
-                    buildingUpgrades[i].MarkFinished();
-                }
-                else
-                {
-                    buildingUpgrades.Add(new BuildingUpgradeModel(upgrade, null));
-                    updateAvailableUpgrades();
-                }
+                buildingUpgrades.Add(upgrade);
+                updateAvailableUpgrades();
 
                 UpgradesUpdated?.Invoke();
-            }
-
-            private void onUpgradeQueued(IIncompleteUpgrade incompleteUpgrade)
-            {
-                buildingUpgrades.Add(new BuildingUpgradeModel(incompleteUpgrade.Upgrade, incompleteUpgrade));
-                updateAvailableUpgrades();
             }
 
             public void HandleEvent(UpgradeTechnologyUnlocked @event)
@@ -141,38 +99,13 @@ sealed partial class BuildingUpgradeManager
             private void updateAvailableUpgrades()
             {
                 buildingAvailableUpgrades.Clear();
-                var upgradesInProgress =
-                    upgradeManager.UpgradesInProgress.Select(t => t.Upgrade).ToImmutableHashSet();
-                buildingAvailableUpgrades
-                    .AddRange(upgradeManager.ApplicableUpgrades.WhereNot(upgradesInProgress.Contains));
+                buildingAvailableUpgrades.AddRange(upgradeManager.ApplicableUpgrades);
                 AvailableUpgradesUpdated?.Invoke();
             }
 
-            public void QueueUpgrade(IPermanentUpgrade upgrade)
+            public void ApplyUpgrade(IPermanentUpgrade upgrade)
             {
                 game.Request(UpgradeBuilding.Request, subject, upgrade);
-            }
-        }
-
-        private sealed class BuildingUpgradeModel : IUpgradeReportInstance.IUpgradeModel
-        {
-            private IIncompleteUpgrade? incompleteUpgrade;
-
-            public IPermanentUpgrade Blueprint { get; }
-
-            public double Progress => incompleteUpgrade?.PercentageComplete ?? 1;
-
-            public bool IsFinished => Progress >= 1;
-
-            public BuildingUpgradeModel(IPermanentUpgrade blueprint, IIncompleteUpgrade? incompleteUpgrade)
-            {
-                Blueprint = blueprint;
-                this.incompleteUpgrade = incompleteUpgrade;
-            }
-
-            public void MarkFinished()
-            {
-                incompleteUpgrade = null;
             }
         }
     }

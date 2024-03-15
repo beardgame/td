@@ -59,7 +59,6 @@ sealed partial class UpgradeReportControl : ReportControl
         }
 
         listItems.ChooseUpgradeButtonClicked -= onChooseUpgradeButtonClicked;
-        listItems.DestroyAll();
         listItems = new UpgradeListItems(newUpgrades, canUpgrade, slots);
         listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
         list.ItemSource = listItems;
@@ -72,7 +71,6 @@ sealed partial class UpgradeReportControl : ReportControl
         canUpgrade.SetFromSource(reportInstance.CanPlayerUpgradeBuilding);
         resources.SetFromSource(reportInstance.PlayerResources);
         slots.SetFromSource($"{reportInstance.OccupiedUpgradeSlots} / {reportInstance.UnlockedUpgradeSlots}");
-        listItems.UpdateProgress();
     }
 
     public override void Dispose()

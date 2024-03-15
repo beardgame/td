@@ -62,8 +62,7 @@ static partial class Stunned
 
         protected override ElementalStatus MakeStatus(Blueprints blueprints)
         {
-            var sprite = blueprints.LoadStatusIconSprite("unstable-orb");
-            return new ElementalStatus(sprite);
+            return new ElementalStatus("unstable-orb".ToStatusIconSpriteId());
         }
     }
 }
