@@ -11,12 +11,14 @@ const int SHAPE_TYPE_HEXAGON = 4; // center and radius
 
 const int GRADIENT_TYPE_NONE = 0;
 const int GRADIENT_TYPE_CONSTANT = 1;
-const int GRADIENT_TYPE_SIMPLE_GLOW = 2;
 const int GRADIENT_TYPE_LINEAR = 20; // point to point
 const int GRADIENT_TYPE_RADIAL_RADIUS = 21; // center and radius
 const int GRADIENT_TYPE_RADIAL_POINT_ON_EDGE = 22; // center and point on edge
 const int GRADIENT_TYPE_ALONG_EDGE_NORMAL = 23;
 const int GRADIENT_ARC_AROUND_POINT = 24; // center, start and total angle in radians
+
+const uint GRADIENT_FLAG_GLOWFADE = 1;
+const uint GRADIENT_FLAG_DITHER = 2;
 
 const int EDGE_OUTER_WIDTH_I = 0;
 const int EDGE_INNER_WIDTH_I = 1;
@@ -32,13 +34,15 @@ const float ANTI_ALIAS_WIDTH = 1;
 
 uniform usamplerBuffer gradientBuffer;
 
+uniform float uiTime;
+
 in vec3 p_position;
 flat in int p_shapeType;
 flat in vec4 p_shapeData;
 flat in vec3 p_shapeData2;
 flat in vec4 p_edgeData;
 
-flat in uint p_gradientTypeIndices[4];
+flat in uvec2 p_gradientTypeIndicesFlags[4];
 flat in vec4 p_gradientParameters[4];
 
 out vec4 fragColor;
@@ -210,14 +214,26 @@ vec4 getColorInGradient(uint index, float t)
     return stopColor(current);
 }
 
-vec4 getColor(int partIndex, float t)
+float hash(float n)
 {
-    uint typeIndex = p_gradientTypeIndices[partIndex];
-    uint type = typeIndex & 0xFFu;
-    uint index = typeIndex >> 8;
-    
+    return fract(sin(n) * 43758.5453);
+}
+float hash(vec2 p)
+{
+    return fract(sin(dot(p, vec2(11.9898, 78.233))) * 43758.5453);
+}
+
+vec4 dither(vec4 color, vec2 seed)
+{
+    float n = (hash(seed) * 2 - 1) * (hash(seed.yx * 12.3) * 2 - 1);
+    n /= 128;
+    color.rgb += n;
+    return color;
+}
+
+vec4 getColor(int partIndex, float t, uint type, uint gradientIndex)
+{
     vec4 parameters = p_gradientParameters[partIndex];
-    
     switch(type)
     {
         case GRADIENT_TYPE_NONE:
@@ -228,24 +244,20 @@ vec4 getColor(int partIndex, float t)
         {
             return getConstantColorFromGradientParameters(partIndex);
         }
-        case GRADIENT_TYPE_SIMPLE_GLOW:
-        {
-            return getConstantColorFromGradientParameters(partIndex) * smoother(t);
-        }
         case GRADIENT_TYPE_LINEAR:
         {
             vec2 p0 = parameters.xy;
             vec2 p1 = parameters.zw;
             vec2 d = p1 - p0;
             float projection = dot(d, p_position.xy - p0) / dot(d, d);
-            return getColorInGradient(index, projection);
+            return getColorInGradient(gradientIndex, projection);
         }
         case GRADIENT_TYPE_RADIAL_RADIUS:
         {
             vec2 center = parameters.xy;
             float radius = parameters.z;
             float distance = length(p_position.xy - center) / radius;
-            return getColorInGradient(index, distance);
+            return getColorInGradient(gradientIndex, distance);
         }
         case GRADIENT_TYPE_RADIAL_POINT_ON_EDGE:
         {
@@ -253,11 +265,11 @@ vec4 getColor(int partIndex, float t)
             vec2 pointOnEdge = p_shapeData.xy;
             float radius = length(pointOnEdge - center);
             float distance = length(p_position.xy - center) / radius;
-            return getColorInGradient(index, distance);
+            return getColorInGradient(gradientIndex, distance);
         }
         case GRADIENT_TYPE_ALONG_EDGE_NORMAL:
         {
-            return getColorInGradient(index, t);
+            return getColorInGradient(gradientIndex, t);
         }
         case GRADIENT_ARC_AROUND_POINT:
         {
@@ -265,13 +277,33 @@ vec4 getColor(int partIndex, float t)
             float startAngle = parameters.z;
             float totalAngle = parameters.w;
             vec2 d = p_position.xy - center;
-            float angle = atan(d.y, d.x);            
+            float angle = atan(d.y, d.x);
             float normalizedAngle = mod(angle + startAngle, TAU) / totalAngle;
-            return getColorInGradient(index, normalizedAngle);
+            return getColorInGradient(gradientIndex, normalizedAngle);
         }
     }
-    
     return vec4(1, 0, 1, 0.5);
+}
+
+vec4 getColor(int partIndex, float t)
+{
+    uint typeIndex = p_gradientTypeIndicesFlags[partIndex].x;
+    uint flags = p_gradientTypeIndicesFlags[partIndex].y;
+    uint type = typeIndex & 0xFFu;
+    uint gradientIndex = typeIndex >> 8;
+    
+    vec4 color = getColor(partIndex, t, type, gradientIndex);
+    
+    if ((flags & GRADIENT_FLAG_GLOWFADE) != 0)
+    {
+        color = color * smoother(t);
+    }
+    if ((flags & GRADIENT_FLAG_DITHER) != 0)
+    {
+        color = dither(color, p_position.xy + hash(uiTime));
+    }
+    
+    return color;
 }
 
 struct Contribution

@@ -37,7 +37,6 @@ static class GradientUIExtensions
         {
             None => default,
             Constant => (encodeColor(def.Color), 0, 0, 0),
-            SimpleGlow => (encodeColor(def.Color), 0, 0, 0),
             Linear => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
             RadialWithRadius => v4(def.Point1.CalculatePointWithin(frame), (def.Radius, 0)),
             RadialToPoint => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
@@ -46,7 +45,7 @@ static class GradientUIExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(def.Type)),
         };
 
-        return new GradientParameters(def.Type, gradientId, parameters);
+        return new GradientParameters(def.Type, gradientId, def.Flags, parameters);
 
         static float encodeColor(Color color) => Unsafe.BitCast<Color, float>(color);
         static Vector4 v4(Vector2 a, Vector2 b) => new(a.X, a.Y, b.X, b.Y);

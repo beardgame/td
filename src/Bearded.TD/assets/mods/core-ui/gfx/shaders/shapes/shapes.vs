@@ -15,10 +15,10 @@ in vec4 v_shapeData;
 in vec3 v_shapeData2;
 in vec4 v_edgeData;
 
-in uint v_fillGradientTypeIndex;
-in uint v_edgeGradientTypeIndex;
-in uint v_outerGlowGradientTypeIndex;
-in uint v_innerGlowGradientTypeIndex;
+in uvec2 v_fillGradientTypeIndexFlags;
+in uvec2 v_edgeGradientTypeIndexFlags;
+in uvec2 v_outerGlowGradientTypeIndexFlags;
+in uvec2 v_innerGlowGradientTypeIndexFlags;
 
 in vec4 v_fillGradientParameters;
 in vec4 v_edgeGradientParameters;
@@ -31,7 +31,7 @@ flat out vec4 p_shapeData;
 flat out vec3 p_shapeData2;
 flat out vec4 p_edgeData;
 
-flat out uint p_gradientTypeIndices[4];
+flat out uvec2 p_gradientTypeIndicesFlags[4];
 flat out vec4 p_gradientParameters[4];
 
 void main()
@@ -44,10 +44,10 @@ void main()
 	p_shapeData2 = v_shapeData2;
 	p_edgeData = v_edgeData;
 
-	p_gradientTypeIndices[PART_FILL_I] = v_fillGradientTypeIndex;
-	p_gradientTypeIndices[PART_EDGE_I] = v_edgeGradientTypeIndex;
-	p_gradientTypeIndices[PART_GLOW_OUTER_I] = v_outerGlowGradientTypeIndex;
-	p_gradientTypeIndices[PART_GLOW_INNER_I] = v_innerGlowGradientTypeIndex;
+	p_gradientTypeIndicesFlags[PART_FILL_I] = v_fillGradientTypeIndexFlags;
+	p_gradientTypeIndicesFlags[PART_EDGE_I] = v_edgeGradientTypeIndexFlags;
+	p_gradientTypeIndicesFlags[PART_GLOW_OUTER_I] = v_outerGlowGradientTypeIndexFlags;
+	p_gradientTypeIndicesFlags[PART_GLOW_INNER_I] = v_innerGlowGradientTypeIndexFlags;
 	
 	p_gradientParameters[PART_FILL_I] = v_fillGradientParameters;
 	p_gradientParameters[PART_EDGE_I] = v_edgeGradientParameters;

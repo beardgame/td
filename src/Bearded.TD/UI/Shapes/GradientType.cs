@@ -6,7 +6,6 @@ enum GradientType : byte
 
     // Single Color
     Constant = 1,
-    SimpleGlow = 2,
 
     // Full Gradients
     Linear = 20,
@@ -21,5 +20,4 @@ enum GradientTypeSingleColor : byte
     None = 0,
 
     Constant = GradientType.Constant,
-    SimpleGlow = GradientType.SimpleGlow,
 }
