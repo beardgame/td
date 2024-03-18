@@ -97,25 +97,22 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
     {
         var color = colorBySeverity[entry.Severity];
 
-        var background = new BackgroundBox();
-        var timeSinceEntry = DateTime.Now - entry.Time;
-        if (timeSinceEntry.TotalSeconds < NewEntryBackgroundAnimationDuration.NumericValue)
+        var label = new Label
         {
-            animations.Start(NewEntryBackgroundAnimation, (background, color));
-        }
-
-        return new CompositeControl
-        {
-            background,
-            new Label
-            {
-                Text = entry.Text,
-                Color = color,
-                FontSize = FontSize,
-                TextAnchor = .5 * Vector2d.UnitY,
-                TextStyle = Font,
-            },
+            Text = entry.Text,
+            Color = color,
+            FontSize = FontSize,
+            TextAnchor = .5 * Vector2d.UnitY,
+            TextStyle = Font,
         };
+
+        var timeSinceEntry = DateTime.Now - entry.Time;
+        if (timeSinceEntry.TotalSeconds > NewEntryBackgroundAnimationDuration.NumericValue)
+            return label;
+
+        var background = new BackgroundBox();
+        animations.Start(NewEntryBackgroundAnimation, (background, color));
+        return new CompositeControl { background, label };
     }
 
     public override void KeyHit(KeyEventArgs eventArgs)
