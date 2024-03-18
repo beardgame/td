@@ -145,6 +145,40 @@ static partial class Constants
             );
         }
 
+        public static class BuildingStatus
+        {
+            public const double ButtonSize = 32;
+
+            public const double Padding = LayoutMargin;
+            public const double EdgeWidth = 1;
+
+            public static readonly ShapeComponents StatusRowBackground = new(
+                Fill: ShapeColor.From(
+                    [
+                        (0, Colors.Get(BackgroundColor.ActiveElement) * 0.5f),
+                        (0.95, Color.Transparent),
+                    ],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
+                )
+            );
+            public static readonly double StatusRowBackgroundLeftMargin = EdgeWidth - Padding;
+
+            public static readonly ShapeComponents Background = new(
+                Fill: ShapeColor.From(
+                    [
+                        (0, Colors.Get(BackgroundColor.Default)),
+                        (0.75, Colors.Get(BackgroundColor.Default) * 0.5f),
+                        (0.95, Color.Transparent),
+                    ],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
+                ),
+                Edge: Edge.Inner((float)EdgeWidth, ShapeColor.From(
+                    [(0, Colors.Get(BackgroundColor.TooltipOutline)), (0.75, Color.Transparent)],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
+                ))
+            );
+        }
+
         public static class Window
         {
             public const double TitlebarHeight = NavBar.Height;

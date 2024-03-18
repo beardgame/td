@@ -13,6 +13,7 @@ static class StatusIconFactories
      *   - Statuses aren't immutable: elements such as the icon and the progress may change frame to frame
      *   - The status may be swapped out entirely: if a status gets removed from the list of statuses, instead of moving
      *     the controls, the content of the statuses is moved over instead.
+     *     - COMMENT: This is likely to make animation and effect continuity challenging
      * - Status value may be set to null; however it is not expected at this time the control will continue to be drawn
      *   and you can use it as a signal that you can unsubscribe from the event.
      * - Current relevant properties and what they mean:
@@ -31,6 +32,7 @@ static class StatusIconFactories
      *     the game
      *   - Progress is shown as a circular progressbar along the inside of the border
      *   - Expected size by the caller is Constants.UI.Button.SquareButtonSize (same as action bar icons)
+     *     - COMMENT: They looked much too big to me, I made them half the size
      * - Future expansions:
      *   - We expect the same UI to contain very similar looking icons, but not for statuses
      *     - Upgrades: both upgrades that are currently active, as well as buttons to select a new upgrade
@@ -44,6 +46,7 @@ static class StatusIconFactories
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
             .WithIcon(status.Transform(s => s?.DrawSpec.Icon ?? Constants.Content.CoreUI.Sprites.Technology))
+            .WithIconScale(0.75f)
             .MakeHexagon());
     }
 

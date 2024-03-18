@@ -70,6 +70,7 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
         var index = 0;
         var vertexIndex = indexOffset;
 
+        // TODO: this should consider ui scaling, or the config needs to scale with it
         if (config.AlignGrid is { } align)
         {
             var cell = origin.Xy / align;

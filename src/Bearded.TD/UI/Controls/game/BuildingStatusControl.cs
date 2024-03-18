@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
@@ -11,19 +12,38 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class BuildingStatusControl : CompositeControl
 {
-    public static readonly Vector2d Size = (200, headerSize + 2 * (buttonSize + buttonBetweenMargin));
+    private const double headerSize = Constants.UI.Text.HeaderLineHeight;
+    private const double buttonSize = Constants.UI.BuildingStatus.ButtonSize;
+    private static readonly Vector2d buttonBetweenMargin = (Constants.UI.Button.Margin, Constants.UI.Button.Margin * 3);
+    private static double buttonLeftMargin(int i) => i * (buttonSize + buttonBetweenMargin.X);
+
+    public static readonly Vector2d Size =
+    (
+        300,
+        headerSize + 2 * (buttonSize + buttonBetweenMargin.Y)
+    );
 
     public BuildingStatusControl(BuildingStatus model)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
-        Add(new BackgroundBox());
+        Add(new ComplexBox
+        {
+            Components = Constants.UI.BuildingStatus.Background,
+            CornerRadius = 5,
+        });
 
-        var column = this.BuildFixedColumn();
+        var innerContainer = new CompositeControl();
+        Add(innerContainer.Anchor(a => a.MarginAllSides(Constants.UI.BuildingStatus.Padding).Top()));
+
+        var column = innerContainer.BuildFixedColumn();
         column
             .AddHeader(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview"))
-            .Add(new IconRow<Status>(model.Statuses, StatusIconFactories.StatusIcon), buttonSize + buttonBetweenMargin)
-            .Add(new IconRow<UpgradeSlot>(model.Upgrades, StatusIconFactories.UpgradeSlot), buttonSize + buttonBetweenMargin);
+            .Add(new IconRow<Status>(
+                    model.Statuses, StatusIconFactories.StatusIcon, Constants.UI.BuildingStatus.StatusRowBackground),
+                buttonSize + buttonBetweenMargin.Y)
+            .Add(new IconRow<UpgradeSlot>(model.Upgrades, StatusIconFactories.UpgradeSlot),
+                buttonSize + buttonBetweenMargin.Y);
     }
 
     private sealed class IconRow<T> : CompositeControl
@@ -32,10 +52,19 @@ sealed class BuildingStatusControl : CompositeControl
         private readonly Func<IReadonlyBinding<T?>, Control> controlFactory;
         private readonly List<Control> iconControls = [];
 
-        public IconRow(IReadonlyBinding<ImmutableArray<T>> source, Func<IReadonlyBinding<T?>, Control> controlFactory)
+        public IconRow(
+            IReadonlyBinding<ImmutableArray<T>> source,
+            Func<IReadonlyBinding<T?>, Control> controlFactory,
+            ShapeComponents? background = null)
         {
             this.source = source;
             this.controlFactory = controlFactory;
+
+            if (background is { } components)
+            {
+                Add(new ComplexBox { Components = components }
+                    .Anchor(a => a.Left(margin: Constants.UI.BuildingStatus.StatusRowBackgroundLeftMargin)));
+            }
 
             source.CollectionSize<ImmutableArray<T>, T>().SourceUpdated += updateIconCount;
             updateIconCount(source.Value.Length);
@@ -77,9 +106,4 @@ sealed class BuildingStatusControl : CompositeControl
             return control;
         }
     }
-
-    private const double headerSize = Constants.UI.Text.HeaderLineHeight;
-    private const double buttonBetweenMargin = Constants.UI.Button.Margin;
-    private const double buttonSize = Constants.UI.Button.SquareButtonSize;
-    private static double buttonLeftMargin(int i) => i * (buttonSize + buttonBetweenMargin);
 }
