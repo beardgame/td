@@ -66,7 +66,7 @@ static class MenuFactories
                 background ?? new ComplexBox
                 {
                     Fill = Constants.UI.Colors.Get(BackgroundColor.Default) * 0.8f,
-                    Edge = Edge.Outer(1, Constants.UI.Colors.Get(BackgroundColor.BackgroundOutline)),
+                    Edge = Edge.Outer(1, Constants.UI.Colors.Get(BackgroundColor.MenuOutline)),
                     OuterGlow = (Constants.UI.Menu.ShadowWidth, Constants.UI.Menu.ShadowColor),
                 },
             };

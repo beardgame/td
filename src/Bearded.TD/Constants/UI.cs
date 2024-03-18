@@ -139,7 +139,7 @@ static partial class Constants
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
                 ),
                 Edge: Edge.Outer(1, ShapeColor.From(
-                    [(0, Colors.Get(BackgroundColor.SubtleOutline)), (1, Color.Transparent)],
+                    [(0, Colors.Get(BackgroundColor.TooltipOutline)), (1, Color.Transparent)],
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.85f, 0)))
                 ))
             );
@@ -159,7 +159,7 @@ static partial class Constants
                     ],
                     GradientDefinition.Linear(AnchorPoint.Relative((0.3f, 0)), AnchorPoint.Relative((0.6f, 1)))
                 ),
-                Edge: Edge.Inner(1, Colors.Get(BackgroundColor.BackgroundOutline))
+                Edge: Edge.Inner(1, Colors.Get(BackgroundColor.WindowOutline))
             );
 
             public static readonly Shadow Shadow = Shadows.LargeWindow;

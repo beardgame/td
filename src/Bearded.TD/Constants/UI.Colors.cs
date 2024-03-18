@@ -13,15 +13,16 @@ public enum BackgroundColor
     InactiveElement = 1,
     Tooltip = 1,
     ActiveElement = 2,
-    SubtleOutline = 2,
-    BackgroundOutline = 1,
+    TooltipOutline = 2,
+    MenuOutline = 1,
     Element = 4,
     Hover = 5,
+    WindowOutline = 3,
+    WindowInsetLine = 3,
 
     WindowBackground = 1,
     HeaderBackground = 2,
 
-    MainMenuBackground = 5,
 }
 
 public enum ForeGroundColor
