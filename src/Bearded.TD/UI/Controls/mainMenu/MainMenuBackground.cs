@@ -1,5 +1,4 @@
-﻿using Bearded.Graphics;
-using Bearded.TD.Rendering;
+﻿using Bearded.TD.Rendering;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
