@@ -8,6 +8,9 @@
 *.sln      text eol=crlf
 *.csproj   text eol=crlf
 
+# Rider files
+*.csproj.DotSettings text eol=lf
+
 # Scripts & config
 *.json     text
 *.json5    text

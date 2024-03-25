@@ -23,17 +23,19 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
 
     public static IGameStatistics CreateSubscribed(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
     {
-        var instance = new GameStatistics(dispatcher);
+        var instance = new GameStatistics(dispatcher, events);
         events.Subscribe<WaveStarted>(instance);
         events.Subscribe<WaveEnded>(instance);
         return instance;
     }
 
     private readonly IDispatcher<GameInstance> dispatcher;
+    private readonly GlobalGameEvents events;
 
-    private GameStatistics(IDispatcher<GameInstance> dispatcher)
+    private GameStatistics(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
     {
         this.dispatcher = dispatcher;
+        this.events = events;
     }
 
     public void HandleEvent(WaveStarted @event)
@@ -44,6 +46,14 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
     public void HandleEvent(WaveEnded @event)
     {
         // TODO: synchronize using dispatcher
+        var waveReport = WaveReport.Create(
+            statsByTower
+                .Select(kvp => (Id: kvp.Key, DamageByType: kvp.Value.ToTypedAccumulatedDamages()))
+                .ToImmutableArray());
+        events.Send(new WaveReportCreated(@event.WaveId, waveReport));
+
+#if DEBUG
+        // TODO: delete debug code
         foreach (var (id, stats) in statsByTower)
         {
             var list = stats.ToTypedAccumulatedDamages().Select(toString).ToList();
@@ -62,6 +72,7 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
         {
             return $"{tad.Type} -> {tad.DamageDone} / {tad.AttemptedDamage} ({tad.Efficiency:P})";
         }
+#endif
     }
 
     public void RegisterDamage(Id<GameObject> id, FinalDamageResult damageResult)
