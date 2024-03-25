@@ -10,17 +10,12 @@ namespace Bearded.TD.Game.Simulation.Statistics;
 sealed class StatisticCollector : Component, ISyncable
 {
     private double totalDamage;
-    private long totalKills;
 
     protected override void OnAdded()
     {
         Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
         {
             totalDamage += e.Result.TotalExactDamage.Amount.NumericValue;
-        }));
-        Events.Subscribe(Listener.ForEvent<CausedKill>(_ =>
-        {
-            totalKills++;
         }));
     }
 
@@ -32,25 +27,21 @@ sealed class StatisticCollector : Component, ISyncable
     {
         private readonly StatisticCollector source;
         private double totalDamage;
-        private long totalKills;
 
         public StatisticCollectorStateToSync(StatisticCollector source)
         {
             this.source = source;
             totalDamage = source.totalDamage;
-            totalKills = source.totalKills;
         }
 
         public void Serialize(INetBufferStream stream)
         {
             stream.Serialize(ref totalDamage);
-            stream.Serialize(ref totalKills);
         }
 
         public void Apply()
         {
             source.totalDamage = totalDamage;
-            source.totalKills = totalKills;
         }
     }
 }
