@@ -5,7 +5,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Statistics;
 
-sealed class StatisticCollector : Component
+sealed class DamageStatisticForwarder : Component
 {
     protected override void OnAdded() {}
 
