@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.26
+
+* Replaced main menu design
+* Replaced technology screen design
+* Added work in progress status overlay for buildings
+  * Replaces status overlay
+  * Shows current upgrades
+* Replaced some square UI elements with hexagonal elements
+* Made improvements to text styling and formatting
+* Made improvements to tooltip styling
+* Added UI animations
+  * Menu slide-in
+  * Button background
+* Bug fix: correctly pass mouse input through the version number overlay
+
 ## v0.25
 
 * Completely rewrote UI skin
