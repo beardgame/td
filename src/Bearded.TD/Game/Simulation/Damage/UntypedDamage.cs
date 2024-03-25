@@ -22,6 +22,18 @@ readonly struct UntypedDamage
         return $"{Amount.NumericValue} Damage";
     }
 
+    public static bool operator <(UntypedDamage left, UntypedDamage right) =>
+        left.Amount < right.Amount;
+
+    public static bool operator <=(UntypedDamage left, UntypedDamage right) =>
+        left.Amount <= right.Amount;
+
+    public static bool operator >(UntypedDamage left, UntypedDamage right) =>
+        left.Amount > right.Amount;
+
+    public static bool operator >=(UntypedDamage left, UntypedDamage right) =>
+        left.Amount >= right.Amount;
+
     public static UntypedDamage operator +(UntypedDamage left, UntypedDamage right) =>
         new(left.Amount + right.Amount);
 

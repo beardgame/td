@@ -10,6 +10,4 @@ readonly record struct IntermediateDamageResult(
 
     public static IntermediateDamageResult Blocked(TypedDamage damage) =>
         new(TypedDamage.Zero(damage.Type), TypedDamage.Zero(damage.Type), HitPoints.Zero);
-
-    public FinalDamageResult AsFinal() => new(ExactDamageDone, DiscreteDamageDone);
 }

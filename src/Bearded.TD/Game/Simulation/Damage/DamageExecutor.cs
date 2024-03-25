@@ -17,6 +17,7 @@ readonly struct DamageExecutor
         target.TryGetSingleComponent<IHealthEventReceiver>(out var damageReceiver);
         var damageResult =
             damageReceiver?.Damage(typedDamage, damageSource) ?? FinalDamageResult.None(typedDamage.Type);
+        damageSource?.AttributeDamage(damageResult, target);
 
         // Inject information about having been hit by something, whether damage was done or not
         // Typically used for visual effects.

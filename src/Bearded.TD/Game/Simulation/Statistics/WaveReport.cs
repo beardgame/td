@@ -10,58 +10,61 @@ namespace Bearded.TD.Game.Simulation.Statistics;
 sealed class WaveReport
 {
     private readonly ImmutableDictionary<Id<GameObject>, Tower> statsByTower;
-    private readonly ImmutableArray<TypedDamageDone> damageByType;
+    private readonly ImmutableArray<TypedAccumulatedDamage> accumulatedDamageByType;
 
     public Tower StatsForTower(Id<GameObject> id) => statsByTower.GetValueOrDefault(id, Tower.NoDamage);
 
     public static WaveReport Create(
-        ImmutableArray<(Id<GameObject> Id, ImmutableArray<TypedDamageDone> DamageByType)> stats)
+        ImmutableArray<(Id<GameObject> Id, ImmutableArray<TypedAccumulatedDamage> DamageByType)> stats)
     {
         var statsByTower = stats.ToImmutableDictionary(tuple => tuple.Id, tuple => new Tower(tuple.DamageByType));
         var damageByType = stats
             .SelectMany(tuple => tuple.DamageByType)
             .GroupBy(
                 d => d.Type,
-                (type, damages) => new TypedDamageDone(type, DamageDone.Aggregate(damages.Select(t => t.Damage))))
+                (type, damages) => new TypedAccumulatedDamage(
+                    type,
+                    AccumulatedDamage.Aggregate(damages.Select(t => t.AccumulatedDamage))))
             .ToImmutableArray();
         return new WaveReport(statsByTower, damageByType);
     }
 
     private WaveReport(
-        ImmutableDictionary<Id<GameObject>, Tower> statsByTower, ImmutableArray<TypedDamageDone> damageByType)
+        ImmutableDictionary<Id<GameObject>, Tower> statsByTower,
+        ImmutableArray<TypedAccumulatedDamage> accumulatedDamageByType)
     {
         this.statsByTower = statsByTower;
-        this.damageByType = damageByType;
+        this.accumulatedDamageByType = accumulatedDamageByType;
     }
 
-    public sealed record Tower(ImmutableArray<TypedDamageDone> DamageByType)
+    public sealed record Tower(ImmutableArray<TypedAccumulatedDamage> DamageByType)
     {
         // TODO: consider precalculating these
-        public UntypedDamage TotalDamageDone => DamageDone.Aggregate(DamageByType.Select(d => d.Damage)).TotalDamage;
-        public double TotalEfficiency => DamageDone.Aggregate(DamageByType.Select(d => d.Damage)).Efficiency;
+        public UntypedDamage TotalDamageDone =>
+            AccumulatedDamage.Aggregate(DamageByType.Select(d => d.AccumulatedDamage)).DamageDone;
+        public double TotalEfficiency =>
+            AccumulatedDamage.Aggregate(DamageByType.Select(d => d.AccumulatedDamage)).Efficiency;
 
-        public static Tower NoDamage => new(ImmutableArray<TypedDamageDone>.Empty);
+        public static Tower NoDamage => new(ImmutableArray<TypedAccumulatedDamage>.Empty);
     }
 
-    public sealed record TypedDamageDone(DamageType Type, DamageDone Damage)
+    public sealed record TypedAccumulatedDamage(DamageType Type, AccumulatedDamage AccumulatedDamage)
     {
-        public UntypedDamage TotalDamage => Damage.TotalDamage;
-        public float Efficiency => Damage.Efficiency;
+        public UntypedDamage DamageDone => AccumulatedDamage.DamageDone;
+        public UntypedDamage AttemptedDamage => AccumulatedDamage.AttemptedDamage;
+        public float Efficiency => AccumulatedDamage.Efficiency;
     }
 
-    public sealed record DamageDone(UntypedDamage TotalDamage, float Efficiency)
+    public sealed record AccumulatedDamage(UntypedDamage DamageDone, UntypedDamage AttemptedDamage)
     {
-        public static DamageDone Zero => new(UntypedDamage.Zero, 1f);
+        public float Efficiency => AttemptedDamage <= UntypedDamage.Zero ? 1 : DamageDone / AttemptedDamage;
 
-        public static DamageDone Combine(DamageDone left, DamageDone right)
-        {
-            var totalDamage = left.TotalDamage + right.TotalDamage;
-            var weightedLeftEfficiency = left.TotalDamage * left.Efficiency;
-            var weightedRightEfficiency = right.TotalDamage * right.Efficiency;
-            var weightedEfficiency = (weightedLeftEfficiency + weightedRightEfficiency) / totalDamage;
-            return new DamageDone(totalDamage, weightedEfficiency);
-        }
+        public static AccumulatedDamage Zero => new(UntypedDamage.Zero, UntypedDamage.Zero);
 
-        public static DamageDone Aggregate(IEnumerable<DamageDone> enumerable) => enumerable.Aggregate(Zero, Combine);
+        public static AccumulatedDamage Combine(AccumulatedDamage left, AccumulatedDamage right) =>
+            new(left.DamageDone + right.DamageDone, left.AttemptedDamage + right.AttemptedDamage);
+
+        public static AccumulatedDamage Aggregate(IEnumerable<AccumulatedDamage> enumerable) =>
+            enumerable.Aggregate(Zero, Combine);
     }
 }

@@ -36,7 +36,6 @@ static class BuildingFactory
         building.AddComponent(new GhostBuildingRenderer());
         building.AddComponent(new BuildingStateManager());
         building.AddComponent(new BuildingUpgradeManager());
-        building.AddComponent(new DamageAttributor());
         building.AddComponent(new DamageSource());
         building.AddComponent(new DebugInvulnerable());
         building.AddComponent(new ElementSystemEntity());
@@ -49,7 +48,7 @@ static class BuildingFactory
         building.AddComponent(new ReportSubject());
         building.AddComponent(new Selectable());
         building.AddComponent(new StaticFootprintTileNotifier(footprint));
-        building.AddComponent(new StatisticCollector());
+        building.AddComponent(new DamageStatisticForwarder());
         building.AddComponent(statuses);
         building.AddComponent(new StatusRenderer(statuses, new BuildingStatusDisplayCondition()));
         building.AddComponent(new TemperatureProperty());
