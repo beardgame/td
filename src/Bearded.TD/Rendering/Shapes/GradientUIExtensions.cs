@@ -20,9 +20,10 @@ static class GradientUIExtensions
 
     public static GradientParameters ForDrawingWith(this ShapeColor color, GradientDrawer gradients, Frame frame)
     {
-        var gradientId = color.Gradient.IsDefaultOrEmpty
+        var gradient = color.Gradient;
+        var gradientId = gradient.Length == 0
             ? GradientId.None
-            : gradients.AddGradient(color.Gradient.AsSpan());
+            : gradients.AddGradient(gradient);
         return color.Definition.ForDrawing(gradientId, frame);
     }
 
