@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Meta;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -12,6 +13,8 @@ namespace Bearded.TD.UI.Controls;
 
 interface IGameWorldOverlay
 {
+    public Animations Animations { get; }
+
     public void AddControl(Control control, Vector2d size, OverlayAnchor anchor);
 
     public void RemoveControl(Control control);
@@ -32,8 +35,11 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     private readonly GameCamera camera;
     private readonly List<OverlayControl> controls = [];
 
-    public GameWorldOverlay(GameCamera camera)
+    public Animations Animations { get; }
+
+    public GameWorldOverlay(GameCamera camera, Animations animations)
     {
+        Animations = animations;
         this.camera = camera;
         IsClickThrough = true;
     }

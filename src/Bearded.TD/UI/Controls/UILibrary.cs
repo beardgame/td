@@ -16,7 +16,7 @@ static class UILibrary
         return NavigationFactories.ForBoth()
             .Add<DebugConsole, Void>(m => new DebugConsoleControl(m, animations))
             .Add<GameDebugOverlay, Void>(m => new GameDebugOverlayControl(m))
-            .Add<GameUI, GameUI.Parameters>(m => new GameUIControl(m, renderContext))
+            .Add<GameUI, GameUI.Parameters>(m => new GameUIControl(m, renderContext, animations))
             .Add<LoadingScreen, LoadingManager>(m => new LoadingScreenControl(m))
             .Add<Lobby, LobbyManager>(m => new LobbyControl(m))
             .Add<LobbyList, Void>(m => new LobbyListControl(m))

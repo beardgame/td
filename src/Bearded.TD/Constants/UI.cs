@@ -161,6 +161,7 @@ static partial class Constants
                 public const double ExperienceBarCornerRadius = 2;
 
                 public static readonly Color ExperienceColor = Colors.Experience;
+                public static readonly Color NewExperienceColor = Colors.Experience * 0.5f;
 
                 public static readonly ShapeComponents ExperienceBarColors = new(
                     Edge: Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine))

@@ -4,10 +4,12 @@ using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.UI.BuildingStatus;
 
@@ -22,7 +24,7 @@ sealed class BuildingStatusControl : CompositeControl
 
     public Vector2d Size { get; }
 
-    public BuildingStatusControl(BuildingStatus model)
+    public BuildingStatusControl(BuildingStatus model, Animations animations)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
@@ -38,7 +40,7 @@ sealed class BuildingStatusControl : CompositeControl
         var column = innerContainer.BuildFixedColumn();
         column
             .AddHeader(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview"))
-            .Add(new VeterancyRow(model.Veterancy), Veterancy.RowHeight)
+            .Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight)
             .Add(new IconRow<Status>(
                     model.Statuses, StatusIconFactories.StatusIcon, StatusRowBackground),
                 ButtonSize + buttonBetweenMargin.Y)
@@ -50,22 +52,31 @@ sealed class BuildingStatusControl : CompositeControl
 
     private sealed class VeterancyRow : CompositeControl
     {
+        private readonly Animations animations;
         private readonly Label levelLabel;
 
+        private IAnimationController? experienceAnimation;
+        private float currentAnimationExperience = 0;
+        private float animationStartExperience = 0;
+        private float animationTargetExperience = 0;
         private readonly GradientStop[] experienceBarGradient =
         [
             new GradientStop(0, Veterancy.ExperienceColor),
             new GradientStop(0, Veterancy.ExperienceColor),
+            new GradientStop(0, Veterancy.NewExperienceColor),
+            new GradientStop(0, Veterancy.NewExperienceColor),
             new GradientStop(0, Color.Transparent),
             new GradientStop(1, Color.Transparent),
         ];
 
-        public VeterancyRow(IReadonlyBinding<VeterancyStatus> veterancy)
+        public VeterancyRow(IReadonlyBinding<VeterancyStatus> veterancy, Animations animations)
         {
+            this.animations = animations;
             var iconMargin = 0.5 * (Veterancy.RowHeight - Veterancy.LevelIconSize);
             var barTopMargin = 0.5 * (Veterancy.RowHeight - Veterancy.ExperienceBarHeight);
             var barLeftMargin = Veterancy.LevelIconSize + iconMargin;
 
+            // TODO: replace by icon
             levelLabel = new Label
             {
                 Color = Veterancy.ExperienceColor,
@@ -95,14 +106,37 @@ sealed class BuildingStatusControl : CompositeControl
             ]);
 
             update(veterancy.Value);
+            experienceAnimation?.End();
             veterancy.SourceUpdated += update;
         }
 
         private void update(VeterancyStatus t)
         {
             levelLabel.Text = t.Level.ToString();
-            experienceBarGradient[1] = (t.PercentageToNextLevel, Veterancy.ExperienceColor);
-            experienceBarGradient[2] = (t.PercentageToNextLevel, Color.Transparent);
+            startAnimationExperience((float)t.PercentageToNextLevel);
+        }
+
+        private void startAnimationExperience(float targetExperience)
+        {
+            experienceBarGradient[3] = (targetExperience, Veterancy.NewExperienceColor);
+            experienceBarGradient[4] = (targetExperience, Color.Transparent);
+
+            experienceAnimation?.Cancel();
+
+            animationStartExperience = currentAnimationExperience;
+            animationTargetExperience = targetExperience;
+
+            experienceAnimation =
+                animations.Start(AnimationFunction.ZeroToOne(0.5.S(), updateExperienceBarFromAnimation));
+        }
+
+        private void updateExperienceBarFromAnimation(float t)
+        {
+            t = Interpolate.Hermite(0, 0, 1, 0.58f, t);
+            var xp = animationStartExperience + (animationTargetExperience - animationStartExperience) * t;
+            currentAnimationExperience = xp;
+            experienceBarGradient[1] = (xp, Veterancy.ExperienceColor);
+            experienceBarGradient[2] = (xp, Veterancy.NewExperienceColor);
         }
     }
 
