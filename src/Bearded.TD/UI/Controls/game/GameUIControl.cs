@@ -1,4 +1,5 @@
 ﻿using Bearded.TD.Rendering;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.UI.Controls;
 
@@ -10,10 +11,10 @@ sealed class GameUIControl : CompositeControl
 
     private readonly GameUI gameUI;
 
-    public GameUIControl(GameUI gameUI, RenderContext renderContext)
+    public GameUIControl(GameUI gameUI, RenderContext renderContext, Animations animations)
     {
         var gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource);
-        var gameWorldOverlay = new GameWorldOverlay(gameUI.Game.Camera);
+        var gameWorldOverlay = new GameWorldOverlay(gameUI.Game.Camera, animations);
 
         this.gameUI = gameUI;
 

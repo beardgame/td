@@ -152,6 +152,22 @@ static partial class Constants
             public const double Padding = LayoutMargin;
             public const double EdgeWidth = 1;
 
+            public static class Veterancy
+            {
+                public const double RowHeight = 24;
+                public const double LevelIconSize = 16;
+                public const double ExperienceBarHeight = 8;
+
+                public const double ExperienceBarCornerRadius = 2;
+
+                public static readonly Color ExperienceColor = Colors.Experience;
+                public static readonly Color NewExperienceColor = Colors.Experience * 0.5f;
+
+                public static readonly ShapeComponents ExperienceBarColors = new(
+                    Edge: Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine))
+                );
+            }
+
             public static readonly ShapeComponents StatusRowBackground = new(
                 Fill: ShapeColor.From(
                     [

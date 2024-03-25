@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities;
 
@@ -12,30 +13,38 @@ sealed class BuildingStatus : IDisposable
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
     public IReadonlyBinding<ImmutableArray<Status>> Statuses => statuses;
     public IReadonlyBinding<ImmutableArray<UpgradeSlot>> Upgrades => upgrades;
+    public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
 
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots upgradeSlots;
     private readonly IBuildingUpgradeManager upgradeManager;
+    private readonly IVeterancy veterancy;
 
     private readonly Binding<bool> showExpanded = new(false);
     private readonly Binding<ImmutableArray<Status>> statuses = new();
     private readonly Binding<ImmutableArray<UpgradeSlot>> upgrades = new();
+    private readonly Binding<VeterancyStatus> veterancyStatus = new();
 
     public BuildingStatus(
         IStatusTracker statusTracker,
         IUpgradeSlots upgradeSlots,
-        IBuildingUpgradeManager upgradeManager)
+        IBuildingUpgradeManager upgradeManager,
+        IVeterancy veterancy)
     {
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.upgradeManager = upgradeManager;
+        this.veterancy = veterancy;
 
         statuses.SetFromSource(statusTracker.Statuses.ToImmutableArray());
         upgrades.SetFromSource(buildInitialUpgradeSlots());
+        veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
-        // TODO: handle new upgrades, new upgrade slots, and add the veterancy slot
+        veterancy.VeterancyStatusChanged += veterancyStatusChanged;
+
+        // TODO: handle new upgrades, new upgrade slots
     }
 
     private ImmutableArray<UpgradeSlot> buildInitialUpgradeSlots()
@@ -59,6 +68,11 @@ sealed class BuildingStatus : IDisposable
         statuses.SetFromSource(statuses.Value.Remove(status));
     }
 
+    private void veterancyStatusChanged(VeterancyStatus status)
+    {
+        veterancyStatus.SetFromSource(status);
+    }
+
     public void PromoteToExpandedView()
     {
         showExpanded.SetFromSource(true);
@@ -68,5 +82,6 @@ sealed class BuildingStatus : IDisposable
     {
         statusTracker.StatusAdded -= statusAdded;
         statusTracker.StatusRemoved -= statusRemoved;
+        veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
     }
 }

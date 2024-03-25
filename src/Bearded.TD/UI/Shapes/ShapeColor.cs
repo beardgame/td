@@ -1,19 +1,48 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using Bearded.Graphics;
 
 namespace Bearded.TD.UI.Shapes;
 
 readonly struct ShapeColor
 {
-    public ImmutableArray<GradientStop> Gradient { get; }
+    private enum Type
+    {
+        Constant,
+        Immutable,
+        Mutable,
+    }
+
+    private readonly Type type;
+    private readonly ImmutableArray<GradientStop> immutableGradient;
+    private readonly GradientStop[]? mutableGradient;
+
+    public ReadOnlySpan<GradientStop> Gradient => type switch
+    {
+        Type.Immutable => immutableGradient.AsSpan(),
+        Type.Mutable => mutableGradient,
+        _ => ReadOnlySpan<GradientStop>.Empty,
+    };
+
     public GradientDefinition Definition { get; }
 
     private ShapeColor(GradientDefinition definition)
-        : this(ImmutableArray<GradientStop>.Empty, definition) { }
+    {
+        type = Type.Constant;
+        Definition = definition;
+    }
 
     private ShapeColor(ImmutableArray<GradientStop> gradient, GradientDefinition definition)
     {
-        Gradient = gradient;
+        type = Type.Immutable;
+        immutableGradient = gradient;
+        Definition = definition;
+    }
+
+    private ShapeColor(GradientStop[] gradient, GradientDefinition definition)
+    {
+        type = Type.Mutable;
+        mutableGradient = gradient;
         Definition = definition;
     }
 
@@ -28,6 +57,9 @@ readonly struct ShapeColor
     public static ShapeColor From(ImmutableArray<GradientStop> gradient, GradientDefinition parameters)
         => new(gradient, parameters);
 
+    public static ShapeColor FromMutable(GradientStop[] gradient, GradientDefinition parameters)
+        => new(gradient, parameters);
+
     public override string ToString()
-        => $"{Definition.Type} with {(Gradient.IsDefault ? "NULL" : Gradient.Length)} stops";
+        => $"{Definition.Type} with {(type == Type.Constant ? "NULL" : Gradient.Length)} stops";
 }

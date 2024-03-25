@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
@@ -6,7 +7,8 @@ using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Shared.Events;
-using Bearded.Utilities.SpaceTime;
+using Bearded.Utilities;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings.Veterancy;
 
@@ -16,13 +18,45 @@ interface ILevelable
     void LevelUp();
 }
 
+record struct VeterancyStatus(
+    int Level,
+    Experience Experience,
+    Experience? NextLevelThreshold,
+    double PercentageToNextLevel)
+
+{
+    public static VeterancyStatus From(
+        int level, Experience experience, ImmutableArray<Experience> levelThresholds)
+    {
+        var previousThreshold = level <= 0
+            ? Experience.Zero
+            : levelThresholds[level - 1];
+
+        if (level >= levelThresholds.Length)
+        {
+            return new VeterancyStatus(level, experience, null, 1);
+        }
+
+        var nextThreshold = levelThresholds[level];
+        var percentageToNextLevel = (experience - previousThreshold) / (nextThreshold - previousThreshold);
+        return new VeterancyStatus(level, experience, nextThreshold, percentageToNextLevel);
+    }
+}
+
+interface IVeterancy
+{
+    VeterancyStatus GetVeterancyStatus();
+    event GenericEventHandler<VeterancyStatus>? VeterancyStatusChanged;
+}
+
 [Component("veterancy")]
-sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
+sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable, IVeterancy
 {
     private readonly ImmutableArray<Experience> levelThresholds;
 
     private int level;
     private Experience experience;
+    private Experience previousExperience;
 
     public Veterancy() : this(Constants.Game.Building.VeterancyThresholds) {}
 
@@ -37,7 +71,23 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
         ReportAggregator.Register(Events, new VeterancyReport(this));
     }
 
-    public override void Update(TimeSpan elapsedTime) { }
+    public override void Update(TimeSpan elapsedTime)
+    {
+        notifyExperienceChangedIfNeeded();
+    }
+
+    private void notifyExperienceChangedIfNeeded()
+    {
+        if (experience == previousExperience)
+            return;
+
+        VeterancyStatusChanged?.Invoke(GetVeterancyStatus());
+        previousExperience = experience;
+    }
+
+    public VeterancyStatus GetVeterancyStatus() => VeterancyStatus.From(level, experience, levelThresholds);
+
+    public event GenericEventHandler<VeterancyStatus>? VeterancyStatusChanged;
 
     public void HandleEvent(GainXp @event)
     {
@@ -80,7 +130,8 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
     public static Veterancy WithLevelThresholds(params Experience[] levelThresholds) =>
         new(levelThresholds.ToImmutableArray());
 
-    private sealed class VeterancyReport : IVeterancyReport
+    [Obsolete]
+    private sealed class VeterancyReport(Veterancy subject) : IVeterancyReport
     {
         public ReportType Type => ReportType.EntityProgression;
 
@@ -99,13 +150,6 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
         public double PercentageToNextLevel => NextLevelThreshold.HasValue
             ? (CurrentExperience - previousLevelThreshold) / (NextLevelThreshold.Value - previousLevelThreshold)
             : 1;
-
-        private readonly Veterancy subject;
-
-        public VeterancyReport(Veterancy subject)
-        {
-            this.subject = subject;
-        }
     }
 
     public IStateToSync GetCurrentStateToSync() => new VeterancySynchronizedState(this);
@@ -133,6 +177,7 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable
     }
 }
 
+[Obsolete]
 interface IVeterancyReport : IReport
 {
     public int CurrentVeterancyLevel { get; }

@@ -26,8 +26,7 @@ sealed class Animation<TState>(ITimeSource time, AnimationFunction<TState> funct
 
     public void Update()
     {
-        Debug.Assert(!HasEnded, "Trying to update an ended animation.");
-        if (cancelled)
+        if (cancelled || HasEnded)
         {
             HasEnded = true;
             return;

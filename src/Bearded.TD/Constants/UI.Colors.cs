@@ -40,6 +40,8 @@ static partial class Constants
     {
         public static class Colors
         {
+            public static readonly Color Experience = new(0xff03fcd7);
+
             private static readonly IReadOnlyList<Color> purples =
             [
                 new Color(0xFFf5e8e3),

@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 
 namespace Bearded.TD.Game.Simulation.Reports;
 
+[Obsolete]
 static partial class ReportAggregator
 {
     public static IReportHandle Register(ComponentEvents events, IReport report)
