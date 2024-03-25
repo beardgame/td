@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities;
@@ -82,19 +83,21 @@ sealed class BuildingStatusObserver
             return;
         }
         if (!t.Object.TryGetSingleComponent<IBuildingUpgradeManager>(out var upgradeManager) ||
-            !t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots))
+            !t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots) ||
+            !t.Object.TryGetSingleComponent<IVeterancy>(out var veterancy))
         {
-            // TODO: still show the overlay, just not the upgrade part of it
+            // TODO: still show the overlay, just not the veterancy and upgrade part of it
             return;
         }
 
-        var status = new BuildingStatus(statusTracker, upgradeSlots, upgradeManager);
-        currentlyShown = new CurrentlyShownBuilding(t.Object, status, new BuildingStatusControl(status));
+        var status = new BuildingStatus(statusTracker, upgradeSlots, upgradeManager, veterancy);
+        var statusControl = new BuildingStatusControl(status);
+        currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl);
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);
         overlay.AddControl(
             currentlyShown.Control,
-            BuildingStatusControl.Size,
+            statusControl.Size,
             new IGameWorldOverlay.OverlayAnchor(anchorPos, IGameWorldOverlay.OverlayDirection.Right));
     }
 
