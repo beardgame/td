@@ -93,10 +93,11 @@ sealed class GameState
         PassabilityObserver = new PassabilityObserver(Meta.Events, Level, GeometryLayer, TileBlockerLayer);
         ZoneLayer = new ZoneLayer(GameSettings.LevelSize);
         VisibilityLayer = new VisibilityLayer(Meta.Events, ZoneLayer);
-        Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityObserver.GetLayer(Passability.WalkingUnit));
+        Navigator =
+            new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityObserver.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
-        Statistics = GameStatistics.CreateSubscribed(Meta.Events);
+        Statistics = GameStatistics.CreateSubscribed(Meta.Dispatcher, Meta.Events);
         WaveDirector = new WaveDirector(this);
         ExplorationManager = new ExplorationManager(this);
     }
