@@ -43,6 +43,9 @@ readonly struct UntypedDamage
     public static UntypedDamage operator /(UntypedDamage amount, float scalar) =>
         new((amount.Amount.NumericValue / scalar).HitPoints());
 
+    public static float operator /(UntypedDamage left, UntypedDamage right) =>
+        left.Amount.NumericValue / right.Amount.NumericValue;
+
     public static UntypedDamagePerSecond operator /(UntypedDamage amount, TimeSpan duration) =>
         new(((float) (amount.Amount.NumericValue / duration.NumericValue)).HitPoints());
 }
