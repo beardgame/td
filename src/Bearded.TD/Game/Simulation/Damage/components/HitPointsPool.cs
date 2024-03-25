@@ -60,7 +60,7 @@ abstract partial class HitPointsPool<T> : Component<T>,
 
         var result = new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(damage.Type), damageDoneDiscrete);
 
-        Events.Send(new TookDamage(result.AsFinal(), source));
+        Events.Send(new TookDamage(source));
 
         return result;
     }

@@ -29,7 +29,7 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
             totalDiscreteDamage += intermediateResult.DiscreteDamageDone;
         }
 
-        return new FinalDamageResult(totalExactDamage, totalDiscreteDamage);
+        return new FinalDamageResult(totalExactDamage, totalDiscreteDamage, typedDamage);
     }
 
     public void Heal(HealInfo healInfo)
