@@ -36,7 +36,6 @@ static class BuildingFactory
         building.AddComponent(new GhostBuildingRenderer());
         building.AddComponent(new BuildingStateManager());
         building.AddComponent(new BuildingUpgradeManager());
-        building.AddComponent(new DamageAttributor());
         building.AddComponent(new DamageSource());
         building.AddComponent(new DebugInvulnerable());
         building.AddComponent(new ElementSystemEntity());

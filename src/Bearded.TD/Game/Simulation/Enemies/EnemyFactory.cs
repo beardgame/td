@@ -43,7 +43,6 @@ static class EnemyFactory
 
         var statuses = new StatusTracker();
 
-        obj.AddComponent(new DamageAttributor());
         obj.AddComponent(new DamageSource());
         obj.AddComponent(new ElementSystemEntity());
         obj.AddComponent(new EnemyLife());
