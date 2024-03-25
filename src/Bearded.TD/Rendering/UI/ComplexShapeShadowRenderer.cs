@@ -1,5 +1,4 @@
-﻿using Bearded.Graphics;
-using Bearded.TD.Rendering.Shapes;
+﻿using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.UI.Rendering;
 using static Bearded.TD.Rendering.Shapes.Shapes;
