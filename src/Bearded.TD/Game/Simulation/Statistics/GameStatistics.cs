@@ -12,11 +12,16 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Statistics;
 
-sealed class GameStatistics : IListener<WaveStarted>, IListener<WaveEnded>
+interface IGameStatistics
+{
+    void RegisterDamage(Id<GameObject> id, FinalDamageResult damageResult);
+}
+
+sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener<WaveEnded>
 {
     private readonly Dictionary<Id<GameObject>, TowerStatistics> statsByTower = new();
 
-    public static GameStatistics CreateSubscribed(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
+    public static IGameStatistics CreateSubscribed(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
     {
         var instance = new GameStatistics(dispatcher);
         events.Subscribe<WaveStarted>(instance);

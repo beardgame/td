@@ -63,7 +63,7 @@ sealed class GameState
     public ZoneLayer ZoneLayer { get; }
     public VisibilityLayer VisibilityLayer { get; }
 
-    public GameStatistics Statistics { get; }
+    public IGameStatistics Statistics { get; }
     public WaveDirector WaveDirector { get; }
 
     // TODO: this should be something managed per faction
