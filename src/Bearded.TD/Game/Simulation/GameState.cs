@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Selection;
+using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
 using Bearded.TD.Game.Simulation.World;
@@ -62,6 +63,7 @@ sealed class GameState
     public ZoneLayer ZoneLayer { get; }
     public VisibilityLayer VisibilityLayer { get; }
 
+    public GameStatistics Statistics { get; }
     public WaveDirector WaveDirector { get; }
 
     // TODO: this should be something managed per faction
@@ -94,6 +96,7 @@ sealed class GameState
         Navigator = new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityObserver.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
+        Statistics = GameStatistics.CreateSubscribed(Meta.Events);
         WaveDirector = new WaveDirector(this);
         ExplorationManager = new ExplorationManager(this);
     }

@@ -11,12 +11,14 @@ sealed class StatisticCollector : Component, ISyncable
 {
     private double totalDamage;
 
-    protected override void OnAdded()
+    protected override void OnAdded() {}
+
+    public override void Activate()
     {
-        Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
+        if (Owner.TryGetSingleComponent<IIdProvider>(out var idProvider))
         {
-            totalDamage += e.Result.TotalExactDamage.Amount.NumericValue;
-        }));
+            Events.Subscribe(Listener.ForEvent<CausedDamage>(e => { Owner.Game.Statistics.RegisterDamage(idProvider.Id, e.Result); }));
+        }
     }
 
     public override void Update(TimeSpan elapsedTime) {}

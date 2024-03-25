@@ -16,6 +16,8 @@ readonly struct TypedDamage
         Type = type;
     }
 
+    public UntypedDamage Untyped() => new(Amount);
+
     public TypedDamage WithAdjustedAmount(HitPoints newAmount) => new(newAmount, Type);
 
     public static TypedDamage operator *(int scalar, TypedDamage damage) =>
