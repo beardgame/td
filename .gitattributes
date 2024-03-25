@@ -1,3 +1,23 @@
-* text=auto
+# Auto detect text files and perform LF normalization
+*          text=auto
 
-*.sh text eol=lf
+# C# files
+*.cs       text diff=csharp
+*.cshtml   text diff=html
+*.csx      text diff=csharp
+*.sln      text eol=crlf
+*.csproj   text eol=crlf
+
+# Scripts & config
+*.json     text
+*.json5    text
+*.sh       text eol=lf diff=bash
+*.yml      text
+*.xml      text
+
+# Documentation
+*.md       text diff=markdown
+*.txt     text
+
+# Assets
+*.png      binary
