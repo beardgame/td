@@ -73,7 +73,7 @@ sealed partial class ShapeDrawer : IShapeDrawer
                 RectangleCornerSize(xyz.Xy, wh, cornerRadius, edges, 0.5f, 1));
             return;
         }
-
+        /*
         if (outerRadius + cornerRadius > 0)
         {
             // topLeft
@@ -119,6 +119,7 @@ sealed partial class ShapeDrawer : IShapeDrawer
             addQuad(rightInner, rightOuter, topInner, bottomInner, z, gradients,
                 LinePointToPoint(new Vector2(right, top), new Vector2(right, bottom), edges));
         }
+        */
     }
 
     private void addQuad(float x0, float x1, float y0, float y1, float z, ShapeGradients gradients, ShapeGeometry geometry)

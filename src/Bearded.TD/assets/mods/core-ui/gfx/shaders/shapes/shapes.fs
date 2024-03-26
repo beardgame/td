@@ -227,7 +227,7 @@ vec4 dither(vec4 color, vec2 seed)
 {
     float n = (hash(seed) * 2 - 1) * (hash(seed.yx * 12.3) * 2 - 1);
     n /= 128;
-    color.rgb += n;
+    color.rgba += n;
     return color;
 }
 
