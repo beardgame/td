@@ -18,7 +18,8 @@ sealed class CoreRenderers
     public IDrawableRenderers DrawableRenderers { get; }
     public TextDrawerWithDefaults<Color> InGameConsoleFont { get; private set; } = null!;
 
-    public Gradients Gradients { get; } = new();
+    public GradientBuffer Gradients { get; } = new();
+    public ComponentBuffer ShapeComponents { get; } = new();
 
     public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings, IDrawableRenderers renderers)
     {
@@ -40,9 +41,10 @@ sealed class CoreRenderers
         InGameConsoleFont = font;
     }
 
-    public void FlushGradients()
+    public void FlushShapes()
     {
         Gradients.Flush();
+        ShapeComponents.Flush();
     }
 
     public void ClearAll()
@@ -51,5 +53,6 @@ sealed class CoreRenderers
         ConsoleBackground.Clear();
         DrawableRenderers.ClearAll();
         Gradients.Clear();
+        ShapeComponents.Clear();
     }
 }

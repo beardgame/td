@@ -12,13 +12,14 @@ namespace Bearded.TD.Rendering.Shapes;
 static class GradientUIExtensions
 {
     public static ShapeComponentsForDrawing ForDrawingWith(
-        this ShapeComponents components, GradientDrawer gradients, Frame frame)
-        => new(components, gradients, frame);
+        this ShapeComponents components, IShapeComponentBuffer componentBuffer, IGradientBuffer gradients, Frame frame)
+        => ShapeComponentsForDrawing.From(components.Components, componentBuffer, (gradients, frame));
 
-    public static ShapeComponentsForDrawing ForDrawingAssumingNoGradients(this ShapeComponents components)
-        => new(components, null, default);
+    public static ShapeComponentsForDrawing ForDrawingAssumingNoGradients(
+        this ShapeComponents components, IShapeComponentBuffer componentBuffer)
+        => ShapeComponentsForDrawing.From(components.Components, componentBuffer);
 
-    public static GradientParameters ForDrawingWith(this ShapeColor color, GradientDrawer gradients, Frame frame)
+    public static GradientParameters ForDrawingWith(this ShapeColor color, IGradientBuffer gradients, Frame frame)
     {
         var gradient = color.Gradient;
         var gradientId = gradient.Length == 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
@@ -54,8 +55,10 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
         this.Add([
             new ComplexBox
             {
-                Fill = Colors.Get(BackgroundColor.Default) * 0.9f,
-                OuterGlow = (Menu.ShadowWidth, Menu.ShadowColor),
+                Components = [
+                    Fill.With(Colors.Get(BackgroundColor.Default) * 0.9f),
+                    Glow.Outer(Menu.ShadowWidth, Menu.ShadowColor),
+                ],
             }.Anchor(a => a.Bottom(Menu.ShadowWidth + 1)),
             logBox.Anchor(a => a.Bottom(margin: Menu.ShadowWidth + InputHeight)),
             commandInput.Anchor(a => a.Bottom(margin: Menu.ShadowWidth, height: InputHeight)),

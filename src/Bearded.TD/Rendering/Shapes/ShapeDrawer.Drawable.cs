@@ -5,6 +5,7 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
+using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering.Shapes;
 
@@ -15,10 +16,13 @@ sealed partial class ShapeDrawer : IDrawable
     private readonly IEnumerable<IRenderSetting> settings;
     private readonly IEnumerable<IDisposable> disposables;
 
-    private ShapeDrawer(Shader shader, Gradients gradients)
+    private ShapeDrawer(Shader shader, GradientBuffer gradients, ComponentBuffer components)
     {
         this.shader = shader;
-        settings = [gradients.TextureUniform("gradientBuffer")];
+        settings = [
+            gradients.TextureUniform("gradientBuffer"),
+            components.TextureUniform("componentBuffer", TextureUnit.Texture0 + 1),
+        ];
         disposables = [meshBuilder];
     }
 

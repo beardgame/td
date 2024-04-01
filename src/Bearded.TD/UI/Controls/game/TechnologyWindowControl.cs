@@ -119,8 +119,10 @@ sealed class TechnologyWindowControl : CompositeControl
             new ComplexBox
             {
                 CornerRadius = 2,
-                Edge = Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine)),
-                OuterGlow = Glow.Simple(4, Shadows.Default.Color * 0.5f),
+                Components = [
+                    Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine)),
+                    Glow.Outer(4, Shadows.Default.Color * 0.5f),
+                ],
                 IsClickThrough = true,
             }
         );

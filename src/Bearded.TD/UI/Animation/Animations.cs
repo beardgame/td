@@ -20,4 +20,7 @@ sealed class Animations(ITimeSource time, AnimationUpdater updater)
         updater.Add(animation);
         return animation;
     }
+
+    public IAnimationController Start<TState>(AnimationBlueprint<TState> blueprint)
+        => Start(blueprint.Function, blueprint.State);
 }

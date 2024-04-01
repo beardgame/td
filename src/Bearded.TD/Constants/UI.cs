@@ -1,4 +1,5 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Animation;
@@ -37,13 +38,15 @@ static partial class Constants
 
             public const double SquareButtonSize = 64;
 
-            public static readonly Color ActiveColor = Colors.Get(BackgroundColor.ActiveElement);
-            public static readonly Color HoverColor = Colors.Get(BackgroundColor.Hover);
-
             public static readonly Shadow DefaultShadow = Shadows.Default;
 
-            public static AnimationFunction<Void> BackgroundColorAnimation(ComplexShapeControl box, BackgroundColor color)
-                => AnimationFunction.ComplexShapeFillColorFromCurrentTo(0.1.S(), box, Colors.Get(color));
+            public static AnimationBlueprint<(Action<Color> set, Color from, Color to)> BackgroundColorAnimation(
+                ShapeComponent current, Action<Color> set, BackgroundColor color)
+            {
+                var from = current.Color.Definition.Color;
+                var to = Colors.Get(color);
+                return AnimationFunction.ColorFromTo(0.1.S()).WithState((set, from, to));
+            }
         }
 
         public static class Checkbox
@@ -83,6 +86,13 @@ static partial class Constants
                 = AnimationFunction.ZeroToOne(0.5.S(), (Control control, float t) => control.Anchor(
                     a => a.Right(margin: -Width * (1 - Hermite(0, 0.42f, 1, 0, t)))
                 ));
+
+            public static readonly ShapeComponents DefaultBackgroundComponents =
+            [
+                Fill.With(Colors.Get(BackgroundColor.Default) * 0.8f),
+                Edge.Outer(1, Colors.Get(BackgroundColor.MenuOutline)),
+                Glow.Outer(ShadowWidth, ShadowColor),
+            ];
         }
 
         public static class NavBar
@@ -133,16 +143,16 @@ static partial class Constants
             public const double Margin = 4;
             public const double AnchorMargin = 4;
 
-            public static readonly ShapeComponents Background = new(
-                Fill: ShapeColor.From(
+            public static readonly ShapeComponents Background = [
+                Fill.With(ShapeColor.From(
                     [(0, Colors.Get(BackgroundColor.Tooltip)), (1, Color.Transparent)],
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                ),
-                Edge: Edge.Outer(1, ShapeColor.From(
+                )),
+                Edge.Outer(1, ShapeColor.From(
                     [(0, Colors.Get(BackgroundColor.TooltipOutline)), (1, Color.Transparent)],
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.85f, 0)))
-                ))
-            );
+                )),
+            ];
         }
 
         public static class BuildingStatus
@@ -163,36 +173,36 @@ static partial class Constants
                 public static readonly Color ExperienceColor = Colors.Experience;
                 public static readonly Color NewExperienceColor = Colors.Experience * 0.5f;
 
-                public static readonly ShapeComponents ExperienceBarColors = new(
-                    Edge: Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine))
-                );
+                public static readonly ShapeComponents ExperienceBarStaticComponents = [
+                    Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine)),
+                ];
             }
 
-            public static readonly ShapeComponents StatusRowBackground = new(
-                Fill: ShapeColor.From(
+            public static readonly ShapeComponents StatusRowBackground = [
+                Fill.With(ShapeColor.From(
                     [
                         (0, Colors.Get(BackgroundColor.ActiveElement) * 0.5f),
                         (0.95, Color.Transparent),
                     ],
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                )
-            );
+                )),
+            ];
             public static readonly double StatusRowBackgroundLeftMargin = EdgeWidth - Padding;
 
-            public static readonly ShapeComponents Background = new(
-                Fill: ShapeColor.From(
+            public static readonly ShapeComponents Background = [
+                Fill.With(ShapeColor.From(
                     [
                         (0, Colors.Get(BackgroundColor.Default)),
                         (0.75, Colors.Get(BackgroundColor.Default) * 0.5f),
                         (0.95, Color.Transparent),
                     ],
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                ),
-                Edge: Edge.Inner((float)EdgeWidth, ShapeColor.From(
+                )),
+                Edge.Inner((float)EdgeWidth, ShapeColor.From(
                     [(0, Colors.Get(BackgroundColor.TooltipOutline)), (0.75, Color.Transparent)],
                     GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                ))
-            );
+                )),
+            ];
         }
 
         public static class Window
@@ -201,16 +211,16 @@ static partial class Constants
 
             public const float CornerRadius = 4;
 
-            public static readonly ShapeComponents BackgroundComponents = new(
-                Fill: ShapeColor.From(
+            public static readonly ShapeComponents BackgroundComponents = [
+                Fill.With(ShapeColor.From(
                     [
                         (0, Colors.Get(BackgroundColor.WindowBackground) * 0.9f),
                         (1, Colors.Get(BackgroundColor.Default) * 0.9f),
                     ],
                     GradientDefinition.Linear(AnchorPoint.Relative((0.3f, 0)), AnchorPoint.Relative((0.6f, 1)))
-                ),
-                Edge: Edge.Inner(1, Colors.Get(BackgroundColor.WindowOutline))
-            );
+                )),
+                Edge.Inner(1, Colors.Get(BackgroundColor.WindowOutline)),
+            ];
 
             public static readonly Shadow Shadow = Shadows.LargeWindow;
         }

@@ -11,14 +11,15 @@ sealed partial class ShapeDrawer
 
     public static ShapeDrawer GetOrCreate(
         IDrawableRenderers renderers,
-        Gradients gradients,
+        GradientBuffer gradients,
+        ComponentBuffer components,
         Shader shader,
         DrawOrderGroup drawGroup,
         int drawGroupOrderKey)
     {
         return renderers.GetOrCreateDrawableFor(
             DrawableTemplate.Instance, shader, drawGroup, drawGroupOrderKey,
-            () => new ShapeDrawer(shader, gradients)
+            () => new ShapeDrawer(shader, gradients, components)
         );
     }
 }

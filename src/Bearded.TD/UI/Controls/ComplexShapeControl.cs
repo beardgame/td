@@ -11,17 +11,7 @@ namespace Bearded.TD.UI.Controls;
 abstract class ComplexShapeControl : Control, ICornerRadiusSource
 {
     public virtual double CornerRadius { get; set; }
-
-    public Fill Fill { get; set; }
-    public Edge Edge { get; set; }
-    public Glow OuterGlow { get; set; }
-    public Glow InnerGlow { get; set; }
-
-    public ShapeComponents Components
-    {
-        get => new(Fill, Edge, OuterGlow, InnerGlow);
-        set => (Fill, Edge, OuterGlow, InnerGlow) = value;
-    }
+    public ShapeComponents Components { get; set; }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 }

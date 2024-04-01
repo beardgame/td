@@ -1,30 +1,52 @@
-﻿using Bearded.TD.UI.Shapes;
+﻿using System;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI;
 
 namespace Bearded.TD.Rendering.Shapes;
 
-readonly struct ShapeComponentsForDrawing(ShapeComponents components, GradientDrawer? gradients, Frame frame)
+readonly struct ShapeComponentsForDrawing(
+    ShapeVertex.ShapeComponents components, float maxDistance, float minDistance)
 {
-    public EdgeData Edges { get; }
-        = new(
-            components.Edge.OuterWidth,
-            components.Edge.InnerWidth,
-            components.OuterGlow.Width,
-            components.InnerGlow.Width
-        );
+    public ShapeVertex.ShapeComponents Components { get; } = components;
+    public float MaxDistance { get; } = maxDistance;
+    public float MinDistance { get; } = minDistance;
 
-    public ShapeGradients Gradients { get; }
-        = gradients == null
-            ? new ShapeGradients(
-                components.Fill.Color.ForDrawingWithoutGradients(),
-                components.Edge.Color.ForDrawingWithoutGradients(),
-                components.OuterGlow.Color.ForDrawingWithoutGradients(),
-                components.InnerGlow.Color.ForDrawingWithoutGradients()
-            )
-            : new ShapeGradients(
-                components.Fill.Color.ForDrawingWith(gradients, frame),
-                components.Edge.Color.ForDrawingWith(gradients, frame),
-                components.OuterGlow.Color.ForDrawingWith(gradients, frame),
-                components.InnerGlow.Color.ForDrawingWith(gradients, frame)
-            );
+    public static ShapeComponentsForDrawing From(
+        ShapeComponent component,
+        IShapeComponentBuffer componentBuffer,
+        (IGradientBuffer, Frame)? gradientsInFrame = null)
+    {
+        var max = Math.Max(component.ZeroDistance, component.OneDistance);
+        var min = Math.Min(component.ZeroDistance, component.OneDistance);
+        var componentForDrawing = ShapeComponentForDrawing.From(component, gradientsInFrame);
+        var id = componentBuffer.AddComponent(componentForDrawing);
+        return new ShapeComponentsForDrawing(id, maxDistance: max, minDistance: min);
+    }
+
+    public static ShapeComponentsForDrawing From(
+        ReadOnlySpan<ShapeComponent> components,
+        IShapeComponentBuffer componentBuffer,
+        (IGradientBuffer, Frame)? gradientsInFrame = null)
+    {
+        if (components.Length == 0)
+            return new ShapeComponentsForDrawing(default, 0, 0);
+
+        var min = float.PositiveInfinity;
+        var max = float.NegativeInfinity;
+        Span<ShapeComponentForDrawing> componentsForDrawing = stackalloc ShapeComponentForDrawing[components.Length];
+
+        for (var i = 0; i < components.Length; i++)
+        {
+            var component = components[i];
+            componentsForDrawing[i] = ShapeComponentForDrawing.From(component, gradientsInFrame);
+
+            min = Math.Min(min, component.ZeroDistance);
+            min = Math.Min(min, component.OneDistance);
+            max = Math.Max(max, component.ZeroDistance);
+            max = Math.Max(max, component.OneDistance);
+        }
+
+        var ids = componentBuffer.AddComponents(componentsForDrawing);
+        return new ShapeComponentsForDrawing(ids, maxDistance: max, minDistance: min);
+    }
 }

@@ -7,7 +7,7 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class BackgroundBoxRenderer(IShapeDrawer drawer) : IRenderer<BackgroundBox>
+sealed class BackgroundBoxRenderer(IShapeDrawer drawer, IShapeComponentBuffer shapeComponents) : IRenderer<BackgroundBox>
 {
     public void Render(BackgroundBox control)
     {
@@ -18,7 +18,7 @@ sealed class BackgroundBoxRenderer(IShapeDrawer drawer) : IRenderer<BackgroundBo
         var frame = control.Frame;
 
         var shape = Rectangle(frame.TopLeft, frame.Size);
-        var components = new ShapeComponents(Fill: color).ForDrawingAssumingNoGradients();
+        var components = ShapeComponentsForDrawing.From(Fill.With(color), shapeComponents);
 
         drawer.Draw(shape, components);
     }

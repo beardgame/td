@@ -6,12 +6,14 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class ComplexShapeRenderer(IShapeDrawer shapes, GradientDrawer gradients) : IRenderer<ComplexShapeControl>
+sealed class ComplexShapeRenderer(
+    IShapeDrawer shapes, IShapeComponentBuffer componentBuffer, IGradientBuffer gradients)
+    : IRenderer<ComplexShapeControl>
 {
     public void Render(ComplexShapeControl control)
     {
         var frame = control.Frame;
-        var components = control.Components.ForDrawingWith(gradients, frame);
+        var components = control.Components.ForDrawingWith(componentBuffer, gradients, frame);
 
         switch (control)
         {

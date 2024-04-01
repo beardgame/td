@@ -32,7 +32,6 @@ sealed class LobbyListRowControl : CompositeControl
             }.Anchor(a => a
                 .Left(relativePercentage: .5)
                 .Right(padding)),
-            new ButtonBackgroundEffect(() => true)
         }.Subscribe(btn => btn.Clicked += _ => Clicked?.Invoke(lobby)));
     }
 

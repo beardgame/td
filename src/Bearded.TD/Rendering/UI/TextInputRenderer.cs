@@ -9,7 +9,7 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class TextInputRenderer(IShapeDrawer drawer, UIFonts fonts)
+sealed class TextInputRenderer(IShapeDrawer drawer, IShapeComponentBuffer componentBuffer, UIFonts fonts)
     : IRenderer<TextInput>
 {
     private const string cursorString = "|";
@@ -31,11 +31,12 @@ sealed class TextInputRenderer(IShapeDrawer drawer, UIFonts fonts)
             _ => BackgroundColor.Element,
         };
 
-        var components = new ShapeComponents(
-            Fill: Constants.UI.Colors.Get(backgroundColor),
-            Edge: Edge.Inner(1, Constants.UI.Colors.Get(ForeGroundColor.Edge)),
-            InnerGlow: (1.5f, Constants.UI.Colors.Get(BackgroundColor.Default))
-        ).ForDrawingAssumingNoGradients();
+        var components = ShapeComponentsForDrawing.From(
+        [
+            Fill.With(Constants.UI.Colors.Get(backgroundColor)),
+            Edge.Inner(1, Constants.UI.Colors.Get(ForeGroundColor.Edge)),
+            Glow.Inner(1.5f, Constants.UI.Colors.Get(BackgroundColor.Default)),
+        ], componentBuffer);
 
         drawer.Draw(Rectangle(frame.TopLeft, frame.Size, 2), components);
 

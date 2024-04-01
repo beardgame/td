@@ -34,25 +34,25 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
         var shapeShader = coreBlueprints.Shaders[DefaultShaders.Shapes];
 
         var gradients = context.Renderers.Gradients;
-        var gradientDrawer = new GradientDrawer(gradients);
-        var shapeDrawer = ShapeDrawer.GetOrCreate(renderers, gradients, shapeShader, DrawOrderGroup.UIBackground, 0);
+        var shapeComponents = context.Renderers.ShapeComponents;
+        var shapeDrawer = ShapeDrawer
+            .GetOrCreate(renderers, gradients, shapeComponents, shapeShader, DrawOrderGroup.UIBackground, 0);
 
         router = new CachedRendererRouter(
         [
             validate(new UIDebugOverlayHighlightRenderer(context.Drawers.ConsoleBackground, uiFonts.Default)),
             validate(new RenderLayerCompositeControlRenderer(context.Compositor)),
-            validate(new AutoCompletingTextInputRenderer(shapeDrawer, uiFonts)),
-            validate(new TextInputRenderer(shapeDrawer, uiFonts)),
+            validate(new AutoCompletingTextInputRenderer(shapeDrawer, shapeComponents, uiFonts)),
+            validate(new TextInputRenderer(shapeDrawer, shapeComponents, uiFonts)),
             validate(new LabelRenderer(uiFonts)),
             validate(new SpriteRenderer(content, renderers, spriteShader)),
-            validate(new BorderRenderer(shapeDrawer)),
-            validate(new BackgroundBoxRenderer(shapeDrawer)),
-            validate(new ComplexShapeRenderer(shapeDrawer, gradientDrawer)),
-            validate(new DropShadowRenderer(shapeDrawer)),
-            validate(new ButtonBackgroundEffectRenderer(shapeDrawer)),
-            validate(new DotRenderer(shapeDrawer)),
+            validate(new BorderRenderer(shapeDrawer, shapeComponents)),
+            validate(new BackgroundBoxRenderer(shapeDrawer, shapeComponents)),
+            validate(new ComplexShapeRenderer(shapeDrawer, shapeComponents, gradients)),
+            validate(new DropShadowRenderer(shapeDrawer, shapeComponents)),
+            validate(new DotRenderer(shapeDrawer, shapeComponents)),
             validate(new CaveBackgroundRenderer(content, renderers)),
-            validate(new FallbackBoxRenderer(shapeDrawer)),
+            validate(new FallbackBoxRenderer(shapeDrawer, shapeComponents)),
         ]);
     }
 

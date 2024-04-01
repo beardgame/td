@@ -5,7 +5,7 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class DropShadowRenderer(IShapeDrawer drawer) : IRenderer<DropShadow>
+sealed class DropShadowRenderer(IShapeDrawer drawer, IShapeComponentBuffer shapeBuffer) : IRenderer<DropShadow>
 {
     public void Render(DropShadow control)
     {
@@ -16,17 +16,17 @@ sealed class DropShadowRenderer(IShapeDrawer drawer) : IRenderer<DropShadow>
         {
             case ComplexCircle { Shape: var circle }:
             {
-                drawer.DrawShadowFor(circle, control.Shadow);
+                drawer.DrawShadowFor(circle, control.Shadow, shapeBuffer);
                 break;
             }
             case ComplexHexagon { Shape: var hexagon }:
             {
-                drawer.DrawShadowFor(hexagon, control.Shadow);
+                drawer.DrawShadowFor(hexagon, control.Shadow, shapeBuffer);
                 break;
             }
             default:
             {
-                drawer.DrawShadowFor(Rectangle(tl, size, control.CornerRadius), control.Shadow);
+                drawer.DrawShadowFor(Rectangle(tl, size, control.CornerRadius), control.Shadow, shapeBuffer);
                 break;
             }
         }

@@ -40,7 +40,7 @@ sealed class LayerRenderer
             InOrder(
                 Do(s => settings.SetSettingsFor(s.Layer)),
                 Do(tryRenderDeferred),
-                Do(renderers.FlushGradients),
+                Do(renderers.FlushShapes),
                 WithContext(c => c.SetBlendMode(Premultiplied),
                     InOrder(
                         WithContext(c => c.SetDebugName("Render primitives"),

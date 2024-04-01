@@ -1,38 +1,38 @@
 ﻿using Bearded.Graphics.MeshBuilders;
 using OpenTK.Mathematics;
 using static System.Math;
-using static Bearded.TD.Rendering.Shapes.ShapeGeometry;
+using static Bearded.TD.Rendering.Shapes.ShapeData;
 
 namespace Bearded.TD.Rendering.Shapes;
 
 interface IShapeDrawer
 {
-    void DrawCircle(Vector3 xyz, float radius, ShapeGradients gradients, EdgeData edges = default);
-    void DrawHexagon(Vector3 xyz, float radius, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default);
-    void DrawRectangle(Vector3 xyz, Vector2 wh, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default);
+    void DrawCircle(Vector3 xyz, float radius, ShapeComponentsForDrawing components);
+    void DrawHexagon(Vector3 xyz, float radius, float cornerRadius, ShapeComponentsForDrawing components);
+    void DrawRectangle(Vector3 xyz, Vector2 wh, float cornerRadius, ShapeComponentsForDrawing components);
 }
 
 sealed partial class ShapeDrawer : IShapeDrawer
 {
-    public void DrawHexagon(Vector3 xyz, float radius, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default)
+    public void DrawHexagon(Vector3 xyz, float radius, float cornerRadius, ShapeComponentsForDrawing components)
     {
         var (x, y, z) = xyz;
-        var w = radius + edges.OuterWidth + edges.OuterGlow;
+        var w = radius + components.MaxDistance;
         var h = w * (1 / 0.86602540378f);
         cornerRadius = Min(radius, cornerRadius);
-        var geometry = HexagonPointRadius(xyz.Xy, radius, cornerRadius, edges, 0.5f, 1);
-        addQuad(x - w, x + w, y - h, y + h, z, gradients, geometry);
+        var shape = HexagonPointRadius(xyz.Xy, radius, cornerRadius, 0.5f, 1);
+        addQuad(x - w, x + w, y - h, y + h, z, components.Components, shape);
     }
 
-    public void DrawCircle(Vector3 xyz, float radius, ShapeGradients gradients, EdgeData edges = default)
+    public void DrawCircle(Vector3 xyz, float radius, ShapeComponentsForDrawing components)
     {
         var (x, y, z) = xyz;
-        var r = radius + edges.OuterWidth + edges.OuterGlow;
-        var geometry = CirclePointRadius(xyz.Xy, radius, edges);
-        addQuad(x - r, x + r, y - r, y + r, z, gradients, geometry);
+        var r = radius + components.MaxDistance;
+        var geometry = CirclePointRadius(xyz.Xy, radius);
+        addQuad(x - r, x + r, y - r, y + r, z, components.Components, geometry);
     }
 
-    public void DrawRectangle(Vector3 xyz, Vector2 wh, ShapeGradients gradients, float cornerRadius = 0, EdgeData edges = default)
+    public void DrawRectangle(Vector3 xyz, Vector2 wh, float cornerRadius, ShapeComponentsForDrawing components)
     {
         var (x, y, z) = xyz;
         var (w, h) = wh;
@@ -42,7 +42,7 @@ sealed partial class ShapeDrawer : IShapeDrawer
         var wInner = w - cornerRadius * 2;
         var hInner = h - cornerRadius * 2;
 
-        var outerRadius = edges.OuterWidth + edges.OuterGlow;
+        var outerRadius = components.MaxDistance;
 
         var leftOuter = x - outerRadius;
         var leftInner = x + cornerRadius;
@@ -67,10 +67,10 @@ sealed partial class ShapeDrawer : IShapeDrawer
         // though we'll eventually need more complex code like that if we want to support non rectangular shapes
         //if (colors.HasFillOrInnerGlow || wInner * hInner == 0)
         {
-            addQuad(leftOuter, rightOuter, topOuter, bottomOuter, z, gradients,
+            addQuad(leftOuter, rightOuter, topOuter, bottomOuter, z, components.Components,
                 // squircleness parameters are hardcoded to subjectively most pleasing values for now
                 // though setting both to 0 would be more performant where possible
-                RectangleCornerSize(xyz.Xy, wh, cornerRadius, edges, 0.5f, 1));
+                RectangleCornerSize(xyz.Xy, wh, cornerRadius, 0.5f, 1));
             return;
         }
         /*
@@ -122,13 +122,13 @@ sealed partial class ShapeDrawer : IShapeDrawer
         */
     }
 
-    private void addQuad(float x0, float x1, float y0, float y1, float z, ShapeGradients gradients, ShapeGeometry geometry)
+    private void addQuad(float x0, float x1, float y0, float y1, float z, ShapeVertex.ShapeComponents components, ShapeData shape)
     {
         meshBuilder.AddQuad(
-            new ShapeVertex(new Vector3(x0, y0, z), geometry, gradients),
-            new ShapeVertex(new Vector3(x1, y0, z), geometry, gradients),
-            new ShapeVertex(new Vector3(x1, y1, z), geometry, gradients),
-            new ShapeVertex(new Vector3(x0, y1, z), geometry, gradients)
+            new ShapeVertex(new Vector3(x0, y0, z), shape, components),
+            new ShapeVertex(new Vector3(x1, y0, z), shape, components),
+            new ShapeVertex(new Vector3(x1, y1, z), shape, components),
+            new ShapeVertex(new Vector3(x0, y1, z), shape, components)
         );
     }
 }

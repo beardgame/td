@@ -11,6 +11,7 @@ using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
+using static Bearded.TD.Constants.UI.Button;
 
 namespace Bearded.TD.UI.Factories;
 
@@ -93,7 +94,7 @@ static partial class ButtonFactories
 
         public T WithShadow(Shadow? shadow = null)
         {
-            this.shadow = shadow ?? Constants.UI.Button.DefaultShadow;
+            this.shadow = shadow ?? DefaultShadow;
             return This;
         }
 
@@ -108,6 +109,7 @@ static partial class ButtonFactories
             shape = Shape.Circle;
             return This;
         }
+
         public T MakeHexagon()
         {
             shape = Shape.Hexagon;
@@ -132,6 +134,10 @@ static partial class ButtonFactories
 
             AddContent(button, contentColor);
 
+            const int edgeIndex = 0;
+            const int fillIndex = 1;
+            var components = new ShapeComponent[2];
+
             var shape = this.shape switch
             {
                 Shape.Rectangle => (ComplexShapeControl)new ComplexBox { CornerRadius = 2 },
@@ -139,7 +145,7 @@ static partial class ButtonFactories
                 Shape.Hexagon => new ComplexHexagon { CornerRadius = 2 },
                 _ => throw new ArgumentOutOfRangeException(),
             };
-            shape.Edge = Edge.Outer(1, contentColor.Value);
+            shape.Components = ShapeComponents.FromMutable(components);
 
             if (shadow is { } s)
             {
@@ -151,7 +157,8 @@ static partial class ButtonFactories
             }
 
             button.Add(shape);
-            contentColor.SourceUpdated += c => shape.Edge = shape.Edge with { Color = c };
+            contentColor.SourceUpdated += setEdgeColor;
+            setEdgeColor(contentColor.Value);
 
             if (progressBar.HasValue)
             {
@@ -183,8 +190,10 @@ static partial class ButtonFactories
                 button.Clicked += args => onClick(args);
             }
 
-
             return button;
+
+            void setEdgeColor(Color color) => components[edgeIndex] = Edge.Outer(1, color);
+            void setFillColor(Color color) => components[fillIndex] = Fill.With(color);
 
             void updateColor(bool skipAnimation = false)
             {
@@ -199,11 +208,14 @@ static partial class ButtonFactories
 
                 if (skipAnimation || animations == null)
                 {
-                    shape.Fill = Constants.UI.Colors.Get(color);
+                    setFillColor(Constants.UI.Colors.Get(color));
                     return;
                 }
+
                 backgroundAnimation?.Cancel();
-                backgroundAnimation = animations.Start(Constants.UI.Button.BackgroundColorAnimation(shape, color));
+                backgroundAnimation = animations.Start(
+                    BackgroundColorAnimation(components[fillIndex], setFillColor, color)
+                );
             }
         }
 
@@ -250,16 +262,16 @@ static partial class ButtonFactories
         protected override void AddContent(IControlParent control, IReadonlyBinding<Color> color)
         {
             var labelControl = TextFactories.Label(label!, color: color);
-            labelControl.FontSize = Constants.UI.Button.FontSize;
+            labelControl.FontSize = FontSize;
             control.Add(labelControl);
 
             if (cost != null)
             {
-                labelControl.Anchor(a => a.Top(margin: Constants.UI.Button.Margin).Bottom(relativePercentage: .4));
+                labelControl.Anchor(a => a.Top(margin: Margin).Bottom(relativePercentage: .4));
                 var costLabel = TextFactories.Label(cost!);
-                costLabel.FontSize = Constants.UI.Button.CostFontSize;
+                costLabel.FontSize = CostFontSize;
                 control.Add(costLabel.Anchor(a =>
-                    a.Bottom(margin: Constants.UI.Button.Margin).Top(relativePercentage: .6)));
+                    a.Bottom(margin: Margin).Top(relativePercentage: .6)));
             }
         }
     }

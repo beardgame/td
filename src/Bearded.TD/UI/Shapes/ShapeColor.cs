@@ -8,7 +8,7 @@ readonly struct ShapeColor
 {
     private enum Type
     {
-        Constant,
+        Constant = 0,
         Immutable,
         Mutable,
     }
@@ -19,9 +19,10 @@ readonly struct ShapeColor
 
     public ReadOnlySpan<GradientStop> Gradient => type switch
     {
+        Type.Constant => ReadOnlySpan<GradientStop>.Empty,
         Type.Immutable => immutableGradient.AsSpan(),
         Type.Mutable => mutableGradient,
-        _ => ReadOnlySpan<GradientStop>.Empty,
+        _ => throw new ArgumentOutOfRangeException(),
     };
 
     public GradientDefinition Definition { get; }

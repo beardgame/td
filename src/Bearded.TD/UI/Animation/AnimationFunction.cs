@@ -6,6 +6,8 @@ using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Animation;
 
+readonly record struct AnimationBlueprint<TState>(AnimationFunction<TState> Function, TState State);
+
 readonly record struct AnimationFunction<TState>(
     Func<TState, TimeSpan, AnimationState> Update,
     Action<TState>? Start = null,
@@ -31,24 +33,12 @@ readonly record struct AnimationFunction<TState>(
             End: inner.End == null ? null : s => inner.End(transform(s.Item1, s.Item2))
         );
     }
+
+    public AnimationBlueprint<TState> WithState(TState state) => new(this, state);
 }
 
 static class AnimationFunction
 {
-    public static AnimationFunction<Void> ComplexShapeFillColorFromCurrentTo(TimeSpan duration, ComplexShapeControl box, Color to)
-    {
-        var from = box.Fill.Color.Definition.Color;
-        return ComplexShapeFillColorFromTo(duration).Substitute((Void _) => (box, from, to));
-    }
-
-    public static AnimationFunction<(ComplexShapeControl, Color from, Color to)> ComplexShapeFillColorFromTo(TimeSpan duration)
-    {
-        return ZeroToOne<(ComplexShapeControl box, Color from, Color to)>(
-            duration,
-            (state, t) => state.box.Fill = Color.Lerp(state.from, state.to, t)
-        );
-    }
-
     public static AnimationFunction<(BackgroundBox, Color from, Color to)> BackgroundBoxColorFromTo(TimeSpan duration)
     {
         return ZeroToOne<(BackgroundBox box, Color from, Color to)>(

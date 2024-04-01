@@ -6,14 +6,14 @@ using static Bearded.TD.Rendering.Shapes.Shapes;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class DotRenderer(IShapeDrawer drawer) : IRenderer<Dot>
+sealed class DotRenderer(IShapeDrawer drawer, IShapeComponentBuffer componentBuffer) : IRenderer<Dot>
 {
     public void Render(Dot control)
     {
         var frame = control.Frame;
 
         var shape = Circle(frame.TopLeft + frame.Size * 0.5, frame.Size.X * 0.5);
-        var components = new ShapeComponents(Fill: control.Color).ForDrawingAssumingNoGradients();
+        var components = ShapeComponentsForDrawing.From(Fill.With(control.Color), componentBuffer);
 
         drawer.Draw(shape, components);
     }

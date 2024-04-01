@@ -5,14 +5,14 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class BorderRenderer(IShapeDrawer drawer) : IRenderer<Border>
+sealed class BorderRenderer(IShapeDrawer drawer, IShapeComponentBuffer shapeComponents) : IRenderer<Border>
 {
     public void Render(Border control)
     {
         var frame = control.Frame;
 
         var shape = Shapes.Shapes.Rectangle(frame.TopLeft, frame.Size);
-        var components = new ShapeComponents(Edge: Edge.Inner(1, control.Color)).ForDrawingAssumingNoGradients();
+        var components = ShapeComponentsForDrawing.From(Edge.Inner(1, control.Color), shapeComponents);
 
         drawer.Draw(shape, components);
     }

@@ -86,13 +86,13 @@ sealed class BuildingStatusControl : CompositeControl
             var experienceBar = new ComplexBox
             {
                 CornerRadius = Veterancy.ExperienceBarCornerRadius,
-                Components = Veterancy.ExperienceBarColors with
-                {
-                    Fill = ShapeColor.FromMutable(experienceBarGradient, GradientDefinition.Linear(
+                Components = [
+                    ..Veterancy.ExperienceBarStaticComponents,
+                    Fill.With(ShapeColor.FromMutable(experienceBarGradient, GradientDefinition.Linear(
                         AnchorPoint.Relative((0, 0)),
                         AnchorPoint.Relative((1, 0))
-                    )),
-                },
+                    ))),
+                ],
             };
 
             this.Add([

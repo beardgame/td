@@ -130,7 +130,7 @@ static class TextFactories
             var backgroundControl = background switch
             {
                 Control c => c,
-                ShapeColor fill => new ComplexBox { Fill = fill },
+                ShapeColor fill => new ComplexBox { Components = [ Fill.With(fill) ] },
                 ShapeComponents components => new ComplexBox { Components = components },
                 IReadonlyBinding<ShapeComponents> componentBinding => new ComplexBox { Components = componentBinding.Value },
                 _ => null,

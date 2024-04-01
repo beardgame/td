@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Bearded.TD.Utilities;
+﻿using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.UI.Animation;

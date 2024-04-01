@@ -5,7 +5,8 @@ using Bearded.UI.Controls;
 
 namespace Bearded.TD.Rendering.UI;
 
-sealed class FallbackBoxRenderer(IShapeDrawer drawer) : BoxRenderer(drawer, Color.Fuchsia)
+sealed class FallbackBoxRenderer(IShapeDrawer drawer, IShapeComponentBuffer shapeComponents)
+    : BoxRenderer(drawer, shapeComponents, Color.Fuchsia)
 {
     public override void Render(Control control)
     {

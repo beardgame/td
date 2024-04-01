@@ -1,33 +1,99 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
+using Bearded.Graphics;
 
 namespace Bearded.TD.UI.Shapes;
 
-readonly record struct ShapeComponents(
-    Fill Fill = default,
-    Edge Edge = default,
-    Glow OuterGlow = default,
-    Glow InnerGlow = default
-);
-
-record struct Edge(float OuterWidth, float InnerWidth, ShapeColor Color)
+readonly partial struct ShapeComponents
 {
-    public static Edge Outer(float width, ShapeColor color) => new(width, 0, color);
+    private enum Type
+    {
+        None = 0,
+        Immutable = 1,
+        Mutable = 2,
+    }
 
-    public static Edge Inner(float width, ShapeColor color) => new(0, width, color);
+    private readonly Type type;
+
+    private readonly ImmutableArray<ShapeComponent> immutableComponents;
+    private readonly ShapeComponent[]? mutableComponents;
+
+    public ReadOnlySpan<ShapeComponent> Components => type switch
+    {
+        Type.None => ReadOnlySpan<ShapeComponent>.Empty,
+        Type.Immutable => immutableComponents.AsSpan(),
+        Type.Mutable => mutableComponents,
+        _ => throw new ArgumentOutOfRangeException(),
+    };
+
+    private ShapeComponents(ImmutableArray<ShapeComponent> components)
+    {
+        type = Type.Immutable;
+        immutableComponents = components;
+    }
+
+    private ShapeComponents(ShapeComponent[] components)
+    {
+        type = Type.Immutable;
+        mutableComponents = components;
+    }
+
+    public static ShapeComponents From(ImmutableArray<ShapeComponent> components)
+        => new(components);
+
+    public static ShapeComponents FromMutable(ShapeComponent[] components)
+        => new(components);
+
+    public static implicit operator ShapeComponents(ShapeComponent components)
+        => [components];
+
 }
 
-record struct Glow(float Width, ShapeColor Color)
+[CollectionBuilder(typeof(ShapeComponents), nameof(From))]
+readonly partial struct ShapeComponents : IEnumerable<ShapeComponent>
 {
-    public static Glow Simple(float width, Color color) => new(width, GradientDefinition.SimpleGlow(color));
+    public static ShapeComponents From(ReadOnlySpan<ShapeComponent> components)
+        => From(components.ToImmutableArray());
 
-    public static implicit operator Glow((float Width, Color Color) glow) => Simple(glow.Width, glow.Color);
+    IEnumerator<ShapeComponent> IEnumerable<ShapeComponent>.GetEnumerator() => throw doNotEnumerate();
+    IEnumerator IEnumerable.GetEnumerator() => throw doNotEnumerate();
+    private static NotSupportedException doNotEnumerate()
+        => new("We implemented IEnumerable only for collection expression support.");
+
+    public ReadOnlySpan<ShapeComponent>.Enumerator GetEnumerator() => Components.GetEnumerator();
 }
 
-record struct Fill(ShapeColor Color)
+readonly record struct ShapeComponent(float ZeroDistance, float OneDistance, ShapeColor Color);
+
+static class Edge
 {
-    public static implicit operator Fill(GradientDefinition.SingleColor gradient) => new(gradient);
+    public static ShapeComponent Outer(float width, ShapeColor color) => new(0, width, color);
+    public static ShapeComponent Inner(float width, ShapeColor color) => new(0, -width, color);
+}
 
-    public static implicit operator Fill(Color color) => new(GradientDefinition.Constant(color));
+static class Glow
+{
+    public static ShapeComponent Outer(float width, Color color)
+        => Edge.Outer(width, GradientDefinition.SimpleGlow(color));
 
-    public static implicit operator Fill(ShapeColor color) => new(color);
+    public static ShapeComponent Inner(float width, Color color)
+        => Edge.Inner(width, GradientDefinition.SimpleGlow(color));
+}
+
+static class Fill
+{
+    private const float zero = 0;
+    private const float one = float.NegativeInfinity;
+
+    public static ShapeComponent With(Color color)
+        => With(GradientDefinition.Constant(color));
+
+    public static ShapeComponent With(GradientDefinition.SingleColor color)
+        => new(zero, one, color);
+
+    public static ShapeComponent With(ShapeColor color)
+        => new(zero, one, color);
 }
