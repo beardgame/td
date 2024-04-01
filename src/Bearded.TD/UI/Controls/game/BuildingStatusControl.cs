@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
@@ -15,7 +16,7 @@ sealed partial class BuildingStatusControl : CompositeControl
 
     public Vector2d Size { get; }
 
-    public BuildingStatusControl(BuildingStatus model, Animations animations)
+    public BuildingStatusControl(BuildingStatus model, Animations animations, GameRequestDispatcher requestDispatcher)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
@@ -32,10 +33,12 @@ sealed partial class BuildingStatusControl : CompositeControl
         column
             .AddHeader(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview"))
             .Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight)
-            .Add(new IconRow<Status>(
-                    model.Statuses, status => StatusIconFactories.StatusIcon(status, animations), StatusRowBackground),
+            .Add(new IconRow<ObservableStatus>(
+                    model.Statuses,
+                    status => StatusIconFactories.StatusIcon(status, animations, requestDispatcher),
+                    StatusRowBackground),
                 ButtonSize + buttonBetweenMargin.Y)
-            .Add(new IconRow<UpgradeSlot>(
+            .Add(new IconRow<IReadonlyBinding<UpgradeSlot>>(
                     model.Upgrades, slot => StatusIconFactories.UpgradeSlot(slot, animations)),
                 ButtonSize + buttonBetweenMargin.Y);
 

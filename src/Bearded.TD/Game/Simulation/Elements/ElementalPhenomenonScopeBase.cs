@@ -66,7 +66,8 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
                     .GetSprite(elementalStatus.Sprite.Id));
         var statusReceipt = statusDisplay?.AddStatus(
             new StatusSpec(
-                StatusType.Negative, StatusDrawSpec.StaticIcon(elementalStatus.Sprite), null, cachedStatusDrawer),
+                StatusType.Negative, null, cachedStatusDrawer),
+            StatusAppearance.IconOnly(elementalStatus.Sprite),
             null);
         return statusReceipt;
     }

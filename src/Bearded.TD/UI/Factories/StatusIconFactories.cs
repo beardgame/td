@@ -1,4 +1,4 @@
-using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
@@ -11,30 +11,30 @@ static class StatusIconFactories
     /**
      * Specifications:
      * - This gets called once to create a UI element displaying a status.
-     * - Statuses aren't immutable: elements such as the icon and the progress may change frame to frame (since we do
-     *   not have good ways to detect changes in the UI).
-     * - At this time it is unlikely the status binding will be updated.
      * - Current relevant properties and what they mean:
-     *   - Type: whether the status is neutral, positive, or negative. Should be represented somehow, e.g. by the colour
-     *     of the outline.
-     *   - DrawSpec: draw-specific information, populated by the component who owns the status
+     *   - Spec: the immutable information about the status that will never change.
+     *     - Type: whether the status is neutral, positive, or negative. Should be represented somehow, e.g. by the
+     *         colour of the outline.
+     *     - Interaction: input-specific information, populated by the component who owns the status.
+     *   - Appearance: draw-specific information, populated by the component who owns the status
      *     - Icon: ModAwareSpriteId of the icon to draw
      *     - Progress: a nullable double that indicates the current progress, if any (null means no progress is drawn)
-     *   - InteractionSpec: input-specific information, populated by the component who owns the status
      *   - Expiry: the game timestamp when the current status will automatically be removed
      * - Currently missing properties that will likely be added in the future:
-     *   - Interactive: whether an icon can be clicked to trigger an action
      *   - Tooltip: some kind of specification for a tooltip that's shown on hover
      *   - (Maybe) Progress colour: we may separate progress bar colours, e.g. to clearly distinguish hot and cold
      */
-    public static Control StatusIcon(IReadonlyBinding<Status> status, Animations animations)
+    public static Control StatusIcon(
+        ObservableStatus status,
+        Animations animations,
+        GameRequestDispatcher requestDispatcher)
     {
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
             .WithAnimations(animations)
-            .WithOnClick(() => status.Value.InteractionSpec?.Interact())
-            .WithInteractive(status.Transform(s => s.CanInteract))
-            .WithIcon(status.Transform(s => s.DrawSpec.Icon))
+            .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher))
+            .WithInteractive(Binding.Constant(status.Spec.IsInteractive))
+            .WithIcon(status.Appearance.Transform(a => a.Icon))
             .WithIconScale(0.75f)
             .MakeHexagon());
     }

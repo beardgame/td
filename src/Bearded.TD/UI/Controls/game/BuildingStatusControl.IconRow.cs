@@ -10,16 +10,16 @@ namespace Bearded.TD.UI.Controls;
 
 sealed partial class BuildingStatusControl
 {
-    private sealed class IconRow<T> : CompositeControl, ICollectionChangeHandler<IReadonlyBinding<T>>
+    private sealed class IconRow<T> : CompositeControl, ICollectionChangeHandler<T>
     {
-        private readonly ReadOnlyObservableCollection<IReadonlyBinding<T>> source;
-        private readonly Func<IReadonlyBinding<T>, Control> controlFactory;
+        private readonly ReadOnlyObservableCollection<T> source;
+        private readonly Func<T, Control> controlFactory;
         private readonly List<Control> iconControls = [];
         private IDisposable? listener;
 
         public IconRow(
-            ReadOnlyObservableCollection<IReadonlyBinding<T>> source,
-            Func<IReadonlyBinding<T>, Control> controlFactory,
+            ReadOnlyObservableCollection<T> source,
+            Func<T, Control> controlFactory,
             ShapeComponents? background = null)
         {
             this.source = source;
@@ -60,7 +60,7 @@ sealed partial class BuildingStatusControl
             positionControls(Range.All);
         }
 
-        public void OnItemAdded(IReadonlyBinding<T> item, int index)
+        public void OnItemAdded(T item, int index)
         {
             var control = controlFactory(item);
             Add(control);
@@ -72,7 +72,7 @@ sealed partial class BuildingStatusControl
             positionControls(index..);
         }
 
-        public void OnItemRemoved(IReadonlyBinding<T> item, int index)
+        public void OnItemRemoved(T item, int index)
         {
             var control = iconControls[index];
             Remove(control);
@@ -83,14 +83,14 @@ sealed partial class BuildingStatusControl
             positionControls(index..);
         }
 
-        public void OnItemReplaced(IReadonlyBinding<T> oldItem, IReadonlyBinding<T> newItem, int index)
+        public void OnItemReplaced(T oldItem, T newItem, int index)
         {
             // Not the most performant perhaps, but happens rarely enough that ease of implementation is worth it.
             OnItemRemoved(oldItem, index);
             OnItemAdded(newItem, index);
         }
 
-        public void OnItemMoved(IReadonlyBinding<T> item, int oldIndex, int newIndex)
+        public void OnItemMoved(T item, int oldIndex, int newIndex)
         {
             // Not the most performant perhaps, but happens rarely enough that ease of implementation is worth it.
             // Perhaps in the future this is something we may want to implement if we want to animate this, but for now

@@ -12,5 +12,5 @@ interface IStatusTracker
     event StatusEventHandler StatusRemoved;
 
     void AddHitPointsBar(HitPointsBar bar);
-    IStatusReceipt AddStatus(StatusSpec status, Instant? expiryTime);
+    IStatusReceipt AddStatus(StatusSpec status, StatusAppearance appearance, Instant? expiryTime);
 }

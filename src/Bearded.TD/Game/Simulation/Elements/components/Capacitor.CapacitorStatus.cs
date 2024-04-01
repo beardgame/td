@@ -13,6 +13,7 @@ sealed partial class Capacitor
     private sealed class CapacitorStatus
     {
         private IStatusReceipt? status;
+        private SpriteBuckets icons;
         private float chargePercentage;
 
         public CapacitorStatus(GameState game, IStatusTracker statusTracker)
@@ -26,15 +27,17 @@ sealed partial class Capacitor
                     iconStatusDrawer(game, "battery-100")),
                 () => chargePercentage);
             var progressDrawer = new ProgressStatusDrawer(iconDrawer, () => chargePercentage);
-            var drawSpec = StatusDrawSpec.BucketedIconWithProgress(
+            icons = new SpriteBuckets(
                 ImmutableArray.Create(
                     "battery-0".ToStatusIconSpriteId(),
                     "battery-25".ToStatusIconSpriteId(),
                     "battery-50".ToStatusIconSpriteId(),
                     "battery-75".ToStatusIconSpriteId(),
-                    "battery-100".ToStatusIconSpriteId()),
-                () => chargePercentage);
-            status = statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, drawSpec, null, progressDrawer), null);
+                    "battery-100".ToStatusIconSpriteId()));
+            status = statusTracker.AddStatus(
+                new StatusSpec(StatusType.Neutral, null, progressDrawer),
+                statusAppearance(),
+                null);
         }
 
         private static IStatusDrawer iconStatusDrawer(GameState game, string iconName) =>
@@ -43,6 +46,12 @@ sealed partial class Capacitor
         public void UpdateCharge(ElectricCharge currentCharge, ElectricCharge maxCharge)
         {
             chargePercentage = currentCharge / maxCharge;
+            status?.UpdateAppearance(statusAppearance());
+        }
+
+        private StatusAppearance statusAppearance()
+        {
+            return StatusAppearance.IconAndProgress(icons.ResolveIcon(chargePercentage), chargePercentage);
         }
 
         public void Detach()

@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Immutable;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Shared.TechEffects;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -14,6 +17,8 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
         ImmutableArray<ITargetingMode>? AllowedTargetingModes { get; }
         ITargetingMode? DefaultTargetingMode { get; }
     }
+
+    private IStatusReceipt? statusReceipt;
 
     public ITargetingMode Value { get; private set; } = TargetingMode.Default;
 
@@ -41,6 +46,17 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
                 Owner.Game.Meta.Logger.Debug?.Log($"Default targeting mode {mode} not actually allowed.");
             }
         }
+
+        if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
+        {
+            statusReceipt = statusTracker.AddStatus(
+                new StatusSpec(
+                    StatusType.Neutral,
+                    new InteractionSpec(this),
+                    new EmptyStatusDrawer()),
+                StatusAppearance.IconOnly(Value.Icon),
+                null);
+        }
     }
 
     public override void Update(TimeSpan elapsedTime) { }
@@ -48,9 +64,11 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
     public void SetTargetingMode(ITargetingMode newMode)
     {
         Value = newMode;
+        statusReceipt?.UpdateAppearance(StatusAppearance.IconOnly(Value.Icon));
         Events.Send(new TargetingModeChanged());
     }
 
+    [Obsolete]
     private sealed class TargetingReport : ITargetingReport
     {
         private readonly TargetingModeProperty subject;
@@ -64,6 +82,17 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
         public TargetingReport(TargetingModeProperty subject)
         {
             this.subject = subject;
+        }
+    }
+
+    private sealed class InteractionSpec(TargetingModeProperty subject) : IStatusInteractionSpec
+    {
+        public void Interact(GameRequestDispatcher requestDispatcher)
+        {
+            var currentIndex = subject.AllowedTargetingModes.IndexOf(subject.Value);
+            var newIndex = (currentIndex + 1) % subject.AllowedTargetingModes.Length;
+            var newMode = subject.AllowedTargetingModes[newIndex];
+            requestDispatcher.Request(Buildings.SetTargetingMode.Request, subject.Owner, newMode);
         }
     }
 }
