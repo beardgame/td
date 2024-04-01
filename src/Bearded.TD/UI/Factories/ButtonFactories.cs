@@ -44,4 +44,10 @@ static partial class ButtonFactories
     {
         return rowLayout.AddRight(Button(builderFunc).WrapCentered(Width, Height), Width + 2 * Margin);
     }
+
+    public static Layouts.IRowLayout AddSquareButtonRight(
+        this Layouts.IRowLayout rowLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+    {
+        return rowLayout.AddRight(Button(builderFunc).WrapCentered(Height, Height), Height + 2 * Margin);
+    }
 }

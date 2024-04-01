@@ -30,7 +30,8 @@ public enum ForeGroundColor
     Highlight = 0,
     Text = 1,
     Edge = 1,
-    Headline = 2,
+    Headline = 3,
+    Headline2 = 2,
     DisabledText = 6,
 }
 

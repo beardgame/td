@@ -75,7 +75,7 @@ static class WindowFactories
 
             var titleBar = new CompositeControl();
             var titleRow = titleBar.BuildFixedRow()
-                .AddButtonRight(b => b.WithLabel("close").WithOnClick(onClose!));
+                .AddSquareButtonRight(b => b.WithLabel("X").WithOnClick(onClose!));
             if (title != null)
                 titleRow.AddHeaderLeft(title, 100);
 
