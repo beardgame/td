@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
@@ -6,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.StatusDisplays;
 sealed partial class StatusTracker
 {
     private readonly List<HitPointsBar> hitPointsBars = [];
-    public IReadOnlyList<HitPointsBar> HitPointsBars { get; }
+    public ReadOnlyCollection<HitPointsBar> HitPointsBars { get; }
 
     public void AddHitPointsBar(HitPointsBar bar)
     {

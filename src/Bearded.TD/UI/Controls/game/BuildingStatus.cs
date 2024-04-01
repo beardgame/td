@@ -1,18 +1,20 @@
 using System;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class BuildingStatus : IDisposable
 {
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
-    public IReadonlyBinding<ImmutableArray<Status>> Statuses => statuses;
-    public IReadonlyBinding<ImmutableArray<UpgradeSlot>> Upgrades => upgrades;
+    public ReadOnlyObservableCollection<IReadonlyBinding<Status>> Statuses { get; private set; }
+    public ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>> Upgrades { get; private set; }
     public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
 
     private readonly IStatusTracker statusTracker;
@@ -21,8 +23,8 @@ sealed class BuildingStatus : IDisposable
     private readonly IVeterancy veterancy;
 
     private readonly Binding<bool> showExpanded = new(false);
-    private readonly Binding<ImmutableArray<Status>> statuses = new();
-    private readonly Binding<ImmutableArray<UpgradeSlot>> upgrades = new();
+    private readonly ObservableCollection<IReadonlyBinding<Status>> statuses;
+    private readonly ObservableCollection<IReadonlyBinding<UpgradeSlot>> upgrades;
     private readonly Binding<VeterancyStatus> veterancyStatus = new();
 
     public BuildingStatus(
@@ -36,8 +38,12 @@ sealed class BuildingStatus : IDisposable
         this.upgradeManager = upgradeManager;
         this.veterancy = veterancy;
 
-        statuses.SetFromSource(statusTracker.Statuses.ToImmutableArray());
-        upgrades.SetFromSource(buildInitialUpgradeSlots());
+        statuses = new ObservableCollection<IReadonlyBinding<Status>>(statusTracker.Statuses.Select(Binding.Create));
+        upgrades = new ObservableCollection<IReadonlyBinding<UpgradeSlot>>(
+            buildInitialUpgradeSlots().Select(Binding.Create));
+        Statuses = new ReadOnlyObservableCollection<IReadonlyBinding<Status>>(statuses);
+        Upgrades = new ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>>(upgrades);
+
         veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
 
         statusTracker.StatusAdded += statusAdded;
@@ -60,12 +66,16 @@ sealed class BuildingStatus : IDisposable
 
     private void statusAdded(Status status)
     {
-        statuses.SetFromSource(statuses.Value.Add(status));
+        var index = statusTracker.Statuses.IndexOf(status);
+        statuses.Insert(index, Binding.Create(status));
     }
 
     private void statusRemoved(Status status)
     {
-        statuses.SetFromSource(statuses.Value.Remove(status));
+        // Not very performant, but the alternative is keeping a status -> index dictionary which is annoying
+        // bookkeeping.
+        var index = statuses.Indexed().Where(tuple => tuple.Item1.Value == status).Select(tuple => tuple.Item2).First();
+        statuses.RemoveAt(index);
     }
 
     private void veterancyStatusChanged(VeterancyStatus status)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.Utilities.SpaceTime;
 
@@ -7,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.StatusDisplays;
 sealed partial class StatusTracker
 {
     private readonly List<Status> statuses = [];
-    public IReadOnlyList<Status> Statuses { get; }
+    public ReadOnlyCollection<Status> Statuses { get; }
 
     public event StatusEventHandler? StatusAdded;
     public event StatusEventHandler? StatusRemoved;
