@@ -183,7 +183,6 @@ static partial class ButtonFactories
                 button.Clicked += args => onClick(args);
             }
 
-
             return button;
 
             void updateColor(bool skipAnimation = false)
@@ -191,8 +190,8 @@ static partial class ButtonFactories
                 var color = (button, mouseState) switch
                 {
                     ({ IsEnabled: false }, _) => BackgroundColor.InactiveElement,
-                    (_, { MouseIsDown: true }) => BackgroundColor.ActiveElement,
-                    (_, { MouseIsOver: true }) => BackgroundColor.Hover,
+                    (_, { MouseIsDown: true }) when onClick is not null => BackgroundColor.ActiveElement,
+                    (_, { MouseIsOver: true }) when onClick is not null => BackgroundColor.Hover,
                     _ when isActive.Value => BackgroundColor.ActiveElement,
                     _ => BackgroundColor.Element,
                 };
