@@ -1,3 +1,5 @@
+using Bearded.TD.Game;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
@@ -27,12 +29,12 @@ static class StatusIconFactories
      *   - Tooltip: some kind of specification for a tooltip that's shown on hover
      *   - (Maybe) Progress colour: we may separate progress bar colours, e.g. to clearly distinguish hot and cold
      */
-    public static Control StatusIcon(IReadonlyBinding<Status> status, Animations animations)
+    public static Control StatusIcon(IReadonlyBinding<Status> status, Animations animations, GameRequestDispatcher requestDispatcher)
     {
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
             .WithAnimations(animations)
-            .WithOnClick(() => status.Value.InteractionSpec?.Interact())
+            .WithOnClick(() => status.Value.InteractionSpec?.Interact(requestDispatcher))
             .WithInteractive(status.Transform(s => s.CanInteract))
             .WithIcon(status.Transform(s => s.DrawSpec.Icon))
             .WithIconScale(0.75f)
