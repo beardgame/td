@@ -19,6 +19,7 @@ static class StatusIconFactories
      *   - DrawSpec: draw-specific information, populated by the component who owns the status
      *     - Icon: ModAwareSpriteId of the icon to draw
      *     - Progress: a nullable double that indicates the current progress, if any (null means no progress is drawn)
+     *   - InteractionSpec: input-specific information, populated by the component who owns the status
      *   - Expiry: the game timestamp when the current status will automatically be removed
      * - Currently missing properties that will likely be added in the future:
      *   - Interactive: whether an icon can be clicked to trigger an action
@@ -28,18 +29,12 @@ static class StatusIconFactories
     public static Control StatusIcon(IReadonlyBinding<Status> status)
     {
         // TODO: replace entirely
-        return ButtonFactories.StandaloneIconButton(b =>
-        {
-            // TODO: oh how disgusting, if the status value ever changes this won't work
-            if (status.Value.CanInteract)
-            {
-                b.WithOnClick(() => status.Value.InteractionSpec?.Interact());
-            }
-            return b
-                .WithIcon(status.Transform(s => s.DrawSpec.Icon))
-                .WithIconScale(0.75f)
-                .MakeHexagon();
-        });
+        return ButtonFactories.StandaloneIconButton(b => b
+            .WithOnClick(() => status.Value.InteractionSpec?.Interact())
+            .WithInteractive(status.Transform(s => s.CanInteract))
+            .WithIcon(status.Transform(s => s.DrawSpec.Icon))
+            .WithIconScale(0.75f)
+            .MakeHexagon());
     }
 
     /**
@@ -59,6 +54,7 @@ static class StatusIconFactories
     {
         // TODO: replace entirely
         return ButtonFactories.Button(b => b
+            .WithInteractive(upgradeSlot.Transform(slot => slot.Upgrade is null))
             .WithLabel(upgradeSlot.Transform(slot => slot.Upgrade?.Name[..1] ?? ""))
             .MakeHexagon());
     }

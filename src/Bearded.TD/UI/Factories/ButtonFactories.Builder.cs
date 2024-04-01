@@ -29,6 +29,7 @@ static partial class ButtonFactories
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
         private GenericEventHandler<Button.ClickEventArgs>? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
+        private IReadonlyBinding<bool> isInteractive = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
         private Shape shape;
@@ -76,6 +77,12 @@ static partial class ButtonFactories
         public T WithEnabled(IReadonlyBinding<bool> isEnabled)
         {
             this.isEnabled = isEnabled;
+            return This;
+        }
+
+        public T WithInteractive(IReadonlyBinding<bool> isInteractive)
+        {
+            this.isInteractive = isInteractive;
             return This;
         }
 
@@ -190,8 +197,8 @@ static partial class ButtonFactories
                 var color = (button, mouseState) switch
                 {
                     ({ IsEnabled: false }, _) => BackgroundColor.InactiveElement,
-                    (_, { MouseIsDown: true }) when onClick is not null => BackgroundColor.ActiveElement,
-                    (_, { MouseIsOver: true }) when onClick is not null => BackgroundColor.Hover,
+                    (_, { MouseIsDown: true }) when isInteractive.Value => BackgroundColor.ActiveElement,
+                    (_, { MouseIsOver: true }) when isInteractive.Value => BackgroundColor.Hover,
                     _ when isActive.Value => BackgroundColor.ActiveElement,
                     _ => BackgroundColor.Element,
                 };
