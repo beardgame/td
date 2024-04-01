@@ -33,7 +33,7 @@ sealed class GameUIControl : CompositeControl
         nonDiegeticUIWrapper.Add(gameWorldOverlay);
         Add(nonDiegeticUIWrapper);
 
-        Add(new StatisticsSideBar().Anchor(a => a
+        Add(new StatisticsSideBarControl(gameUI.StatisticsSideBar, animations).Anchor(a => a
             .Top(technologyButtonSize + 8 * Constants.UI.Button.Margin)
             .Bottom(Constants.UI.Button.SquareButtonSize + 4 * Constants.UI.Button.Margin)
         ));

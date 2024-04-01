@@ -14,6 +14,11 @@ sealed class WaveReport
 
     public Tower StatsForTower(Id<GameObject> id) => statsByTower.GetValueOrDefault(id, Tower.NoDamage);
 
+    public static WaveReport Empty = new(
+        ImmutableDictionary<Id<GameObject>, Tower>.Empty,
+        ImmutableArray<TypedAccumulatedDamage>.Empty
+    );
+
     public static WaveReport Create(
         ImmutableArray<(Id<GameObject> Id, ImmutableArray<TypedAccumulatedDamage> DamageByType)> stats)
     {

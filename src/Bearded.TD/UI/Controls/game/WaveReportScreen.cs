@@ -1,26 +1,33 @@
-﻿using Bearded.TD.UI.Factories;
-using Bearded.TD.UI.Shapes;
+﻿using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.UI.Animation;
+using Bearded.TD.UI.Factories;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
+using static Bearded.TD.Constants.UI;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class WaveReportScreen : CompositeControl
 {
-    public WaveReportScreen()
+    private readonly Animations animations;
+
+    public WaveReportScreen(WaveReport report, VoidEventHandler close, Animations animations)
     {
-        this.Anchor(a => a.Right(Constants.UI.LayoutMargin, 250));
+        this.animations = animations;
 
-        var window = WindowFactories.Window(b => b
+        this.Anchor(a => a.Right(LayoutMargin, 250));
+
+        Add(WindowFactories.Window(b => b
             .WithTitle("Wave Report")
-            .WithOnClose(() => { })
-            .WithContent(buildContent())
-            .WithShadow(Constants.UI.Shadows.SmallWindow)
-        );
+            .WithOnClose(close)
+            .WithContent(buildWindowContent(report))
+            .WithShadow(Shadows.SmallWindow)
+        ));
 
-        Add(window);
+        IsVisible = false;
     }
 
-    private Control buildContent()
+    private Control buildWindowContent(WaveReport report)
     {
         var content = new CompositeControl();
         var column = content.BuildScrollableColumn();
@@ -37,7 +44,7 @@ sealed class WaveReportScreen : CompositeControl
         var container = makeContainer();
         // TODO: add towers to container
 
-        column.AddHeader("Top Towers", Constants.UI.Colors.Get(ForeGroundColor.Headline2));
+        column.AddHeader("Top Towers", Colors.Get(ForeGroundColor.Headline2));
         column.Add(container, 100);
     }
 
@@ -54,12 +61,17 @@ sealed class WaveReportScreen : CompositeControl
             .Top(relativePercentage: 0.5, height: chartDiameter, margin: -chartDiameter / 2)
         ));
 
-        column.AddHeader("All Damage", Constants.UI.Colors.Get(ForeGroundColor.Headline2));
+        column.AddHeader("All Damage", Colors.Get(ForeGroundColor.Headline2));
         column.Add(container, height);
     }
 
     private static CompositeControl makeContainer()
     {
         return [];
+    }
+
+    public void SetVisible(bool visible)
+    {
+        IsVisible = visible;
     }
 }

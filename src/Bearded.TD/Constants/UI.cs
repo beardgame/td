@@ -56,6 +56,7 @@ static partial class Constants
             public const double Margin = 4;
 
             public const double SquareButtonSize = 64;
+            public const double SmallSquareButtonSize = 32;
 
             public static readonly Color ActiveColor = Colors.Get(BackgroundColor.ActiveElement);
             public static readonly Color HoverColor = Colors.Get(BackgroundColor.Hover);
