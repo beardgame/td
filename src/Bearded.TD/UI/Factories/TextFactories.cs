@@ -152,6 +152,14 @@ static class TextFactories
         }
     }
 
+    public static Layouts.IColumnLayout AddSeparator(this Layouts.IColumnLayout columnLayout)
+    {
+        return columnLayout.Add(
+            new ComplexBox { Components = Constants.UI.Layout.HorizontalSeparator },
+            Constants.UI.Layout.HorizontalSeparatorHeight
+        );
+    }
+
     public static Layouts.IColumnLayout AddHeader(
         this Layouts.IColumnLayout columnLayout, string text, Color? color = null)
     {

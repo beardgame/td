@@ -35,6 +35,11 @@ sealed class GameUIControl : CompositeControl
         nonDiegeticUIWrapper.Add(gameWorldOverlay);
         Add(nonDiegeticUIWrapper);
 
+        Add(new StatisticsSideBar().Anchor(a => a
+            .Top(technologyButtonSize + 8 * Constants.UI.Button.Margin)
+            .Bottom(Constants.UI.Button.SquareButtonSize + 4 * Constants.UI.Button.Margin)
+        ));
+
         Add(new GameMenuControl()
             .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
