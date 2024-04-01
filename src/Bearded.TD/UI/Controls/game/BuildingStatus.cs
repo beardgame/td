@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 
@@ -40,7 +40,7 @@ sealed class BuildingStatus : IDisposable
 
         statuses = new ObservableCollection<IReadonlyBinding<Status>>(statusTracker.Statuses.Select(Binding.Create));
         upgrades = new ObservableCollection<IReadonlyBinding<UpgradeSlot>>(
-            buildInitialUpgradeSlots().Select(Binding.Create));
+            upgradeSlots.Slots.Select(UpgradeSlot.FromState).Select(Binding.Create));
         Statuses = new ReadOnlyObservableCollection<IReadonlyBinding<Status>>(statuses);
         Upgrades = new ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>>(upgrades);
 
@@ -48,20 +48,18 @@ sealed class BuildingStatus : IDisposable
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
+        upgradeSlots.SlotUnlocked += slotUnlocked;
+        upgradeSlots.SlotFilled += slotFilled;
         veterancy.VeterancyStatusChanged += veterancyStatusChanged;
-
-        // TODO: handle new upgrades, new upgrade slots
     }
 
-    private ImmutableArray<UpgradeSlot> buildInitialUpgradeSlots()
+    public void Dispose()
     {
-        var appliedUpgrades = upgradeManager.AppliedUpgrades.ToList();
-        DebugAssert.State.Satisfies(appliedUpgrades.Count == upgradeSlots.FilledSlotsCount);
-
-        return Enumerable.Range(0, upgradeSlots.TotalSlotsCount)
-            .Select(i =>
-                i >= appliedUpgrades.Count ? new UpgradeSlot(null, null) : new UpgradeSlot(appliedUpgrades[i], null))
-            .ToImmutableArray();
+        statusTracker.StatusAdded -= statusAdded;
+        statusTracker.StatusRemoved -= statusRemoved;
+        upgradeSlots.SlotUnlocked -= slotUnlocked;
+        upgradeSlots.SlotFilled -= slotFilled;
+        veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
     }
 
     private void statusAdded(Status status)
@@ -78,6 +76,20 @@ sealed class BuildingStatus : IDisposable
         statuses.RemoveAt(index);
     }
 
+    private void slotUnlocked(int index)
+    {
+        upgrades.Add(Binding.Create(UpgradeSlot.Empty()));
+    }
+
+    private void slotFilled(int index, IPermanentUpgrade upgrade)
+    {
+        upgradeBinding(index).SetFromSource(new UpgradeSlot(upgrade));
+    }
+
+    // We are keeping track of `IReadonlyBinding<T>` in the list to not expose the mutable interface, but that means we
+    // need to cast here to get the mutable version back.
+    private Binding<UpgradeSlot> upgradeBinding(int i) => (Binding<UpgradeSlot>) upgrades[i];
+
     private void veterancyStatusChanged(VeterancyStatus status)
     {
         veterancyStatus.SetFromSource(status);
@@ -86,12 +98,5 @@ sealed class BuildingStatus : IDisposable
     public void PromoteToExpandedView()
     {
         showExpanded.SetFromSource(true);
-    }
-
-    public void Dispose()
-    {
-        statusTracker.StatusAdded -= statusAdded;
-        statusTracker.StatusRemoved -= statusRemoved;
-        veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
     }
 }

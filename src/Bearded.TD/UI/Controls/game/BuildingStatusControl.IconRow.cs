@@ -13,13 +13,13 @@ sealed partial class BuildingStatusControl
     private sealed class IconRow<T> : CompositeControl, ICollectionChangeHandler<IReadonlyBinding<T>>
     {
         private readonly ReadOnlyObservableCollection<IReadonlyBinding<T>> source;
-        private readonly Func<IReadonlyBinding<T?>, Control> controlFactory;
+        private readonly Func<IReadonlyBinding<T>, Control> controlFactory;
         private readonly List<Control> iconControls = [];
         private IDisposable? listener;
 
         public IconRow(
             ReadOnlyObservableCollection<IReadonlyBinding<T>> source,
-            Func<IReadonlyBinding<T?>, Control> controlFactory,
+            Func<IReadonlyBinding<T>, Control> controlFactory,
             ShapeComponents? background = null)
         {
             this.source = source;
