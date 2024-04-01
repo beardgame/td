@@ -12,20 +12,20 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class BuildingStatus : IDisposable
 {
-    public IReadonlyBinding<bool> ShowExpanded => showExpanded;
-    public ReadOnlyObservableCollection<IReadonlyBinding<Status>> Statuses { get; private set; }
-    public ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>> Upgrades { get; private set; }
-    public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
-
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots upgradeSlots;
     private readonly IBuildingUpgradeManager upgradeManager;
     private readonly IVeterancy veterancy;
 
     private readonly Binding<bool> showExpanded = new(false);
-    private readonly ObservableCollection<IReadonlyBinding<Status>> statuses;
+    private readonly ObservableCollection<ObservableStatus> statuses;
     private readonly ObservableCollection<IReadonlyBinding<UpgradeSlot>> upgrades;
     private readonly Binding<VeterancyStatus> veterancyStatus = new();
+
+    public IReadonlyBinding<bool> ShowExpanded => showExpanded;
+    public ReadOnlyObservableCollection<ObservableStatus> Statuses { get; }
+    public ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>> Upgrades { get;  }
+    public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
 
     public BuildingStatus(
         IStatusTracker statusTracker,
@@ -38,10 +38,11 @@ sealed class BuildingStatus : IDisposable
         this.upgradeManager = upgradeManager;
         this.veterancy = veterancy;
 
-        statuses = new ObservableCollection<IReadonlyBinding<Status>>(statusTracker.Statuses.Select(Binding.Create));
+        statuses = new ObservableCollection<ObservableStatus>(
+            statusTracker.Statuses.Select(s => new ObservableStatus(s)));
         upgrades = new ObservableCollection<IReadonlyBinding<UpgradeSlot>>(
             upgradeSlots.Slots.Select(UpgradeSlot.FromState).Select(Binding.Create));
-        Statuses = new ReadOnlyObservableCollection<IReadonlyBinding<Status>>(statuses);
+        Statuses = new ReadOnlyObservableCollection<ObservableStatus>(statuses);
         Upgrades = new ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>>(upgrades);
 
         veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
@@ -55,6 +56,11 @@ sealed class BuildingStatus : IDisposable
 
     public void Dispose()
     {
+        foreach (var s in statuses)
+        {
+            s.Dispose();
+        }
+
         statusTracker.StatusAdded -= statusAdded;
         statusTracker.StatusRemoved -= statusRemoved;
         upgradeSlots.SlotUnlocked -= slotUnlocked;
@@ -65,14 +71,14 @@ sealed class BuildingStatus : IDisposable
     private void statusAdded(Status status)
     {
         var index = statusTracker.Statuses.IndexOf(status);
-        statuses.Insert(index, Binding.Create(status));
+        statuses.Insert(index, new ObservableStatus(status));
     }
 
     private void statusRemoved(Status status)
     {
-        // Not very performant, but the alternative is keeping a status -> index dictionary which is annoying
-        // bookkeeping.
-        var index = statuses.Indexed().Where(tuple => tuple.Item1.Value == status).Select(tuple => tuple.Item2).First();
+        // Not very performant, but the alternative is a lot of bookkeeping.
+        var (observableStatus, index) = statuses.Indexed().First(tuple => tuple.Item1.Observes(status));
+        observableStatus.Dispose();
         statuses.RemoveAt(index);
     }
 

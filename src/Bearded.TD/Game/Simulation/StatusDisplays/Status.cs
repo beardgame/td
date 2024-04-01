@@ -1,14 +1,36 @@
-using System;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.StatusDisplays;
 
-sealed class Status(StatusSpec spec, Instant? expiryTime)
+sealed class Status(StatusSpec spec, StatusAppearance appearance)
 {
-    public StatusType Type => spec.Type;
-    [Obsolete] public IStatusDrawer Drawer => spec.Drawer;
-    public IStatusDrawSpec DrawSpec => spec.DrawSpec;
-    public Instant? Expiry { get; set; } = expiryTime;
-    public bool IsInteractive => spec.InteractionSpec is not null;
-    public IStatusInteractionSpec? InteractionSpec => spec.InteractionSpec;
+    private Instant? expiry;
+
+    public StatusSpec Spec => spec;
+
+    public StatusAppearance Appearance
+    {
+        get => appearance;
+        set
+        {
+            if (appearance == value) return;
+            appearance = value;
+            AppearanceChanged?.Invoke();
+        }
+    }
+
+    public Instant? Expiry
+    {
+        get => expiry;
+        set
+        {
+            if (expiry == value) return;
+            expiry = value;
+            ExpiryChanged?.Invoke();
+        }
+    }
+
+    public event VoidEventHandler? AppearanceChanged;
+    public event VoidEventHandler? ExpiryChanged;
 }

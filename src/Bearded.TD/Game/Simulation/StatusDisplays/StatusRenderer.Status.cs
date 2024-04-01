@@ -31,14 +31,14 @@ sealed partial class StatusRenderer
             var col = i % StatusIconsPerRow;
             var row = i / StatusIconsPerRow;
             var pos = statusOrigin + statusWidth * new Vector3(col, row, 0);
-            status.Drawer.Draw(core, drawer, pos, statusSize);
+            status.Spec.Drawer.Draw(core, drawer, pos, statusSize);
             // TODO: draw time until expiry
             core.Primitives.DrawRectangle(
                 pos - statusSize * new Vector3(0.5f, 0.5f, 0), statusSize * Vector2.One, LineWidth, statusColor(status));
         }
     }
 
-    private static Color statusColor(Status status) => status.Type switch
+    private static Color statusColor(Status status) => status.Spec.Type switch
     {
         StatusType.Neutral => NeutralColor,
         StatusType.Positive => PositiveColor,

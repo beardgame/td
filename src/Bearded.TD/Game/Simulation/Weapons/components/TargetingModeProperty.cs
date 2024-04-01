@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Immutable;
-using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Reports;
@@ -50,12 +49,12 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
 
         if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
         {
-            statusTracker.AddStatus(
+            statusReceipt = statusTracker.AddStatus(
                 new StatusSpec(
                     StatusType.Neutral,
-                    new DrawSpec(this),
                     new InteractionSpec(this),
                     new EmptyStatusDrawer()),
+                StatusAppearance.IconOnly(Value.Icon),
                 null);
         }
     }
@@ -65,6 +64,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
     public void SetTargetingMode(ITargetingMode newMode)
     {
         Value = newMode;
+        statusReceipt?.UpdateAppearance(StatusAppearance.IconOnly(Value.Icon));
         Events.Send(new TargetingModeChanged());
     }
 
@@ -83,12 +83,6 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
         {
             this.subject = subject;
         }
-    }
-
-    private sealed class DrawSpec(TargetingModeProperty subject) : IStatusDrawSpec
-    {
-        public ModAwareSpriteId Icon => subject.Value.Icon;
-        public double? Progress => null;
     }
 
     private sealed class InteractionSpec(TargetingModeProperty subject) : IStatusInteractionSpec

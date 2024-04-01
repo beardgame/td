@@ -33,12 +33,12 @@ sealed partial class BuildingStatusControl : CompositeControl
         column
             .AddHeader(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview"))
             .Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight)
-            .Add(new IconRow<Status>(
+            .Add(new IconRow<ObservableStatus>(
                     model.Statuses,
                     status => StatusIconFactories.StatusIcon(status, animations, requestDispatcher),
                     StatusRowBackground),
                 ButtonSize + buttonBetweenMargin.Y)
-            .Add(new IconRow<UpgradeSlot>(
+            .Add(new IconRow<IReadonlyBinding<UpgradeSlot>>(
                     model.Upgrades, slot => StatusIconFactories.UpgradeSlot(slot, animations)),
                 ButtonSize + buttonBetweenMargin.Y);
 

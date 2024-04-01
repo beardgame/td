@@ -1,6 +1,7 @@
 using System;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -16,6 +17,8 @@ namespace Bearded.TD.Game.Simulation.Drawing;
 [Component("fuelGauge")]
 sealed class FuelGauge : Component
 {
+    private static readonly ModAwareSpriteId iconSpriteId = "fuel-tank".ToStatusIconSpriteId();
+
     private IFuelTank? tank;
     private float displayLevel;
     private IBuildingStateProvider? building;
@@ -42,14 +45,13 @@ sealed class FuelGauge : Component
 
         if (statusDisplay is not null && status is null)
         {
-            var drawSpec =
-                StatusDrawSpec.StaticIconWithProgress("fuel-tank".ToStatusIconSpriteId(), () => displayLevel);
             var drawer = new StatusDrawer(() => displayLevel);
-            status =
-                statusDisplay.AddStatus(new StatusSpec(StatusType.Neutral, drawSpec, null, drawer), null);
+            status = statusDisplay.AddStatus(
+                new StatusSpec(StatusType.Neutral, null, drawer), StatusAppearance.IconOnly(iconSpriteId), null);
         }
 
         displayLevel += (level - displayLevel) * (1 - MathF.Pow(0.1f, (float)elapsedTime.NumericValue));
+        status?.UpdateAppearance(StatusAppearance.IconAndProgress(iconSpriteId, displayLevel));
     }
 
     private sealed class StatusDrawer : IStatusDrawer
