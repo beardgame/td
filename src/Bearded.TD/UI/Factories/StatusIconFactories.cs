@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -26,10 +27,11 @@ static class StatusIconFactories
      *   - Tooltip: some kind of specification for a tooltip that's shown on hover
      *   - (Maybe) Progress colour: we may separate progress bar colours, e.g. to clearly distinguish hot and cold
      */
-    public static Control StatusIcon(IReadonlyBinding<Status> status)
+    public static Control StatusIcon(IReadonlyBinding<Status> status, Animations animations)
     {
         // TODO: replace entirely
         return ButtonFactories.StandaloneIconButton(b => b
+            .WithAnimations(animations)
             .WithOnClick(() => status.Value.InteractionSpec?.Interact())
             .WithInteractive(status.Transform(s => s.CanInteract))
             .WithIcon(status.Transform(s => s.DrawSpec.Icon))
@@ -50,10 +52,11 @@ static class StatusIconFactories
      * - The slot is interactive if both Upgrade and UnlockProgress are null. In the future we may distinguish the first
      *   empty upgrade slot from subsequent slots since you should always fill slots from left to right.
      */
-    public static Control UpgradeSlot(IReadonlyBinding<UpgradeSlot> upgradeSlot)
+    public static Control UpgradeSlot(IReadonlyBinding<UpgradeSlot> upgradeSlot, Animations animations)
     {
         // TODO: replace entirely
         return ButtonFactories.Button(b => b
+            .WithAnimations(animations)
             .WithInteractive(upgradeSlot.Transform(slot => slot.Upgrade is null))
             .WithLabel(upgradeSlot.Transform(slot => slot.Upgrade?.Name[..1] ?? ""))
             .MakeHexagon());
