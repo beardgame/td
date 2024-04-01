@@ -34,7 +34,7 @@ sealed partial class Capacitor
                     "battery-75".ToStatusIconSpriteId(),
                     "battery-100".ToStatusIconSpriteId()),
                 () => chargePercentage);
-            status = statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, drawSpec, progressDrawer), null);
+            status = statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, drawSpec, null, progressDrawer), null);
         }
 
         private static IStatusDrawer iconStatusDrawer(GameState game, string iconName) =>

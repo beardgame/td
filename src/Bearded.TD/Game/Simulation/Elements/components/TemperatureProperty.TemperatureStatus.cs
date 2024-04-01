@@ -33,7 +33,7 @@ sealed partial class TemperatureProperty
                 var coldDrawSpec =
                     StatusDrawSpec.StaticIconWithProgress("thermometer-cold".ToStatusIconSpriteId(), () => progress);
                 coldStatus ??=
-                    statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, coldDrawSpec, coldDrawer), null);
+                    statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, coldDrawSpec, null, coldDrawer), null);
                 progress = (newTemperature - Constants.Game.Elements.MinNormalTemperature) /
                     (Constants.Game.Elements.MinTemperature - Constants.Game.Elements.MinNormalTemperature);
             }
@@ -47,7 +47,8 @@ sealed partial class TemperatureProperty
             {
                 var hotDrawSpec =
                     StatusDrawSpec.StaticIconWithProgress("thermometer-hot".ToStatusIconSpriteId(), () => progress);
-                hotStatus ??= statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, hotDrawSpec, hotDrawer), null);
+                hotStatus ??=
+                    statusTracker.AddStatus(new StatusSpec(StatusType.Neutral, hotDrawSpec, null, hotDrawer), null);
                 progress = (newTemperature - Constants.Game.Elements.MaxNormalTemperature) /
                     (Constants.Game.Elements.MaxTemperature - Constants.Game.Elements.MaxNormalTemperature);
             }
@@ -64,6 +65,7 @@ sealed partial class TemperatureProperty
                 new StatusSpec(
                     StatusType.Negative,
                     StatusDrawSpec.StaticIcon("hot-surface".ToStatusIconSpriteId()),
+                    null,
                     overheatedDrawer),
                 null);
         }

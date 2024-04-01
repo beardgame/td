@@ -9,4 +9,6 @@ sealed class Status(StatusSpec spec, Instant? expiryTime)
     [Obsolete] public IStatusDrawer Drawer => spec.Drawer;
     public IStatusDrawSpec DrawSpec => spec.DrawSpec;
     public Instant? Expiry { get; set; } = expiryTime;
+    public bool CanInteract => spec.InteractionSpec is not null;
+    public IStatusInteractionSpec? InteractionSpec => spec.InteractionSpec;
 }
