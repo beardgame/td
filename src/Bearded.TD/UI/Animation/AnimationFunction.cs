@@ -65,7 +65,7 @@ static class AnimationFunction
         );
     }
 
-    public static AnimationFunction<Void> ZeroToOne(TimeSpan duration, Action<float> update)
+    public static AnimationFunction<Void> ZeroToOne(TimeSpan duration, Action<float> update, Action? end = null)
         => new(
             Update: (_, time) =>
             {
@@ -76,10 +76,15 @@ static class AnimationFunction
                     : AnimationState.Ended;
             },
             Start: _ => update(0),
-            End: _ => update(1)
+            End: _ =>
+            {
+                update(1);
+                end?.Invoke();
+            }
         );
 
-    public static AnimationFunction<TState> ZeroToOne<TState>(TimeSpan duration, Action<TState, float> update)
+    public static AnimationFunction<TState> ZeroToOne<TState>(
+        TimeSpan duration, Action<TState, float> update, Action<TState>? end = null)
         => new(
             Update: (state, time) =>
             {
@@ -90,6 +95,10 @@ static class AnimationFunction
                     : AnimationState.Ended;
             },
             Start: state => update(state, 0),
-            End: state => update(state, 1)
+            End: state =>
+            {
+                update(state, 1);
+                end?.Invoke(state);
+            }
         );
 }

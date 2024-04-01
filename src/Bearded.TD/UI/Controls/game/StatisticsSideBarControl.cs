@@ -36,38 +36,21 @@ sealed class StatisticsSideBarControl : CompositeControl
         );
 
         statistics.LastWaveReport.SourceUpdated += onNewWaveReport;
-        statistics.WaveReportVisible.SourceUpdated += updateWaveReportVisibility;
+        statistics.WaveReportVisible.SourceUpdated += v => currentWaveReport?.SetVisible(v);
 
         onNewWaveReport(statistics.LastWaveReport.Value);
     }
 
     private void onNewWaveReport(WaveReport? report)
     {
-        if (currentWaveReport != null)
-            removeWaveReport(currentWaveReport);
+        currentWaveReport?.Destroy();
+        currentWaveReport = null;
 
         if (report == null)
             return;
 
-        addWaveReport(report);
-    }
-
-    private void addWaveReport(WaveReport report)
-    {
         currentWaveReport = new WaveReportScreen(report, statistics.CloseWaveReport, animations);
-
+        currentWaveReport.SetVisible(statistics.WaveReportVisible.Value);
         Add(currentWaveReport);
     }
-
-    private void removeWaveReport(Control current)
-    {
-        Remove(current);
-        currentWaveReport = null;
-    }
-
-    private void updateWaveReportVisibility(bool visible)
-    {
-        currentWaveReport?.SetVisible(visible);
-    }
-
 }
