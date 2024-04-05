@@ -57,8 +57,9 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
             statusDisplay.AddStatus(
                 new StatusSpec(
                     StatusType.Negative,
-                    StatusDrawSpec.StaticIcon("spanner".ToStatusIconSpriteId()),
+                    null,
                     IconStatusDrawer.FromSpriteBlueprint(Owner.Game, sprite)),
+                StatusAppearance.IconOnly("spanner".ToStatusIconSpriteId()),
                 newJam.End);
         }
 

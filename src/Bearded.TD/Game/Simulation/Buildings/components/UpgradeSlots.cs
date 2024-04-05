@@ -25,6 +25,9 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
 
     public IReadOnlyList<IUpgradeSlot> Slots { get; }
 
+    public event SlotEventHandler? SlotUnlocked;
+    public event SlotFilledEventHandler? SlotFilled;
+
     public UpgradeSlots(IParameters parameters) : base(parameters)
     {
         Slots = slots.AsReadOnly();
@@ -58,23 +61,27 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
 
     private void unlockSlot()
     {
-        slots.Add(new Slot(this, slots.Count));
+        var index = slots.Count;
+        slots.Add(new Slot(this, index));
+        SlotUnlocked?.Invoke(index);
     }
 
     public void FillSlot(IPermanentUpgrade upgrade)
     {
-        var slot = Slots.FirstOrDefault(s => !s.Filled);
+        var slot = slots.FirstOrDefault(s => !((IUpgradeSlot) s).Filled);
         if (slot is null)
         {
             throw new InvalidOperationException("Cannot fill a slot if no slots are available");
         }
         slot.Fill(upgrade);
+        SlotFilled?.Invoke(slot.Index, upgrade);
     }
 
     public override void Update(TimeSpan elapsedTime) { }
 
     private sealed class Slot(UpgradeSlots slots, int index) : IUpgradeSlot
     {
+        public int Index { get; } = index;
         public IPermanentUpgrade? Upgrade { get; private set; }
 
         public void Fill(IPermanentUpgrade upgrade)

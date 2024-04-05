@@ -91,7 +91,7 @@ sealed class BuildingStatusObserver
         }
 
         var status = new BuildingStatus(statusTracker, upgradeSlots, upgradeManager, veterancy);
-        var statusControl = new BuildingStatusControl(status, overlay.Animations);
+        var statusControl = new BuildingStatusControl(status, overlay.Animations, overlay.RequestDispatcher);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl);
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);

@@ -33,12 +33,13 @@ sealed class GameUI :
     private FocusManager focusManager = null!;
     private ShortcutCapturer shortcutCapturer = null!;
 
-    public GameUIController GameUIController { get; }
+    public GameUIController GameUIController { get; } = new();
 
     public GameNotificationsUI NotificationsUI { get; }
-    public ActionBar ActionBar { get; }
-    public CoreStatsUI CoreStats { get; }
-    public TechnologyWindow TechnologyUI { get; }
+    public ActionBar ActionBar { get; } = new();
+    public CoreStatsUI CoreStats { get; } = new();
+    public TechnologyWindow TechnologyUI { get; } = new();
+    public StatisticsSideBar StatisticsSideBar { get; } = new();
 
     public event VoidEventHandler? FocusReset;
     public event VoidEventHandler? GameVictoryTriggered;
@@ -51,12 +52,7 @@ sealed class GameUI :
 
     public GameUI()
     {
-        GameUIController = new GameUIController();
-
         NotificationsUI = new GameNotificationsUI(GameUIController);
-        ActionBar = new ActionBar();
-        CoreStats = new CoreStatsUI();
-        TechnologyUI = new TechnologyWindow();
     }
 
     protected override void Initialize(DependencyResolver dependencies, Parameters parameters)
@@ -78,6 +74,7 @@ sealed class GameUI :
         ActionBar.Initialize(Game, shortcutCapturer);
         CoreStats.Initialize(Game, shortcutCapturer);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, tooltipFactory);
+        StatisticsSideBar.Initialize(Game);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;

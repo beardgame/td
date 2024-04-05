@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.Utilities.SpaceTime;
 
@@ -7,14 +8,14 @@ namespace Bearded.TD.Game.Simulation.StatusDisplays;
 sealed partial class StatusTracker
 {
     private readonly List<Status> statuses = [];
-    public IReadOnlyList<Status> Statuses { get; }
+    public ReadOnlyCollection<Status> Statuses { get; }
 
     public event StatusEventHandler? StatusAdded;
     public event StatusEventHandler? StatusRemoved;
 
-    public IStatusReceipt AddStatus(StatusSpec spec, Instant? expiryTime)
+    public IStatusReceipt AddStatus(StatusSpec spec, StatusAppearance appearance, Instant? expiryTime)
     {
-        var status = new Status(spec, expiryTime);
+        var status = new Status(spec, appearance) { Expiry = expiryTime };
         statuses.Add(status);
         StatusAdded?.Invoke(status);
         return new StatusReceipt(status, this);
@@ -41,6 +42,11 @@ sealed partial class StatusTracker
 
     private sealed class StatusReceipt(Status status, StatusTracker tracker) : IStatusReceipt
     {
+        public void UpdateAppearance(StatusAppearance appearance)
+        {
+            status.Appearance = appearance;
+        }
+
         public void DeleteImmediately()
         {
             tracker.removeStatus(status);

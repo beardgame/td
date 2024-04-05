@@ -39,6 +39,8 @@ static partial class Constants
                 private static ModAwareSpriteId hud(string id) => new(new ModAwareId(ModId, "hud"), id);
 
                 public static readonly ModAwareSpriteId Technology = hud("microscope-lens");
+
+                public static ModAwareSpriteId Targeting(string id) => new(new ModAwareId(ModId, "targeting"), id);
             }
 
             public static class MainMenu

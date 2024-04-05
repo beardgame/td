@@ -21,10 +21,31 @@ static partial class Constants
         public const double LayoutMarginSmall = 4;
         public const double LayoutMargin = 8;
 
+        public static class Layout
+        {
+            public const double HorizontalSeparatorHeight = 1;
+
+            public static readonly ShapeComponents HorizontalSeparator =
+            [
+                Fill.With(ShapeColor.From(
+                    [
+                        (0, Color.Transparent),
+                        (0.25, Colors.Get(BackgroundColor.WindowInsetLine)),
+                        (0.75, Colors.Get(BackgroundColor.WindowInsetLine)),
+                        (1, Color.Transparent),
+                    ],
+                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((1, 0))))
+                ),
+            ];
+        }
+
         public static class Shadows
         {
-            public static readonly Shadow Default = Shadow((0, 2, 0), 5, new Color(0, 3, 13, 255) * 0.5f);
-            public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 75, new Color(0, 3, 13, 255) * 0.75f);
+            public static readonly Color DefaultColor = new(0, 3, 13);
+
+            public static readonly Shadow Default = Shadow((0, 2, 0), 5, DefaultColor * 0.5f);
+            public static readonly Shadow SmallWindow = Shadow((0, 6, 0), 50, DefaultColor * 0.65f);
+            public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 75, DefaultColor * 0.75f);
         }
 
         public static class Button
@@ -37,6 +58,7 @@ static partial class Constants
             public const double Margin = 4;
 
             public const double SquareButtonSize = 64;
+            public const double SmallSquareButtonSize = 32;
 
             public static readonly Shadow DefaultShadow = Shadows.Default;
 

@@ -7,6 +7,4 @@ interface IUpgradeSlot
     IPermanentUpgrade? Upgrade { get; }
 
     bool Filled => Upgrade is not null;
-
-    void Fill(IPermanentUpgrade upgrade);
 }

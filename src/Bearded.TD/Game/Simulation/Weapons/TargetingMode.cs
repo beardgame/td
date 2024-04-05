@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
 using JetBrains.Annotations;
+using static Bearded.TD.Constants.Content.CoreUI;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -17,6 +19,7 @@ static class TargetingMode
     private sealed class ArbitraryTargetingMode : ITargetingMode
     {
         public string Name => "Arbitrary";
+        public ModAwareSpriteId Icon => Sprites.Targeting("perspective-dice-six-faces-random");
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context) =>
             candidates.FirstOrDefault();
@@ -28,6 +31,7 @@ static class TargetingMode
     private sealed class LeastRotationTargetingMode : ITargetingMode
     {
         public string Name => "Least rotation";
+        public ModAwareSpriteId Icon => Sprites.Targeting("striking-arrows");
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
@@ -52,6 +56,7 @@ static class TargetingMode
     private sealed class HighestHealthTargetingMode : ITargetingMode
     {
         public string Name => "Highest health";
+        public ModAwareSpriteId Icon => Sprites.Targeting("heart-plus");
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
@@ -66,6 +71,7 @@ static class TargetingMode
     private sealed class LowestHealthTargetingMode : ITargetingMode
     {
         public string Name => "Lowest health";
+        public ModAwareSpriteId Icon => Sprites.Targeting("heart-minus");
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
@@ -80,6 +86,7 @@ static class TargetingMode
     private sealed class ClosestToBaseTargetingMode : ITargetingMode
     {
         public string Name => "Closest to base";
+        public ModAwareSpriteId Icon => Sprites.Targeting("path-distance");
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
