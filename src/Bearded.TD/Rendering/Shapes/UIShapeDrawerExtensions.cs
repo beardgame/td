@@ -59,7 +59,7 @@ static class UIShapeDrawerExtensions
 
         var maxDistance = (float)shadow.PenumbraRadius * 2;
 
-        var penumbra = ShapeComponentsForDrawing.From(Glow.Outer(maxDistance, innerColor), shapeBuffer);
+        var penumbra = ShapeComponentsForDrawing.From(Glow.OuterFilled(maxDistance, innerColor), shapeBuffer);
         return (innerRadius, penumbra);
     }
 

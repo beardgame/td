@@ -12,6 +12,7 @@ enum DrawOrderGroup
     IgnoreDepth,
 
     UIBackground,
+    UIShapes,
     UISpritesBack,
     UIFont,
     UISpritesTop,

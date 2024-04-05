@@ -15,6 +15,8 @@ abstract class TextureBuffer<T> : IDisposable
     private readonly BufferStream<T> stream;
     private readonly BufferTexture bufferTexture;
 
+    private bool isEmpty;
+
     protected TextureBuffer(SizedInternalFormat pixelFormat, bool reserveDefault = true)
     {
         this.pixelFormat = pixelFormat;
@@ -32,6 +34,7 @@ abstract class TextureBuffer<T> : IDisposable
     {
         var id = stream.Count;
         stream.Add(items);
+        isEmpty = false;
         return id;
     }
 
@@ -39,12 +42,13 @@ abstract class TextureBuffer<T> : IDisposable
     {
         var id = stream.Count;
         stream.Add(item);
+        isEmpty = false;
         return id;
     }
 
     public void Flush()
     {
-        if (stream.Count == 0 || !stream.IsDirty)
+        if (!stream.IsDirty)
             return;
         stream.FlushIfDirty(BufferTarget.TextureBuffer);
         using var target = bufferTexture.Bind();
@@ -53,9 +57,14 @@ abstract class TextureBuffer<T> : IDisposable
 
     public void Clear()
     {
+        if (isEmpty)
+            return;
+
         stream.Clear();
         if (reserveDefault)
             stream.Add(default(T));
+
+        isEmpty = true;
     }
 
     public void Dispose()

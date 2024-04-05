@@ -16,6 +16,7 @@ readonly struct ShapeColor
     private readonly Type type;
     private readonly ImmutableArray<GradientStop> immutableGradient;
     private readonly GradientStop[]? mutableGradient;
+    public GradientDefinition Definition { get; }
 
     public ReadOnlySpan<GradientStop> Gradient => type switch
     {
@@ -24,8 +25,6 @@ readonly struct ShapeColor
         Type.Mutable => mutableGradient,
         _ => throw new ArgumentOutOfRangeException(),
     };
-
-    public GradientDefinition Definition { get; }
 
     private ShapeColor(GradientDefinition definition)
     {
@@ -46,8 +45,6 @@ readonly struct ShapeColor
         mutableGradient = gradient;
         Definition = definition;
     }
-
-    public bool IsNone => Definition.IsNone;
 
     public static implicit operator ShapeColor(Color color) => From(GradientDefinition.Constant(color));
 

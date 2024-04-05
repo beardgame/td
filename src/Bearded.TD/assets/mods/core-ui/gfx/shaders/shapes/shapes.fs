@@ -19,6 +19,8 @@ const int GRADIENT_ARC_AROUND_POINT = 24; // center, start and total angle in ra
 
 const uint GRADIENT_FLAG_GLOWFADE = 1;
 const uint GRADIENT_FLAG_DITHER = 2;
+const uint GRADIENT_FLAG_EXTEND_NEGATIVE = 4;
+const uint GRADIENT_FLAG_EXTEND_POSITIVE = 8;
 
 const float ANTI_ALIAS_WIDTH = 1;
 
@@ -279,7 +281,7 @@ vec4 getColor(uint typeIndex, uint flags, vec4 parameters, float t)
     
     if ((flags & GRADIENT_FLAG_GLOWFADE) != 0)
     {
-        color = color * smoother(t);
+        color = color * smoother(1 - t);
     }
     if ((flags & GRADIENT_FLAG_DITHER) != 0)
     {
@@ -292,19 +294,30 @@ vec4 getColor(uint typeIndex, uint flags, vec4 parameters, float t)
 struct Contribution
 {
     float alpha;
-    float t;
+    float zeroToOne;
 };
 
-Contribution contributionOf(float fromDistance, float toDistance, float distance, float antiAliasWidth)
+float antiAlias(float distance, float antiAliasWidth)
 {
-    float edgeRadius = (toDistance - fromDistance + antiAliasWidth) / 2;
-    float edgeCenterOffset = (toDistance + fromDistance) / 2;
-    float absoluteDistance = abs(distance - edgeCenterOffset);
+    return clamp(distance / antiAliasWidth + 0.5, 0, 1);
+}
 
-    float alpha = clamp((edgeRadius - absoluteDistance) / antiAliasWidth, 0, 1);
-    float t = clamp((distance - fromDistance) / (toDistance - fromDistance), 0, 1);
+Contribution contributionOf(float zero, float one, float distance, float antiAliasWidth, uint flags)
+{
+    float zeroToOne = clamp((distance - zero) / (one - zero), 0, 1);
+
+    bool extendNegative = (flags & GRADIENT_FLAG_EXTEND_NEGATIVE) != 0;
+    bool extendPositive = (flags & GRADIENT_FLAG_EXTEND_POSITIVE) != 0;
     
-    return Contribution(alpha, t);
+    float lower = min(zero, one);
+    float upper = max(zero, one);
+
+    float lowerAlpha = extendNegative ? 1 : antiAlias(distance - lower, antiAliasWidth);
+    float upperAlpha = extendPositive ? 1 : antiAlias(upper - distance, antiAliasWidth);
+    
+    float alpha = min(lowerAlpha, upperAlpha);
+    
+    return Contribution(alpha, zeroToOne);
 }
 
 vec4 addPremultiplied(vec4 a, vec4 b)
@@ -318,7 +331,7 @@ vec4 getFragmentColor()
 
     float signedDistance = signedDistanceToEdge();
     float antiAliasWidth = ANTI_ALIAS_WIDTH * fwidth(signedDistance) * 1;
-
+    
     for(int i = 0; i < p_componentCount; i++)
     {
         int bufferIndex = int(p_firstComponent + i) * 2;
@@ -332,9 +345,10 @@ vec4 getFragmentColor()
         
         vec4 gradientParameters = uintBitsToFloat(texel2);
 
-        Contribution contribution = contributionOf(zeroDistance, oneDistance, signedDistance, antiAliasWidth);
-        
-        vec4 color = getColor(gradientTypeIndex, gradientFlags, gradientParameters, contribution.t);
+        Contribution contribution = contributionOf(
+            zeroDistance, oneDistance, signedDistance, antiAliasWidth, gradientFlags);
+
+        vec4 color = getColor(gradientTypeIndex, gradientFlags, gradientParameters, contribution.zeroToOne);
         
         ret = addPremultiplied(ret, color * contribution.alpha);
     }
@@ -352,37 +366,26 @@ void main()
     {
         float signedDistance = signedDistanceToEdge();
         float a = 0.5 + cos(signedDistance * 3.14) * 0.3;
-        if (p_shapeType == SHAPE_TYPE_LINE)
+        vec2 xy = abs(fract(p_position.xy * vec2(0.2)) - vec2(0.5));
+        float d = length(xy);
+        
+        vec4 c;
+        float s;
+        if (signedDistance < 0)
         {
-            fragColor = mix(fragColor, vec4(1, 0, 0, 1) * a, DEBUG_SHAPE);
+            c = vec4(1, 0, 0, 1);
+            s = smoothstep(0.1, 0f, xy.y) * smoothstep(0.45, 0.4, d);
         }
-        if (p_shapeType == SHAPE_TYPE_CIRCLE || p_shapeType == SHAPE_TYPE_HEXAGON)
+        else if (signedDistance > 0)
         {
-            fragColor = mix(fragColor, vec4(0, 1, 0, 1) * a, DEBUG_SHAPE);
+            c = vec4(0, 1, 0, 1);
+            s = smoothstep(0.1, 0f, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
         }
-        if (p_shapeType == SHAPE_TYPE_RECTANGLE)
+        else
         {
-            vec2 xy = abs(fract(p_position.xy * vec2(0.2)) - vec2(0.5));
-            float d = length(xy);
-            
-            vec4 c;
-            float s;
-            if (signedDistance < 0)
-            {
-                c = vec4(1, 0, 1, 1);
-                s = smoothstep(0.1, 0f, xy.y) * smoothstep(0.45, 0.4, d);
-            }
-            else if (signedDistance > 0)
-            {
-                c = vec4(1, 1, 0, 1);
-                s = smoothstep(0.1, 0f, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
-            }
-            else
-            {
-                c = vec4(0, 1, 1, 1);
-                s = smoothstep(0.1, 0f, abs(d - 0.35));
-            }
-            fragColor = mix(fragColor, c * a + vec4(1) * clamp(s, 0, 1), DEBUG_SHAPE);
+            c = vec4(0, 0, 1, 1);
+            s = smoothstep(0.1, 0f, abs(d - 0.35));
         }
+        fragColor = mix(fragColor, c * a + vec4(1) * clamp(s, 0, 1), DEBUG_SHAPE);
     }
 }

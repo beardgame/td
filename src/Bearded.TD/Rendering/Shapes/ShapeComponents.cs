@@ -11,8 +11,8 @@ interface IShapeComponentBuffer
 
 sealed class ComponentBuffer() : TextureBuffer<ShapeComponentForDrawing>(SizedInternalFormat.Rgba32ui), IShapeComponentBuffer
 {
-    public ShapeComponentIds AddComponents(ReadOnlySpan<ShapeComponentForDrawing> component)
-        => (new ShapeComponentId((uint)Add(component)), 1);
+    public ShapeComponentIds AddComponents(ReadOnlySpan<ShapeComponentForDrawing> components)
+        => (new ShapeComponentId((uint)Add(components)), components.Length);
 
     public ShapeComponentIds AddComponent(ShapeComponentForDrawing component)
         => (new ShapeComponentId((uint)Add(component)), 1);

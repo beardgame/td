@@ -36,7 +36,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
         var gradients = context.Renderers.Gradients;
         var shapeComponents = context.Renderers.ShapeComponents;
         var shapeDrawer = ShapeDrawer
-            .GetOrCreate(renderers, gradients, shapeComponents, shapeShader, DrawOrderGroup.UIBackground, 0);
+            .GetOrCreate(renderers, gradients, shapeComponents, shapeShader, DrawOrderGroup.UIShapes, 0);
 
         router = new CachedRendererRouter(
         [

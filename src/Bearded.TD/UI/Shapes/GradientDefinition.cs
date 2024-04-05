@@ -10,6 +10,8 @@ enum GradientFlags : uint
     Default = 0,
     GlowFade = 1,
     Dither = 2,
+    ExtendNegative = 4,
+    ExtendPositive = 8,
 }
 
 readonly struct GradientDefinition
@@ -21,26 +23,23 @@ readonly struct GradientDefinition
     public float Radius { get; private init; }
     public Direction2 StartAngle { get; private init; }
     public Angle Length { get; private init; }
-    public GradientFlags Flags { get; }
+    public GradientFlags Flags { get; private init; }
 
     private GradientDefinition(GradientType type, GradientFlags flags)
     {
         Type = type;
         Flags = flags;
     }
+    private GradientDefinition(GradientDefinition definition)
+    {
+        this = definition;
+    }
 
     public bool IsNone => Type == GradientType.None;
 
-    public GradientDefinition WithFlags(GradientFlags flags)
-        => new(Type, flags)
-        {
-            Color = Color,
-            Point1 = Point1,
-            Point2 = Point2,
-            Radius = Radius,
-            StartAngle = StartAngle,
-            Length = Length,
-        };
+    public GradientDefinition WithFlags(GradientFlags flags) => new(this) { Flags = flags };
+
+    public GradientDefinition AddFlags(GradientFlags flags) => new(this) { Flags = Flags | flags };
 
     public static SingleColor Constant(Color color)
         => new(GradientTypeSingleColor.Constant, color, GradientFlags.Default);
@@ -65,9 +64,23 @@ readonly struct GradientDefinition
             { Point1 = center, StartAngle = start, Length = length };
 
 
-    public readonly struct SingleColor(GradientTypeSingleColor type, Color color, GradientFlags flags)
+    public readonly struct SingleColor
     {
-        public GradientDefinition Definition { get; } = new((GradientType)type, flags) { Color = color };
+        public SingleColor(GradientTypeSingleColor type, Color color, GradientFlags flags)
+            : this(new GradientDefinition((GradientType)type, flags) { Color = color })
+        {
+        }
+
+        private SingleColor(GradientDefinition definition)
+        {
+            Definition = definition;
+        }
+
+        public GradientDefinition Definition { get; }
+
+        public SingleColor WithFlags(GradientFlags flags) => new(Definition.WithFlags(flags));
+
+        public SingleColor AddFlags(GradientFlags flags) => new(Definition.AddFlags(flags));
 
         public static implicit operator GradientDefinition(SingleColor definition) => definition.Definition;
     }

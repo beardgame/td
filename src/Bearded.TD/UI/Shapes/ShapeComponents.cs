@@ -37,7 +37,7 @@ readonly partial struct ShapeComponents
 
     private ShapeComponents(ShapeComponent[] components)
     {
-        type = Type.Immutable;
+        type = Type.Mutable;
         mutableComponents = components;
     }
 
@@ -78,6 +78,9 @@ static class Glow
 {
     public static ShapeComponent Outer(float width, Color color)
         => Edge.Outer(width, GradientDefinition.SimpleGlow(color));
+
+    public static ShapeComponent OuterFilled(float width, Color color)
+        => Edge.Outer(width, GradientDefinition.SimpleGlow(color).AddFlags(GradientFlags.ExtendNegative));
 
     public static ShapeComponent Inner(float width, Color color)
         => Edge.Inner(width, GradientDefinition.SimpleGlow(color));

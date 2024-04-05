@@ -19,6 +19,7 @@ sealed class LayerRenderer
     private static readonly DrawOrderGroup[] uiDrawGroups =
     [
         UIBackground,
+        UIShapes,
         UISpritesBack,
         UIFont,
         UISpritesTop,
