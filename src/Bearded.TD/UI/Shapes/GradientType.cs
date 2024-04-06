@@ -17,7 +17,11 @@ enum GradientType : byte
 
 enum GradientTypeSingleColor : byte
 {
-    None = 0,
-
     Constant = GradientType.Constant,
+}
+
+enum ComponentBlendMode : byte
+{
+    PremultipliedAdd = 0,
+    Multiply = 1,
 }

@@ -13,8 +13,8 @@ readonly struct ShapeComponentForDrawing
     // texel 1
     private readonly float zeroDistance;
     private readonly float oneDistance;
-    private readonly uint type1gradientIndex3;
-    private readonly uint flags;
+    private readonly uint type1flags2blendMode1;
+    private readonly uint gradientIndex;
     // texel 2
     private readonly Vector4 parameters;
 
@@ -23,8 +23,9 @@ readonly struct ShapeComponentForDrawing
         this.zeroDistance = zeroDistance;
         this.oneDistance = oneDistance;
 
-        type1gradientIndex3 = (uint)gradient.Type | (gradient.Id.Value << 8);
-        flags = (uint)gradient.Flags;
+        type1flags2blendMode1 = (uint)gradient.Type | ((uint)gradient.Flags << 8) | ((uint)gradient.BlendMode << 24);
+        gradientIndex = gradient.Id.Value;
+
         parameters = gradient.Parameters;
     }
 
@@ -39,7 +40,12 @@ readonly struct ShapeComponentForDrawing
     }
 }
 
-readonly record struct GradientParameters(GradientType Type, GradientId Id, GradientFlags Flags, Vector4 Parameters)
+readonly record struct GradientParameters(
+    GradientType Type,
+    GradientId Id,
+    GradientFlags Flags,
+    ComponentBlendMode BlendMode,
+    Vector4 Parameters)
 {
     public static implicit operator GradientParameters(GradientDefinition.SingleColor definition)
         => definition.Definition.ForDrawing(GradientId.None, default);

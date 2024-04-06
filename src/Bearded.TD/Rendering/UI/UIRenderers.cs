@@ -49,7 +49,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
             validate(new BorderRenderer(shapeDrawer, shapeComponents)),
             validate(new BackgroundBoxRenderer(shapeDrawer, shapeComponents)),
             validate(new ComplexShapeRenderer(shapeDrawer, shapeComponents, gradients)),
-            validate(new DropShadowRenderer(shapeDrawer, shapeComponents)),
+            validate(new DropShadowRenderer(shapeDrawer, shapeComponents, gradients)),
             validate(new DotRenderer(shapeDrawer, shapeComponents)),
             validate(new CaveBackgroundRenderer(content, renderers)),
             validate(new FallbackBoxRenderer(shapeDrawer, shapeComponents)),

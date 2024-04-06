@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Bearded.Graphics.Vertices;
+using Bearded.TD.Utilities;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
 
@@ -28,7 +29,7 @@ readonly struct ShapeVertex(
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ShapeComponents(ShapeComponentId first, int count)
     {
-        private readonly ShapeComponentId first = first;
+        private readonly uint first = first.Value;
         private readonly int count = count;
 
         public static IEnumerable<VertexAttributeTemplate> VertexAttributeTemplates =>
@@ -42,6 +43,17 @@ readonly struct ShapeVertex(
 
         public static implicit operator ShapeComponents(ShapeComponentIds ids)
             => new(ids.First, ids.Count);
+
+        public ShapeComponents WithAdjacent(ShapeComponents other)
+        {
+            if (other.first == 0)
+                return this;
+            if (first == 0)
+                return other;
+
+            DebugAssert.State.Satisfies(other.first == first + count);
+            return new(new(first), count + other.count);
+        }
     }
 }
 

@@ -49,4 +49,13 @@ readonly struct ShapeComponentsForDrawing(
         var ids = componentBuffer.AddComponents(componentsForDrawing);
         return new ShapeComponentsForDrawing(ids, maxDistance: max, minDistance: min);
     }
+
+    public ShapeComponentsForDrawing WithOverlaid(ShapeComponentsForDrawing other)
+    {
+        return new ShapeComponentsForDrawing(
+            Components.WithAdjacent(other.Components),
+            maxDistance,
+            minDistance
+        );
+    }
 }

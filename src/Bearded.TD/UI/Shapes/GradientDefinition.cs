@@ -1,18 +1,7 @@
-﻿using System;
-using Bearded.Graphics;
+﻿using Bearded.Graphics;
 using Bearded.Utilities.Geometry;
 
 namespace Bearded.TD.UI.Shapes;
-
-[Flags]
-enum GradientFlags : uint
-{
-    Default = 0,
-    GlowFade = 1,
-    Dither = 2,
-    ExtendNegative = 4,
-    ExtendPositive = 8,
-}
 
 readonly struct GradientDefinition
 {
@@ -24,6 +13,7 @@ readonly struct GradientDefinition
     public Direction2 StartAngle { get; private init; }
     public Angle Length { get; private init; }
     public GradientFlags Flags { get; private init; }
+    public ComponentBlendMode BlendMode { get; private init; }
 
     private GradientDefinition(GradientType type, GradientFlags flags)
     {
@@ -40,6 +30,8 @@ readonly struct GradientDefinition
     public GradientDefinition WithFlags(GradientFlags flags) => new(this) { Flags = flags };
 
     public GradientDefinition AddFlags(GradientFlags flags) => new(this) { Flags = Flags | flags };
+
+    public GradientDefinition WithBlendMode(ComponentBlendMode blendMode) => new(this) { BlendMode = blendMode };
 
     public static SingleColor Constant(Color color)
         => new(GradientTypeSingleColor.Constant, color, GradientFlags.Default);
@@ -81,6 +73,8 @@ readonly struct GradientDefinition
         public SingleColor WithFlags(GradientFlags flags) => new(Definition.WithFlags(flags));
 
         public SingleColor AddFlags(GradientFlags flags) => new(Definition.AddFlags(flags));
+
+        public SingleColor WithBlendMode(ComponentBlendMode blendMode) => new(Definition.WithBlendMode(blendMode));
 
         public static implicit operator GradientDefinition(SingleColor definition) => definition.Definition;
     }

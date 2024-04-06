@@ -1,3 +1,4 @@
+using Bearded.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
@@ -19,11 +20,11 @@ sealed partial class BuildingStatusControl : CompositeControl
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
-        Add(new ComplexBox
+        this.Add(new ComplexBox
         {
             Components = Background,
             CornerRadius = 5,
-        });
+        }.WithDropShadow(Shadow, ShadowFade));
 
         var innerContainer = new CompositeControl();
         Add(innerContainer.Anchor(a => a.MarginAllSides(Padding).Top()));

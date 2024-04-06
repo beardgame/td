@@ -47,7 +47,7 @@ static class GradientUIExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(def.Type)),
         };
 
-        return new GradientParameters(def.Type, gradientId, def.Flags, parameters);
+        return new GradientParameters(def.Type, gradientId, def.Flags, def.BlendMode, parameters);
 
         static float encodeColor(Color color) => Unsafe.BitCast<Color, float>(color);
         static Vector4 v4(Vector2 a, Vector2 b) => new(a.X, a.Y, b.X, b.Y);

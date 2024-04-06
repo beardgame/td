@@ -272,12 +272,30 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
     return vec4(1, 0, 1, 0.5);
 }
 
-vec4 getColor(uint typeIndex, uint flags, vec4 parameters, float t)
+struct BitField
 {
-    uint type = typeIndex & 0xFFu;
-    uint gradientIndex = typeIndex >> 8;
+    uint data;
+};
+
+uint getType(BitField bits)
+{
+    return bits.data & 0xFFu;
+}
+uint getFlags(BitField bits)
+{
+    return (bits.data >> 8) & 0xFFFFu;
+}
+uint getBlendMode(BitField bits)
+{
+    return (bits.data >> 24) & 0xFFu;
+}
+
+vec4 getColor(BitField bits, uint gradientId, vec4 parameters, float t)
+{
+    uint type = getType(bits);
+    uint flags = getFlags(bits);
     
-    vec4 color = getColor(parameters, t, type, gradientIndex);
+    vec4 color = getColor(parameters, t, type, gradientId);
     
     if ((flags & GRADIENT_FLAG_GLOWFADE) != 0)
     {
@@ -302,10 +320,11 @@ float antiAlias(float distance, float antiAliasWidth)
     return clamp(distance / antiAliasWidth + 0.5, 0, 1);
 }
 
-Contribution contributionOf(float zero, float one, float distance, float antiAliasWidth, uint flags)
+Contribution contributionOf(float zero, float one, float distance, float antiAliasWidth, BitField bits)
 {
     float zeroToOne = clamp((distance - zero) / (one - zero), 0, 1);
 
+    uint flags = getFlags(bits);
     bool extendNegative = (flags & GRADIENT_FLAG_EXTEND_NEGATIVE) != 0;
     bool extendPositive = (flags & GRADIENT_FLAG_EXTEND_POSITIVE) != 0;
     
@@ -325,6 +344,26 @@ vec4 addPremultiplied(vec4 a, vec4 b)
     return a * (1 - b.a) + b;
 }
 
+const uint BLEND_MODE_PREMULTIPLIEDADD = 0;
+const uint BLEND_MODE_MULTIPLY = 1;
+
+vec4 blend(vec4 a, vec4 b, BitField bits)
+{
+    uint blendMode = getBlendMode(bits);
+    switch(blendMode)
+    {
+        case BLEND_MODE_PREMULTIPLIEDADD:
+        {
+            return addPremultiplied(a, b);
+        }
+        case BLEND_MODE_MULTIPLY:
+        {
+            return a * b;
+        }
+    }
+    return vec4(1, 0, 1, 0.5);
+}
+
 vec4 getFragmentColor()
 {
     vec4 ret = vec4(0);
@@ -340,17 +379,16 @@ vec4 getFragmentColor()
         
         float zeroDistance = uintBitsToFloat(texel1.x);
         float oneDistance = uintBitsToFloat(texel1.y);
-        uint gradientTypeIndex = texel1.z;
-        uint gradientFlags = texel1.w;
+        BitField bits = BitField(texel1.z);
+        uint gradientId = texel1.w;
         
         vec4 gradientParameters = uintBitsToFloat(texel2);
 
-        Contribution contribution = contributionOf(
-            zeroDistance, oneDistance, signedDistance, antiAliasWidth, gradientFlags);
+        Contribution contribution = contributionOf(zeroDistance, oneDistance, signedDistance, antiAliasWidth, bits);
 
-        vec4 color = getColor(gradientTypeIndex, gradientFlags, gradientParameters, contribution.zeroToOne);
+        vec4 color = getColor(bits, gradientId, gradientParameters, contribution.zeroToOne);
         
-        ret = addPremultiplied(ret, color * contribution.alpha);
+        ret = blend(ret, color * contribution.alpha, bits);
     }
     
     return ret;

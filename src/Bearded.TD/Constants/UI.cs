@@ -44,6 +44,7 @@ static partial class Constants
             public static readonly Color DefaultColor = new(0, 3, 13);
 
             public static readonly Shadow Default = Shadow((0, 2, 0), 5, DefaultColor * 0.5f);
+            public static readonly Shadow Tooltip = Shadow((0, 4, 0), 10, DefaultColor * 0.5f);
             public static readonly Shadow SmallWindow = Shadow((0, 6, 0), 50, DefaultColor * 0.65f);
             public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 75, DefaultColor * 0.75f);
         }
@@ -211,20 +212,26 @@ static partial class Constants
             ];
             public static readonly double StatusRowBackgroundLeftMargin = EdgeWidth - Padding;
 
-            public static readonly ShapeComponents Background = [
-                Fill.With(ShapeColor.From(
-                    [
-                        (0, Colors.Get(BackgroundColor.Default)),
-                        (0.75, Colors.Get(BackgroundColor.Default) * 0.5f),
-                        (0.95, Color.Transparent),
-                    ],
-                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                )),
-                Edge.Inner((float)EdgeWidth, ShapeColor.From(
-                    [(0, Colors.Get(BackgroundColor.TooltipOutline)), (0.75, Color.Transparent)],
-                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                )),
+            private static readonly ShapeComponent backgroundFade = Fill.With(ShapeColor.From(
+                [
+                    (0, Color.White),
+                    (0.75, Color.White * 0.5f),
+                    (0.95, Color.Transparent),
+                ], GradientDefinition.Linear(
+                    AnchorPoint.Relative((0, 0)),
+                    AnchorPoint.Relative((0.9f, 0))
+                ).WithFlags(GradientFlags.ExtendBoth).WithBlendMode(ComponentBlendMode.Multiply))
+            );
+
+            public static readonly ShapeComponents Background =
+            [
+                Fill.With(Colors.Get(BackgroundColor.Default)),
+                Edge.Inner((float)EdgeWidth, Colors.Get(BackgroundColor.TooltipOutline)),
+                backgroundFade,
             ];
+
+            public static readonly Shadow Shadow = Shadows.Tooltip;
+            public static readonly ShapeComponents ShadowFade = [backgroundFade];
         }
 
         public static class Window
