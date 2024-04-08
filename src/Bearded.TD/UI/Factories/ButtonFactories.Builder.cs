@@ -59,6 +59,9 @@ static partial class ButtonFactories
         public T WithTooltip(TooltipFactory factory, ICollection<string> text) =>
             WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
 
+        public T WithTooltip(TooltipFactory factory, IReadonlyBinding<string> text) =>
+            WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
+
         public T WithTooltip(TooltipFactory factory, TooltipDefinition definition)
         {
             tooltip = (factory, definition);

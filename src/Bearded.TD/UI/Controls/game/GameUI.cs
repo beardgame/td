@@ -28,6 +28,7 @@ sealed class GameUI :
 
     public GameInstance Game { get; private set; } = null!;
     public TimeSource TimeSource { get; private set; } = null!;
+    public TooltipFactory Tooltips { get; private set; } = null!;
     private GameRunner runner = null!;
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
@@ -66,14 +67,14 @@ sealed class GameUI :
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
         shortcutCapturer = dependencies.Resolve<ShortcutCapturer>();
-        var tooltipFactory = dependencies.Resolve<TooltipFactory>();
+        Tooltips = dependencies.Resolve<TooltipFactory>();
 
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game, shortcutCapturer);
         CoreStats.Initialize(Game, shortcutCapturer);
-        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, tooltipFactory);
+        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, Tooltips);
         StatisticsSideBar.Initialize(Game);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;

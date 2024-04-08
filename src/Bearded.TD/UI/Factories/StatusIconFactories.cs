@@ -2,6 +2,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -59,12 +60,13 @@ static class StatusIconFactories
         IReadonlyBinding<UpgradeSlot> upgradeSlot,
         IReadonlyBinding<bool> isActiveSlot,
         VoidEventHandler onClick,
-        Animations animations)
+        Animations animations,
+        TooltipFactory tooltipFactory)
     {
         var upgrade = upgradeSlot.Transform(slot => slot.Upgrade);
         // TODO: replace entirely
         return ButtonFactories.Button(b => b
-            .forUpgrade(upgrade)
+            .forUpgrade(upgrade, tooltipFactory)
             .WithAnimations(animations)
             .WithOnClick(onClick)
             .AlwaysRenderAsEnabled()
@@ -76,12 +78,13 @@ static class StatusIconFactories
         IPermanentUpgrade upgrade,
         ButtonClickEventHandler onClick,
         IReadonlyBinding<bool> enabled,
-        Animations animations)
+        Animations animations,
+        TooltipFactory tooltipFactory)
     {
         var upgradeBinding = Binding.Constant(upgrade);
         // TODO: replace entirely
         return ButtonFactories.Button(b => b
-            .forUpgrade(upgradeBinding)
+            .forUpgrade(upgradeBinding, tooltipFactory)
             .WithAnimations(animations)
             .WithOnClick(onClick)
             .WithEnabled(enabled)
@@ -90,8 +93,11 @@ static class StatusIconFactories
 
     private static ButtonFactories.TextButtonBuilder forUpgrade(
         this ButtonFactories.TextButtonBuilder builder,
-        IReadonlyBinding<IPermanentUpgrade?> upgrade)
+        IReadonlyBinding<IPermanentUpgrade?> upgrade,
+        TooltipFactory tooltipFactory)
     {
-        return builder.WithLabel(upgrade.Transform(u => u?.Name[..1] ?? ""));
+        return builder
+            .WithLabel(upgrade.Transform(u => u?.Name[..1] ?? ""))
+            .WithTooltip(tooltipFactory, upgrade.Transform(u => u?.Name ?? ""));
     }
 }

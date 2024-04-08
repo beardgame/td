@@ -4,6 +4,7 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 
@@ -18,6 +19,7 @@ sealed partial class BuildingStatusControl
         private readonly Action<IPermanentUpgrade> doUpgrade;
         private readonly Binding<bool> upgradeChoicesEnabled = new(true);
         private readonly Animations animations;
+        private readonly TooltipFactory tooltipFactory;
         private readonly Control iconRow;
 
         public UpgradeSelectRow(
@@ -25,12 +27,14 @@ sealed partial class BuildingStatusControl
             IReadonlyBinding<int?> activeUpgradeSlot,
             IReadonlyBinding<ResourceAmount> currentResources,
             Action<IPermanentUpgrade> doUpgrade,
-            Animations animations)
+            Animations animations,
+            TooltipFactory tooltipFactory)
         {
             this.activeUpgradeSlot = activeUpgradeSlot;
             this.currentResources = currentResources;
             this.doUpgrade = doUpgrade;
             this.animations = animations;
+            this.tooltipFactory = tooltipFactory;
 
             iconRow = new IconRow<IPermanentUpgrade>(availableUpgrades, createControl);
             Add(iconRow);
@@ -63,8 +67,8 @@ sealed partial class BuildingStatusControl
                 upgrade,
                 _ => onUpgradeSelected(upgrade),
                 resourcesAreSufficient.And(upgradeChoicesEnabled),
-                animations
-            );
+                animations,
+                tooltipFactory);
         }
 
         private void onUpgradeSelected(IPermanentUpgrade upgrade)

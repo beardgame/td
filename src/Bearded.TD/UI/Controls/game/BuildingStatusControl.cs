@@ -2,6 +2,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
@@ -17,7 +18,11 @@ sealed partial class BuildingStatusControl : CompositeControl
 
     public Vector2d Size { get; }
 
-    public BuildingStatusControl(BuildingStatus model, Animations animations, GameRequestDispatcher requestDispatcher)
+    public BuildingStatusControl(
+        BuildingStatus model,
+        Animations animations,
+        TooltipFactory tooltipFactory,
+        GameRequestDispatcher requestDispatcher)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
@@ -46,14 +51,16 @@ sealed partial class BuildingStatusControl : CompositeControl
                         model.AvailableUpgrades.IsCountPositive()
                             .And(Binding.Combine(slot, model.ActiveUpgradeSlot, (s, i) => s.Index == i)),
                         model.ToggleUpgradeSelect,
-                        animations)),
+                        animations,
+                        tooltipFactory)),
                 rowHeight)
             .Add(new UpgradeSelectRow(
                     model.AvailableUpgrades,
                     model.ActiveUpgradeSlot,
                     Binding.Constant(1000.Resources()), // TODO
                     model.ApplyUpgrade,
-                    animations).BindIsVisible(model.ShowUpgradeSelect),
+                    animations,
+                    tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
                 rowHeight);
 
         Size = (300, column.Height + Padding);
