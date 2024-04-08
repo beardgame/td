@@ -10,20 +10,27 @@ namespace Bearded.TD.Game.Simulation.Statistics;
 sealed class WaveReport
 {
     private readonly ImmutableDictionary<Id<GameObject>, Tower> statsByTower;
-    private readonly ImmutableArray<TypedAccumulatedDamage> accumulatedDamageByType;
+    public ImmutableArray<TypedAccumulatedDamage> AccumulatedDamageByType { get; }
 
-    public Tower StatsForTower(Id<GameObject> id) => statsByTower.GetValueOrDefault(id, Tower.NoDamage);
+    public Tower StatsForTower(Id<GameObject> id) => statsByTower[id];
+    public IEnumerable<Tower> AllTowers => statsByTower.Values;
 
-    public static WaveReport Empty = new(
+    public static WaveReport Empty { get; } = new(
         ImmutableDictionary<Id<GameObject>, Tower>.Empty,
         ImmutableArray<TypedAccumulatedDamage>.Empty
     );
 
-    public static WaveReport Create(
-        ImmutableArray<(Id<GameObject> Id, ImmutableArray<TypedAccumulatedDamage> DamageByType)> stats)
+    public record struct TowerData(
+        Id<GameObject> Id,
+        GameObject GameObject,
+        ImmutableArray<TypedAccumulatedDamage> DamageByType
+    );
+
+    public static WaveReport Create(IEnumerable<TowerData> stats)
     {
-        var statsByTower = stats.ToImmutableDictionary(tuple => tuple.Id, tuple => new Tower(tuple.DamageByType));
-        var damageByType = stats
+        var towerData = stats as ICollection<TowerData> ?? stats.ToList();
+        var statsByTower = towerData.ToImmutableDictionary(data => data.Id, Tower.From);
+        var damageByType = towerData
             .SelectMany(tuple => tuple.DamageByType)
             .GroupBy(
                 d => d.Type,
@@ -39,18 +46,19 @@ sealed class WaveReport
         ImmutableArray<TypedAccumulatedDamage> accumulatedDamageByType)
     {
         this.statsByTower = statsByTower;
-        this.accumulatedDamageByType = accumulatedDamageByType;
+        AccumulatedDamageByType = accumulatedDamageByType;
     }
 
-    public sealed record Tower(ImmutableArray<TypedAccumulatedDamage> DamageByType)
+    public sealed record Tower(GameObject GameObject, ImmutableArray<TypedAccumulatedDamage> DamageByType)
     {
+        public static Tower From(TowerData data) => new(data.GameObject, data.DamageByType);
+
         // TODO: consider precalculating these
         public UntypedDamage TotalDamageDone =>
             AccumulatedDamage.Aggregate(DamageByType.Select(d => d.AccumulatedDamage)).DamageDone;
+
         public double TotalEfficiency =>
             AccumulatedDamage.Aggregate(DamageByType.Select(d => d.AccumulatedDamage)).Efficiency;
-
-        public static Tower NoDamage => new(ImmutableArray<TypedAccumulatedDamage>.Empty);
     }
 
     public sealed record TypedAccumulatedDamage(DamageType Type, AccumulatedDamage AccumulatedDamage)

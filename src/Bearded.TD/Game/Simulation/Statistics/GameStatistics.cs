@@ -14,7 +14,7 @@ namespace Bearded.TD.Game.Simulation.Statistics;
 
 interface IGameStatistics
 {
-    void RegisterDamage(Id<GameObject> id, FinalDamageResult damageResult);
+    void RegisterDamage(Id<GameObject> id, GameObject obj, FinalDamageResult damageResult);
 }
 
 sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener<WaveEnded>
@@ -47,9 +47,11 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
     {
         // TODO: synchronize using dispatcher
         var waveReport = WaveReport.Create(
-            statsByTower
-                .Select(kvp => (Id: kvp.Key, DamageByType: kvp.Value.ToTypedAccumulatedDamages()))
-                .ToImmutableArray());
+            statsByTower.Select(kvp => new WaveReport.TowerData(
+                Id: kvp.Key,
+                GameObject: kvp.Value.GameObject,
+                DamageByType: kvp.Value.ToTypedAccumulatedDamages()
+            )));
         events.Send(new WaveReportCreated(@event.WaveId, waveReport));
 
 #if DEBUG
@@ -75,11 +77,12 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
 #endif
     }
 
-    public void RegisterDamage(Id<GameObject> id, FinalDamageResult damageResult)
+
+    public void RegisterDamage(Id<GameObject> id, GameObject obj, FinalDamageResult damageResult)
     {
         if (!statsByTower.TryGetValue(id, out var statistics))
         {
-            statistics = new TowerStatistics();
+            statistics = new TowerStatistics(obj);
             statsByTower.Add(id, statistics);
         }
 
@@ -89,8 +92,10 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
             damageResult.TotalExactDamage.Type);
     }
 
-    private sealed class TowerStatistics
+    private sealed class TowerStatistics(GameObject obj)
     {
+        public GameObject GameObject { get; } = obj;
+
         private readonly Dictionary<DamageType, WaveReport.AccumulatedDamage> accumulatedDamageByType = new();
 
         public void RegisterDamage(UntypedDamage damageDone, UntypedDamage damageAttempted, DamageType damageType)

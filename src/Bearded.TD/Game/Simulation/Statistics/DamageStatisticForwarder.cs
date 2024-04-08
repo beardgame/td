@@ -15,7 +15,7 @@ sealed class DamageStatisticForwarder : Component
         {
             Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
             {
-                Owner.Game.Statistics.RegisterDamage(idProvider.Id, e.Result);
+                Owner.Game.Statistics.RegisterDamage(idProvider.Id, Owner, e.Result);
             }));
         }
     }
