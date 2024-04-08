@@ -15,6 +15,8 @@ using static Bearded.TD.Constants.UI.Button;
 
 namespace Bearded.TD.UI.Factories;
 
+delegate void ButtonClickEventHandler(Button.ClickEventArgs args);
+
 static partial class ButtonFactories
 {
     public abstract class Builder<T> where T : Builder<T>
@@ -28,7 +30,7 @@ static partial class ButtonFactories
 
         private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
-        private GenericEventHandler<Button.ClickEventArgs>? onClick;
+        private ButtonClickEventHandler? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isInteractive = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
@@ -69,7 +71,7 @@ static partial class ButtonFactories
             return This;
         }
 
-        public T WithOnClick(GenericEventHandler<Button.ClickEventArgs> onClick)
+        public T WithOnClick(ButtonClickEventHandler onClick)
         {
             this.onClick = onClick;
             return This;
