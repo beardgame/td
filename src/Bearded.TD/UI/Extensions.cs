@@ -29,6 +29,11 @@ static class Extensions
         this AnchorTemplate a, Control control, double? width = null, double margin = 0) =>
         a.Right(margin: control.HorizontalAnchors.Left.Offset + margin, width: width);
 
+    public static AnchorTemplate TopToBottomPercentage(this AnchorTemplate template, float top, float bottom)
+    {
+        return template.Top(relativePercentage: top).Bottom(relativePercentage: bottom);
+    }
+
     public static Anchor WithAddedOffset(this Anchor anchor, double offset) =>
         new Anchor(anchor.Percentage, anchor.Offset + offset);
 

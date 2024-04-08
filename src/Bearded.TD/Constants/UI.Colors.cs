@@ -43,6 +43,14 @@ static partial class Constants
         {
             public static readonly Color Experience = new(0xff03fcd7);
 
+            public static Color DamageEfficiency(double efficiency)
+            {
+                const float value = 0.988f;
+                const float saturation = 0.988f;
+                var hue = (MathF.PI * 2 / 3) * (float)efficiency;
+                return Color.FromHSVA(hue, saturation, value);
+            }
+
             private static readonly IReadOnlyList<Color> purples =
             [
                 new Color(0xFFf5e8e3),

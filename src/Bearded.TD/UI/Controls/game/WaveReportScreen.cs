@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.Statistics;
+﻿using System.Linq;
+using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
@@ -90,17 +91,39 @@ sealed class WaveReportScreen : CompositeControl
         var content = new CompositeControl();
         var column = content.BuildScrollableColumn();
 
-        addTopTowers(column);
+        addTopTowers(column, report);
         column.AddSeparator();
         addTotalDamageChart(column);
 
         return content;
     }
 
-    private void addTopTowers(Layouts.IColumnLayout column)
+    private void addTopTowers(Layouts.IColumnLayout column, WaveReport report)
     {
-        var container = makeContainer();
-        // TODO: add towers to container
+        var rowContainer = new CompositeControl();
+        var row = rowContainer.BuildFixedRow();
+
+        var topTowers = report.AllTowers
+            .OrderByDescending(t => t.TotalDamageDone.Amount.NumericValue)
+            .Take(6)
+            .Select(TowerDamageDisplay.From);
+
+        foreach (var tower in topTowers)
+        {
+            var towerControl = new CompositeControl
+            {
+                ReportFactories.TowerDamageDisplay(tower, animations)
+                    .Anchor(a => a.MarginAllSides(LayoutMarginSmall)),
+            };
+            row.AddRight(towerControl, width / 6);
+        }
+
+        var container = new CompositeControl
+        {
+            rowContainer.Anchor(a => a
+                .Right(row.Width * -0.5f, relativePercentage: 0.5)
+                .Left(row.Width * 0.5f, relativePercentage: 0.5)),
+        };
 
         column.AddHeader("Top Towers", Colors.Get(ForeGroundColor.Headline2));
         column.Add(container, 100);

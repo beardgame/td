@@ -35,6 +35,7 @@ static partial class Constants
                 private static ModAwareSpriteId symbol(string id) => new(new ModAwareId(ModId, "symbols"), id);
 
                 public static readonly ModAwareSpriteId CheckMark = symbol("checkmark");
+                public static readonly ModAwareSpriteId QuestionMark = symbol("question-mark");
 
                 private static ModAwareSpriteId hud(string id) => new(new ModAwareId(ModId, "hud"), id);
 

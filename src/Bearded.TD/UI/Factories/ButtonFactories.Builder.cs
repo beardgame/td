@@ -179,51 +179,28 @@ static partial class ButtonFactories
                     new TooltipTarget(tooltip.Value.Factory, tooltip.Value.Definition, TooltipAnchor.Direction.Right));
             }
 
-            var mouseState = new MouseStateObserver(button);
-
             isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
             button.IsEnabled = isEnabled.Value;
-
-            IAnimationController? backgroundAnimation = null;
-            isActive.SourceUpdated += _ => updateColor();
-            isActive.ControlUpdated += _ => updateColor();
-            isEnabled.SourceUpdated += _ => updateColor();
-            isEnabled.ControlUpdated += _ => updateColor();
-            mouseState.StateChanged += () => updateColor();
-            updateColor(true);
 
             if (onClick != null)
             {
                 button.Clicked += args => onClick(args);
             }
 
+            button.AnimateBackground(
+                DefaultBackgroundColors,
+                setFillColor,
+                () => components[fillIndex],
+                animations,
+                isEnabled,
+                isActive,
+                isInteractive
+            );
+
             return button;
 
             void setEdgeColor(Color color) => components[edgeIndex] = Edge.Outer(1, color);
             void setFillColor(Color color) => components[fillIndex] = Fill.With(color);
-
-            void updateColor(bool skipAnimation = false)
-            {
-                var color = (button, mouseState) switch
-                {
-                    ({ IsEnabled: false }, _) => BackgroundColor.InactiveElement,
-                    (_, { MouseIsDown: true }) when isInteractive.Value => BackgroundColor.ActiveElement,
-                    (_, { MouseIsOver: true }) when isInteractive.Value => BackgroundColor.Hover,
-                    _ when isActive.Value => BackgroundColor.ActiveElement,
-                    _ => BackgroundColor.Element,
-                };
-
-                if (skipAnimation || animations == null)
-                {
-                    setFillColor(Constants.UI.Colors.Get(color));
-                    return;
-                }
-
-                backgroundAnimation?.Cancel();
-                backgroundAnimation = animations.Start(
-                    BackgroundColorAnimation(components[fillIndex], setFillColor, color)
-                );
-            }
         }
 
         protected abstract void Validate();

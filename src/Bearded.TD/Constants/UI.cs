@@ -4,13 +4,13 @@ using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using static Bearded.TD.Rendering.Shapes.Shapes;
 using static Bearded.Utilities.Interpolate;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD;
 
@@ -63,12 +63,18 @@ static partial class Constants
 
             public static readonly Shadow DefaultShadow = Shadows.Default;
 
+            public static readonly ButtonBackgroundColor DefaultBackgroundColors = new(
+                Neutral: Colors.Get(BackgroundColor.Element),
+                Hover: Colors.Get(BackgroundColor.Hover),
+                Active: Colors.Get(BackgroundColor.ActiveElement),
+                Disabled: Colors.Get(BackgroundColor.InactiveElement)
+            );
+
             public static AnimationBlueprint<(Action<Color> set, Color from, Color to)> BackgroundColorAnimation(
-                ShapeComponent current, Action<Color> set, BackgroundColor color)
+                ShapeComponent current, Action<Color> set, Color target)
             {
                 var from = current.Color.Definition.Color;
-                var to = Colors.Get(color);
-                return AnimationFunction.ColorFromTo(0.1.S()).WithState((set, from, to));
+                return AnimationFunction.ColorFromTo(0.1.S()).WithState((set, from, target));
             }
         }
 

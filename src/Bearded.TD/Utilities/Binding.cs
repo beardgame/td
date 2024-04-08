@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Utilities;
+using Bearded.Utilities.Linq;
 using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Utilities;
@@ -105,11 +106,14 @@ static class Binding
         TOut aggregatedValue() => aggregator(bindingsArray.Select(b => b.Value));
     }
 
-    public static IReadonlyBinding<Void> AggregateChanges<TIn>(IEnumerable<Binding<TIn>> bindings)
+    public static IReadonlyBinding<Void> AggregateChanges<TIn>(ReadOnlySpan<IReadonlyBinding<TIn>?> bindings)
     {
         var aggregated = new Binding<Void>();
         foreach (var binding in bindings)
         {
+            if (binding is null)
+                continue;
+
             binding.ControlUpdated += _ => aggregated.SetFromControl(default);
             binding.SourceUpdated += _ => aggregated.SetFromSource(default);
         }
