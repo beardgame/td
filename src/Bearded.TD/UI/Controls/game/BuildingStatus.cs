@@ -106,7 +106,7 @@ sealed class BuildingStatus : IDisposable
 
     private void slotUnlocked(int index)
     {
-        upgrades.Add(Binding.Create(UpgradeSlot.Empty()));
+        upgrades.Add(Binding.Create(UpgradeSlot.Empty(index)));
         if (activeUpgradeSlot.Value is null)
         {
             activeUpgradeSlot.SetFromSource(index);
@@ -116,7 +116,7 @@ sealed class BuildingStatus : IDisposable
     private void slotFilled(int index, IPermanentUpgrade upgrade)
     {
         State.Satisfies(index == activeUpgradeSlot.Value);
-        upgradeBinding(index).SetFromSource(new UpgradeSlot(upgrade));
+        upgradeBinding(index).SetFromSource(new UpgradeSlot(index, upgrade));
         incrementActiveUpgradeSlot();
         updateAvailableUpgrades();
     }

@@ -32,9 +32,9 @@ static partial class ButtonFactories
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
         private ButtonClickEventHandler? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
-        private IReadonlyBinding<bool> isInteractive = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
+        private bool alwaysRenderAsEnabled;
         private Shape shape;
         private Shadow? shadow;
         private Animations? animations;
@@ -83,12 +83,6 @@ static partial class ButtonFactories
             return This;
         }
 
-        public T WithInteractive(IReadonlyBinding<bool> isInteractive)
-        {
-            this.isInteractive = isInteractive;
-            return This;
-        }
-
         public T WithActive(IReadonlyBinding<bool> isActive)
         {
             this.isActive = isActive;
@@ -110,6 +104,12 @@ static partial class ButtonFactories
         public T MakeDisabled()
         {
             isEnabled = Binding.Constant(false);
+            return This;
+        }
+
+        public T AlwaysRenderAsEnabled()
+        {
+            alwaysRenderAsEnabled = true;
             return This;
         }
 
@@ -138,7 +138,9 @@ static partial class ButtonFactories
                     return Constants.UI.Text.ErrorTextColor;
                 }
 
-                return enabled ? Constants.UI.Text.TextColor : Constants.UI.Text.DisabledTextColor;
+                return enabled || alwaysRenderAsEnabled
+                    ? Constants.UI.Text.TextColor
+                    : Constants.UI.Text.DisabledTextColor;
             });
 
             AddContent(button, contentColor);
@@ -208,9 +210,8 @@ static partial class ButtonFactories
             {
                 var color = (button, mouseState) switch
                 {
-                    ({ IsEnabled: false }, _) => BackgroundColor.InactiveElement,
-                    (_, { MouseIsDown: true }) when isInteractive.Value => BackgroundColor.ActiveElement,
-                    (_, { MouseIsOver: true }) when isInteractive.Value => BackgroundColor.Hover,
+                    ({ IsEnabled: false }, _) when !alwaysRenderAsEnabled => BackgroundColor.InactiveElement,
+                    ({ IsEnabled: true }, { MouseIsOver: true }) => BackgroundColor.Hover,
                     _ when isActive.Value => BackgroundColor.ActiveElement,
                     _ => BackgroundColor.Element,
                 };

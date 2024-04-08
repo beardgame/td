@@ -43,7 +43,8 @@ sealed partial class BuildingStatusControl : CompositeControl
                     model.Upgrades,
                     slot => StatusIconFactories.UpgradeSlot(
                         slot,
-                        model.AvailableUpgrades.IsCountPositive(),
+                        model.AvailableUpgrades.IsCountPositive()
+                            .And(Binding.Combine(slot, model.ActiveUpgradeSlot, (s, i) => s.Index == i)),
                         model.ToggleUpgradeSelect,
                         animations)),
                 rowHeight)

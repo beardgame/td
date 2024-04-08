@@ -35,7 +35,8 @@ static class StatusIconFactories
         return ButtonFactories.StandaloneIconButton(b => b
             .WithAnimations(animations)
             .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher))
-            .WithInteractive(Binding.Constant(status.Spec.IsInteractive))
+            .AlwaysRenderAsEnabled()
+            .WithEnabled(Binding.Constant(status.Spec.IsInteractive))
             .WithIcon(status.Appearance.Transform(a => a.Icon))
             .WithIconScale(0.75f)
             .MakeHexagon());
@@ -56,7 +57,7 @@ static class StatusIconFactories
      */
     public static Control UpgradeSlot(
         IReadonlyBinding<UpgradeSlot> upgradeSlot,
-        IReadonlyBinding<bool> upgradeAvailable,
+        IReadonlyBinding<bool> isActiveSlot,
         VoidEventHandler onClick,
         Animations animations)
     {
@@ -66,7 +67,8 @@ static class StatusIconFactories
             .forUpgrade(upgrade)
             .WithAnimations(animations)
             .WithOnClick(onClick)
-            .WithInteractive(upgrade.Transform(u => u is null).And(upgradeAvailable))
+            .AlwaysRenderAsEnabled()
+            .WithEnabled(isActiveSlot)
             .MakeHexagon());
     }
 
