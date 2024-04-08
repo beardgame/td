@@ -1,7 +1,8 @@
-using Bearded.Graphics;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
@@ -12,11 +13,16 @@ namespace Bearded.TD.UI.Controls;
 sealed partial class BuildingStatusControl : CompositeControl
 {
     private static readonly Vector2d buttonBetweenMargin = (Constants.UI.Button.Margin, Constants.UI.Button.Margin * 3);
+    private static readonly double rowHeight = ButtonSize + buttonBetweenMargin.Y;
     private static double buttonLeftMargin(int i) => i * (ButtonSize + buttonBetweenMargin.X);
 
     public Vector2d Size { get; }
 
-    public BuildingStatusControl(BuildingStatus model, Animations animations, GameRequestDispatcher requestDispatcher)
+    public BuildingStatusControl(
+        BuildingStatus model,
+        Animations animations,
+        TooltipFactory tooltipFactory,
+        GameRequestDispatcher requestDispatcher)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
@@ -37,10 +43,25 @@ sealed partial class BuildingStatusControl : CompositeControl
                     model.Statuses,
                     status => StatusIconFactories.StatusIcon(status, animations, requestDispatcher),
                     StatusRowBackground),
-                ButtonSize + buttonBetweenMargin.Y)
+                rowHeight)
             .Add(new IconRow<IReadonlyBinding<UpgradeSlot>>(
-                    model.Upgrades, slot => StatusIconFactories.UpgradeSlot(slot, animations)),
-                ButtonSize + buttonBetweenMargin.Y);
+                    model.Upgrades,
+                    slot => StatusIconFactories.UpgradeSlot(
+                        slot,
+                        model.AvailableUpgrades.IsCountPositive()
+                            .And(Binding.Combine(slot, model.ActiveUpgradeSlot, (s, i) => s.Index == i)),
+                        model.ToggleUpgradeSelect,
+                        animations,
+                        tooltipFactory)),
+                rowHeight)
+            .Add(new UpgradeSelectRow(
+                    model.AvailableUpgrades,
+                    model.ActiveUpgradeSlot,
+                    Binding.Constant(1000.Resources()), // TODO
+                    model.ApplyUpgrade,
+                    animations,
+                    tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
+                rowHeight);
 
         Size = (300, column.Height + Padding);
     }

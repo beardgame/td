@@ -25,6 +25,9 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
 
     public IReadOnlyList<IUpgradeSlot> Slots { get; }
 
+    public IReadOnlyList<IPermanentUpgrade> AvailableUpgrades =>
+        upgradeManager?.ApplicableUpgrades.ToImmutableArray() ?? ImmutableArray<IPermanentUpgrade>.Empty;
+
     public event SlotEventHandler? SlotUnlocked;
     public event SlotFilledEventHandler? SlotFilled;
 

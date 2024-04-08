@@ -15,6 +15,8 @@ using static Bearded.TD.Constants.UI.Button;
 
 namespace Bearded.TD.UI.Factories;
 
+delegate void ButtonClickEventHandler(Button.ClickEventArgs args);
+
 static partial class ButtonFactories
 {
     public abstract class Builder<T> where T : Builder<T>
@@ -28,11 +30,11 @@ static partial class ButtonFactories
 
         private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
         private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
-        private GenericEventHandler<Button.ClickEventArgs>? onClick;
+        private ButtonClickEventHandler? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
-        private IReadonlyBinding<bool> isInteractive = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
+        private bool alwaysRenderAsEnabled;
         private Shape shape;
         private Shadow? shadow;
         private Animations? animations;
@@ -57,6 +59,9 @@ static partial class ButtonFactories
         public T WithTooltip(TooltipFactory factory, ICollection<string> text) =>
             WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
 
+        public T WithTooltip(TooltipFactory factory, IReadonlyBinding<string> text) =>
+            WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
+
         public T WithTooltip(TooltipFactory factory, TooltipDefinition definition)
         {
             tooltip = (factory, definition);
@@ -69,7 +74,7 @@ static partial class ButtonFactories
             return This;
         }
 
-        public T WithOnClick(GenericEventHandler<Button.ClickEventArgs> onClick)
+        public T WithOnClick(ButtonClickEventHandler onClick)
         {
             this.onClick = onClick;
             return This;
@@ -78,12 +83,6 @@ static partial class ButtonFactories
         public T WithEnabled(IReadonlyBinding<bool> isEnabled)
         {
             this.isEnabled = isEnabled;
-            return This;
-        }
-
-        public T WithInteractive(IReadonlyBinding<bool> isInteractive)
-        {
-            this.isInteractive = isInteractive;
             return This;
         }
 
@@ -108,6 +107,12 @@ static partial class ButtonFactories
         public T MakeDisabled()
         {
             isEnabled = Binding.Constant(false);
+            return This;
+        }
+
+        public T AlwaysRenderAsEnabled()
+        {
+            alwaysRenderAsEnabled = true;
             return This;
         }
 
@@ -136,7 +141,9 @@ static partial class ButtonFactories
                     return Constants.UI.Text.ErrorTextColor;
                 }
 
-                return enabled ? Constants.UI.Text.TextColor : Constants.UI.Text.DisabledTextColor;
+                return enabled || alwaysRenderAsEnabled
+                    ? Constants.UI.Text.TextColor
+                    : Constants.UI.Text.DisabledTextColor;
             });
 
             AddContent(button, contentColor);
@@ -194,7 +201,7 @@ static partial class ButtonFactories
                 animations,
                 isEnabled,
                 isActive,
-                isInteractive
+                alwaysRenderAsEnabled
             );
 
             return button;

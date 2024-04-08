@@ -4,6 +4,7 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities.SpaceTime;
@@ -15,6 +16,7 @@ namespace Bearded.TD.UI.Controls;
 interface IGameWorldOverlay
 {
     public Animations Animations { get; }
+    public TooltipFactory Tooltips { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
 
     public void AddControl(Control control, Vector2d size, OverlayAnchor anchor);
@@ -38,11 +40,14 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     private readonly List<OverlayControl> controls = [];
 
     public Animations Animations { get; }
+    public TooltipFactory Tooltips { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
 
-    public GameWorldOverlay(GameCamera camera, Animations animations, GameRequestDispatcher requestDispatcher)
+    public GameWorldOverlay(
+        GameCamera camera, Animations animations, TooltipFactory tooltips, GameRequestDispatcher requestDispatcher)
     {
         Animations = animations;
+        Tooltips = tooltips;
         RequestDispatcher = requestDispatcher;
         this.camera = camera;
         IsClickThrough = true;

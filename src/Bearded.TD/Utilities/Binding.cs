@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.Specialized;
 using System.Linq;
 using Bearded.Utilities;
 using Bearded.Utilities.Linq;
@@ -70,6 +72,11 @@ static class Binding
         Combine(left, right, (l, r) => l || r);
 
     public static IReadonlyBinding<bool> Negate(this IReadonlyBinding<bool> binding) => binding.Transform(b => !b);
+
+    public static void ToggleFromSource(this Binding<bool> binding)
+    {
+        binding.SetFromSource(!binding.Value);
+    }
 
     public static IReadonlyBinding<TOut> Transform<TIn, TOut>(this IReadonlyBinding<TIn> binding, Func<TIn, TOut> func)
     {
@@ -141,5 +148,21 @@ static class Binding
         return element;
 
         TElement? elementOrDefault(TList l) => index < l.Count ? l[index] : default;
+    }
+
+    public static IReadonlyBinding<bool> IsCountZero<T>(this T collection)
+        where T : ICollection, INotifyCollectionChanged
+    {
+        var isZero = new Binding<bool>(collection.Count == 0);
+        collection.CollectionChanged += (_, _) => isZero.SetFromSource(collection.Count == 0);
+        return isZero;
+    }
+
+    public static IReadonlyBinding<bool> IsCountPositive<T>(this T collection)
+        where T : ICollection, INotifyCollectionChanged
+    {
+        var isZero = new Binding<bool>(collection.Count > 0);
+        collection.CollectionChanged += (_, _) => isZero.SetFromSource(collection.Count > 0);
+        return isZero;
     }
 }

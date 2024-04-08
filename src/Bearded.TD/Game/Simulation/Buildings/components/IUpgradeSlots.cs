@@ -11,6 +11,8 @@ interface IUpgradeSlots
     int FilledSlotsCount => Slots.Count(s => s.Filled);
     bool HasAvailableSlot => FilledSlotsCount < TotalSlotsCount;
 
+    IReadOnlyList<IPermanentUpgrade> AvailableUpgrades { get; }
+
     event SlotEventHandler? SlotUnlocked;
     event SlotFilledEventHandler? SlotFilled;
 

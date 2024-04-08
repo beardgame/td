@@ -1,8 +1,11 @@
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
 
 namespace Bearded.TD.UI.Factories;
 
@@ -33,7 +36,8 @@ static class StatusIconFactories
         return ButtonFactories.StandaloneIconButton(b => b
             .WithAnimations(animations)
             .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher))
-            .WithInteractive(Binding.Constant(status.Spec.IsInteractive))
+            .AlwaysRenderAsEnabled()
+            .WithEnabled(Binding.Constant(status.Spec.IsInteractive))
             .WithIcon(status.Appearance.Transform(a => a.Icon))
             .WithIconScale(0.75f)
             .MakeHexagon());
@@ -52,13 +56,48 @@ static class StatusIconFactories
      * - The slot is interactive if both Upgrade and UnlockProgress are null. In the future we may distinguish the first
      *   empty upgrade slot from subsequent slots since you should always fill slots from left to right.
      */
-    public static Control UpgradeSlot(IReadonlyBinding<UpgradeSlot> upgradeSlot, Animations animations)
+    public static Control UpgradeSlot(
+        IReadonlyBinding<UpgradeSlot> upgradeSlot,
+        IReadonlyBinding<bool> isActiveSlot,
+        VoidEventHandler onClick,
+        Animations animations,
+        TooltipFactory tooltipFactory)
     {
+        var upgrade = upgradeSlot.Transform(slot => slot.Upgrade);
         // TODO: replace entirely
         return ButtonFactories.Button(b => b
+            .forUpgrade(upgrade, tooltipFactory)
             .WithAnimations(animations)
-            .WithInteractive(upgradeSlot.Transform(slot => slot.Upgrade is null))
-            .WithLabel(upgradeSlot.Transform(slot => slot.Upgrade?.Name[..1] ?? ""))
+            .WithOnClick(onClick)
+            .AlwaysRenderAsEnabled()
+            .WithEnabled(isActiveSlot)
             .MakeHexagon());
+    }
+
+    public static Control UpgradeChoice(
+        IPermanentUpgrade upgrade,
+        ButtonClickEventHandler onClick,
+        IReadonlyBinding<bool> enabled,
+        Animations animations,
+        TooltipFactory tooltipFactory)
+    {
+        var upgradeBinding = Binding.Constant(upgrade);
+        // TODO: replace entirely
+        return ButtonFactories.Button(b => b
+            .forUpgrade(upgradeBinding, tooltipFactory)
+            .WithAnimations(animations)
+            .WithOnClick(onClick)
+            .WithEnabled(enabled)
+            .MakeHexagon());
+    }
+
+    private static ButtonFactories.TextButtonBuilder forUpgrade(
+        this ButtonFactories.TextButtonBuilder builder,
+        IReadonlyBinding<IPermanentUpgrade?> upgrade,
+        TooltipFactory tooltipFactory)
+    {
+        return builder
+            .WithLabel(upgrade.Transform(u => u?.Name[..1] ?? ""))
+            .WithTooltip(tooltipFactory, upgrade.Transform(u => u?.Name ?? ""));
     }
 }

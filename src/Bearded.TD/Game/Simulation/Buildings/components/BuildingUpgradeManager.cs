@@ -14,7 +14,6 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 sealed partial class BuildingUpgradeManager
     : Component,
         IBuildingUpgradeManager,
-        IUpgradable,
         IListener<ComponentAdded>
 {
     private ObjectAttributes attributes = ObjectAttributes.Default;
@@ -87,14 +86,13 @@ sealed partial class BuildingUpgradeManager
     }
 }
 
-interface IBuildingUpgradeManager
+interface IBuildingUpgradeManager : IUpgradable
 {
     IReadOnlyCollection<IPermanentUpgrade> AppliedUpgrades { get; }
     IEnumerable<IPermanentUpgrade> ApplicableUpgrades { get; }
 
     event GenericEventHandler<IPermanentUpgrade> UpgradeCompleted;
 
-    bool CanApplyUpgrade(IPermanentUpgrade upgrade);
     bool CanBeUpgradedBy(Faction faction);
     void Upgrade(IPermanentUpgrade upgrade);
 }

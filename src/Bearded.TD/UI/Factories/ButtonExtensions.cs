@@ -30,13 +30,12 @@ static class ButtonExtensions
         Animations? animations = null,
         IReadonlyBinding<bool>? isEnabled = null,
         IReadonlyBinding<bool>? isActive = null,
-        IReadonlyBinding<bool>? isInteractive = null)
+        bool alwaysRenderAsEnabled = false)
     {
         var mouseState = new MouseStateObserver(button);
-        var stateChanged = Binding.AggregateChanges([isEnabled, isActive, isInteractive]);
+        var stateChanged = Binding.AggregateChanges([isEnabled, isActive]);
 
         isActive ??= Binding.Constant(false);
-        isInteractive ??= Binding.Constant(true);
         IAnimationController? backgroundAnimation = null;
 
         mouseState.StateChanged += () => updateColor();
@@ -50,9 +49,9 @@ static class ButtonExtensions
         {
             var color = (button, mouseState) switch
             {
-                ({ IsEnabled: false }, _) => colors.Disabled,
-                (_, { MouseIsDown: true }) when isInteractive.Value => colors.Active,
-                (_, { MouseIsOver: true }) when isInteractive.Value => colors.Hover,
+                ({ IsEnabled: false }, _) when !alwaysRenderAsEnabled => colors.Disabled,
+                ({ IsEnabled: true }, { MouseIsDown: true }) => colors.Active,
+                ({ IsEnabled: true }, { MouseIsOver: true }) => colors.Hover,
                 _ when isActive.Value => colors.Active,
                 _ => colors.Neutral,
             } ?? Color.Transparent;

@@ -4,6 +4,7 @@ using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using static Bearded.TD.Constants.UI;
 using static Bearded.TD.Constants.UI.Tooltip;
@@ -28,8 +29,19 @@ static class TooltipFactories
 
     public static TooltipDefinition SimpleTooltip(string text, double? width = null)
     {
-        Control createControl() => tooltip(Label(text, Controls.Label.TextAnchorLeft));
         return new TooltipDefinition(createControl, width ?? DefaultWidth, Text.LineHeight + 2 * Margin);
+
+        Control createControl() => tooltip(Label(text, Controls.Label.TextAnchorLeft));
+    }
+
+    public static TooltipDefinition SimpleTooltip(IReadonlyBinding<string> text, double? width = null)
+    {
+        return new TooltipDefinition(createControl, width ?? DefaultWidth, Text.LineHeight + 2 * Margin);
+
+        Control createControl() =>
+            tooltip(
+                    Label(text, Controls.Label.TextAnchorLeft))
+                .BindIsVisible(text.Transform(t => !string.IsNullOrWhiteSpace(t)));
     }
 
     public static TooltipDefinition SimpleTooltip(ICollection<string> text, double? width = null)
