@@ -58,6 +58,7 @@ static class ButtonExtensions
 
             if (skipAnimation || animations == null)
             {
+                backgroundAnimation?.Cancel();
                 setFillColor(color);
                 return;
             }

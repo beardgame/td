@@ -40,10 +40,25 @@ sealed record TowerDamageDisplay(
 
 static class ReportFactories
 {
-    public static Control TowerDamageDisplay(TowerDamageDisplay model, Animations? animations = null)
+    public static Control TowerDamageDisplay(
+        TowerDamageDisplay model,
+        Animations? animations = null,
+        double? expectedControlHeight = null)
     {
-        const float spriteSize = 4f / 6f;
-        const float labelHeight = 1f / 6f;
+
+        var expectedHeight = expectedControlHeight ?? 100;
+        var expectedWidth = expectedHeight * (4f / 6f);
+
+        var expectedContentHeight = expectedHeight - Constants.UI.LayoutMarginSmall * 2;
+        var expectedContentWidth = expectedWidth - Constants.UI.LayoutMarginSmall * 2;
+
+        var expectedContentRatio = expectedContentWidth / expectedContentHeight;
+
+        var spriteSizeP = expectedContentRatio;
+        var labelHeightP = (1 - expectedContentRatio) / 2;
+
+        var labelHeight = expectedContentHeight * labelHeightP;
+        var fontSize = labelHeight * 0.9f;
 
         var sprite = new Sprite
         {
@@ -60,23 +75,27 @@ static class ReportFactories
         var totalDamage = TextFactories.Label(text: model.TotalDamageDone.Transform(formatDamage));
         var totalEfficiency = TextFactories.Label(
             text: model.TotalEfficiency.Transform(formatEfficiency),
-            color: model.TotalEfficiency.Transform(formatEfficiencyColor)
+            color: model.TotalEfficiency.Transform(formatEfficiencyColor),
+            textAnchor: (0.5, 0)
         );
+        totalDamage.FontSize = fontSize;
+        totalEfficiency.FontSize = fontSize;
 
         var content = new CompositeControl
         {
             sprite.Anchor(
-                a => a.TopToBottomPercentage(0, spriteSize)),
+                a => a.TopToBottomPercentage(0, spriteSizeP)),
             totalDamage.Anchor(
-                a => a.TopToBottomPercentage(spriteSize, spriteSize + labelHeight)),
+                a => a.TopToBottomPercentage(spriteSizeP, spriteSizeP + labelHeightP)),
             totalEfficiency.Anchor(
-                a => a.TopToBottomPercentage(spriteSize + labelHeight, spriteSize + labelHeight * 2)),
+                a => a.TopToBottomPercentage(spriteSizeP + labelHeightP, spriteSizeP + labelHeightP * 2)
+                    .Left(fontSize / 2)),
         };
 
         var backgroundShape = new ShapeComponent[1];
         var background = new ComplexBox
         {
-            CornerRadius = 6,
+            CornerRadius = expectedContentHeight / 14,
             Components = ShapeComponents.FromMutable(backgroundShape),
         };
 
@@ -88,6 +107,7 @@ static class ReportFactories
 
         button.AnimateBackground(
             new ButtonBackgroundColor(
+                Neutral: Constants.UI.Colors.Get(BackgroundColor.Element) * 0.1f,
                 Hover: Constants.UI.Colors.Get(BackgroundColor.Hover) * 0.25f,
                 Active: Constants.UI.Colors.Get(BackgroundColor.ActiveElement) * 0.5f
             ),
@@ -115,7 +135,7 @@ static class ReportFactories
             };
         }
 
-        static string formatEfficiency(double efficiency) => $"{efficiency * 100:N0}";
+        static string formatEfficiency(double efficiency) => $"{efficiency * 100:N0}%";
         static Color formatEfficiencyColor(double efficiency) => Constants.UI.Colors.DamageEfficiency(efficiency);
     }
 }

@@ -11,7 +11,7 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class WaveReportScreen : CompositeControl
 {
-    private const double width = 250;
+    private const double width = 300;
     private const double rightMarginVisible = LayoutMargin;
     private static readonly double rightMarginHidden = -(LayoutMargin + width + Shadows.SmallWindow.PenumbraRadius);
 
@@ -100,33 +100,38 @@ sealed class WaveReportScreen : CompositeControl
 
     private void addTopTowers(Layouts.IColumnLayout column, WaveReport report)
     {
+        const int towerCount = 6;
+        const double towerWidth = width / towerCount - LayoutMarginSmall;
+        const double towerHeight = towerWidth * 6 / 4;
+
         var rowContainer = new CompositeControl();
         var row = rowContainer.BuildFixedRow();
 
         var topTowers = report.AllTowers
             .OrderByDescending(t => t.TotalDamageDone.Amount.NumericValue)
-            .Take(6)
+            .Take(towerCount)
             .Select(TowerDamageDisplay.From);
 
         foreach (var tower in topTowers)
         {
             var towerControl = new CompositeControl
             {
-                ReportFactories.TowerDamageDisplay(tower, animations)
+                ReportFactories.TowerDamageDisplay(tower, animations, towerHeight)
                     .Anchor(a => a.MarginAllSides(LayoutMarginSmall)),
             };
-            row.AddRight(towerControl, width / 6);
+            row.AddRight(towerControl, towerWidth);
         }
 
         var container = new CompositeControl
         {
             rowContainer.Anchor(a => a
                 .Right(row.Width * -0.5f, relativePercentage: 0.5)
-                .Left(row.Width * 0.5f, relativePercentage: 0.5)),
+                .Left(row.Width * -0.5f, relativePercentage: 0.5)
+                .Top(height: towerHeight)),
         };
 
         column.AddHeader("Top Towers", Colors.Get(ForeGroundColor.Headline2));
-        column.Add(container, 100);
+        column.Add(container, towerHeight + LayoutMargin);
     }
 
     private void addTotalDamageChart(Layouts.IColumnLayout column)
