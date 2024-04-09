@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
@@ -21,6 +22,7 @@ sealed class WaveReportScreen : CompositeControl
             s => s.screen.onSlideEnd()
         );
 
+    private readonly GameInstance game;
     private readonly Animations animations;
 
     private float visiblePercentage;
@@ -28,8 +30,9 @@ sealed class WaveReportScreen : CompositeControl
     private IAnimationController? currentSlideAnimation;
     private bool deleteAfterHiding;
 
-    public WaveReportScreen(WaveReport report, VoidEventHandler close, Animations animations)
+    public WaveReportScreen(GameInstance game, WaveReport report, VoidEventHandler close, Animations animations)
     {
+        this.game = game;
         this.animations = animations;
 
         this.Anchor(a => a.Right(rightMarginHidden, width));
@@ -110,7 +113,7 @@ sealed class WaveReportScreen : CompositeControl
         var topTowers = report.AllTowers
             .OrderByDescending(t => t.TotalDamageDone.Amount.NumericValue)
             .Take(towerCount)
-            .Select(TowerDamageDisplay.From);
+            .Select(t => TowerDamageDisplay.From(t, game));
 
         foreach (var tower in topTowers)
         {

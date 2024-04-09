@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Statistics;
@@ -23,7 +24,7 @@ sealed record TowerDamageDisplay(
     Action? OnClick = null
 )
 {
-    public static TowerDamageDisplay From(WaveReport.Tower data)
+    public static TowerDamageDisplay From(WaveReport.Tower data, GameInstance? game = null)
     {
         data.GameObject.TryGetSingleComponent<IObjectAttributes>(out var attributes);
 
@@ -33,8 +34,15 @@ sealed record TowerDamageDisplay(
             Binding.Constant(data.TotalDamageDone),
             Binding.Constant(data.TotalEfficiency),
             Binding.Constant(data.DamageByType),
-            null //TODO: inject game to allow scrolling to tower
+            scrollTo(data.GameObject)
         );
+
+        Action? scrollTo(GameObject obj) =>
+            game switch
+            {
+                null => null,
+                _ => () => game.CameraController.ScrollToWorldPos(obj.Position.XY()),
+            };
     }
 }
 

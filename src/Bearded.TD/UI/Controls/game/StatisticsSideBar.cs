@@ -14,13 +14,11 @@ sealed class StatisticsSideBar : IListener<WaveReportCreated>
     public IReadonlyBinding<bool> WaveReportVisible => waveReportVisible;
 
     public IReadonlyBinding<bool> WaveReportButtonEnabled => lastWaveReport.Transform(r => r != null);
-
-    public StatisticsSideBar()
-    {
-    }
+    public GameInstance Game { get; private set; } = null!;
 
     public void Initialize(GameInstance game)
     {
+        Game = game;
         game.State.Meta.Events.Subscribe(this);
 
         // for debugging

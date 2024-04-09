@@ -49,7 +49,7 @@ sealed class StatisticsSideBarControl : CompositeControl
         if (report == null)
             return;
 
-        currentWaveReport = new WaveReportScreen(report, statistics.CloseWaveReport, animations);
+        currentWaveReport = new WaveReportScreen(statistics.Game, report, statistics.CloseWaveReport, animations);
         currentWaveReport.SetVisible(statistics.WaveReportVisible.Value);
         Add(currentWaveReport);
     }
