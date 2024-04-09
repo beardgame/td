@@ -122,7 +122,7 @@ sealed class WaveReportScreen : CompositeControl
                 ReportFactories.TowerDamageDisplay(tower, animations, towerHeight)
                     .Anchor(a => a.MarginAllSides(LayoutMarginSmall)),
             };
-            row.AddRight(towerControl, towerWidth);
+            row.AddLeft(towerControl, towerWidth);
         }
 
         var container = new CompositeControl
