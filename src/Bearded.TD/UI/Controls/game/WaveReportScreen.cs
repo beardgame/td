@@ -1,11 +1,14 @@
 ﻿using System.Linq;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
+using static Bearded.TD.Constants.Content.CoreUI;
 using static Bearded.TD.Constants.UI;
 
 namespace Bearded.TD.UI.Controls;
@@ -113,16 +116,50 @@ sealed class WaveReportScreen : CompositeControl
         var topTowers = report.AllTowers
             .OrderByDescending(t => t.TotalDamageDone.Amount.NumericValue)
             .Take(towerCount)
-            .Select(t => TowerDamageDisplay.From(t, game));
+            .ToList();
+
+        var mostEfficientTower = report.AllTowers.MaxBy(t => t.TotalEfficiency)?.GameObject;
+
+        var margin = LayoutMarginSmall;
+        var iconSize = towerWidth / 3;
+        var smallIconSize = iconSize / 2;
+        var smallIconMargin = (iconSize - smallIconSize) / 2;
 
         foreach (var tower in topTowers)
         {
+            var model = TowerDamageDisplay.From(tower, game);
             var towerControl = new CompositeControl
             {
-                ReportFactories.TowerDamageDisplay(tower, animations, towerHeight)
-                    .Anchor(a => a.MarginAllSides(LayoutMarginSmall)),
+                ReportFactories.TowerDamageDisplay(model, animations, towerHeight)
+                    .Anchor(a => a.MarginAllSides(margin)),
             };
             row.AddLeft(towerControl, towerWidth);
+
+            if (tower.GameObject == mostEfficientTower)
+            {
+                var wreath = new Sprite
+                {
+                    SpriteId = Sprites.HexWreath,
+                    Color = Colors.DamageEfficiency(1),
+                };
+
+                towerControl.Add(
+                    wreath.Anchor(a => a.Top(height: iconSize).Left(width: iconSize))
+                );
+            }
+        }
+
+        if (rowContainer.Children.FirstOrDefault() is CompositeControl mvp)
+        {
+            var star = new Sprite
+            {
+                SpriteId = Sprites.Star,
+                Color = Colors.DamageEfficiency(1),
+            };
+            var (m, s) = topTowers[0].GameObject == mostEfficientTower
+                ? (smallIconMargin, smallIconSize)
+                : (0, iconSize);
+            mvp.Add(star.Anchor(a => a.Top(m, s).Left(m, s)));
         }
 
         var container = new CompositeControl
