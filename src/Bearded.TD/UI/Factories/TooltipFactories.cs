@@ -31,7 +31,7 @@ static class TooltipFactories
     {
         return new TooltipDefinition(createControl, width ?? DefaultWidth, Text.LineHeight + 2 * Margin);
 
-        Control createControl() => tooltip(Label(text, Controls.Label.TextAnchorLeft));
+        Control createControl() => TooltipWithContent(Label(text, Controls.Label.TextAnchorLeft));
     }
 
     public static TooltipDefinition SimpleTooltip(IReadonlyBinding<string> text, double? width = null)
@@ -39,7 +39,7 @@ static class TooltipFactories
         return new TooltipDefinition(createControl, width ?? DefaultWidth, Text.LineHeight + 2 * Margin);
 
         Control createControl() =>
-            tooltip(
+            TooltipWithContent(
                     Label(text, Controls.Label.TextAnchorLeft))
                 .BindIsVisible(text.Transform(t => !string.IsNullOrWhiteSpace(t)));
     }
@@ -62,10 +62,10 @@ static class TooltipFactories
     {
         var layoutControl = new CompositeControl();
         layoutBuilder(layoutControl.BuildFixedColumn());
-        return tooltip(layoutControl);
+        return TooltipWithContent(layoutControl);
     }
 
-    private static Control tooltip(Control content)
+    public static Control TooltipWithContent(Control content)
     {
         return new CompositeControl
         {
@@ -73,7 +73,7 @@ static class TooltipFactories
             {
                 CornerRadius = 2,
                 Components = Background,
-            },
+            }.WithDropShadow(Shadow, ShadowFade),
             content.Anchor(a => a.MarginAllSides(Margin)),
         };
     }

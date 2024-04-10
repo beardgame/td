@@ -75,7 +75,7 @@ sealed class GameUI :
         ActionBar.Initialize(Game, shortcutCapturer);
         CoreStats.Initialize(Game, shortcutCapturer);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, Tooltips);
-        StatisticsSideBar.Initialize(Game);
+        StatisticsSideBar.Initialize(Game, Tooltips);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;

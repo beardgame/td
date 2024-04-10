@@ -172,16 +172,26 @@ static partial class Constants
             public const double Margin = 4;
             public const double AnchorMargin = 4;
 
-            public static readonly ShapeComponents Background = [
-                Fill.With(ShapeColor.From(
-                    [(0, Colors.Get(BackgroundColor.Tooltip)), (1, Color.Transparent)],
-                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.9f, 0)))
-                )),
-                Edge.Outer(1, ShapeColor.From(
-                    [(0, Colors.Get(BackgroundColor.TooltipOutline)), (1, Color.Transparent)],
-                    GradientDefinition.Linear(AnchorPoint.Relative((0, 0)), AnchorPoint.Relative((0.85f, 0)))
-                )),
+            private static readonly ShapeComponent backgroundFade = Fill.With(ShapeColor.From(
+                [
+                    (0, Color.White),
+                    (0.75, Color.White * 0.5f),
+                    (0.95, Color.Transparent),
+                ], GradientDefinition.Linear(
+                    AnchorPoint.Relative((0, 0)),
+                    AnchorPoint.Relative((0.9f, 0))
+                ).WithFlags(GradientFlags.ExtendBoth).WithBlendMode(ComponentBlendMode.Multiply))
+            );
+
+            public static readonly ShapeComponents Background =
+            [
+                Fill.With(Colors.Get(BackgroundColor.Tooltip)),
+                Edge.Inner(1, Colors.Get(BackgroundColor.TooltipOutline)),
+                backgroundFade,
             ];
+
+            public static readonly Shadow Shadow = Shadows.Tooltip;
+            public static readonly ShapeComponents ShadowFade = [backgroundFade];
         }
 
         public static class BuildingStatus

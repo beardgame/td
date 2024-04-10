@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
@@ -15,10 +16,12 @@ sealed class StatisticsSideBar : IListener<WaveReportCreated>
 
     public IReadonlyBinding<bool> WaveReportButtonEnabled => lastWaveReport.Transform(r => r != null);
     public GameInstance Game { get; private set; } = null!;
+    public TooltipFactory Tooltips { get; private set; } = null!;
 
-    public void Initialize(GameInstance game)
+    public void Initialize(GameInstance game, TooltipFactory tooltips)
     {
         Game = game;
+        Tooltips = tooltips;
         game.State.Meta.Events.Subscribe(this);
 
         // for debugging

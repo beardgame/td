@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
@@ -10,6 +11,7 @@ using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 
@@ -51,7 +53,8 @@ static class ReportFactories
     public static Control TowerDamageDisplay(
         TowerDamageDisplay model,
         Animations? animations = null,
-        double? expectedControlHeight = null)
+        double? expectedControlHeight = null,
+        TooltipFactory? tooltipFactory = null)
     {
 
         var expectedHeight = expectedControlHeight ?? 100;
@@ -80,7 +83,10 @@ static class ReportFactories
             ),
         };
 
-        var totalDamage = TextFactories.Label(text: model.TotalDamageDone.Transform(formatDamage));
+        var totalDamage = TextFactories.Label(
+            text: model.TotalDamageDone.Transform(formatDamage),
+            color: Binding.Constant(Constants.UI.Colors.Experience)
+        );
         var totalEfficiency = TextFactories.Label(
             text: model.TotalEfficiency.Transform(formatEfficiency),
             color: model.TotalEfficiency.Transform(formatEfficiencyColor),
@@ -127,23 +133,71 @@ static class ReportFactories
         if (model.OnClick is { } onClick)
             button.Clicked += _ => onClick();
 
-        return button;
-
-        static string formatDamage(UntypedDamage damage)
+        if (tooltipFactory != null)
         {
-            var amount = damage.Amount.NumericValue;
-            return amount switch
-            {
-                < 10000 => $"{amount:N0}",
-                < 100_000 => $"{amount / 1000:N1}K",
-                < 1_000_000 => $"{amount / 1000:N0}K",
-                < 10_000_000 => $"{amount / 1000_000:N2}M",
-                < 100_000_000 => $"{amount / 1000_000:N1}M",
-                _ => $"{amount / 1000_000:N0}M",
-            };
+            var definition = createTooltipDefinition(model);
+            button.Add(new TooltipTarget(tooltipFactory, definition, TooltipAnchor.Direction.Top));
         }
 
-        static string formatEfficiency(double efficiency) => $"{efficiency * 100:N0}%";
-        static Color formatEfficiencyColor(double efficiency) => Constants.UI.Colors.DamageEfficiency(efficiency);
+        return button;
+
     }
+
+    private static Func<TooltipDefinition> createTooltipDefinition(TowerDamageDisplay model)
+    {
+        return () =>
+        {
+            var lineHeight = Constants.UI.Text.LineHeight;
+            var lineCount = model.DamageByType.Value.Length + 1;
+
+            return new TooltipDefinition(
+                () => createControl(model, lineHeight),
+                100,
+                lineHeight * lineCount + Constants.UI.Tooltip.Margin * 2
+            );
+        };
+
+        static Control createControl(TowerDamageDisplay model, float lineHeight)
+        {
+            var content = new CompositeControl();
+            var column = content.BuildFixedColumn();
+
+            column.AddLabel(model.Name, (0, 0.5));
+
+            foreach (var damage in model.DamageByType.Value.OrderByDescending(d => d.DamageDone.Amount.NumericValue))
+            {
+                var row = new CompositeControl
+                {
+                    TextFactories.Label(formatDamage(damage.DamageDone), (1, 0.5), damage.Type.GetColor())
+                        .Anchor(a => a.Right(relativePercentage: 0.45)),
+                    TextFactories.Label(
+                        formatEfficiency(damage.Efficiency),
+                        (1, 0.5),
+                        Constants.UI.Colors.DamageEfficiency(damage.Efficiency)
+                    ),
+                }.Anchor(a => a.Right(relativePercentage: 0.85));
+                column.Add(row, lineHeight);
+            }
+
+            return TooltipFactories.TooltipWithContent(content);
+        }
+    }
+
+
+    static string formatDamage(UntypedDamage damage)
+    {
+        var amount = damage.Amount.NumericValue;
+        return amount switch
+        {
+            < 10000 => $"{amount:N0}",
+            < 100_000 => $"{amount / 1000:N1}K",
+            < 1_000_000 => $"{amount / 1000:N0}K",
+            < 10_000_000 => $"{amount / 1000_000:N2}M",
+            < 100_000_000 => $"{amount / 1000_000:N1}M",
+            _ => $"{amount / 1000_000:N0}M",
+        };
+    }
+
+    static string formatEfficiency(double efficiency) => $"{efficiency * 100:N0}%";
+    static Color formatEfficiencyColor(double efficiency) => Constants.UI.Colors.DamageEfficiency(efficiency);
 }

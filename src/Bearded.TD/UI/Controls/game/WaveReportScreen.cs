@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -27,16 +28,23 @@ sealed class WaveReportScreen : CompositeControl
 
     private readonly GameInstance game;
     private readonly Animations animations;
+    private readonly TooltipFactory tooltips;
 
     private float visiblePercentage;
     private bool targetVisibility;
     private IAnimationController? currentSlideAnimation;
     private bool deleteAfterHiding;
 
-    public WaveReportScreen(GameInstance game, WaveReport report, VoidEventHandler close, Animations animations)
+    public WaveReportScreen(
+        GameInstance game,
+        WaveReport report,
+        VoidEventHandler close,
+        Animations animations,
+        TooltipFactory tooltips)
     {
         this.game = game;
         this.animations = animations;
+        this.tooltips = tooltips;
 
         this.Anchor(a => a.Right(rightMarginHidden, width));
 
@@ -130,7 +138,7 @@ sealed class WaveReportScreen : CompositeControl
             var model = TowerDamageDisplay.From(tower, game);
             var towerControl = new CompositeControl
             {
-                ReportFactories.TowerDamageDisplay(model, animations, towerHeight)
+                ReportFactories.TowerDamageDisplay(model, animations, towerHeight, tooltips)
                     .Anchor(a => a.MarginAllSides(margin)),
             };
             row.AddLeft(towerControl, towerWidth);
@@ -154,7 +162,7 @@ sealed class WaveReportScreen : CompositeControl
             var star = new Sprite
             {
                 SpriteId = Sprites.Star,
-                Color = Colors.DamageEfficiency(1),
+                Color = Colors.Experience,
             };
             var (m, s) = topTowers[0].GameObject == mostEfficientTower
                 ? (smallIconMargin, smallIconSize)
