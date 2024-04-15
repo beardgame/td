@@ -201,6 +201,17 @@ vec4 getColorInGradient(uint index, float t)
 
     return stopColor(current);
 }
+vec4 getColorInGradient(uint index, float t, float tapWidth, int taps)
+{
+    vec4 color = vec4(0);
+    float width = tapWidth / taps;
+    float min = t - tapWidth / 2;
+    for (int i = 0; i < taps; i++)
+    {
+        color += getColorInGradient(index, min + i * width);
+    }
+    return color / taps;
+}
 
 float hash(float n)
 {
@@ -249,7 +260,7 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
         case GRADIENT_TYPE_RADIAL_POINT_ON_EDGE:
         {
             vec2 center = parameters.xy;
-            vec2 pointOnEdge = p_shapeData.xy;
+            vec2 pointOnEdge = parameters.zw;
             float radius = length(pointOnEdge - center);
             float distance = length(p_position.xy - center) / radius;
             return getColorInGradient(gradientIndex, distance);
@@ -263,10 +274,16 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
             vec2 center = parameters.xy;
             float startAngle = parameters.z;
             float totalAngle = parameters.w;
+            if (totalAngle < 0)
+            {
+                totalAngle = -totalAngle;
+                startAngle -= totalAngle;
+            }
             vec2 d = p_position.xy - center;
             float angle = atan(d.y, d.x);
             float normalizedAngle = mod(angle + startAngle, TAU) / totalAngle;
-            return getColorInGradient(gradientIndex, normalizedAngle);
+            float distance = length(d);
+            return getColorInGradient(gradientIndex, normalizedAngle, 0.25 / distance, 8);
         }
     }
     return vec4(1, 0, 1, 0.5);

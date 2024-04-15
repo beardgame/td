@@ -11,6 +11,7 @@ using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Content.CoreUI;
 using static Bearded.TD.Constants.UI;
+using static Bearded.TD.Game.Simulation.Statistics.WaveReport;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -27,6 +28,7 @@ sealed class WaveReportScreen : CompositeControl
         );
 
     private readonly GameInstance game;
+    private readonly WaveReport report;
     private readonly Animations animations;
     private readonly TooltipFactory tooltips;
 
@@ -43,6 +45,7 @@ sealed class WaveReportScreen : CompositeControl
         TooltipFactory tooltips)
     {
         this.game = game;
+        this.report = report;
         this.animations = animations;
         this.tooltips = tooltips;
 
@@ -51,7 +54,7 @@ sealed class WaveReportScreen : CompositeControl
         Add(WindowFactories.Window(b => b
             .WithTitle("Wave Report")
             .WithOnClose(close)
-            .WithContent(buildWindowContent(report))
+            .WithContent(buildWindowContent())
             .WithShadow(Shadows.SmallWindow)
         ));
 
@@ -100,19 +103,19 @@ sealed class WaveReportScreen : CompositeControl
         currentSlideAnimation = animations.Start(slide, (this, visiblePercentage, visible ? 1 : 0));
     }
 
-    private Control buildWindowContent(WaveReport report)
+    private Control buildWindowContent()
     {
         var content = new CompositeControl();
         var column = content.BuildScrollableColumn();
 
-        addTopTowers(column, report);
+        addTopTowers(column);
         column.AddSeparator();
         addTotalDamageChart(column);
 
         return content;
     }
 
-    private void addTopTowers(Layouts.IColumnLayout column, WaveReport report)
+    private void addTopTowers(Layouts.IColumnLayout column)
     {
         const int towerCount = 6;
         const double towerWidth = width / towerCount - LayoutMarginSmall;
@@ -184,16 +187,35 @@ sealed class WaveReportScreen : CompositeControl
 
     private void addTotalDamageChart(Layouts.IColumnLayout column)
     {
-        const double height = 200;
-        const double chartDiameter = 200;
+        const double chartDiameter = width * 2 / 3;
+        const double damageByTypeWidth = width - chartDiameter - LayoutMargin * 2;
+        const double lineHeight = Text.LineHeight;
+        const double height = chartDiameter + lineHeight + LayoutMargin;
+        const double chartMargin = LayoutMargin;
 
         var container = makeContainer();
 
-        // TODO: add actual pie chart
-        container.Add(new Dot().Anchor(a => a
-            .Left(relativePercentage: 0.5, width: chartDiameter, margin: -chartDiameter / 2)
-            .Top(relativePercentage: 0.5, height: chartDiameter, margin: -chartDiameter / 2)
-        ));
+        var sortedDamage = report.AccumulatedDamageByType
+            .OrderByDescending(d => d.DamageDone.Amount.NumericValue)
+            .ToList();
+        var totalDamage = AccumulatedDamage.Aggregate(sortedDamage.Select(d => d.AccumulatedDamage));
+
+        var pieChart = ReportFactories.DamagePieChart(sortedDamage);
+        var totalDamageLine = ReportFactories.SingleDamageAndEfficiency(totalDamage, lineHeight);
+        var damageByType = ReportFactories.StackedDamageAndEfficiencies(sortedDamage);
+
+        container.Add(
+        [
+            new CompositeControl { pieChart.Anchor(a => a.MarginAllSides(chartMargin)) }.Anchor(a => a
+                .Left(width: chartDiameter)
+                .Top(height: chartDiameter)
+            ),
+            totalDamageLine.Anchor(a => a
+                .Left(margin: chartDiameter * 0.25, width: chartDiameter * 0.5)
+                .Top(height: lineHeight, margin: chartDiameter + LayoutMargin)),
+            damageByType.Anchor(a => a
+                .Right(margin: LayoutMarginSmall, width: damageByTypeWidth)),
+        ]);
 
         column.AddHeader("All Damage", Colors.Get(ForeGroundColor.Headline2));
         column.Add(container, height);

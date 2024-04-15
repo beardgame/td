@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
@@ -14,6 +15,10 @@ using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.Utilities.Geometry;
+using static Bearded.TD.Constants.UI;
+using static Bearded.TD.UI.Factories.TextFactories;
+using Button = Bearded.UI.Controls.Button;
 
 namespace Bearded.TD.UI.Factories;
 
@@ -60,8 +65,8 @@ static class ReportFactories
         var expectedHeight = expectedControlHeight ?? 100;
         var expectedWidth = expectedHeight * (4f / 6f);
 
-        var expectedContentHeight = expectedHeight - Constants.UI.LayoutMarginSmall * 2;
-        var expectedContentWidth = expectedWidth - Constants.UI.LayoutMarginSmall * 2;
+        var expectedContentHeight = expectedHeight - LayoutMarginSmall * 2;
+        var expectedContentWidth = expectedWidth - LayoutMarginSmall * 2;
 
         var expectedContentRatio = expectedContentWidth / expectedContentHeight;
 
@@ -83,11 +88,11 @@ static class ReportFactories
             ),
         };
 
-        var totalDamage = TextFactories.Label(
+        var totalDamage = Label(
             text: model.TotalDamageDone.Transform(formatDamage),
-            color: Binding.Constant(Constants.UI.Colors.Experience)
+            color: Binding.Constant(Colors.Experience)
         );
-        var totalEfficiency = TextFactories.Label(
+        var totalEfficiency = Label(
             text: model.TotalEfficiency.Transform(formatEfficiency),
             color: model.TotalEfficiency.Transform(formatEfficiencyColor),
             textAnchor: (0.5, 0)
@@ -116,14 +121,14 @@ static class ReportFactories
         var button = new Button
         {
             background,
-            content.Anchor(a => a.MarginAllSides(Constants.UI.LayoutMarginSmall)),
+            content.Anchor(a => a.MarginAllSides(LayoutMarginSmall)),
         };
 
         button.AnimateBackground(
             new ButtonBackgroundColor(
-                Neutral: Constants.UI.Colors.Get(BackgroundColor.Element) * 0.1f,
-                Hover: Constants.UI.Colors.Get(BackgroundColor.Hover) * 0.25f,
-                Active: Constants.UI.Colors.Get(BackgroundColor.ActiveElement) * 0.5f
+                Neutral: Colors.Get(BackgroundColor.Element) * 0.1f,
+                Hover: Colors.Get(BackgroundColor.Hover) * 0.25f,
+                Active: Colors.Get(BackgroundColor.ActiveElement) * 0.5f
             ),
             color => backgroundShape[0] = Fill.With(color),
             () => backgroundShape[0],
@@ -147,7 +152,7 @@ static class ReportFactories
     {
         return () =>
         {
-            var lineHeight = Constants.UI.Text.LineHeight;
+            var lineHeight = Text.LineHeight;
             var lineCount = model.DamageByType.Value.Length + 1;
 
             return new TooltipDefinition(
@@ -164,25 +169,114 @@ static class ReportFactories
 
             column.AddLabel(model.Name, (0, 0.5));
 
-            foreach (var damage in model.DamageByType.Value.OrderByDescending(d => d.DamageDone.Amount.NumericValue))
-            {
-                var row = new CompositeControl
-                {
-                    TextFactories.Label(formatDamage(damage.DamageDone), (1, 0.5), damage.Type.GetColor())
-                        .Anchor(a => a.Right(relativePercentage: 0.45)),
-                    TextFactories.Label(
-                        formatEfficiency(damage.Efficiency),
-                        (1, 0.5),
-                        Constants.UI.Colors.DamageEfficiency(damage.Efficiency)
-                    ),
-                }.Anchor(a => a.Right(relativePercentage: 0.85));
-                column.Add(row, lineHeight);
-            }
+            var sortedDamage = model.DamageByType.Value.OrderByDescending(d => d.DamageDone.Amount.NumericValue);
+            AddStackedDamageAndEfficiencies(column, sortedDamage, lineHeight);
 
-            return TooltipFactories.TooltipWithContent(content);
+            return TooltipFactories.TooltipWithContent(
+                new CompositeControl { content.Anchor(a => a.Right(relativePercentage: 0.85)) }
+            );
         }
     }
 
+    public static Control DamagePieChart(IEnumerable<WaveReport.TypedAccumulatedDamage> data)
+    {
+        const float shadow = 0.05f;
+
+        var pieChart = PieChartFactories.StaticPieChart(data, b => b
+            .WithValues(d => d.DamageDone.Amount.NumericValue)
+            .WithColors(d => d.Type.GetColor())
+            .WithAdditionalComponents([
+                Fill.With(ShapeColor.From(
+                    [
+                        (0, Color.White),
+                        (1 - shadow - 0.01f, Color.White),
+                        (1 - shadow, Color.Gray),
+                        (1, Color.Gray),
+                    ],
+                    GradientDefinition.Radial(
+                        AnchorPoint.Relative((0.5f, 0.5f - shadow * 0.5f)),
+                        AnchorPoint.Relative((0.5f, 1))
+                    ).WithBlendMode(ComponentBlendMode.Multiply)
+                )),
+                Fill.With(ShapeColor.From(
+                    [
+                        (0, Color.White),
+                        (1, new Color(0xFF666666)),
+                    ],
+                    GradientDefinition.Linear(
+                        AnchorPoint.Relative((0, 0)),
+                        AnchorPoint.Relative((0.5f, 1))
+                    ).WithBlendMode(ComponentBlendMode.Multiply)
+                )),
+            ])
+        );
+
+        return pieChart;
+    }
+
+    public static Control StackedDamageAndEfficiencies(
+        IEnumerable<WaveReport.TypedAccumulatedDamage> damage,
+        double lineHeight = Text.LineHeight,
+        double? fontSizeOverride = null)
+    {
+        var content = new CompositeControl();
+        var column = content.BuildFixedColumn();
+        AddStackedDamageAndEfficiencies(column, damage, lineHeight, fontSizeOverride);
+        return content;
+    }
+
+    public static void AddStackedDamageAndEfficiencies(
+        Layouts.IColumnLayout column,
+        IEnumerable<WaveReport.TypedAccumulatedDamage> damage,
+        double lineHeight = Text.LineHeight,
+        double? fontSizeOverride = null)
+    {
+        var fontSize = fontSizeOverride ?? lineHeight * (Text.FontSize / Text.LineHeight);
+        foreach (var d in damage)
+        {
+            var row = SingleDamageAndEfficiency(d, fontSize);
+            column.Add(row, lineHeight);
+        }
+    }
+
+    public static Control SingleDamageAndEfficiency(
+        WaveReport.AccumulatedDamage damage, double fontSize = Text.FontSize)
+    {
+        var damageColor = Colors.Experience;
+        var damageDone = damage.DamageDone;
+        var damageEfficiency = damage.Efficiency;
+
+        return singleDamageAndEfficiency(fontSize, damageEfficiency, damageDone, damageColor);
+    }
+
+    public static Control SingleDamageAndEfficiency(
+        WaveReport.TypedAccumulatedDamage damage, double fontSize = Text.FontSize)
+    {
+        var damageColor = damage.Type.GetColor();
+        var damageDone = damage.DamageDone;
+        var damageEfficiency = damage.Efficiency;
+
+        return singleDamageAndEfficiency(fontSize, damageEfficiency, damageDone, damageColor);
+    }
+
+    private static Control singleDamageAndEfficiency(
+        double fontSize, float damageEfficiency, UntypedDamage damageDone, Color damageColor)
+    {
+        var anchor = (1, 0.5);
+        var efficiencyColor = Colors.DamageEfficiency(damageEfficiency);
+
+        var damageLabel = Label(formatDamage(damageDone), anchor, damageColor);
+        var efficiencyLabel = Label(formatEfficiency(damageEfficiency), anchor, efficiencyColor);
+
+        damageLabel.FontSize = fontSize;
+        efficiencyLabel.FontSize = fontSize;
+
+        return new CompositeControl
+        {
+            damageLabel.Anchor(a => a.Right(relativePercentage: 0.5)),
+            efficiencyLabel.Anchor(a => a.Left(relativePercentage: 0.5)),
+        };
+    }
 
     static string formatDamage(UntypedDamage damage)
     {
@@ -199,5 +293,5 @@ static class ReportFactories
     }
 
     static string formatEfficiency(double efficiency) => $"{efficiency * 100:N0}%";
-    static Color formatEfficiencyColor(double efficiency) => Constants.UI.Colors.DamageEfficiency(efficiency);
+    static Color formatEfficiencyColor(double efficiency) => Colors.DamageEfficiency(efficiency);
 }
