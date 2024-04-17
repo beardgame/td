@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Layers;
@@ -19,7 +18,6 @@ interface IGameWorldOverlay
     public Animations Animations { get; }
     public TooltipFactory Tooltips { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
-    public GlobalGameEvents GameEvents { get; }
 
     public void AddControl(Control control, Vector2d size, OverlayAnchor anchor);
 
@@ -44,20 +42,17 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     public Animations Animations { get; }
     public TooltipFactory Tooltips { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
-    public GlobalGameEvents GameEvents { get; }
 
     public GameWorldOverlay(
         GameCamera camera,
         Animations animations,
         TooltipFactory tooltips,
-        GameRequestDispatcher requestDispatcher,
-        GlobalGameEvents gameEvents)
+        GameRequestDispatcher requestDispatcher)
     {
         this.camera = camera;
         Animations = animations;
         Tooltips = tooltips;
         RequestDispatcher = requestDispatcher;
-        GameEvents = gameEvents;
         IsClickThrough = true;
     }
 

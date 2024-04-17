@@ -89,9 +89,9 @@ sealed class BuildingStatusObserver
             return;
         }
 
-        var status = new BuildingStatus(
-            overlay.RequestDispatcher, overlay.GameEvents, t.Object, statusTracker, upgradeSlots, veterancy);
-        var statusControl = new BuildingStatusControl(status, overlay.Animations, overlay.Tooltips, overlay.RequestDispatcher);
+        var status = new BuildingStatus(overlay.RequestDispatcher, t.Object, statusTracker, upgradeSlots, veterancy);
+        var statusControl =
+            new BuildingStatusControl(status, overlay.Animations, overlay.Tooltips, overlay.RequestDispatcher);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl);
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);

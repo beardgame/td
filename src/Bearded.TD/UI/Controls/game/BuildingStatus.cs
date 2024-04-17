@@ -19,8 +19,8 @@ namespace Bearded.TD.UI.Controls;
 sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
 {
     private readonly GameRequestDispatcher requestDispatcher;
-    private readonly GlobalGameEvents events;
     private readonly GameObject building;
+    private readonly GlobalGameEvents events;
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots upgradeSlots;
     private readonly IVeterancy veterancy;
@@ -43,15 +43,14 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
-        GlobalGameEvents events,
         GameObject building,
         IStatusTracker statusTracker,
         IUpgradeSlots upgradeSlots,
         IVeterancy veterancy)
     {
         this.requestDispatcher = requestDispatcher;
-        this.events = events;
         this.building = building;
+        events = building.Game.Meta.Events;
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
