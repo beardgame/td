@@ -16,8 +16,11 @@ sealed class GameUIControl : CompositeControl
     public GameUIControl(GameUI gameUI, RenderContext renderContext, Animations animations)
     {
         var gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource);
-        var gameWorldOverlay =
-            new GameWorldOverlay(gameUI.Game.Camera, animations, gameUI.Tooltips, new GameRequestDispatcher(gameUI.Game));
+        var gameWorldOverlay = new GameWorldOverlay(
+            gameUI.Game.Camera,
+            animations, gameUI.Tooltips,
+            new GameRequestDispatcher(gameUI.Game),
+            gameUI.Game.State.Meta.Events);
 
         this.gameUI = gameUI;
 

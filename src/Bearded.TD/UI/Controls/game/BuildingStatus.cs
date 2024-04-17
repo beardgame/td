@@ -4,18 +4,22 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class BuildingStatus : IDisposable
+sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
 {
     private readonly GameRequestDispatcher requestDispatcher;
+    private readonly GlobalGameEvents events;
     private readonly GameObject building;
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots upgradeSlots;
@@ -39,12 +43,14 @@ sealed class BuildingStatus : IDisposable
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
+        GlobalGameEvents events,
         GameObject building,
         IStatusTracker statusTracker,
         IUpgradeSlots upgradeSlots,
         IVeterancy veterancy)
     {
         this.requestDispatcher = requestDispatcher;
+        this.events = events;
         this.building = building;
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
@@ -54,7 +60,8 @@ sealed class BuildingStatus : IDisposable
             statusTracker.Statuses.Select(s => new ObservableStatus(s)));
         upgrades = new ObservableCollection<IReadonlyBinding<UpgradeSlot>>(
             upgradeSlots.Slots.Select(UpgradeSlot.FromState).Select(Binding.Create));
-        availableUpgrades = new ObservableCollection<IPermanentUpgrade>(upgradeSlots.AvailableUpgrades);
+        availableUpgrades = new ObservableCollection<IPermanentUpgrade>(
+            upgradeSlots.AvailableUpgrades.OrderBy(u => u.Name));
         Statuses = new ReadOnlyObservableCollection<ObservableStatus>(statuses);
         Upgrades = new ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>>(upgrades);
         AvailableUpgrades = new ReadOnlyObservableCollection<IPermanentUpgrade>(availableUpgrades);
@@ -67,6 +74,8 @@ sealed class BuildingStatus : IDisposable
         upgradeSlots.SlotUnlocked += slotUnlocked;
         upgradeSlots.SlotFilled += slotFilled;
         veterancy.VeterancyStatusChanged += veterancyStatusChanged;
+
+        events.Subscribe(this);
     }
 
     private int? findActiveUpgradeSlot()
@@ -88,6 +97,8 @@ sealed class BuildingStatus : IDisposable
         upgradeSlots.SlotUnlocked -= slotUnlocked;
         upgradeSlots.SlotFilled -= slotFilled;
         veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
+
+        events.Unsubscribe(this);
     }
 
     private void statusAdded(Status status)
@@ -143,12 +154,18 @@ sealed class BuildingStatus : IDisposable
     {
         // Not the most efficient, but we can always implement smarter diffing later (and that may end up being slower).
         availableUpgrades.Clear();
-        upgradeSlots.AvailableUpgrades.ForEach(availableUpgrades.Add);
+        upgradeSlots.AvailableUpgrades.OrderBy(u => u.Name).ForEach(availableUpgrades.Add);
     }
 
     private void veterancyStatusChanged(VeterancyStatus status)
     {
         veterancyStatus.SetFromSource(status);
+    }
+
+    public void HandleEvent(UpgradeTechnologyUnlocked @event)
+    {
+        // We could consider filtering by faction, but realistically right now we only have one faction.
+        updateAvailableUpgrades();
     }
 
     public void PromoteToExpandedView()
