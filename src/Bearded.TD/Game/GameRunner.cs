@@ -51,7 +51,6 @@ sealed class GameRunner
 
         if (game.State.Meta.GameOver) return;
 
-        game.State.Meta.Events.Send(new FrameUpdateStarting());
         game.State.Navigator.Update();
         game.State.Advance(elapsedTime);
 

@@ -108,7 +108,6 @@ static class ModLoader
                 new SpaceTime1Converter<ElectricChargeRate>(d => new ElectricChargeRate(d)),
                 new SpaceTime1Converter<HitPoints>(d => d.HitPoints()),
                 new SpaceTime1Converter<ResourceAmount>(d => ((int) d).Resources()),
-                new SpaceTime1Converter<ResourceRate>(d => ((int) d).ResourcesPerSecond()),
                 new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
                 new SpaceTime3Converter<Difference3>((x, y, z) => new Difference3(x, y, z)),
                 new SpaceTime1Converter<Resistance>(f => new Resistance(f)),

@@ -2,7 +2,6 @@
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
-using Bearded.TD.UI.Tooltips;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;

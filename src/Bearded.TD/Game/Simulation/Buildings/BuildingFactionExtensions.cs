@@ -51,15 +51,10 @@ static class BuildingFactionExtensions
 
         var resourcesToRefund = ResourceAmount.Zero;
 
-        if (gameObj.GetComponents<BuildingConstructionWork>().SingleOrDefault() is { } constructionWork)
-        {
-            resourcesToRefund += constructionWork.ResourcesInvestedSoFar ?? ResourceAmount.Zero;
-        }
-        else if(gameObj.GetComponents<ICost>().SingleOrDefault() is { } cost)
+        if(gameObj.GetComponents<ICost>().SingleOrDefault() is { } cost)
         {
             resourcesToRefund += cost.Resources;
         }
-
         if (gameObj.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is { } upgradeManager)
         {
             foreach (var upgrade in upgradeManager.AppliedUpgrades)
