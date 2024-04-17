@@ -15,6 +15,7 @@ sealed class FactionResources : FactionBehavior
     public void ProvideResources(ResourceAmount amount)
     {
         CurrentResources += amount;
+        Events.Send(new ResourcesProvided(this, amount));
     }
 
     public void ConsumeResources(ResourceAmount amount)
@@ -24,5 +25,6 @@ sealed class FactionResources : FactionBehavior
             throw new InvalidOperationException("Not enough resources available.");
         }
         CurrentResources -= amount;
+        Events.Send(new ResourcesConsumed(this, amount));
     }
 }

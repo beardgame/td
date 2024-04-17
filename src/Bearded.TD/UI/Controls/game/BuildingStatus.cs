@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -16,11 +17,16 @@ using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
+sealed class BuildingStatus
+    : IDisposable,
+        IListener<UpgradeTechnologyUnlocked>,
+        IListener<ResourcesProvided>,
+        IListener<ResourcesConsumed>
 {
     private readonly GameRequestDispatcher requestDispatcher;
     private readonly GameObject building;
     private readonly GlobalGameEvents events;
+    private readonly FactionResources? resources;
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots upgradeSlots;
     private readonly IVeterancy veterancy;
@@ -32,6 +38,7 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
     private readonly Binding<VeterancyStatus> veterancyStatus = new();
     private readonly Binding<int?> activeUpgradeSlot = new();
     private readonly Binding<bool> showUpgradeSelect = new();
+    private readonly Binding<ResourceAmount> currentResources = new();
 
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
     public ReadOnlyObservableCollection<ObservableStatus> Statuses { get; }
@@ -40,6 +47,7 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
     public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
     public IReadonlyBinding<int?> ActiveUpgradeSlot => activeUpgradeSlot;
     public IReadonlyBinding<bool> ShowUpgradeSelect => showUpgradeSelect;
+    public IReadonlyBinding<ResourceAmount> CurrentResources => currentResources;
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
@@ -51,6 +59,7 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
         this.requestDispatcher = requestDispatcher;
         this.building = building;
         events = building.Game.Meta.Events;
+        building.FindFaction().TryGetBehaviorIncludingAncestors(out resources);
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
@@ -67,6 +76,7 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
 
         veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
         activeUpgradeSlot.SetFromSource(findActiveUpgradeSlot());
+        currentResources.SetFromSource(resources?.AvailableResources ?? ResourceAmount.Zero);
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
@@ -74,7 +84,9 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
         upgradeSlots.SlotFilled += slotFilled;
         veterancy.VeterancyStatusChanged += veterancyStatusChanged;
 
-        events.Subscribe(this);
+        events.Subscribe<UpgradeTechnologyUnlocked>(this);
+        events.Subscribe<ResourcesProvided>(this);
+        events.Subscribe<ResourcesConsumed>(this);
     }
 
     private int? findActiveUpgradeSlot()
@@ -97,7 +109,9 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
         upgradeSlots.SlotFilled -= slotFilled;
         veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
 
-        events.Unsubscribe(this);
+        events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
+        events.Unsubscribe<ResourcesProvided>(this);
+        events.Unsubscribe<ResourcesConsumed>(this);
     }
 
     private void statusAdded(Status status)
@@ -165,6 +179,22 @@ sealed class BuildingStatus : IDisposable, IListener<UpgradeTechnologyUnlocked>
     {
         // We could consider filtering by faction, but realistically right now we only have one faction.
         updateAvailableUpgrades();
+    }
+
+    public void HandleEvent(ResourcesProvided @event)
+    {
+        if (@event.Resources == resources)
+        {
+            currentResources.SetFromSource(resources.AvailableResources);
+        }
+    }
+
+    public void HandleEvent(ResourcesConsumed @event)
+    {
+        if (@event.Resources == resources)
+        {
+            currentResources.SetFromSource(resources.AvailableResources);
+        }
     }
 
     public void PromoteToExpandedView()
