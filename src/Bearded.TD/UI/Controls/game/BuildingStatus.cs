@@ -76,7 +76,7 @@ sealed class BuildingStatus
 
         veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
         activeUpgradeSlot.SetFromSource(findActiveUpgradeSlot());
-        currentResources.SetFromSource(resources?.AvailableResources ?? ResourceAmount.Zero);
+        currentResources.SetFromSource((resources != null ? resources.CurrentResources : (ResourceAmount?)null) ?? ResourceAmount.Zero);
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
@@ -185,7 +185,7 @@ sealed class BuildingStatus
     {
         if (@event.Resources == resources)
         {
-            currentResources.SetFromSource(resources.AvailableResources);
+            currentResources.SetFromSource(resources.CurrentResources);
         }
     }
 
@@ -193,7 +193,7 @@ sealed class BuildingStatus
     {
         if (@event.Resources == resources)
         {
-            currentResources.SetFromSource(resources.AvailableResources);
+            currentResources.SetFromSource(resources.CurrentResources);
         }
     }
 

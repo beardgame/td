@@ -8,8 +8,6 @@ sealed class FactionResources : FactionBehavior
 {
     public ResourceAmount CurrentResources { get; private set; }
 
-    public ResourceAmount AvailableResources => CurrentResources;
-
     protected override void Execute() {}
 
     public void ProvideResources(ResourceAmount amount)
@@ -20,7 +18,7 @@ sealed class FactionResources : FactionBehavior
 
     public void ConsumeResources(ResourceAmount amount)
     {
-        if (AvailableResources < amount)
+        if (CurrentResources < amount)
         {
             throw new InvalidOperationException("Not enough resources available.");
         }

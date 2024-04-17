@@ -65,7 +65,7 @@ static class BuildBuilding
             return factionTechnology.IsBuildingUnlocked(blueprint)
                 && faction.SharesBehaviorWith<FactionResources>(actor.Faction)
                 && buildingPreconditions.IsValid
-                && factionResources.AvailableResources >= buildingPreconditions.Cost;
+                && factionResources.CurrentResources >= buildingPreconditions.Cost;
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
