@@ -61,7 +61,10 @@ sealed partial class BuildingStatusControl : CompositeControl
                     model.ApplyUpgrade,
                     animations,
                     tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
-                rowHeight);
+                rowHeight)
+            .AddLeftButton(b => b
+                .WithLabel("Delete")
+                .WithOnClick(model.DeleteBuilding));
 
         Size = (300, column.Height + Padding);
     }

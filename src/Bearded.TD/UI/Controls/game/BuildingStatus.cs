@@ -166,4 +166,9 @@ sealed class BuildingStatus : IDisposable
     {
         requestDispatcher.Request(UpgradeBuilding.Request, building, upgrade);
     }
+
+    public void DeleteBuilding()
+    {
+        requestDispatcher.Request(Game.Simulation.Buildings.DeleteBuilding.Request, building);
+    }
 }

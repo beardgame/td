@@ -34,6 +34,7 @@ static partial class ButtonFactories
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
+        private bool isDangerous;
         private bool alwaysRenderAsEnabled;
         private Shape shape;
         private Shadow? shadow;
@@ -107,6 +108,12 @@ static partial class ButtonFactories
         public T MakeDisabled()
         {
             isEnabled = Binding.Constant(false);
+            return This;
+        }
+
+        public T MakeDangerous()
+        {
+            isDangerous = true;
             return This;
         }
 
