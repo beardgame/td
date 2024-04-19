@@ -1,5 +1,8 @@
 ﻿using System.Drawing;
+using Bearded.Graphics.Debugging;
+using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
+using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Textures;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -15,12 +18,21 @@ sealed class FrameCompositor
     private readonly LayerRenderer layerRenderer;
     public ViewportSize ViewPort { get; private set; }
 
+    private readonly PipelineTexture accumulatedColor;
+    private readonly RenderTarget accumulationTarget;
+    private readonly TextureUniform accumulatedColorUniform;
+
     public FrameCompositor(Logger logger, CoreRenderSettings settings, CoreShaders shaders, CoreRenderers renderers,
         DeferredRenderer deferredRenderer)
     {
         // TODO: use mod specific shader managers and hot reload them separately
         shaderReloader = new DebugOnlyShaderReloader(shaders.ShaderManager, logger);
         layerRenderer = new LayerRenderer(settings, renderers, deferredRenderer);
+
+        accumulatedColor = Pipeline.Texture(PixelInternalFormat.Rgba);
+        KHRDebugExtension.Instance.SetObjectLabel(ObjectLabelIdentifier.Texture, accumulatedColor.Texture.Handle, "Layer Accumulation");
+        accumulationTarget = RenderTarget.WithColorAttachments(accumulatedColor.Texture);
+        accumulatedColorUniform = new TextureUniform("accumulatedColor", TextureUnit.Texture0, accumulatedColor.Texture);
     }
 
     public void SetViewportSize(ViewportSize viewPort)
@@ -32,6 +44,10 @@ sealed class FrameCompositor
     public void PrepareForFrame()
     {
         shaderReloader.ReloadShadersIfNeeded();
+
+        accumulatedColor.EnsureSize((ViewPort.Width, ViewPort.Height));
+
+        using var _ = accumulationTarget.Bind();
 
         var argb = Color.Black;
         GL.ClearColor(argb.R / 255f, argb.G / 255f, argb.B / 255f, 1);
@@ -47,12 +63,14 @@ sealed class FrameCompositor
 
     public void RenderLayer(IRenderLayer layer)
     {
-        // By using a layer renderer and injecting a target, we could render each layer into a different texture
-        // and show them separately/in a 3d slideshow for debugging if desired
-        layerRenderer.RenderLayer(layer, RenderTarget.BackBuffer);
+        layerRenderer.RenderLayer(layer, accumulationTarget);
     }
 
     public void FinalizeFrame()
     {
+        using var _ = accumulationTarget.Bind(FramebufferTarget.ReadFramebuffer);
+
+        GL.BlitFramebuffer(0, 0, ViewPort.Width, ViewPort.Height, 0, 0, ViewPort.Width, ViewPort.Height,
+            ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
     }
 }
