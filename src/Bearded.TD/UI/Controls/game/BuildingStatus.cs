@@ -4,19 +4,29 @@ using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class BuildingStatus : IDisposable
+sealed class BuildingStatus
+    : IDisposable,
+        IListener<UpgradeTechnologyUnlocked>,
+        IListener<ResourcesProvided>,
+        IListener<ResourcesConsumed>
 {
     private readonly GameRequestDispatcher requestDispatcher;
     private readonly GameObject building;
+    private readonly GlobalGameEvents events;
+    private readonly FactionResources? resources;
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots upgradeSlots;
     private readonly IVeterancy veterancy;
@@ -28,6 +38,7 @@ sealed class BuildingStatus : IDisposable
     private readonly Binding<VeterancyStatus> veterancyStatus = new();
     private readonly Binding<int?> activeUpgradeSlot = new();
     private readonly Binding<bool> showUpgradeSelect = new();
+    private readonly Binding<ResourceAmount> currentResources = new();
 
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
     public ReadOnlyObservableCollection<ObservableStatus> Statuses { get; }
@@ -36,6 +47,7 @@ sealed class BuildingStatus : IDisposable
     public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
     public IReadonlyBinding<int?> ActiveUpgradeSlot => activeUpgradeSlot;
     public IReadonlyBinding<bool> ShowUpgradeSelect => showUpgradeSelect;
+    public IReadonlyBinding<ResourceAmount> CurrentResources => currentResources;
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
@@ -46,6 +58,8 @@ sealed class BuildingStatus : IDisposable
     {
         this.requestDispatcher = requestDispatcher;
         this.building = building;
+        events = building.Game.Meta.Events;
+        building.FindFaction().TryGetBehaviorIncludingAncestors(out resources);
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
@@ -54,19 +68,25 @@ sealed class BuildingStatus : IDisposable
             statusTracker.Statuses.Select(s => new ObservableStatus(s)));
         upgrades = new ObservableCollection<IReadonlyBinding<UpgradeSlot>>(
             upgradeSlots.Slots.Select(UpgradeSlot.FromState).Select(Binding.Create));
-        availableUpgrades = new ObservableCollection<IPermanentUpgrade>(upgradeSlots.AvailableUpgrades);
+        availableUpgrades = new ObservableCollection<IPermanentUpgrade>(
+            upgradeSlots.AvailableUpgrades.OrderBy(u => u.Name));
         Statuses = new ReadOnlyObservableCollection<ObservableStatus>(statuses);
         Upgrades = new ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>>(upgrades);
         AvailableUpgrades = new ReadOnlyObservableCollection<IPermanentUpgrade>(availableUpgrades);
 
         veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
         activeUpgradeSlot.SetFromSource(findActiveUpgradeSlot());
+        currentResources.SetFromSource((resources != null ? resources.CurrentResources : (ResourceAmount?)null) ?? ResourceAmount.Zero);
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
         upgradeSlots.SlotUnlocked += slotUnlocked;
         upgradeSlots.SlotFilled += slotFilled;
         veterancy.VeterancyStatusChanged += veterancyStatusChanged;
+
+        events.Subscribe<UpgradeTechnologyUnlocked>(this);
+        events.Subscribe<ResourcesProvided>(this);
+        events.Subscribe<ResourcesConsumed>(this);
     }
 
     private int? findActiveUpgradeSlot()
@@ -88,6 +108,10 @@ sealed class BuildingStatus : IDisposable
         upgradeSlots.SlotUnlocked -= slotUnlocked;
         upgradeSlots.SlotFilled -= slotFilled;
         veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
+
+        events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
+        events.Unsubscribe<ResourcesProvided>(this);
+        events.Unsubscribe<ResourcesConsumed>(this);
     }
 
     private void statusAdded(Status status)
@@ -143,12 +167,34 @@ sealed class BuildingStatus : IDisposable
     {
         // Not the most efficient, but we can always implement smarter diffing later (and that may end up being slower).
         availableUpgrades.Clear();
-        upgradeSlots.AvailableUpgrades.ForEach(availableUpgrades.Add);
+        upgradeSlots.AvailableUpgrades.OrderBy(u => u.Name).ForEach(availableUpgrades.Add);
     }
 
     private void veterancyStatusChanged(VeterancyStatus status)
     {
         veterancyStatus.SetFromSource(status);
+    }
+
+    public void HandleEvent(UpgradeTechnologyUnlocked @event)
+    {
+        // We could consider filtering by faction, but realistically right now we only have one faction.
+        updateAvailableUpgrades();
+    }
+
+    public void HandleEvent(ResourcesProvided @event)
+    {
+        if (@event.Resources == resources)
+        {
+            currentResources.SetFromSource(resources.CurrentResources);
+        }
+    }
+
+    public void HandleEvent(ResourcesConsumed @event)
+    {
+        if (@event.Resources == resources)
+        {
+            currentResources.SetFromSource(resources.CurrentResources);
+        }
     }
 
     public void PromoteToExpandedView()
@@ -165,5 +211,10 @@ sealed class BuildingStatus : IDisposable
     public void ApplyUpgrade(IPermanentUpgrade upgrade)
     {
         requestDispatcher.Request(UpgradeBuilding.Request, building, upgrade);
+    }
+
+    public void DeleteBuilding()
+    {
+        requestDispatcher.Request(Game.Simulation.Buildings.DeleteBuilding.Request, building);
     }
 }

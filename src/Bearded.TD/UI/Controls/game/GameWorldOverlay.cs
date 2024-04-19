@@ -44,12 +44,15 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     public GameRequestDispatcher RequestDispatcher { get; }
 
     public GameWorldOverlay(
-        GameCamera camera, Animations animations, TooltipFactory tooltips, GameRequestDispatcher requestDispatcher)
+        GameCamera camera,
+        Animations animations,
+        TooltipFactory tooltips,
+        GameRequestDispatcher requestDispatcher)
     {
+        this.camera = camera;
         Animations = animations;
         Tooltips = tooltips;
         RequestDispatcher = requestDispatcher;
-        this.camera = camera;
         IsClickThrough = true;
     }
 

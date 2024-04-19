@@ -25,6 +25,14 @@ static partial class ButtonFactories
         return columnLayout.Add(Button(builderFunc).WrapVerticallyCentered(Height), Height + 2 * Margin);
     }
 
+    public static Layouts.IColumnLayout AddLeftButton(
+        this Layouts.IColumnLayout columnLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+    {
+        return columnLayout.Add(
+            Button(builderFunc).WrapAligned(Width, Height, 0, 0.5),
+            Height + 2 * Margin);
+    }
+
     public static Layouts.IColumnLayout AddCenteredButton(
         this Layouts.IColumnLayout columnLayout, BuilderFunc<TextButtonBuilder> builderFunc)
     {

@@ -44,7 +44,7 @@ sealed partial class BuildingUpgradeManager
             public bool CanPlayerUpgradeBuilding =>
                 upgradeSlots is { HasAvailableSlot: true } && upgradeManager.CanBeUpgradedBy(playerFaction);
 
-            public ResourceAmount PlayerResources => factionResources?.AvailableResources ?? ResourceAmount.Zero;
+            public ResourceAmount PlayerResources => (factionResources != null ? factionResources.CurrentResources : (ResourceAmount?)null) ?? ResourceAmount.Zero;
 
             public event VoidEventHandler? UpgradesUpdated;
             public event VoidEventHandler? AvailableUpgradesUpdated;

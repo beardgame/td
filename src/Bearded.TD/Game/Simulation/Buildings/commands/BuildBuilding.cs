@@ -65,7 +65,7 @@ static class BuildBuilding
             return factionTechnology.IsBuildingUnlocked(blueprint)
                 && faction.SharesBehaviorWith<FactionResources>(actor.Faction)
                 && buildingPreconditions.IsValid
-                && factionResources.AvailableResources >= buildingPreconditions.Cost;
+                && factionResources.CurrentResources >= buildingPreconditions.Cost;
         }
 
         public override ISerializableCommand<GameInstance> ToCommand() => new Implementation(
@@ -88,10 +88,7 @@ static class BuildBuilding
             constructionSyncer.SyncCompleteBuild();
 
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
-            var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(result.Cost));
-            reservation.MarkReadyToReceive();
-            State.Satisfies(reservation.IsCommitted);
-            reservation.ClaimResources(result.Cost);
+            resources!.ConsumeResources(result.Cost);
 
             if (building.GetComponents<IBreakageHandler>().SingleOrDefault() is { } breakageHandler)
             {

@@ -47,7 +47,7 @@ static class UpgradeBuilding
                 return false;
             }
             return technology.IsUpgradeUnlocked(upgrade)
-                && resources.AvailableResources >= upgrade.Cost
+                && resources.CurrentResources >= upgrade.Cost
                 && upgradeSlots.HasAvailableSlot
                 && upgradeManager.CanApplyUpgrade(upgrade)
                 && upgradeManager.CanBeUpgradedBy(actor.Faction);
@@ -59,10 +59,7 @@ static class UpgradeBuilding
             upgradeSlots.FillSlot(upgrade);
 
             building.FindFaction().TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
-            var reservation = resources!.ReserveResources(new FactionResources.ResourceRequest(upgrade.Cost));
-            reservation.MarkReadyToReceive();
-            DebugAssert.State.Satisfies(reservation.IsCommitted);
-            reservation.ClaimResources(upgrade.Cost);
+            resources!.ConsumeResources(upgrade.Cost);
 
             if (building.GetComponents<IBreakageHandler>().SingleOrDefault() is { } breakageHandler)
             {
