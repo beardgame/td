@@ -40,6 +40,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
 
         router = new CachedRendererRouter(
         [
+            validate(new BlurBackgroundRenderer(context.Drawers)),
             validate(new UIDebugOverlayHighlightRenderer(context.Drawers.ConsoleBackground, uiFonts.Default)),
             validate(new RenderLayerCompositeControlRenderer(context.Compositor)),
             validate(new AutoCompletingTextInputRenderer(shapeDrawer, shapeComponents, uiFonts)),

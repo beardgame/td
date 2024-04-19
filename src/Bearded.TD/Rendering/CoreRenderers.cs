@@ -1,14 +1,21 @@
+using System;
 using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
+using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Text;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.Rendering.Vertices;
+using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering;
 
 sealed class CoreRenderers
 {
+    private readonly CoreShaders shaders;
+    private readonly CoreRenderSettings settings;
+
     public ExpandingIndexedTrianglesMeshBuilder<ColorVertexData> Primitives { get; } = new();
     public IRenderer PrimitivesRenderer { get; }
 
@@ -18,11 +25,16 @@ sealed class CoreRenderers
     public IDrawableRenderers DrawableRenderers { get; }
     public TextDrawerWithDefaults<Color> InGameConsoleFont { get; private set; } = null!;
 
+    public IndexedTrianglesMeshBuilder<VoidVertex> IntermediateLayerBlur { get; } = new();
+    public IRenderer IntermediateLayerBlurRenderer { get; private set; } = null!;
+
     public GradientBuffer Gradients { get; } = new();
     public ComponentBuffer ShapeComponents { get; } = new();
 
     public CoreRenderers(CoreShaders shaders, CoreRenderSettings settings, IDrawableRenderers renderers)
     {
+        this.shaders = shaders;
+        this.settings = settings;
         DrawableRenderers = renderers;
 
         var primitiveShader = shaders.GetShaderProgram("geometry");
@@ -34,6 +46,20 @@ sealed class CoreRenderers
         ConsoleBackgroundRenderer = BatchedRenderer.From(
             ConsoleBackground.ToRenderable(), settings.ViewMatrix, settings.ProjectionMatrix);
         primitiveShader.UseOnRenderer(ConsoleBackgroundRenderer);
+    }
+
+    public void SetLayerAccumulationTexture(PipelineTexture texture)
+    {
+        if (IntermediateLayerBlurRenderer != null)
+            throw new InvalidOperationException("Layer accumulation texture already set");
+
+        IntermediateLayerBlurRenderer = Renderer.From(
+            IntermediateLayerBlur.ToRenderable(),
+            settings.ViewMatrix,
+            settings.ProjectionMatrix,
+            new TextureUniform("inputTexture", TextureUnit.Texture0, texture.Texture)
+        );
+        shaders.GetShaderProgram("intermediateLayerBlur").UseOnRenderer(IntermediateLayerBlurRenderer);
     }
 
     public void SetInGameConsoleFont(TextDrawerWithDefaults<Color> font)
@@ -54,5 +80,6 @@ sealed class CoreRenderers
         DrawableRenderers.ClearAll();
         Gradients.Clear();
         ShapeComponents.Clear();
+        IntermediateLayerBlur.Clear();
     }
 }

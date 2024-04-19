@@ -2,13 +2,20 @@ using Bearded.UI.Rendering;
 
 namespace Bearded.TD.UI.Layers;
 
-class OnTopCompositeControl : DefaultRenderLayerControl
+class OnTopCompositeControl(string debugName) : DefaultRenderLayerControl
 {
+    public override string DebugName => debugName;
+
     public new static OnTopCompositeControl CreateClickThrough()
     {
-        return new OnTopCompositeControl
+        throw new System.NotImplementedException("Use overload with debug name.");
+    }
+
+    public static OnTopCompositeControl CreateClickThrough(string debugName)
+    {
+        return new OnTopCompositeControl(debugName)
         {
-            IsClickThrough = true
+            IsClickThrough = true,
         };
     }
 

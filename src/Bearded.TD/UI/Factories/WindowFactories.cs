@@ -63,7 +63,7 @@ static class WindowFactories
         {
             validate();
 
-            var control = new OnTopCompositeControl();
+            var control = new OnTopCompositeControl("Window");
             var background = new ComplexBox
             {
                 CornerRadius = CornerRadius,

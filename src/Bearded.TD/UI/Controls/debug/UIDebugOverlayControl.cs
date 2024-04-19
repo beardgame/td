@@ -55,7 +55,7 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
 
     private bool moveControlBox;
 
-    public UIDebugOverlayControl(UIDebugOverlay model)
+    public UIDebugOverlayControl(UIDebugOverlay model) : base("UI Debug Overlay")
     {
         Add(new BackgroundBox { Color = Color.DarkCyan * 0.2f });
 

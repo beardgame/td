@@ -31,6 +31,7 @@ sealed class CoreShaders
             "deferred/spotlight",
             "terrain-base",
             "biome-base",
+            "intermediateLayerBlur",
         }.ForEach(name => shaders.RegisterRendererShaderFromAllShadersWithName(name));
     }
 

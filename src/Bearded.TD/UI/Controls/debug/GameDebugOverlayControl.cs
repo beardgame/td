@@ -15,7 +15,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
 {
     private bool minimized;
 
-    public GameDebugOverlayControl(GameDebugOverlay model)
+    public GameDebugOverlayControl(GameDebugOverlay model) : base("Game Debug Overlay")
     {
         Add(new BackgroundBox {Color = Color.Purple * 0.5f});
 
@@ -30,7 +30,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
             .Anchor(a => a.Top(4, 16).Right(4 + 16 + 4, 16))
             .Subscribe(b => b.Clicked += toggleMinimized));
 
-        var itemList = new ListControl(new ViewportClippingLayerControl())
+        var itemList = new ListControl(new ViewportClippingLayerControl("Game Debug Overlay List"))
                 {ItemSource = new ActionListItemSource(model.Items)}
             .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4));
         Add(itemList);

@@ -34,11 +34,11 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
 
     private readonly DebugConsole debug;
     private readonly Animations animations;
-    private readonly ListControl logBox = new(new ViewportClippingLayerControl(), startStuckToBottom: true);
+    private readonly ListControl logBox = new(new ViewportClippingLayerControl("Debug Console Log"), startStuckToBottom: true);
     private readonly RotatingListItemSource<Logger.Entry> listItemSource;
     private readonly TextInput commandInput;
 
-    public DebugConsoleControl(DebugConsole debug, Animations animations)
+    public DebugConsoleControl(DebugConsole debug, Animations animations) : base("Debug Console")
     {
         this.debug = debug;
         this.animations = animations;

@@ -150,8 +150,8 @@ sealed class TheGame : Window
         var shortcuts = new ShortcutCapturer();
         dependencyResolver.Add(shortcuts);
 
-        var navigationRoot = OnTopCompositeControl.CreateClickThrough();
-        var uiOverlay = OnTopCompositeControl.CreateClickThrough();
+        var navigationRoot = OnTopCompositeControl.CreateClickThrough("Navigation Root");
+        var uiOverlay = OnTopCompositeControl.CreateClickThrough("UI Overlay");
 
         rootControl.Add(navigationRoot);
         rootControl.Add(uiOverlay);

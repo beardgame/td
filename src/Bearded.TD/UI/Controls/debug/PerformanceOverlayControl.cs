@@ -15,7 +15,7 @@ sealed class PerformanceOverlayControl : CompositeControl
         Add(new Label { Text = $"Frame time ({model.FramesConsideredForAverage} frame avg)", FontSize = 14, TextAnchor = new Vector2d(0, 0.5) }
             .Anchor(a => a.Top(4, 16).Left(4, 16)));
 
-        var itemList = new ListControl(new ViewportClippingLayerControl())
+        var itemList = new ListControl(new ViewportClippingLayerControl("Performance Overlay"))
                 { ItemSource = new FrameTimeListItemSource(model) }
             .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4));
         Add(itemList);

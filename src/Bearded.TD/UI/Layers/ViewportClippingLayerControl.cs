@@ -4,7 +4,7 @@ using Bearded.TD.Meta;
 
 namespace Bearded.TD.UI.Layers;
 
-class ViewportClippingLayerControl : OnTopCompositeControl
+class ViewportClippingLayerControl(string debugName) : OnTopCompositeControl(debugName)
 {
     public override RenderOptions RenderOptions => new RenderOptions(getViewportFromFrame());
 

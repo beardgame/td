@@ -79,7 +79,7 @@ sealed class LobbyControl : CompositeControl
 
             // TODO: this is still very hardcoded with numbers
             var chatItemSource = new ChatLogListSource(model.ChatLog);
-            chatList = new ListControl(new ViewportClippingLayerControl())
+            chatList = new ListControl(new ViewportClippingLayerControl("Lobby Chat"))
             {
                 ItemSource = chatItemSource,
                 StickToBottom = true
@@ -97,7 +97,7 @@ sealed class LobbyControl : CompositeControl
             model.ChatMessagesUpdated += () => chatList.ItemSource = chatItemSource;
 
             var loadingItemSource = new LoadingBlueprintsListSource(model.LoadingProfiler);
-            loadingList = new ListControl(new ViewportClippingLayerControl())
+            loadingList = new ListControl(new ViewportClippingLayerControl("List Content"))
             {
                 ItemSource = loadingItemSource,
                 StickToBottom = true

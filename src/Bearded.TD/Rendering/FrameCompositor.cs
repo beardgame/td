@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using Bearded.Graphics.Debugging;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.RenderSettings;
@@ -20,19 +19,17 @@ sealed class FrameCompositor
 
     private readonly PipelineTexture accumulatedColor;
     private readonly RenderTarget accumulationTarget;
-    private readonly TextureUniform accumulatedColorUniform;
 
     public FrameCompositor(Logger logger, CoreRenderSettings settings, CoreShaders shaders, CoreRenderers renderers,
         DeferredRenderer deferredRenderer)
     {
+        accumulatedColor =  Pipeline.Texture(PixelInternalFormat.Rgba, label: "Layer Accumulation");
+        accumulationTarget = RenderTarget.WithColorAttachments(accumulatedColor.Texture);
+        renderers.SetLayerAccumulationTexture(accumulatedColor);
+
         // TODO: use mod specific shader managers and hot reload them separately
         shaderReloader = new DebugOnlyShaderReloader(shaders.ShaderManager, logger);
         layerRenderer = new LayerRenderer(settings, renderers, deferredRenderer);
-
-        accumulatedColor = Pipeline.Texture(PixelInternalFormat.Rgba);
-        KHRDebugExtension.Instance.SetObjectLabel(ObjectLabelIdentifier.Texture, accumulatedColor.Texture.Handle, "Layer Accumulation");
-        accumulationTarget = RenderTarget.WithColorAttachments(accumulatedColor.Texture);
-        accumulatedColorUniform = new TextureUniform("accumulatedColor", TextureUnit.Texture0, accumulatedColor.Texture);
     }
 
     public void SetViewportSize(ViewportSize viewPort)

@@ -47,7 +47,7 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
         GameCamera camera,
         Animations animations,
         TooltipFactory tooltips,
-        GameRequestDispatcher requestDispatcher)
+        GameRequestDispatcher requestDispatcher) : base("Game World Overlay")
     {
         this.camera = camera;
         Animations = animations;

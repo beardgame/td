@@ -15,6 +15,7 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
     private readonly GameRenderer renderer;
 
     private Matrix4 viewMatrix;
+    public override string DebugName => "Game World";
     public override Matrix4 ViewMatrix => viewMatrix;
     public override Matrix4 ProjectionMatrix => game.Camera.ProjectionMatrix;
     public override RenderOptions RenderOptions => RenderOptions.Default;

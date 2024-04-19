@@ -5,6 +5,7 @@ namespace Bearded.TD.UI.Layers;
 
 interface IRenderLayer
 {
+    string DebugName { get; }
     Matrix4 ViewMatrix { get; }
     Matrix4 ProjectionMatrix { get; }
     RenderOptions RenderOptions { get; }

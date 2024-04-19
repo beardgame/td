@@ -77,6 +77,7 @@ abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
         skipNextRender = true;
     }
 
+    public abstract string DebugName { get; }
     public abstract Matrix4 ViewMatrix { get; }
     public abstract Matrix4 ProjectionMatrix { get; }
     public abstract RenderOptions RenderOptions { get; }

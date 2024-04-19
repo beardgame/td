@@ -30,7 +30,7 @@ sealed partial class UpgradeReportControl : ReportControl
         reportInstance.UpgradesUpdated += updateUpgradesFromReport;
         reportInstance.AvailableUpgradesUpdated += updateUpgradesFromReport;
 
-        list = new ListControl(new ViewportClippingLayerControl());
+        list = new ListControl(new ViewportClippingLayerControl("Upgrade Report List"));
         listItems = new UpgradeListItems(
             reportInstance.Upgrades.ToImmutableArray(), canUpgrade, slots);
         listItems.ChooseUpgradeButtonClicked += onChooseUpgradeButtonClicked;
