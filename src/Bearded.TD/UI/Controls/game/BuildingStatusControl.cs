@@ -26,6 +26,7 @@ sealed partial class BuildingStatusControl : CompositeControl
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
+        Add(new BlurBackground());
         this.Add(new ComplexBox
         {
             Components = Background,

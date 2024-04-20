@@ -11,6 +11,8 @@ const int SHAPE_TYPE_HEXAGON = 4; // center and radius
 
 const int GRADIENT_TYPE_NONE = 0;
 const int GRADIENT_TYPE_CONSTANT = 1;
+const int GRADIENT_BLURRED_BACKGROUND = 2;
+
 const int GRADIENT_TYPE_LINEAR = 20; // point to point
 const int GRADIENT_TYPE_RADIAL_RADIUS = 21; // center and radius
 const int GRADIENT_TYPE_RADIAL_POINT_ON_EDGE = 22; // center and point on edge
@@ -27,9 +29,13 @@ const float ANTI_ALIAS_WIDTH = 1;
 uniform usamplerBuffer gradientBuffer;
 uniform usamplerBuffer componentBuffer;
 
+uniform sampler2D intermediateBlurBackground;
+
 uniform float uiTime;
 
 in vec3 p_position;
+in vec2 p_screenUV;
+
 flat in int p_shapeType;
 flat in vec4 p_shapeData;
 flat in vec3 p_shapeData2;
@@ -230,6 +236,29 @@ vec4 dither(vec4 color, vec2 seed)
     return color;
 }
 
+vec4 getBackgroundBlur()
+{
+    vec2 size = textureSize(intermediateBlurBackground, 0);
+
+    float pixelStepY = 1.0 / size.y;
+
+    const float[] gaussianWeights = float[](
+    0.00874088, 0.0179975 , 0.03315999, 0.05467158, 0.0806592,
+    0.10648569, 0.12579798, 0.13298454, 0.12579798, 0.10648569,
+    0.0806592 , 0.05467158, 0.03315999, 0.0179975 , 0.00874088
+    );
+
+    vec4 color = vec4(0);
+
+    for (int i = 0; i < 15; i++)
+    {
+        vec2 uv = vec2(p_screenUV.x, p_screenUV.y + float(i - 7) * pixelStepY);
+        color += texture(intermediateBlurBackground, uv) * gaussianWeights[i];
+    }
+
+    return color;
+}
+
 vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
 {
     switch(type)
@@ -284,6 +313,10 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
             float normalizedAngle = mod(angle + startAngle, TAU) / totalAngle;
             float distance = length(d);
             return getColorInGradient(gradientIndex, normalizedAngle, 0.25 / distance, 8);
+        }
+        case GRADIENT_BLURRED_BACKGROUND:
+        {
+            return getBackgroundBlur();
         }
     }
     return vec4(1, 0, 1, 0.5);

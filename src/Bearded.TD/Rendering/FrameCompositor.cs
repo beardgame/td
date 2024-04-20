@@ -32,6 +32,9 @@ sealed class FrameCompositor
         layerRenderer = new LayerRenderer(settings, renderers, deferredRenderer);
     }
 
+    public TextureUniform IntermediateBlurTextureUniform(string name, TextureUnit unit)
+        => layerRenderer.IntermediateBlurTextureUniform(name, unit);
+
     public void SetViewportSize(ViewportSize viewPort)
     {
         ViewPort = viewPort;

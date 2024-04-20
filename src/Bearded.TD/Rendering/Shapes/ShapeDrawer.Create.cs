@@ -1,4 +1,8 @@
-﻿using Bearded.TD.Content.Models;
+﻿using System;
+using System.Collections.Immutable;
+using Bearded.Graphics.RenderSettings;
+using Bearded.TD.Content.Models;
+using OpenTK.Graphics.OpenGL;
 
 namespace Bearded.TD.Rendering.Shapes;
 
@@ -11,15 +15,31 @@ sealed partial class ShapeDrawer
 
     public static ShapeDrawer GetOrCreate(
         IDrawableRenderers renderers,
-        GradientBuffer gradients,
-        ComponentBuffer components,
         Shader shader,
+        RenderContext context,
         DrawOrderGroup drawGroup,
         int drawGroupOrderKey)
     {
         return renderers.GetOrCreateDrawableFor(
             DrawableTemplate.Instance, shader, drawGroup, drawGroupOrderKey,
-            () => new ShapeDrawer(shader, gradients, components)
+            () => new ShapeDrawer(shader, textures([
+                (context.Renderers.Gradients.TextureUniform, "gradientBuffer"),
+                (context.Renderers.ShapeComponents.TextureUniform, "componentBuffer"),
+                (context.Compositor.IntermediateBlurTextureUniform, "intermediateBlurBackground"),
+            ]))
         );
+
+        // TODO: a little experiment to see if we can make multiple texture uniforms more readable
+        // consider creating a public helper somewhere?
+        static ImmutableArray<IRenderSetting> textures(
+            ReadOnlySpan<(Func<string, TextureUnit, IRenderSetting> Create, string Name)> factories)
+        {
+            var builder = ImmutableArray.CreateBuilder<IRenderSetting>(factories.Length);
+            foreach (var factory in factories)
+            {
+                builder.Add(factory.Create(factory.Name, TextureUnit.Texture0 + builder.Count));
+            }
+            return builder.ToImmutable();
+        }
     }
 }

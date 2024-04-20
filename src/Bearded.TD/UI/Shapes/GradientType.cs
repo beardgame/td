@@ -6,6 +6,7 @@ enum GradientType : byte
 
     // Single Color
     Constant = 1,
+    BlurredBackground = 2,
 
     // Full Gradients
     Linear = 20,
@@ -18,6 +19,7 @@ enum GradientType : byte
 enum GradientTypeSingleColor : byte
 {
     Constant = GradientType.Constant,
+    BlurredBackground = GradientType.BlurredBackground,
 }
 
 enum ComponentBlendMode : byte

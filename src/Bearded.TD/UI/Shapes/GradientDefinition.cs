@@ -36,6 +36,9 @@ readonly struct GradientDefinition
     public static SingleColor Constant(Color color)
         => new(GradientTypeSingleColor.Constant, color, GradientFlags.Default);
 
+    public static SingleColor BlurredBackground()
+        => new(GradientTypeSingleColor.BlurredBackground, default, GradientFlags.Default);
+
     public static SingleColor SimpleGlow(Color color)
         => new(GradientTypeSingleColor.Constant, color, GradientFlags.GlowFade | GradientFlags.Dither);
 
@@ -54,7 +57,6 @@ readonly struct GradientDefinition
     public static GradientDefinition ArcAroundPoint(AnchorPoint center, Direction2 start, Angle length)
         => new(GradientType.ArcAroundPoint, GradientFlags.Dither)
             { Point1 = center, StartAngle = start, Length = length };
-
 
     public readonly struct SingleColor
     {

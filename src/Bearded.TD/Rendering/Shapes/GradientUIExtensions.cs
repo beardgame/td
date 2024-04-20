@@ -39,6 +39,7 @@ static class GradientUIExtensions
         {
             None => default,
             Constant => (encodeColor(def.Color), 0, 0, 0),
+            BlurredBackground => (0, 0, 0, 0),
             Linear => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),
             RadialWithRadius => v4(def.Point1.CalculatePointWithin(frame), (def.Radius, 0)),
             RadialToPoint => v4(def.Point1.CalculatePointWithin(frame), def.Point2.CalculatePointWithin(frame)),

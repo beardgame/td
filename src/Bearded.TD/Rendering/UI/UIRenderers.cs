@@ -6,6 +6,7 @@ using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Content.CoreUI;
 
@@ -35,8 +36,12 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
 
         var gradients = context.Renderers.Gradients;
         var shapeComponents = context.Renderers.ShapeComponents;
-        var shapeDrawer = ShapeDrawer
-            .GetOrCreate(renderers, gradients, shapeComponents, shapeShader, DrawOrderGroup.UIShapes, 0);
+        var shapeDrawer = ShapeDrawer.GetOrCreate(
+            renderers,
+            shapeShader,
+            context,
+            DrawOrderGroup.UIShapes,
+            0);
 
         router = new CachedRendererRouter(
         [

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
+using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.UI.Layers;
@@ -32,12 +33,13 @@ sealed class LayerRenderer
     private readonly DeferredRenderer deferredRenderer;
     private readonly IPipeline renderLayer;
     private ViewportSize viewport;
+    private readonly PipelineTexture blurIntermediateTexture;
 
     public LayerRenderer(CoreRenderSettings settings, CoreRenderers renderers, DeferredRenderer deferredRenderer)
     {
         this.deferredRenderer = deferredRenderer;
 
-        var blurIntermediateTexture = Pipeline.Texture(PixelInternalFormat.Rgba, label: "Blur intermediate texture");
+        blurIntermediateTexture = Pipeline.Texture(PixelInternalFormat.Rgba, label: "Blur intermediate texture");
         var blurIntermediateTarget = Pipeline.RenderTargetWithColors("Blur intermediate target", blurIntermediateTexture);
 
         renderLayer = WithContext(
@@ -74,6 +76,9 @@ sealed class LayerRenderer
             )
         );
     }
+
+    public TextureUniform IntermediateBlurTextureUniform(string name, TextureUnit unit)
+        => new(name, unit, blurIntermediateTexture.Texture);
 
     private static IPipeline renderDrawGroups(IDrawableRenderers renderers, IEnumerable<DrawOrderGroup> drawGroups)
     {

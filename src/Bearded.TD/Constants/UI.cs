@@ -231,6 +231,7 @@ static partial class Constants
             private static readonly ShapeComponent backgroundFade = Fill.With(ShapeColor.From(
                 [
                     (0, Color.White),
+                    (0.33, Color.White),
                     (0.75, Color.White * 0.5f),
                     (0.95, Color.Transparent),
                 ], GradientDefinition.Linear(
@@ -241,7 +242,8 @@ static partial class Constants
 
             public static readonly ShapeComponents Background =
             [
-                Fill.With(Colors.Get(BackgroundColor.Default)),
+                Fill.With(GradientDefinition.BlurredBackground()),
+                Fill.With(Colors.Get(BackgroundColor.Default) * 0.8f),
                 Edge.Inner((float)EdgeWidth, Colors.Get(BackgroundColor.TooltipOutline)),
                 backgroundFade,
             ];

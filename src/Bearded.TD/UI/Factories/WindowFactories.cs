@@ -2,6 +2,7 @@ using System;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
+using Bearded.TD.UI.Shapes;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.UI.Window;
@@ -34,6 +35,7 @@ static class WindowFactories
         private VoidEventHandler? onClose;
         private Control? content;
         private Shadow? shadow;
+        private bool blurBackground = true;
 
         public Builder WithTitle(string title)
         {
@@ -59,16 +61,25 @@ static class WindowFactories
             return this;
         }
 
+        public Builder BlurBackground(bool blur)
+        {
+            blurBackground = blur;
+            return this;
+        }
+
         public Control Build()
         {
             validate();
 
-            var control = new OnTopCompositeControl("Window");
+            var control = new OnTopCompositeControl("Window " + title);
             var background = new ComplexBox
             {
                 CornerRadius = CornerRadius,
-                Components = BackgroundComponents,
+                Components = blurBackground
+                    ? [Fill.With(GradientDefinition.BlurredBackground()), ..BackgroundComponents]
+                    : BackgroundComponents,
             };
+            control.Add(new BlurBackground());
             control.Add(shadow != null
                 ? background.WithDropShadow(shadow.Value)
                 : [background]);
