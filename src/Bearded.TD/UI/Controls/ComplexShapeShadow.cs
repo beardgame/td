@@ -16,18 +16,3 @@ sealed class DropShadow : Control
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 }
-
-static class DropShadowExtensions
-{
-    public static Control[] WithDropShadow(
-        this Control source, Shadow shadow, ShapeComponents overlayComponents = default)
-    {
-        var dropShadow = new DropShadow
-        {
-            SourceControl = source,
-            Shadow = shadow,
-            OverlayComponents = overlayComponents,
-        };
-        return [dropShadow, source];
-    }
-}

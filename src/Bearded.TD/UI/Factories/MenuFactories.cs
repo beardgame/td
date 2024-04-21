@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
-using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
+using static Bearded.TD.Constants.UI.Menu;
 
 namespace Bearded.TD.UI.Factories;
 
@@ -17,7 +17,7 @@ static class MenuFactories
     {
         var builder = new Builder();
         builderFunc(builder);
-        layout.DockFixedSizeToRight(builder.Build(), Constants.UI.Menu.Width);
+        layout.DockFixedSizeToRight(builder.Build(), Width);
         return layout;
     }
 
@@ -25,8 +25,8 @@ static class MenuFactories
     {
         private ButtonAction? closeAction;
         private readonly List<ButtonAction> menuActions = new();
-        private Control? background;
         private Animations? animations;
+        private bool blurBackground;
 
         public Builder WithAnimations(Animations? animations)
         {
@@ -48,9 +48,9 @@ static class MenuFactories
             return this;
         }
 
-        public Builder WithBackground(Control background)
+        public Builder WithBlurredBackground()
         {
-            this.background = background;
+            blurBackground = true;
             return this;
         }
 
@@ -63,11 +63,12 @@ static class MenuFactories
 
             var control = new CompositeControl
             {
-                background ?? new ComplexBox
-                {
-                    Components = Constants.UI.Menu.DefaultBackgroundComponents,
-                },
+                new ComplexBox { Components = DefaultBackgroundComponents }
+                    .WithDecorations(new Decorations(
+                        BlurredBackground: BlurredBackground.Default.If(blurBackground))
+                    ),
             };
+
             var layout = control.BuildLayout()
                 .ForContentBox()
                 .DockFixedSizeToBottom(buttonFor(closeAction), Constants.UI.Button.Height)

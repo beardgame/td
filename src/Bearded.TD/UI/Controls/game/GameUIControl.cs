@@ -43,11 +43,6 @@ sealed class GameUIControl : CompositeControl
             .Bottom(Constants.UI.Button.SquareButtonSize + 4 * Constants.UI.Button.Margin)
         ));
 
-        Add(new GameMenuControl()
-            .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)
-            .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
-            .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
-
         this.BuildLayout()
             .ForFullScreen()
             .DockFixedSizeToTop(
@@ -68,6 +63,11 @@ sealed class GameUIControl : CompositeControl
 
         Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
             .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */
+
+        Add(new GameMenuControl()
+            .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)
+            .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
+            .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
 
         gameUI.FocusReset += Focus;
         gameUI.GameLeft += Unfocus;

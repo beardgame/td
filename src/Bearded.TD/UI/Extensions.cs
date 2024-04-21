@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bearded.TD.Utilities;
 using Bearded.UI;
@@ -53,7 +54,7 @@ static class Extensions
         return control;
     }
 
-    public static void Add(this CompositeControl parent, IEnumerable<Control> children)
+    public static void Add(this CompositeControl parent, ReadOnlySpan<Control> children)
     {
         foreach (var child in children)
         {

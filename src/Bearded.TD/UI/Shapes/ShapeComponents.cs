@@ -9,6 +9,8 @@ namespace Bearded.TD.UI.Shapes;
 
 readonly partial struct ShapeComponents
 {
+    public static ShapeComponents Empty => default;
+
     private enum Type
     {
         None = 0,
@@ -20,6 +22,8 @@ readonly partial struct ShapeComponents
 
     private readonly ImmutableArray<ShapeComponent> immutableComponents;
     private readonly ShapeComponent[]? mutableComponents;
+
+    public bool IsMutable => type == Type.Mutable;
 
     public ReadOnlySpan<ShapeComponent> Components => type switch
     {

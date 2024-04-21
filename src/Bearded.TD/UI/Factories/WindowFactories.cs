@@ -71,18 +71,17 @@ static class WindowFactories
         {
             validate();
 
-            var control = new OnTopCompositeControl("Window " + title);
-            var background = new ComplexBox
+            var control = new OnTopCompositeControl("Window " + title)
             {
-                CornerRadius = CornerRadius,
-                Components = blurBackground
-                    ? [Fill.With(GradientDefinition.BlurredBackground()), ..BackgroundComponents]
-                    : BackgroundComponents,
+                new ComplexBox
+                {
+                    CornerRadius = CornerRadius,
+                    Components = BackgroundComponents,
+                }.WithDecorations(new Decorations(
+                    Shadow: shadow,
+                    BlurredBackground: BlurredBackground.Default.If(blurBackground)
+                )),
             };
-            control.Add(new BlurBackground());
-            control.Add(shadow != null
-                ? background.WithDropShadow(shadow.Value)
-                : [background]);
 
             var titleBar = new CompositeControl();
             var titleRow = titleBar.BuildFixedRow()

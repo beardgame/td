@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Layers;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Controls;
@@ -10,7 +11,7 @@ sealed class MainMenuControl : CompositeControl
     {
         Add(new MainMenuBackground());
 
-        var menuFrame = CreateClickThrough();
+        var menuFrame = OnTopCompositeControl.CreateClickThrough("Main Menu Frame");
         Add(menuFrame);
 
         menuFrame.BuildLayout().AddMenu(b => b
@@ -20,6 +21,7 @@ sealed class MainMenuControl : CompositeControl
             .AddMenuAction("Options", model.OnOptionsButtonClicked)
             .WithCloseAction("Exit", model.OnQuitGameButtonClicked)
             .WithAnimations(animations)
+            .WithBlurredBackground()
         );
 
         animations.Start(Constants.UI.Menu.SlideInAnimation, menuFrame);
