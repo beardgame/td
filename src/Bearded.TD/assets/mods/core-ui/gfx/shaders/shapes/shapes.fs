@@ -240,7 +240,11 @@ vec4 getBackgroundBlur()
 {
     vec2 size = textureSize(intermediateBlurBackground, 0);
 
-    float pixelStepY = 1.0 / size.y;
+    float pixelStepY = 1.5 / size.y;
+    
+    const float[] stepSizes = float[](
+    -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7
+    );
 
     const float[] gaussianWeights = float[](
     0.00874088, 0.0179975 , 0.03315999, 0.05467158, 0.0806592,
@@ -249,10 +253,12 @@ vec4 getBackgroundBlur()
     );
 
     vec4 color = vec4(0);
+    
+    vec2 offset = vec2(0.5) / size;
 
     for (int i = 0; i < 15; i++)
     {
-        vec2 uv = vec2(p_screenUV.x, p_screenUV.y + float(i - 7) * pixelStepY);
+        vec2 uv = vec2(p_screenUV.x, p_screenUV.y + stepSizes[i] * pixelStepY) + offset;
         color += texture(intermediateBlurBackground, uv) * gaussianWeights[i];
     }
 
