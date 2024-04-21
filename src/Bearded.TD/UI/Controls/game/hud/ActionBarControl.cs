@@ -82,6 +82,8 @@ sealed class ActionBarControl : CompositeControl
             .WithOnClick(() => binding.Value?.OnClick())
             .MakeHexagon()
             .WithShadow()
+            .WithBlurredBackground()
+            .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
         ).Anchor(a => a
             .Left(margin: buttonLeftMargin(i), width: buttonSize, relativePercentage: 0.5)
             .Bottom(margin: buttonBottomMargin, height: buttonSize)

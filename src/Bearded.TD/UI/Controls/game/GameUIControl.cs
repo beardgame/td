@@ -50,6 +50,8 @@ sealed class GameUIControl : CompositeControl
                         .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
                         .MakeHexagon()
                         .WithShadow()
+                        .WithBlurredBackground()
+                        .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
                         .WithOnClick(gameUI.GameUIController.ShowTechnologyModal))
                     .WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
                 technologyButtonSize + 4 * Constants.UI.Button.Margin);

@@ -39,6 +39,8 @@ static partial class ButtonFactories
         private Shape shape;
         private Shadow? shadow;
         private Animations? animations;
+        private bool blurBackground;
+        private ButtonBackgroundColor backgroundColors = DefaultBackgroundColors;
 
         protected abstract T This { get; }
 
@@ -105,6 +107,18 @@ static partial class ButtonFactories
             return This;
         }
 
+        public T WithBlurredBackground()
+        {
+            blurBackground = true;
+            return This;
+        }
+
+        public T WithBackgroundColors(ButtonBackgroundColor colors)
+        {
+            backgroundColors = colors;
+            return This;
+        }
+
         public T MakeDisabled()
         {
             isEnabled = Binding.Constant(false);
@@ -155,9 +169,17 @@ static partial class ButtonFactories
 
             AddContent(button, contentColor);
 
-            const int edgeIndex = 0;
-            const int fillIndex = 1;
-            var components = new ShapeComponent[2];
+            var i = 0;
+            var edgeIndex = i++;
+            var blurIndex = blurBackground ? i++ : -1;
+            var fillIndex = i++;
+            var components = new ShapeComponent[i];
+
+            if (blurBackground)
+            {
+                button.Add(new BlurBackground());
+                components[blurIndex] = Fill.With(GradientDefinition.BlurredBackground());
+            }
 
             var shape = this.shape switch
             {
@@ -202,7 +224,7 @@ static partial class ButtonFactories
             }
 
             button.AnimateBackground(
-                DefaultBackgroundColors,
+                backgroundColors,
                 setFillColor,
                 () => components[fillIndex],
                 animations,
