@@ -1,3 +1,4 @@
+using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -39,7 +40,8 @@ static class JamWeapon
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Id<GameObject> weapon;
+        private Id<GameObject> building;
+        private int weaponId;
         private double duration;
 
         [UsedImplicitly]
@@ -47,16 +49,23 @@ static class JamWeapon
 
         public Serializer(GameObject weapon, TimeSpan duration)
         {
-            this.weapon = weapon.FindId();
+            var buildingObj = weapon.Parent!;
+            building = buildingObj.FindId();
+            weaponId = buildingObj.GetComponents<ITurret>().TakeWhile(turret => turret.Weapon != weapon).Count();
             this.duration = duration.NumericValue;
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-            => new Implementation(game.State.Find(weapon), duration.S());
+        {
+            var buildingObj = game.State.Find(building);
+            var weapon = buildingObj.GetComponents<ITurret>().ElementAt(weaponId).Weapon;
+            return new Implementation(weapon, duration.S());
+        }
 
         public void Serialize(INetBufferStream stream)
         {
-            stream.Serialize(ref weapon);
+            stream.Serialize(ref building);
+            stream.Serialize(ref weaponId);
             stream.Serialize(ref duration);
         }
     }
