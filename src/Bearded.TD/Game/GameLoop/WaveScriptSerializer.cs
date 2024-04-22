@@ -101,6 +101,7 @@ sealed class WaveScriptSerializer
 
         public void Serialize(INetBufferStream stream)
         {
+            stream.Serialize(ref spawnLocation);
             stream.Serialize(ref time);
             enemyForm.Serialize(stream);
         }
