@@ -37,7 +37,7 @@ readonly struct GradientDefinition
         => new(GradientTypeSingleColor.Constant, color, GradientFlags.Default);
 
     public static SingleColor BlurredBackground()
-        => new(GradientTypeSingleColor.BlurredBackground, default, GradientFlags.Default);
+        => new(GradientTypeSingleColor.BlurredBackground, default, GradientFlags.Dither);
 
     public static SingleColor SimpleGlow(Color color)
         => new(GradientTypeSingleColor.Constant, color, GradientFlags.GlowFade | GradientFlags.Dither);
