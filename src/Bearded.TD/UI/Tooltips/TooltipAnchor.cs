@@ -24,10 +24,10 @@ readonly record struct TooltipAnchor(Control Reference, TooltipAnchor.Direction 
             case Direction.Top:
                 return AnchorTemplate.Default
                     .Left(Reference.Frame.X.Start, width)
-                    .Bottom(Reference.Frame.Y.Start + Constants.UI.Tooltip.AnchorMargin, height);
+                    .Top(Reference.Frame.Y.Start - Constants.UI.Tooltip.AnchorMargin - height, height);
             case Direction.Left:
                 return AnchorTemplate.Default
-                    .Right(Reference.Frame.X.Start + Constants.UI.Tooltip.AnchorMargin, width)
+                    .Left(Reference.Frame.X.Start - Constants.UI.Tooltip.AnchorMargin - width, width)
                     .Top(Reference.Frame.Y.Start, height);
             case Direction.Bottom:
                 return AnchorTemplate.Default
