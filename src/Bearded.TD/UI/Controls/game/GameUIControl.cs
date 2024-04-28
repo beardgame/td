@@ -38,7 +38,7 @@ sealed class GameUIControl : CompositeControl
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
-        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar)
+        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, gameUI.Tooltips)
             .BindIsVisible(gameUI.GameUIController.ActionBarVisibility));
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
             .Anchor(a => a

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
@@ -11,11 +12,13 @@ namespace Bearded.TD.UI.Controls;
 sealed class ActionBarControl : CompositeControl
 {
     private readonly ActionBar model;
+    private readonly TooltipFactory tooltips;
     private readonly List<Button> buttons = [];
 
-    public ActionBarControl(ActionBar model)
+    public ActionBarControl(ActionBar model, TooltipFactory tooltips)
     {
         this.model = model;
+        this.tooltips = tooltips;
         IsClickThrough = true;
 
         model.Entries
@@ -84,6 +87,7 @@ sealed class ActionBarControl : CompositeControl
             .WithShadow()
             .WithBlurredBackground()
             .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
+            .WithTooltip(tooltips, binding.Transform(e => e?.Label ?? ""), TooltipAnchor.Direction.Top)
         ).Anchor(a => a
             .Left(margin: buttonLeftMargin(i), width: buttonSize, relativePercentage: 0.5)
             .Bottom(margin: buttonBottomMargin, height: buttonSize)

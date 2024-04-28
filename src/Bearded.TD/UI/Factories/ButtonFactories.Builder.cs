@@ -29,7 +29,7 @@ static partial class ButtonFactories
         }
 
         private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
-        private (TooltipFactory Factory, TooltipDefinition Definition)? tooltip;
+        private (TooltipFactory Factory, TooltipDefinition Definition, TooltipAnchor.Direction Direction)? tooltip;
         private ButtonClickEventHandler? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
@@ -56,18 +56,28 @@ static partial class ButtonFactories
             return This;
         }
 
-        public T WithTooltip(TooltipFactory factory, string text) =>
-            WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
+        public T WithTooltip(TooltipFactory factory, string text,
+            TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right) =>
+            WithTooltip(factory, TooltipFactories.SimpleTooltip(text), direction);
 
-        public T WithTooltip(TooltipFactory factory, ICollection<string> text) =>
-            WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
+        public T WithTooltip(
+            TooltipFactory factory,
+            ICollection<string> text,
+            TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right) =>
+            WithTooltip(factory, TooltipFactories.SimpleTooltip(text), direction);
 
-        public T WithTooltip(TooltipFactory factory, IReadonlyBinding<string> text) =>
-            WithTooltip(factory, TooltipFactories.SimpleTooltip(text));
+        public T WithTooltip(
+            TooltipFactory factory,
+            IReadonlyBinding<string> text,
+            TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right) =>
+            WithTooltip(factory, TooltipFactories.SimpleTooltip(text), direction);
 
-        public T WithTooltip(TooltipFactory factory, TooltipDefinition definition)
+        public T WithTooltip(
+            TooltipFactory factory,
+            TooltipDefinition definition,
+            TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right)
         {
-            tooltip = (factory, definition);
+            tooltip = (factory, definition, direction);
             return This;
         }
 
@@ -209,10 +219,9 @@ static partial class ButtonFactories
                 button.Add(ProgressBarFactories.BareProgressBar(progressBar.Value.Progress, progressColor));
             }
 
-            if (tooltip.HasValue)
+            if (tooltip is { } tip)
             {
-                button.Add(
-                    new TooltipTarget(tooltip.Value.Factory, tooltip.Value.Definition, TooltipAnchor.Direction.Right));
+                button.Add(new TooltipTarget(tip.Factory, tip.Definition, tip.Direction));
             }
 
             isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
