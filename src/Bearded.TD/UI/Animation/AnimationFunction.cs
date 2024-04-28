@@ -1,6 +1,7 @@
 ﻿using System;
 using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.Utilities;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Void = Bearded.Utilities.Void;
 
@@ -52,6 +53,40 @@ static class AnimationFunction
         return ZeroToOne<(Action<Color> set, Color from, Color to)>(
             duration,
             (state, t) => state.set(Color.Lerp(state.from, state.to, t))
+        );
+    }
+
+    public static AnimationFunction<Void> ZeroToOneRepeat(
+        TimeSpan duration, Action<float> update, Action? end = null, Func<bool>? whileTrue = null)
+    {
+        var repeat = whileTrue ?? (() => true);
+        TimeSpan? cycleStartTime = null;
+
+        return new AnimationFunction<Void>(
+            Update: (_, time) =>
+            {
+                cycleStartTime ??= time;
+
+                while (true)
+                {
+                    var sinceStart = time - cycleStartTime.Value;
+                    if (sinceStart < duration)
+                    {
+                        update((float)(sinceStart / duration));
+                        return AnimationState.Continue;
+                    }
+                    if (!repeat())
+                        return AnimationState.Ended;
+
+                    cycleStartTime += duration;
+                }
+            },
+            Start: _ => update(0),
+            End: _ =>
+            {
+                update(1);
+                end?.Invoke();
+            }
         );
     }
 

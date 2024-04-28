@@ -5,6 +5,7 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Reports;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Shared.Events;
@@ -22,7 +23,9 @@ namespace Bearded.TD.UI.Controls;
 sealed class GameUI :
     UpdateableNavigationNode<GameUI.Parameters>,
     IListener<GameOverTriggered>,
-    IListener<GameVictoryTriggered>
+    IListener<GameVictoryTriggered>,
+    IListener<TechnologyTokenAwarded>,
+    IListener<TechnologyTokenConsumed>
 {
     private readonly UIUpdater uiUpdater = new();
 
@@ -41,6 +44,8 @@ sealed class GameUI :
     public CoreStatsUI CoreStats { get; } = new();
     public TechnologyWindow TechnologyUI { get; } = new();
     public StatisticsSideBar StatisticsSideBar { get; } = new();
+    private Binding<bool> techTokenIsAvailable { get; } = new(false);
+    public IReadonlyBinding<bool> TechTokenIsAvailable => techTokenIsAvailable;
 
     public event VoidEventHandler? FocusReset;
     public event VoidEventHandler? GameVictoryTriggered;
@@ -80,6 +85,8 @@ sealed class GameUI :
         Game.SelectionManager.ObjectSelected += onObjectSelected;
         Game.SelectionManager.ObjectDeselected += onObjectDeselected;
         Game.Meta.Events.Subscribe<GameOverTriggered>(this);
+        Game.Meta.Events.Subscribe<TechnologyTokenAwarded>(this);
+        Game.Meta.Events.Subscribe<TechnologyTokenConsumed>(this);
 
         FocusReset?.Invoke();
     }
@@ -193,6 +200,16 @@ sealed class GameUI :
     public void HandleEvent(GameVictoryTriggered @event)
     {
         GameVictoryTriggered?.Invoke();
+    }
+
+    public void HandleEvent(TechnologyTokenAwarded _)
+    {
+        techTokenIsAvailable.SetFromSource(true);
+    }
+
+    public void HandleEvent(TechnologyTokenConsumed _)
+    {
+        techTokenIsAvailable.SetFromSource(false);
     }
 
     public void OnReturnToMainMenuButtonClicked()

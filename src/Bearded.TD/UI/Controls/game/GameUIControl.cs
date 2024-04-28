@@ -1,16 +1,24 @@
-﻿using Bearded.TD.Game.Commands;
+﻿using System;
+using System.Reflection.Metadata.Ecma335;
+using Bearded.Graphics;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Shapes;
+using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls;
 
 sealed class GameUIControl : CompositeControl
 {
-    private const double technologyButtonSize = 128;
+    private const double technologyButtonSize = 96;
 
     private readonly GameUI gameUI;
+    private readonly Animations animations;
 
     public GameUIControl(GameUI gameUI, RenderContext renderContext, Animations animations)
     {
@@ -22,6 +30,7 @@ sealed class GameUIControl : CompositeControl
             new GameRequestDispatcher(gameUI.Game));
 
         this.gameUI = gameUI;
+        this.animations = animations;
 
         CanBeFocused = true;
 
@@ -43,17 +52,20 @@ sealed class GameUIControl : CompositeControl
             .Bottom(Constants.UI.Button.SquareButtonSize + 4 * Constants.UI.Button.Margin)
         ));
 
+        var techButton = ButtonFactories.StandaloneIconButton(b => b
+            .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
+            .MakeHexagon()
+            .WithShadow()
+            .WithBlurredBackground()
+            .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
+            .WithOnClick(gameUI.GameUIController.ShowTechnologyModal));
+
+        techButton.Add(techButtonGlow());
+
         this.BuildLayout()
             .ForFullScreen()
             .DockFixedSizeToTop(
-                ButtonFactories.StandaloneIconButton(b => b
-                        .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
-                        .MakeHexagon()
-                        .WithShadow()
-                        .WithBlurredBackground()
-                        .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
-                        .WithOnClick(gameUI.GameUIController.ShowTechnologyModal))
-                    .WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
+                techButton.WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
                 technologyButtonSize + 4 * Constants.UI.Button.Margin);
         Add(new TechnologyWindowControl(gameUI.TechnologyUI)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
@@ -76,6 +88,37 @@ sealed class GameUIControl : CompositeControl
         gameUI.GameOverTriggered += onGameOver;
         gameUI.GameVictoryTriggered += onGameVictory;
         gameUI.GameLeft += gameWorldControl.CleanUp;
+    }
+
+    private Control techButtonGlow()
+    {
+        var components = new ShapeComponent[1];
+        var control = new ComplexHexagon
+        {
+            IsVisible = false,
+            Components = ShapeComponents.FromMutable(components),
+            CornerRadius = 24,
+        };
+
+        var animation = AnimationFunction.ZeroToOneRepeat(1.S(), t =>
+            {
+                var a = 0.5f - 0.5f * MathF.Cos(t * MathF.Tau);
+                var color = Constants.UI.Colors.TechButtonGlow * a;
+                var glow = GradientDefinition.SimpleGlow(color).AddFlags(GradientFlags.ExtendNegative);
+                components[0] = new ShapeComponent(-24, 24, glow);
+                control.IsVisible = true;
+            },
+            end: () => control.IsVisible = false,
+            whileTrue: () => gameUI.TechTokenIsAvailable.Value
+        );
+
+        gameUI.TechTokenIsAvailable.SourceUpdated += available =>
+        {
+            if (available && !control.IsVisible)
+                animations.Start(animation);
+        };
+
+        return control;
     }
 
     private void onGameOver()

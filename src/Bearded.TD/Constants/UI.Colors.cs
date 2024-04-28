@@ -42,6 +42,7 @@ static partial class Constants
         public static class Colors
         {
             public static readonly Color Experience = new(0xff03fcd7);
+            public static readonly Color TechButtonGlow = Game.GameUI.UrgentBackgroundColor;
 
             public static Color DamageEfficiency(double efficiency)
             {
