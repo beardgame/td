@@ -55,8 +55,7 @@ sealed class GameNotificationsUI
                 @event => @event.GameObject is IPositionable positionable ? ScrollTo(game, positionable) : null),
             textOnlyEventListener<TechnologyUnlocked>(
                 @event => $"Unlocked {@event.Technology.Name}"),
-            new ExplorationTokenListener(this),
-            new TechnologyTokenListener(this));
+            new ExplorationTokenListener(this));
 
     public void Initialize(GameInstance game, ITimeSource timeSource)
     {
@@ -250,15 +249,5 @@ sealed class GameNotificationsUI
             ScrollToContain(Parent.game, Parent.game.State.Enumerate<IZoneRevealer>());
 
         public ExplorationTokenListener(GameNotificationsUI parent) : base(parent) {}
-    }
-
-    private sealed class TechnologyTokenListener : TokenListener<TechnologyTokenAwarded, TechnologyTokenConsumed>
-    {
-        protected override string NotificationText => "Technology token available";
-
-        protected override NotificationClickAction? NotificationClickAction =>
-            Parent.gameUIController.ShowTechnologyModal;
-
-        public TechnologyTokenListener(GameNotificationsUI parent) : base(parent) {}
     }
 }
