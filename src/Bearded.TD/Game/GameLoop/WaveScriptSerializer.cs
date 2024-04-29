@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,7 +7,6 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
