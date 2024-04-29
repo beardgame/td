@@ -19,7 +19,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
     {
         context.Dispatcher.RunOnlyOnServer(commandDispatcher =>
         {
-            var (targetFaction, chaptersPerGame, wavesPerChapter, elements, enemies) = Parameters;
+            var (targetFaction, chaptersPerGame, wavesPerChapter, enableTimers, elements, enemies) = Parameters;
             var spawnLocationActivator = new SpawnLocationActivator(context.GameState, commandDispatcher, context.Seed);
             var waveGenerator = new WaveGenerator(
                 enemies.CastArray<ISpawnableEnemy>(),
@@ -28,7 +28,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
                 context.Seed,
                 context.Logger);
             var waveExecutor = new WaveExecutor(context.GameState, context.Ids, commandDispatcher);
-            var chapterGenerator = new ChapterGenerator(elements, context.Seed);
+            var chapterGenerator = new ChapterGenerator(elements, enableTimers, context.Seed);
             var chapterExecutor = new ChapterExecutor(spawnLocationActivator, waveGenerator, waveExecutor);
             var gameScheduler = new GameScheduler(
                 context.GameState,
@@ -45,6 +45,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
         ExternalId<Faction> TargetFaction,
         int ChaptersPerGame,
         int WavesPerChapter,
+        bool EnableTimers,
         ImmutableArray<Element> Elements,
         ImmutableArray<SpawnableEnemy> Enemies);
 

@@ -67,6 +67,7 @@
                 targetFaction: "players",
                 chaptersPerGame: 5,
                 wavesPerChapter: 5,
+                enableTimers: false,
                 elements: [ "kinetics", "fire", "lightning" ],
                 enemies: [
                     { blueprint: "default.dodgy-enemy", probability: 1, },
