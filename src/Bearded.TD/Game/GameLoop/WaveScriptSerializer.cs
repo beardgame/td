@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Content.Mods;
@@ -7,6 +8,7 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Networking.Serialization;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -18,7 +20,7 @@ sealed class WaveScriptSerializer
     private string displayName = "";
     private Id<Faction> targetFaction;
     private double spawnStart;
-    private Id<SpawnLocation>[] spawnLocations = Array.Empty<Id<SpawnLocation>>();
+    private Id<SpawnLocation>[] spawnLocations = [];
     private readonly EnemySpawnScriptSerializer enemyScript = new();
 
     [UsedImplicitly]
@@ -58,18 +60,32 @@ sealed class WaveScriptSerializer
 
     private sealed class EnemySpawnScriptSerializer
     {
-        private EnemySpawnEventSerializer?[] spawnEvents = Array.Empty<EnemySpawnEventSerializer>();
+        private EnemyFormSerializer?[] formSerializers = [];
+        private EnemySpawnEventSerializer?[] spawnEvents = [];
 
         [UsedImplicitly]
         public EnemySpawnScriptSerializer() {}
 
         public EnemySpawnScriptSerializer(EnemySpawnScript script)
         {
-            spawnEvents = script.SpawnEvents.Select(e => new EnemySpawnEventSerializer(e)).ToArray();
+            var forms = script.SpawnEvents.Select(e => e.EnemyForm).Distinct().ToList();
+
+            formSerializers = forms.Select(f => new EnemyFormSerializer(f)).ToArray();
+
+            spawnEvents = script.SpawnEvents
+                .Select(e => new EnemySpawnEventSerializer(e, forms.IndexOf(e.EnemyForm))).ToArray();
         }
 
         public void Serialize(INetBufferStream stream)
         {
+            stream.SerializeArrayCount(ref formSerializers);
+            for (var i = 0; i < formSerializers.Length; i++)
+            {
+                var serializer = formSerializers[i] ?? new EnemyFormSerializer();
+                serializer.Serialize(stream);
+                formSerializers[i] = serializer;
+            }
+
             stream.SerializeArrayCount(ref spawnEvents);
             for (var i = 0; i < spawnEvents.Length; i++)
             {
@@ -79,42 +95,46 @@ sealed class WaveScriptSerializer
             }
         }
 
-        public EnemySpawnScript ToSpawnScript(GameInstance game) =>
-            new(spawnEvents.Select(e => e!.ToSpawnEvent(game)).ToImmutableArray());
+        public EnemySpawnScript ToSpawnScript(GameInstance game)
+        {
+            var forms = formSerializers.Select(f => f!.ToEnemyForm(game)).ToList();
+
+            return new EnemySpawnScript(spawnEvents.Select(e => e!.ToSpawnEvent(game, forms)).ToImmutableArray());
+        }
     }
 
     private sealed class EnemySpawnEventSerializer
     {
         private Id<SpawnLocation> spawnLocation;
         private TimeSpan time;
-        private readonly EnemyFormSerializer enemyForm = new();
+        private int formId;
 
         [UsedImplicitly]
         public EnemySpawnEventSerializer() {}
 
-        public EnemySpawnEventSerializer(EnemySpawnScript.EnemySpawnEvent spawnEvent)
+        public EnemySpawnEventSerializer(EnemySpawnScript.EnemySpawnEvent spawnEvent, int formId)
         {
             spawnLocation = spawnEvent.SpawnLocation.Id;
             time = spawnEvent.TimeOffset;
-            enemyForm = new EnemyFormSerializer(spawnEvent.EnemyForm);
+            this.formId = formId;
         }
 
         public void Serialize(INetBufferStream stream)
         {
             stream.Serialize(ref spawnLocation);
             stream.Serialize(ref time);
-            enemyForm.Serialize(stream);
+            stream.Serialize(ref formId);
         }
 
-        public EnemySpawnScript.EnemySpawnEvent ToSpawnEvent(GameInstance game) =>
-            new(game.State.Find(spawnLocation), time, enemyForm.ToEnemyForm(game));
+        public EnemySpawnScript.EnemySpawnEvent ToSpawnEvent(GameInstance game, IList<EnemyForm> forms) =>
+            new(game.State.Find(spawnLocation), time, forms[formId]);
     }
 
     private sealed class EnemyFormSerializer
     {
         private ModAwareId blueprint;
-        private (string, ModAwareId)[] modules = Array.Empty<(string, ModAwareId)>();
-        private (DamageType, float)[] resistances = Array.Empty<(DamageType, float)>();
+        private (string, ModAwareId)[] modules = [];
+        private (DamageType, float)[] resistances = [];
 
         [UsedImplicitly]
         public EnemyFormSerializer() {}
