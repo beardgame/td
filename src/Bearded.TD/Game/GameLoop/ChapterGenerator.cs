@@ -11,11 +11,13 @@ namespace Bearded.TD.Game.GameLoop;
 sealed class ChapterGenerator
 {
     private readonly ImmutableArray<Element> elements;
+    private readonly bool enableTimers;
     private readonly int seed;
 
-    public ChapterGenerator(ImmutableArray<Element> elements, int seed)
+    public ChapterGenerator(ImmutableArray<Element> elements, bool enableTimers, int seed)
     {
-        this.elements = elements.IsEmpty ? ImmutableArray.Create(Element.Kinetics) : elements;
+        this.elements = elements.IsEmpty ? [Element.Kinetics] : elements;
+        this.enableTimers = enableTimers;
         this.seed = seed;
     }
 
@@ -32,9 +34,20 @@ sealed class ChapterGenerator
 
     private ImmutableArray<WaveDescription> generateWaveDescriptions(ImmutableArray<double> waveThreats)
     {
-        return waveThreats
-            .Select((threat, i) => new WaveDescription(threat, i == 0 ? FirstDownTimeDuration : DownTimeDuration))
-            .ToImmutableArray();
+        return [
+            ..waveThreats
+                .Select((threat, i) => new WaveDescription(threat, chooseDowntimeDuration(i)))
+        ];
+    }
+
+    private Bearded.Utilities.SpaceTime.TimeSpan? chooseDowntimeDuration(int waveNo)
+    {
+        if (!enableTimers)
+        {
+            return null;
+        }
+
+        return waveNo == 0 ? FirstDownTimeDuration : DownTimeDuration;
     }
 
     private ElementalTheme chooseChapterElements(ChapterScript? previousChapter, Random random)

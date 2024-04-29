@@ -8,12 +8,18 @@ namespace Bearded.TD.Tests.Game.GameLoop;
 
 public sealed class ChapterGeneratorTests
 {
+    public ChapterGeneratorTests(bool enableTimers1)
+    {
+        enableTimers = enableTimers;
+    }
+
     private static readonly ImmutableArray<Element> allElements = ElementExtensions.Enumerate().ToImmutableArray();
+    private bool enableTimers;
 
     [Property]
     public void ChapterGenerationIsDeterministicGivenSeed(int seed, bool isFirstChapter)
     {
-        var gen = new ChapterGenerator(allElements, seed);
+        var gen = new ChapterGenerator(allElements, enableTimers, seed);
         var requirements =
             new ChapterRequirements(isFirstChapter ? 1 : 2, ImmutableArray.Create<double>(100, 150, 200));
         var prevChapter = isFirstChapter
