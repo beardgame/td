@@ -25,6 +25,7 @@ sealed class BuildingStatus
 {
     private readonly GameRequestDispatcher requestDispatcher;
     private readonly GameObject building;
+    private readonly IObjectAttributes attributes;
     private readonly GlobalGameEvents events;
     private readonly FactionResources? resources;
     private readonly IStatusTracker statusTracker;
@@ -41,6 +42,7 @@ sealed class BuildingStatus
     private readonly Binding<ResourceAmount> currentResources = new();
 
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
+    public string BuildingName => attributes.Name;
     public ReadOnlyObservableCollection<ObservableStatus> Statuses { get; }
     public ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>> Upgrades { get; }
     public ReadOnlyObservableCollection<IPermanentUpgrade> AvailableUpgrades { get; }
@@ -58,6 +60,7 @@ sealed class BuildingStatus
     {
         this.requestDispatcher = requestDispatcher;
         this.building = building;
+        attributes = this.building.AttributesOrDefault();
         events = building.Game.Meta.Events;
         building.FindFaction().TryGetBehaviorIncludingAncestors(out resources);
         this.statusTracker = statusTracker;

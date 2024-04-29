@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Tooltips;
@@ -38,7 +37,7 @@ sealed partial class BuildingStatusControl : CompositeControl
 
         var column = innerContainer.BuildFixedColumn();
         column
-            .AddHeader(model.ShowExpanded.Transform(b => b ? "Expanded" : "Preview"))
+            .AddHeader(Binding.Constant(model.BuildingName))
             .Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight)
             .Add(new IconRow<ObservableStatus>(
                     model.Statuses,
