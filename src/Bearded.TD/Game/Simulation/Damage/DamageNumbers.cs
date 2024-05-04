@@ -15,11 +15,13 @@ namespace Bearded.TD.Game.Simulation.Damage;
 sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawComponents>
 {
     private static readonly TimeSpan lifeTime = 0.5.S();
+    private static readonly TimeSpan mergeTime = 0.1.S();
+    private static readonly Squared<Unit> mergeDistance = 0.5.U().Squared;
 
     private readonly record struct Number(
-        string Amount, Color Color, Instant StartTime, Position3 Origin, Velocity3 Velocity);
+        TypedDamage Damage, string Amount, Color Color, Instant StartTime, Position3 Origin, Velocity3 Velocity);
 
-    private readonly Queue<Number> numbers = new();
+    private readonly List<Number> numbers = [];
 
     protected override void OnAdded()
     {
@@ -37,33 +39,64 @@ sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawC
 
     public void HandleEvent(CausedDamage e)
     {
-        var amount = e.Result.TotalDiscreteDamage;
+        var damage = new TypedDamage(e.Result.TotalDiscreteDamage, e.Result.TotalExactDamage.Type);
 
-        if (amount <= HitPoints.Zero)
+        if (damage.Amount <= HitPoints.Zero)
         {
             return;
         }
 
+        var now = Owner.Game.Time;
         var p = e.Target.Position;
-        var damage = e.Result.TotalExactDamage;
-        var type = damage.Type;
 
-        var color = type.ToElement().GetColor();
+        for (var i = 0; i < numbers.Count; i++)
+        {
+            if (mergeIfPossible(numbers[i], now, damage, p) is { } merged)
+            {
+                numbers[i] = merged;
+                return;
+            }
+        }
+
+        var color = damage.Type.ToElement().GetColor();
 
         var number = new Number(
-            amount.NumericValue.ToString(CultureInfo.InvariantCulture),
-            color, Owner.Game.Time,
+            damage,
+            numberString(damage.Amount),
+            color, now,
             p, new Velocity3(0, 0.5f, 0));
 
-        numbers.Enqueue(number);
+        numbers.Add(number);
     }
+
+    private static Number? mergeIfPossible(
+        Number target, Instant now, TypedDamage damage, Position3 position)
+    {
+        var differentType = damage.Type != target.Damage.Type;
+        var tooMuchTimePassed = now > target.StartTime + mergeTime;
+        var tooFarAway = (position - target.Origin).LengthSquared > mergeDistance;
+        if (differentType || tooMuchTimePassed || tooFarAway)
+        {
+            return null;
+        }
+
+        var newDamage = new TypedDamage(damage.Amount + target.Damage.Amount, damage.Type);
+
+        return target with
+        {
+            Damage = newDamage,
+            Amount = numberString(newDamage.Amount),
+        };
+    }
+
+    private static string numberString(HitPoints amount)
+        => amount.NumericValue.ToString(CultureInfo.InvariantCulture);
 
     public void HandleEvent(DrawComponents e)
     {
         var now = Owner.Game.Time;
 
-        while (numbers.TryPeek(out var number) && now > number.StartTime + lifeTime)
-            numbers.Dequeue();
+        numbers.RemoveAll(number => now > number.StartTime + lifeTime);
 
         foreach (var number in numbers)
         {
