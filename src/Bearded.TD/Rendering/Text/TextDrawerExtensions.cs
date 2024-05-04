@@ -7,6 +7,8 @@ namespace Bearded.TD.Rendering.Text;
 
 static class TextDrawerExtensions
 {
+    private sealed record FontTemplate(Font Font, TextDrawerConfiguration Config) : IDrawableTemplate;
+
     public static TextDrawer<TVertex, TVertexParameters> MakeConcreteWith<TVertex, TVertexParameters>(
         this Font font, TextDrawerConfiguration config,
         IDrawableRenderers drawableRenderers,
@@ -16,9 +18,10 @@ static class TextDrawerExtensions
         Shader? shader = null)
         where TVertex : struct, IVertexData
     {
+        var template = new FontTemplate(font, config);
         shader ??= font.Material.Shader;
         return drawableRenderers.GetOrCreateDrawableFor(
-            font, shader, drawGroup, drawGroupOrderKey,
+            template, shader, drawGroup, drawGroupOrderKey,
             () => TextDrawer.Create(font, config, createVertex, shader)
         );
     }

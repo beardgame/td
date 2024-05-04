@@ -5,7 +5,7 @@ using Bearded.TD.Rendering;
 namespace Bearded.TD.Content.Models.Fonts;
 
 sealed class Font(ModAwareId id, FontDefinition definition, Material material)
-    : IBlueprint, IDrawableTemplate
+    : IBlueprint
 {
     public ModAwareId Id { get; } = id;
     public FontDefinition Definition { get; } = definition;

@@ -5,4 +5,5 @@ enum TextStyle
     Default,
     Header,
     Monospace,
+    InGame,
 }

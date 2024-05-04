@@ -1,5 +1,5 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.Graphics.Text;
 using Bearded.TD.Content.Models;
@@ -21,7 +21,6 @@ sealed class UIFonts
     private static readonly TextDrawerConfiguration uiMonospaceConfig
         = new(IgnoreKerning: true);
 
-    // TODO: use this for in-game numbers which currently use the above
     private static readonly TextDrawerConfiguration inGameConfig = new();
 
     private static readonly IReadOnlyDictionary<TextStyle, TextStyleDefinition> textStyles =
@@ -30,11 +29,12 @@ sealed class UIFonts
             { TextStyle.Default, new TextStyleDefinition(Fonts.DefaultText, Text.FontSize) },
             { TextStyle.Header, new TextStyleDefinition(Fonts.DefaultText, Text.HeaderFontSize) },
             { TextStyle.Monospace, new TextStyleDefinition(Fonts.MonospaceText, Text.FontSize, uiMonospaceConfig) },
+            { TextStyle.InGame, new TextStyleDefinition(Fonts.DefaultText, Text.FontSize, inGameConfig) },
         }.AsReadOnly();
 
     public static UIFonts Load(Blueprints blueprints, IDrawableRenderers renderers)
     {
-        var fontDrawers = textStyles.ToImmutableDictionary(
+        var fontDrawers = textStyles.ToFrozenDictionary(
             kvp => kvp.Key,
             kvp =>
             {
@@ -57,6 +57,7 @@ sealed class UIFonts
     }
 
     public TextDrawerWithDefaults<Color> Default => ForStyle(TextStyle.Default);
+    public TextDrawerWithDefaults<Color> DefaultInGame => ForStyle(TextStyle.InGame);
 
     public TextDrawerWithDefaults<Color> ForStyle(TextStyle style) => fontDrawers[style];
 

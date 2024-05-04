@@ -29,7 +29,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
 
         var uiFonts = UIFonts.Load(coreBlueprints, renderers);
 
-        context.Renderers.SetInGameConsoleFont(uiFonts.Default.With(unitDownDP: -Vector3.UnitY));
+        context.Renderers.SetInGameConsoleFont(uiFonts.DefaultInGame.With(unitDownDP: -Vector3.UnitY));
 
         var spriteShader = coreBlueprints.Shaders[DefaultShaders.Sprite];
         var shapeShader = coreBlueprints.Shaders[DefaultShaders.Shapes];
