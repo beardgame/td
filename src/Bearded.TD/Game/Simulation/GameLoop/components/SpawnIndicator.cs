@@ -94,7 +94,7 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
         }
 
         var drawer = @event.Drawer;
-        var font = @event.Core.InGameConsoleFont.With(fontHeight: fontSize, alignHorizontal: 0, alignVertical: 0.5f);
+        var font = @event.Core.InGameFont.With(fontHeight: fontSize, alignHorizontal: 0, alignVertical: 0.5f);
         var anchor =
             Owner.Position + iconOffsetFromObject - 0.5f * (futureSpawnsWithIcons.Length - 1) * offsetBetweenIcons;
 

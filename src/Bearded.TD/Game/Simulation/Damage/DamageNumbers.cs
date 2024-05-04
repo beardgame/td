@@ -70,7 +70,7 @@ sealed class DamageNumbers : Component, IListener<CausedDamage>, IListener<DrawC
             var elapsedTime = now - number.StartTime;
             var position = number.Origin + number.Velocity * elapsedTime;
 
-            e.Core.InGameConsoleFont.DrawLine(
+            e.Core.InGameFont.DrawLine(
                 number.Color,
                 position.NumericValue,
                 number.Amount,

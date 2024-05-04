@@ -23,7 +23,7 @@ sealed class CoreRenderers
     public IRenderer ConsoleBackgroundRenderer { get; }
 
     public IDrawableRenderers DrawableRenderers { get; }
-    public TextDrawerWithDefaults<Color> InGameConsoleFont { get; private set; } = null!;
+    public TextDrawerWithDefaults<Color> InGameFont { get; private set; } = null!;
 
     public IndexedTrianglesMeshBuilder<VoidVertex> IntermediateLayerBlur { get; } = new();
     public IRenderer IntermediateLayerBlurRenderer { get; private set; } = null!;
@@ -62,9 +62,9 @@ sealed class CoreRenderers
         shaders.GetShaderProgram("intermediateLayerBlur").UseOnRenderer(IntermediateLayerBlurRenderer);
     }
 
-    public void SetInGameConsoleFont(TextDrawerWithDefaults<Color> font)
+    public void SetInGameFont(TextDrawerWithDefaults<Color> font)
     {
-        InGameConsoleFont = font;
+        InGameFont = font;
     }
 
     public void FlushShapes()

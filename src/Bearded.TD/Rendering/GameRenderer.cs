@@ -66,9 +66,9 @@ sealed class GameRenderer
         );
 
         shapeDrawer = drawers.Primitives;
-        debugGeometryTextDrawer = drawers.InGameConsoleFont.With(
+        debugGeometryTextDrawer = drawers.InGameFont.With(
             fontHeight: .3f * HexagonSide, parameters: Color.Orange, alignHorizontal: .5f);
-        debugCoordinateTextDrawer = drawers.InGameConsoleFont.With(
+        debugCoordinateTextDrawer = drawers.InGameFont.With(
             fontHeight: .3f * HexagonSide, parameters: Color.Beige, alignHorizontal: .5f, alignVertical: .5f);
     }
 
@@ -427,7 +427,7 @@ sealed class GameRenderer
             var p = cursor.NumericValue.WithZ();
             foreach (var line in lines)
             {
-                drawers.InGameConsoleFont.DrawLine(
+                drawers.InGameFont.DrawLine(
                     Color.Red, p, line,
                     fontHeight: 0.5f
                 );
@@ -442,7 +442,7 @@ sealed class GameRenderer
                     : (Color.Lime, $"path found in {timer.Elapsed.TotalMilliseconds:0.00}ms")
                 : (Color.Red, $"pathfinder crashed after {timer.Elapsed.TotalMilliseconds:0.00}ms");
 
-        drawers.InGameConsoleFont.DrawLine(
+        drawers.InGameFont.DrawLine(
             argb, cursor.NumericValue.WithZ(), text,
             fontHeight: 0.5f,
             alignVertical: 1f
@@ -524,7 +524,7 @@ sealed class GameRenderer
             p.Y += debugLines.Count * 0.5f;
             foreach (var line in debugLines)
             {
-                drawers.InGameConsoleFont.DrawLine(
+                drawers.InGameFont.DrawLine(
                     Color.Aqua, p, line,
                     fontHeight: 0.5f, alignVertical: 1
                 );

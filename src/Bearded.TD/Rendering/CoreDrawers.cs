@@ -18,9 +18,9 @@ sealed class CoreDrawers
     public IShapeDrawer2<Color> Primitives { get; }
     public IDrawableSprite<Color> CustomPrimitives { get; }
     public IShapeDrawer2<Color> ConsoleBackground { get; }
-    public IShapeDrawer2<Void> IntermediateLayerBlur { get; } 
+    public IShapeDrawer2<Void> IntermediateLayerBlur { get; }
 
-    public TextDrawerWithDefaults<Color> InGameConsoleFont => renderers.InGameConsoleFont;
+    public TextDrawerWithDefaults<Color> InGameFont => renderers.InGameFont;
 
     public PointLightDrawer PointLight { get; }
     public SpotlightDrawer Spotlight { get; }

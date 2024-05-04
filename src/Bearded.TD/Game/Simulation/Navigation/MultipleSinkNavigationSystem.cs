@@ -190,7 +190,7 @@ sealed class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
     public void DrawDebug(CoreDrawers drawers, bool drawWeights)
     {
         var shapeDrawer = drawers.ConsoleBackground;
-        var textDrawer = drawers.InGameConsoleFont;
+        var textDrawer = drawers.InGameFont;
 
         const float lineWidth = HexagonSide * 0.05f;
         const float fontHeight = HexagonSide;
