@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Bearded.Audio;
 using Bearded.Graphics;
+using Bearded.Graphics.Windowing;
 using Bearded.TD.Commands.Serialization;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Mods;
@@ -52,6 +53,7 @@ sealed class TheGame : Window
 
     private readonly Logger logger;
     private readonly Intent intent;
+    private readonly IRenderDoc renderDoc;
     private readonly ManualActionQueue glActionQueue = new();
     private readonly ScreenshotSaver screenshots;
     private readonly ActivityTimer activityTimer;
@@ -71,10 +73,11 @@ sealed class TheGame : Window
 
     private readonly TimeSource gameTime = new ();
 
-    public TheGame(Logger logger, Intent intent)
+    public TheGame(Logger logger, Intent intent, IRenderDoc renderDoc)
     {
         this.logger = logger;
         this.intent = intent;
+        this.renderDoc = renderDoc;
         screenshots = new ScreenshotSaver(logger, glActionQueue);
 
         var activityStopwatch = Stopwatch.StartNew();
@@ -181,7 +184,12 @@ sealed class TheGame : Window
             .Build();
         shortcuts.AddLayer(globalShortcuts);
 
-        UserSettings.SettingsChanged += TriggerResize;
+        renderDoc.ShowOverlay(UserSettings.Instance.Debug.RenderDocOverlay);
+        UserSettings.SettingsChanged += () =>
+        {
+            renderDoc.ShowOverlay(UserSettings.Instance.Debug.RenderDocOverlay);
+            TriggerResize();
+        };
 
         if (UserSettings.Instance.Debug.PerformanceOverlay)
             instance!.navigationController.Push<PerformanceOverlay>();
@@ -238,6 +246,7 @@ sealed class TheGame : Window
 
     protected override void OnRender(UpdateEventArgs e)
     {
+        using var frameCapture = inputManager.IsKeyHit(Keys.F10) ? renderDoc.CaptureFrame() : null;
         using var discard = activityTimer.Start(Activity.RenderGame);
 
         gameTime.SetTo(new Instant(e.TimeInS));
