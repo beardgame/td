@@ -36,32 +36,40 @@ sealed partial class BuildingStatusControl : CompositeControl
         Add(innerContainer.Anchor(a => a.MarginAllSides(Padding).Top()));
 
         var column = innerContainer.BuildFixedColumn();
+        column.AddHeader(Binding.Constant(model.BuildingName));
+        if (model.ShowVeterancy)
+        {
+            column.Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight);
+        }
         column
-            .AddHeader(Binding.Constant(model.BuildingName))
-            .Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight)
             .Add(new IconRow<ObservableStatus>(
                     model.Statuses,
                     status => StatusIconFactories.StatusIcon(status, animations, requestDispatcher),
                     StatusRowBackground),
-                rowHeight)
-            .Add(new IconRow<IReadonlyBinding<UpgradeSlot>>(
-                    model.Upgrades,
-                    slot => StatusIconFactories.UpgradeSlot(
-                        slot,
-                        model.AvailableUpgrades.IsCountPositive()
-                            .And(Binding.Combine(slot, model.ActiveUpgradeSlot, (s, i) => s.Index == i)),
-                        model.ToggleUpgradeSelect,
+                rowHeight);
+        if (model.ShowUpgrades)
+        {
+            column
+                .Add(new IconRow<IReadonlyBinding<UpgradeSlot>>(
+                        model.Upgrades,
+                        slot => StatusIconFactories.UpgradeSlot(
+                            slot,
+                            model.AvailableUpgrades.IsCountPositive()
+                                .And(Binding.Combine(slot, model.ActiveUpgradeSlot, (s, i) => s.Index == i)),
+                            model.ToggleUpgradeSelect,
+                            animations,
+                            tooltipFactory)),
+                    rowHeight)
+                .Add(new UpgradeSelectRow(
+                        model.AvailableUpgrades,
+                        model.ActiveUpgradeSlot,
+                        model.CurrentResources,
+                        model.ApplyUpgrade,
                         animations,
-                        tooltipFactory)),
-                rowHeight)
-            .Add(new UpgradeSelectRow(
-                    model.AvailableUpgrades,
-                    model.ActiveUpgradeSlot,
-                    model.CurrentResources,
-                    model.ApplyUpgrade,
-                    animations,
-                    tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
-                rowHeight)
+                        tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
+                    rowHeight);
+        }
+        column
             .AddLeftButton(b => b
                 .WithLabel("Delete")
                 .WithOnClick(model.DeleteBuilding));

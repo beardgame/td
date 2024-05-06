@@ -29,8 +29,8 @@ sealed class BuildingStatus
     private readonly GlobalGameEvents events;
     private readonly FactionResources? resources;
     private readonly IStatusTracker statusTracker;
-    private readonly IUpgradeSlots upgradeSlots;
-    private readonly IVeterancy veterancy;
+    private readonly IUpgradeSlots? upgradeSlots;
+    private readonly IVeterancy? veterancy;
 
     private readonly Binding<bool> showExpanded = new(false);
     private readonly ObservableCollection<ObservableStatus> statuses;
@@ -40,6 +40,9 @@ sealed class BuildingStatus
     private readonly Binding<int?> activeUpgradeSlot = new();
     private readonly Binding<bool> showUpgradeSelect = new();
     private readonly Binding<ResourceAmount> currentResources = new();
+
+    public bool ShowVeterancy => veterancy is not null;
+    public bool ShowUpgrades => upgradeSlots is not null;
 
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
     public string BuildingName => attributes.Name;
@@ -55,8 +58,8 @@ sealed class BuildingStatus
         GameRequestDispatcher requestDispatcher,
         GameObject building,
         IStatusTracker statusTracker,
-        IUpgradeSlots upgradeSlots,
-        IVeterancy veterancy)
+        IUpgradeSlots? upgradeSlots,
+        IVeterancy? veterancy)
     {
         this.requestDispatcher = requestDispatcher;
         this.building = building;
@@ -70,22 +73,29 @@ sealed class BuildingStatus
         statuses = new ObservableCollection<ObservableStatus>(
             statusTracker.Statuses.Select(s => new ObservableStatus(s)));
         upgrades = new ObservableCollection<IReadonlyBinding<UpgradeSlot>>(
-            upgradeSlots.Slots.Select(UpgradeSlot.FromState).Select(Binding.Create));
+            upgradeSlots?.Slots.Select(UpgradeSlot.FromState).Select(Binding.Create) ??
+            Enumerable.Empty<IReadonlyBinding<UpgradeSlot>>());
         availableUpgrades = new ObservableCollection<IPermanentUpgrade>(
-            upgradeSlots.AvailableUpgrades.OrderBy(u => u.Name));
+            upgradeSlots?.AvailableUpgrades.OrderBy(u => u.Name) ?? Enumerable.Empty<IPermanentUpgrade>());
         Statuses = new ReadOnlyObservableCollection<ObservableStatus>(statuses);
         Upgrades = new ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>>(upgrades);
         AvailableUpgrades = new ReadOnlyObservableCollection<IPermanentUpgrade>(availableUpgrades);
 
-        veterancyStatus.SetFromSource(veterancy.GetVeterancyStatus());
+        veterancyStatus.SetFromSource(veterancy?.GetVeterancyStatus() ?? VeterancyStatus.Initial);
         activeUpgradeSlot.SetFromSource(findActiveUpgradeSlot());
-        currentResources.SetFromSource((resources != null ? resources.CurrentResources : (ResourceAmount?)null) ?? ResourceAmount.Zero);
+        currentResources.SetFromSource(resources?.CurrentResources ?? ResourceAmount.Zero);
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
-        upgradeSlots.SlotUnlocked += slotUnlocked;
-        upgradeSlots.SlotFilled += slotFilled;
-        veterancy.VeterancyStatusChanged += veterancyStatusChanged;
+        if (upgradeSlots is not null)
+        {
+            upgradeSlots.SlotUnlocked += slotUnlocked;
+            upgradeSlots.SlotFilled += slotFilled;
+        }
+        if (veterancy is not null)
+        {
+            veterancy.VeterancyStatusChanged += veterancyStatusChanged;
+        }
 
         events.Subscribe<UpgradeTechnologyUnlocked>(this);
         events.Subscribe<ResourcesProvided>(this);
@@ -94,8 +104,8 @@ sealed class BuildingStatus
 
     private int? findActiveUpgradeSlot()
     {
-        var foundSlot = Enumerable.Range(0, upgradeSlots.Slots.Count)
-            .FirstOrDefault(i => !upgradeSlots.Slots[i].Filled, -1);
+        var foundSlot = Enumerable.Range(0, upgradeSlots?.Slots.Count ?? 0)
+            .FirstOrDefault(i => !upgradeSlots!.Slots[i].Filled, -1);
         return foundSlot >= 0 ? foundSlot : null;
     }
 
@@ -108,9 +118,15 @@ sealed class BuildingStatus
 
         statusTracker.StatusAdded -= statusAdded;
         statusTracker.StatusRemoved -= statusRemoved;
-        upgradeSlots.SlotUnlocked -= slotUnlocked;
-        upgradeSlots.SlotFilled -= slotFilled;
-        veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
+        if (upgradeSlots is not null)
+        {
+            upgradeSlots.SlotUnlocked -= slotUnlocked;
+            upgradeSlots.SlotFilled -= slotFilled;
+        }
+        if (veterancy is not null)
+        {
+            veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
+        }
 
         events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
         events.Unsubscribe<ResourcesProvided>(this);
@@ -170,7 +186,7 @@ sealed class BuildingStatus
     {
         // Not the most efficient, but we can always implement smarter diffing later (and that may end up being slower).
         availableUpgrades.Clear();
-        upgradeSlots.AvailableUpgrades.OrderBy(u => u.Name).ForEach(availableUpgrades.Add);
+        upgradeSlots?.AvailableUpgrades.OrderBy(u => u.Name).ForEach(availableUpgrades.Add);
     }
 
     private void veterancyStatusChanged(VeterancyStatus status)

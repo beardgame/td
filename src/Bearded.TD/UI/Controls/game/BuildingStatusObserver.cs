@@ -82,12 +82,9 @@ sealed class BuildingStatusObserver
             DebugAssert.State.IsInvalid("Selectable is missing a status tracker, cannot show overlay.");
             return;
         }
-        if (!t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots) ||
-            !t.Object.TryGetSingleComponent<IVeterancy>(out var veterancy))
-        {
-            // TODO: still show the overlay, just not the veterancy and upgrade part of it
-            return;
-        }
+
+        t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots);
+        t.Object.TryGetSingleComponent<IVeterancy>(out var veterancy);
 
         var status = new BuildingStatus(overlay.RequestDispatcher, t.Object, statusTracker, upgradeSlots, veterancy);
         var statusControl =

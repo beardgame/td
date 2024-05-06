@@ -23,8 +23,9 @@ record struct VeterancyStatus(
     Experience Experience,
     Experience? NextLevelThreshold,
     double PercentageToNextLevel)
-
 {
+    public static readonly VeterancyStatus Initial = new(0, Experience.Zero, null, 0);
+
     public static VeterancyStatus From(
         int level, Experience experience, ImmutableArray<Experience> levelThresholds)
     {
