@@ -160,7 +160,8 @@ sealed class TheGame : Window
         rootControl.Add(uiOverlay);
 
         eventManager = new EventManager(rootControl, inputManager, shortcuts);
-        var (models, views) = UILibrary.CreateFactories(renderContext, new Animations(gameTime, uiAnimationUpdater));
+        var (models, views) =
+            UILibrary.CreateFactories(contentManager, renderContext, new Animations(gameTime, uiAnimationUpdater));
         navigationController =
             new NavigationController(navigationRoot, dependencyResolver, models, views);
         navigationController.Push<MainMenu, Intent>(intent);

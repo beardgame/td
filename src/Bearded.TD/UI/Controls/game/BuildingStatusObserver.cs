@@ -86,7 +86,14 @@ sealed class BuildingStatusObserver
         t.Object.TryGetSingleComponent<IUpgradeSlots>(out var upgradeSlots);
         t.Object.TryGetSingleComponent<IVeterancy>(out var veterancy);
 
-        var status = new BuildingStatus(overlay.RequestDispatcher, t.Object, statusTracker, upgradeSlots, veterancy);
+        var status = new BuildingStatus(
+            overlay.RequestDispatcher,
+            overlay.ContentManager,
+            overlay.SoundScape,
+            t.Object,
+            statusTracker,
+            upgradeSlots,
+            veterancy);
         var statusControl =
             new BuildingStatusControl(status, overlay.Animations, overlay.Tooltips, overlay.RequestDispatcher);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl);
