@@ -1,4 +1,6 @@
-﻿using Bearded.TD.Game.Commands;
+﻿using Bearded.TD.Audio;
+using Bearded.TD.Content;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -10,14 +12,17 @@ sealed class BuildingInteractionHandler : InteractionHandler
 {
     private readonly Faction faction;
     private readonly IGameObjectBlueprint blueprint;
+    private readonly ContentManager contentManager;
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
     private DynamicFootprintTileNotifier? ghostTileOccupation;
 
-    public BuildingInteractionHandler(GameInstance game, Faction faction, IGameObjectBlueprint blueprint) : base(game)
+    public BuildingInteractionHandler(
+        GameInstance game, Faction faction, IGameObjectBlueprint blueprint, ContentManager contentManager) : base(game)
     {
         this.faction = faction;
         this.blueprint = blueprint;
+        this.contentManager = contentManager;
         TileSelection = TileSelection.FromFootprint(blueprint.GetFootprint());
     }
 
@@ -41,6 +46,9 @@ sealed class BuildingInteractionHandler : InteractionHandler
             else
             {
                 Game.Request(BuildBuilding.Request, faction, blueprint, footprint);
+
+                var sound = contentManager.ResolveSoundEffect(Constants.Content.CoreUI.Sounds.UpgradeGeneric);
+                Game.Meta.SoundScape.PlayGlobalSound(sound);
             }
         }
         else if (cursor.Cancel.Hit)

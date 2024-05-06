@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Content;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Input;
@@ -30,6 +31,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
     private GameInstance game = null!;
     private ShortcutCapturer shortcutCapturer = null!;
+    private ContentManager contentManager = null!;
     private FactionResources? resources;
 
     public ActionBar()
@@ -48,10 +50,11 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         return builder.Build();
     }
 
-    public void Initialize(GameInstance game, ShortcutCapturer shortcutCapturer)
+    public void Initialize(GameInstance game, ShortcutCapturer shortcutCapturer, ContentManager contentManager)
     {
         this.game = game;
         this.shortcutCapturer = shortcutCapturer;
+        this.contentManager = contentManager;
         shortcutCapturer.AddLayer(shortcuts);
 
         var faction = game.Me.Faction;
@@ -109,7 +112,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
     private ActionBarEntry makeEntryFromBlueprint(IGameObjectBlueprint blueprint)
     {
-        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint);
+        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint, contentManager);
         var attributes = blueprint.AttributesOrDefault();
         return new ActionBarEntry(
             attributes.Name,
