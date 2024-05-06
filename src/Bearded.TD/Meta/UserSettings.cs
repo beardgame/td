@@ -85,8 +85,8 @@ sealed partial class UserSettings
     public sealed class DebugSettings
     {
         public bool GameDebugScreen = false;
-
         public bool PerformanceOverlay = false;
+        public bool RenderDocOverlay = false;
 
         // most useful game debug settings
         [SettingOptions(0.1, 0.5, 1, 2, 10)]

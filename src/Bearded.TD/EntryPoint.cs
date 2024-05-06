@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Bearded.Graphics.Windowing;
 using Bearded.TD.Content.Components;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.Utilities.IO;
@@ -50,6 +51,8 @@ static class EntryPoint
         logger.Debug?.Log($"Runtime: {RuntimeInformation.FrameworkDescription}");
         logger.Debug?.Log("");
 
+        var renderDoc = loadRenderDocInDebug(logger);
+
         logger.Debug?.Log("Creating behavior factories");
         ComponentFactories.Initialize();
         FactionBehaviorFactories.Initialize();
@@ -60,7 +63,7 @@ static class EntryPoint
         logger.Debug?.Log("");
 
         logger.Info?.Log("Creating game");
-        var game = new TheGame(logger, options.Intent);
+        var game = new TheGame(logger, options.Intent, renderDoc);
 
         logger.Info?.Log("Running game");
         game.Run();
@@ -75,5 +78,19 @@ static class EntryPoint
             throw;
         }
 #endif
+    }
+
+    private static IRenderDoc loadRenderDocInDebug(Logger logger)
+    {
+#if !DEBUG
+        return RenderDoc.Dummy;
+#endif
+        logger.Debug?.Log("Loading RenderDoc");
+        var renderDoc = RenderDoc.LoadOrDummy();
+        renderDoc.ClearCaptureKeys();
+        logger.Debug?.Log($"RenderDoc version: {renderDoc.Version ?? "N/A"}");
+        logger.Debug?.Log("");
+
+        return renderDoc;
     }
 }
