@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Reflection.Metadata.Ecma335;
-using Bearded.Graphics;
+using Bearded.TD.Content;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
@@ -8,8 +7,6 @@ using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -20,14 +17,17 @@ sealed class GameUIControl : CompositeControl
     private readonly GameUI gameUI;
     private readonly Animations animations;
 
-    public GameUIControl(GameUI gameUI, RenderContext renderContext, Animations animations)
+    public GameUIControl(
+        GameUI gameUI, ContentManager contentManager, RenderContext renderContext, Animations animations)
     {
         var gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource);
         var gameWorldOverlay = new GameWorldOverlay(
             gameUI.Game.Camera,
             animations,
             gameUI.Tooltips,
-            new GameRequestDispatcher(gameUI.Game));
+            new GameRequestDispatcher(gameUI.Game),
+            contentManager,
+            gameUI.Game.Meta.SoundScape);
 
         this.gameUI = gameUI;
         this.animations = animations;

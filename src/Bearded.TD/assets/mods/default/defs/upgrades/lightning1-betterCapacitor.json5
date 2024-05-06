@@ -2,6 +2,7 @@
     id: "lightning1-betterCapacitor",
     name: "Supercharged capacitor",
     cost: 50,
+    element: "lightning",
     effects: [
         {
             type: "modification",

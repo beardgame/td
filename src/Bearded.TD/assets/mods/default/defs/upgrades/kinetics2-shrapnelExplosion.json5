@@ -2,6 +2,7 @@
     id: "kinetics2-shrapnelExplosion",
     name: "Shrapnel Projectiles",
     cost: 50,
+    element: "kinetics",
     effects: [
         {
             type: "component",

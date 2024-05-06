@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.Utilities;
@@ -17,6 +18,7 @@ sealed class UpgradeBlueprint
     public string? Name { get; set; }
     public ResourceAmount Cost { get; set; }
     public List<IUpgradeEffect>? Effects { get; set; }
+    public Element Element { get; set; }
 
     public Content.Models.PermanentUpgrade ToGameModel(ModMetadata modMetadata, Void resolvers)
     {
@@ -27,6 +29,7 @@ sealed class UpgradeBlueprint
             ModAwareId.FromNameInMod(Id, modMetadata),
             Name,
             Cost,
-            Effects?.ToImmutableArray() ?? ImmutableArray<IUpgradeEffect>.Empty);
+            Effects?.ToImmutableArray() ?? ImmutableArray<IUpgradeEffect>.Empty,
+            Element);
     }
 }

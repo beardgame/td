@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
 
@@ -9,4 +10,5 @@ sealed record PermanentUpgrade(
     ModAwareId Id,
     string Name,
     ResourceAmount Cost,
-    ImmutableArray<IUpgradeEffect> Effects) : IPermanentUpgrade;
+    ImmutableArray<IUpgradeEffect> Effects,
+    Element Element) : IPermanentUpgrade;

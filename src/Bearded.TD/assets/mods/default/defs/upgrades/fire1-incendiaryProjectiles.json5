@@ -2,6 +2,7 @@
     id: "fire1-incendiaryProjectiles",
     name: "Incendiary projectiles",
     cost: 50,
+    element: "fire",
     effects: [
         {
             type: "component",

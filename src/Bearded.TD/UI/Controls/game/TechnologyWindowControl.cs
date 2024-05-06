@@ -204,7 +204,7 @@ sealed class TechnologyWindowControl : CompositeControl
                         model.TooltipFactory, tech.Blueprint.Unlocks.Select(u => u.Description).ToImmutableArray())
                     .WithOnClick(args =>
                     {
-                        if (Constants.Input.DebugForceModifier.IsSupersetOf(args.ModifierKeys))
+                        if (args.ModifierKeys.IsSupersetOf(Constants.Input.DebugForceModifier))
                         {
                             model.ForceTechnologyUnlock(tech.Blueprint);
                         }

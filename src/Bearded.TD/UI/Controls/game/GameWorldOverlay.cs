@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Bearded.TD.Audio;
+using Bearded.TD.Content;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Meta;
@@ -18,6 +20,8 @@ interface IGameWorldOverlay
     public Animations Animations { get; }
     public TooltipFactory Tooltips { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
+    public ContentManager ContentManager { get; }
+    public ISoundScape SoundScape { get; }
 
     public void AddControl(Control control, Vector2d size, OverlayAnchor anchor);
 
@@ -42,17 +46,23 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     public Animations Animations { get; }
     public TooltipFactory Tooltips { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
+    public ContentManager ContentManager { get; }
+    public ISoundScape SoundScape { get; }
 
     public GameWorldOverlay(
         GameCamera camera,
         Animations animations,
         TooltipFactory tooltips,
-        GameRequestDispatcher requestDispatcher) : base("Game World Overlay")
+        GameRequestDispatcher requestDispatcher,
+        ContentManager contentManager,
+        ISoundScape soundScape) : base("Game World Overlay")
     {
         this.camera = camera;
         Animations = animations;
         Tooltips = tooltips;
         RequestDispatcher = requestDispatcher;
+        ContentManager = contentManager;
+        SoundScape = soundScape;
         IsClickThrough = true;
     }
 

@@ -53,6 +53,14 @@ static partial class Constants
                 public static readonly ModAwareSpriteId Turret = foreground("turret");
                 public static readonly ModAwareId CaveBackground = new (ModId, "menu-background");
             }
+
+            public static class Sounds
+            {
+                public static readonly ModAwareId UpgradeGeneric = new(ModId, "clank");
+                public static readonly ModAwareId UpgradeKinetics = new(ModId, "upgrade-kinetics");
+                public static readonly ModAwareId UpgradeFire = new(ModId, "upgrade-fire");
+                public static readonly ModAwareId UpgradeLightning = new(ModId, "upgrade-lightning");
+            }
         }
     }
 }

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Bearded.TD.Audio;
+using Bearded.TD.Content;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Technologies;
@@ -24,6 +27,8 @@ sealed class BuildingStatus
         IListener<ResourcesConsumed>
 {
     private readonly GameRequestDispatcher requestDispatcher;
+    private readonly ContentManager contentManager;
+    private readonly ISoundScape soundScape;
     private readonly GameObject building;
     private readonly IObjectAttributes attributes;
     private readonly GlobalGameEvents events;
@@ -57,6 +62,8 @@ sealed class BuildingStatus
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
+        ContentManager contentManager,
+        ISoundScape soundScape,
         GameObject building,
         IStatusTracker statusTracker,
         IUpgradeSlots? upgradeSlots,
@@ -70,6 +77,8 @@ sealed class BuildingStatus
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
+        this.soundScape = soundScape;
+        this.contentManager = contentManager;
 
         ShowDeletion = building.CanBeDeleted();
 
@@ -233,6 +242,9 @@ sealed class BuildingStatus
     public void ApplyUpgrade(IPermanentUpgrade upgrade)
     {
         requestDispatcher.Request(UpgradeBuilding.Request, building, upgrade);
+
+        var sound = upgrade.Element.GetUpgradeSound(contentManager);
+        soundScape.PlayGlobalSound(sound);
     }
 
     public void DeleteBuilding()
