@@ -52,6 +52,20 @@ static partial class Constants
                 return Color.FromHSVA(hue, saturation, value);
             }
 
+            private static readonly IReadOnlyList<Color> grays =
+            [
+                new Color(0xFFf5f5f5),
+                new Color(0xFFe0e0e0),
+                new Color(0xFFc6c6c6),
+                new Color(0xFFababab),
+                new Color(0xFF909090),
+                new Color(0xFF757575),
+                new Color(0xFF5a5a5a),
+                new Color(0xFF3f3f3f),
+                new Color(0xFF242424),
+                new Color(0xFF090909),
+            ];
+
             private static readonly IReadOnlyList<Color> purples =
             [
                 new Color(0xFFf5e8e3),
@@ -67,6 +81,24 @@ static partial class Constants
                 new Color(0xFF3c233b),
                 new Color(0xFF27172a),
                 new Color(0xFF140c17),
+            ];
+            
+            private static readonly IReadOnlyList<Color> deepPurpleToGray =
+            [
+                new Color(0xFFf5e8e3),
+                new Color(0xFFe3ceca),
+                new Color(0xFFd0b3b3),
+                new Color(0xFFbe9ca0),
+                new Color(0xFFab8790),
+                new Color(0xFF987481),
+                new Color(0xFF866173),
+                new Color(0xFF745066),
+                new Color(0xFF614059),
+                new Color(0xFF4e314b),
+                new Color(0xFF3c233b),
+                new Color(0xFF27172a),
+                new Color(0xFF140c17),
+                new Color(0xFF090909),
             ];
 
             private static readonly IReadOnlyList<Color> yellows =
@@ -104,7 +136,7 @@ static partial class Constants
                       """);
 
             public static Color Get(BackgroundColor level)
-                => copper[^((int)level + 1)];
+                => deepPurpleToGray[^((int)level + 1)];
 
             public static Color Get(ForeGroundColor level)
                 => yellows[(int)level];
