@@ -2,6 +2,7 @@
   id: "fire2-napalmExplosion",
   name: "Napalm explosion",
   cost: 50,
+  element: "fire",
   effects: [
     {
       type: "component",

@@ -2,6 +2,7 @@
     id: "lightning1-chargedProjectiles",
     name: "Charged projectiles",
     cost: 50,
+    element: "lightning",
     effects: [
         {
             type: "component",

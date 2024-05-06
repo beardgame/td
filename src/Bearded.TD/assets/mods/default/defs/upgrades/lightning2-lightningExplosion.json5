@@ -2,6 +2,7 @@
   id: "lightning2-lightningExplosion",
   name: "Lightning explosion",
   cost: 50,
+  element: "lightning",
   effects: [
     {
       type: "replacement",

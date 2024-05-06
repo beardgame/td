@@ -2,6 +2,7 @@
   id: "lightning2-arcBranching",
   name: "Arc branching",
   cost: 50,
+  element: "lightning",
   effects: [
     {
       type: "modification",
