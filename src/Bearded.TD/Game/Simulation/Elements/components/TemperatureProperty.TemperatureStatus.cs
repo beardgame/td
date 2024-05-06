@@ -12,24 +12,15 @@ sealed partial class TemperatureProperty
         private static readonly ModAwareSpriteId overheatedStatusIcon = "hot-surface".ToStatusIconSpriteId();
 
         private readonly IStatusTracker statusTracker;
-        private readonly IStatusDrawer coldDrawer;
-        private readonly IStatusDrawer hotDrawer;
-        private readonly IStatusDrawer overheatedDrawer;
         private IStatusReceipt? coldStatus;
         private IStatusReceipt? hotStatus;
         private IStatusReceipt? overheatedStatus;
         private float progress;
 
-        public TemperatureStatus(GameState game, IStatusTracker statusTracker)
+        public TemperatureStatus(IStatusTracker statusTracker)
         {
             this.statusTracker = statusTracker;
-            coldDrawer = new ProgressStatusDrawer(iconStatusDrawer(game, "thermometer-cold"), () => progress);
-            hotDrawer = new ProgressStatusDrawer(iconStatusDrawer(game, "thermometer-hot"), () => progress);
-            overheatedDrawer = iconStatusDrawer(game, "hot-surface");
         }
-
-        private static IStatusDrawer iconStatusDrawer(GameState game, string iconName) =>
-            IconStatusDrawer.FromSpriteBlueprint(game, game.Meta.Blueprints.LoadStatusIconSprite(iconName));
 
         public void UpdateCurrentTemperature(Temperature newTemperature)
         {
@@ -41,7 +32,7 @@ sealed partial class TemperatureProperty
                 if (coldStatus is null)
                 {
                     coldStatus = statusTracker.AddStatus(
-                        new StatusSpec(StatusType.Neutral, null, coldDrawer),
+                        new StatusSpec(StatusType.Neutral, null),
                         StatusAppearance.IconAndProgress(coldStatusIcon, progress),
                         null);
                 }
@@ -64,7 +55,7 @@ sealed partial class TemperatureProperty
                 if (hotStatus is null)
                 {
                     hotStatus = statusTracker.AddStatus(
-                        new StatusSpec(StatusType.Neutral, null, hotDrawer),
+                        new StatusSpec(StatusType.Neutral, null),
                         StatusAppearance.IconAndProgress(hotStatusIcon, progress),
                         null);
                 }
@@ -83,7 +74,7 @@ sealed partial class TemperatureProperty
         public void BeginOverheat()
         {
             overheatedStatus = statusTracker.AddStatus(
-                new StatusSpec(StatusType.Negative, null, overheatedDrawer),
+                new StatusSpec(StatusType.Negative, null),
                 StatusAppearance.IconOnly(overheatedStatusIcon),
                 null);
         }

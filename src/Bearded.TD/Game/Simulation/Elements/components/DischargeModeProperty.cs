@@ -28,7 +28,7 @@ sealed class DischargeModeProperty : Component, IProperty<CapacitorDischargeMode
     {
         base.Activate();
         status = statusTracker?.AddStatus(
-            new StatusSpec(StatusType.Neutral, new InteractionSpec(this), new EmptyStatusDrawer()),
+            new StatusSpec(StatusType.Neutral, new InteractionSpec(this)),
             StatusAppearance.IconOnly(iconForMode(Value)),
             null);
     }

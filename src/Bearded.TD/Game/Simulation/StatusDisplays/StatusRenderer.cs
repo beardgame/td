@@ -39,6 +39,5 @@ sealed partial class StatusRenderer : Component, IListener<DrawComponents>
         }
 
         drawHitPointsBars(@event.Core.ConsoleBackground);
-        drawStatuses(@event.Core, @event.Drawer);
     }
 }

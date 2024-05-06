@@ -11,7 +11,6 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     private readonly GameObject target;
     private readonly IStatusTracker? statusDisplay;
     private readonly List<EffectWithExpiry> activeEffects = new();
-    private IStatusDrawer? cachedStatusDrawer;
     private ActiveEffect? activeEffect;
 
     protected IEnumerable<TEffect> ActiveEffects => activeEffects.Select(e => e.Effect);
@@ -59,14 +58,8 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     private IStatusReceipt? reportStatus()
     {
         var elementalStatus = MakeStatus(target.Game.Meta.Blueprints);
-        cachedStatusDrawer ??=
-            IconStatusDrawer.FromSpriteBlueprint(
-                target.Game,
-                target.Game.Meta.Blueprints.Sprites[elementalStatus.Sprite.SpriteSet]
-                    .GetSprite(elementalStatus.Sprite.Id));
         var statusReceipt = statusDisplay?.AddStatus(
-            new StatusSpec(
-                StatusType.Negative, null, cachedStatusDrawer),
+            new StatusSpec(StatusType.Negative, null),
             StatusAppearance.IconOnly(elementalStatus.Sprite),
             null);
         return statusReceipt;

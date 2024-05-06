@@ -50,10 +50,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
         if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
         {
             statusReceipt = statusTracker.AddStatus(
-                new StatusSpec(
-                    StatusType.Neutral,
-                    new InteractionSpec(this),
-                    new EmptyStatusDrawer()),
+                new StatusSpec(StatusType.Neutral, new InteractionSpec(this)),
                 StatusAppearance.IconOnly(Value.Icon),
                 null);
         }
