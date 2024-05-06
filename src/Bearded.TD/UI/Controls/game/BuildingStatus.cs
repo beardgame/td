@@ -43,6 +43,7 @@ sealed class BuildingStatus
 
     public bool ShowVeterancy => veterancy is not null;
     public bool ShowUpgrades => upgradeSlots is not null;
+    public bool ShowDeletion { get; }
 
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
     public string BuildingName => attributes.Name;
@@ -69,6 +70,8 @@ sealed class BuildingStatus
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
+
+        ShowDeletion = building.CanBeDeleted();
 
         statuses = new ObservableCollection<ObservableStatus>(
             statusTracker.Statuses.Select(s => new ObservableStatus(s)));

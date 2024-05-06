@@ -37,16 +37,19 @@ sealed partial class BuildingStatusControl : CompositeControl
 
         var column = innerContainer.BuildFixedColumn();
         column.AddHeader(Binding.Constant(model.BuildingName));
+
         if (model.ShowVeterancy)
         {
             column.Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight);
         }
+
         column
             .Add(new IconRow<ObservableStatus>(
                     model.Statuses,
                     status => StatusIconFactories.StatusIcon(status, animations, requestDispatcher),
                     StatusRowBackground),
                 rowHeight);
+
         if (model.ShowUpgrades)
         {
             column
@@ -69,10 +72,14 @@ sealed partial class BuildingStatusControl : CompositeControl
                         tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
                     rowHeight);
         }
-        column
-            .AddLeftButton(b => b
-                .WithLabel("Delete")
-                .WithOnClick(model.DeleteBuilding));
+
+        if (model.ShowDeletion)
+        {
+            column
+                .AddLeftButton(b => b
+                    .WithLabel("Delete")
+                    .WithOnClick(model.DeleteBuilding));
+        }
 
         Size = (300, column.Height + Padding);
     }

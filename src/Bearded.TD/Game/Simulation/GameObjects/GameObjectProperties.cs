@@ -13,4 +13,9 @@ static class GameObjectProperties
         }
         return idProvider.Id;
     }
+
+    public static bool CanBeDeleted(this GameObject owner)
+    {
+        return !owner.Deleted && !owner.Tags().Contains("forbidDeletion");
+    }
 }

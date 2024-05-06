@@ -24,6 +24,7 @@ static class DeleteBuilding
 
         public override bool CheckPreconditions(Player actor) =>
             !building.Deleted
+            && building.CanBeDeleted()
             && building.CanBeDeletedBy(actor.Faction);
 
         public override void Execute()
