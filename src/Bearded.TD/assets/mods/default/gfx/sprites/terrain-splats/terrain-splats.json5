@@ -7,5 +7,5 @@
         }
     ],
     padding: 2,
-    premultiply: false,
+    premultiply: true,
 }

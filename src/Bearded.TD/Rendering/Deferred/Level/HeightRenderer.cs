@@ -193,7 +193,7 @@ sealed class HeightRenderer
                     (Floor, Floor) when passableDirections.Includes(direction) => smoothTransitions,
                     (Floor, Floor) => harshTransitions,
                     (Wall, Wall) => smoothTransitions,
-                    (Crevice, Crevice) => smoothTransitions,
+                    (Crevice, Crevice) => creviceFloorTransitions,
                     (Wall, _) => floorWallTransitions,
                     (_, Wall) => floorWallTransitions,
                     (Crevice, Floor) => creviceFloorTransitions,
@@ -201,16 +201,14 @@ sealed class HeightRenderer
                     _ => throw new InvalidOperationException("Encountered unknown tile type.")
                 };
 
-                var splat = transitions.RandomElement(random);
-
-                var splatCenter = (p0.NumericValue + offset).WithZ(0);
-
                 var invertTransition = neighbourHeight < height;
                 var (uX, heights) = invertTransition
                     ? (-unitX, (neighbourHeight, height))
                     : (unitX, (height, neighbourHeight));
                 var uY = unitY * random.NextSign();
 
+                var splatCenter = (p0.NumericValue + offset).WithZ(0);
+                var splat = transitions.RandomElement(random);
                 splat.Draw(splatCenter, uX, uY, heights);
             }
         }
