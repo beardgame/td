@@ -1,6 +1,5 @@
 ﻿using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
-using Bearded.TD.Rendering;
 
 namespace Bearded.TD.Content.Models.Fonts;
 

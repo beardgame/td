@@ -2,7 +2,6 @@
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Elements;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -74,10 +75,11 @@ sealed class DefaultInteractionHandler : InteractionHandler
 
     private bool tryDoubleClickInteraction(ISelectable selectable)
     {
-        var manualControl = selectable.Subject.Reports.OfType<IManualControlReport>().FirstOrDefault();
-
-        if (manualControl == null || !manualControl.CanBeControlledBy(Game.Me.Faction))
+        if (!selectable.Object.TryGetSingleComponent<IManualControl>(out var manualControl) ||
+            !manualControl.CanBeControlledBy(Game.Me.Faction))
+        {
             return false;
+        }
 
         Game.SelectionManager.ResetSelection();
         Game.PlayerInput.SetInteractionHandler(new ManualControlInteractionHandler(Game, manualControl));

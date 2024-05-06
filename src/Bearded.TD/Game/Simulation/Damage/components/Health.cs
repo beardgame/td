@@ -1,6 +1,5 @@
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using static Bearded.TD.Utilities.DebugAssert;
@@ -49,7 +48,6 @@ sealed class Health :
     {
         Events.Subscribe<PreviewHealDamage>(this);
         Events.Subscribe<HealDamage>(this);
-        ReportAggregator.Register(Events, new HealthReport(this));
     }
 
     public override void OnRemoved()
@@ -81,21 +79,6 @@ sealed class Health :
         if (CurrentHealth <= HitPoints.Zero)
         {
             Events.Send(new EnactDeath());
-        }
-    }
-
-    private sealed class HealthReport : IHealthReport
-    {
-        public ReportType Type => ReportType.EntityProperties;
-
-        public HitPoints CurrentHealth => source.CurrentHealth;
-        public HitPoints MaxHealth => source.MaxHealth;
-
-        private readonly Health source;
-
-        public HealthReport(Health source)
-        {
-            this.source = source;
         }
     }
 }

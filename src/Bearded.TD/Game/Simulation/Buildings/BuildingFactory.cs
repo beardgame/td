@@ -1,13 +1,11 @@
 using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Debug;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.StatusDisplays;
@@ -45,7 +43,6 @@ static class BuildingFactory
         building.AddComponent(new IdProvider(id));
         building.AddComponent(new IncompleteBuildingComponent());
         building.AddComponent(new Killable());
-        building.AddComponent(new ReportSubject());
         building.AddComponent(new Selectable());
         building.AddComponent(new StaticFootprintTileNotifier(footprint));
         building.AddComponent(new DamageStatisticForwarder());
@@ -54,9 +51,6 @@ static class BuildingFactory
         building.AddComponent(new TemperatureProperty());
         building.AddComponent(new TileBasedVisibility());
         building.AddComponent(new EventReceiver<TakeHit>());
-#if DEBUG
-        building.AddComponent(new DebugReporter());
-#endif
         return building;
     }
 

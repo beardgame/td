@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Statistics;
-using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Tooltips;

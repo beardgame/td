@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
-using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;

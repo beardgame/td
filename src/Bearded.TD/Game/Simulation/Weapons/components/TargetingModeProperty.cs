@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Shared.TechEffects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -27,10 +25,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
 
     public TargetingModeProperty(IParameters parameters) : base(parameters) { }
 
-    protected override void OnAdded()
-    {
-        ReportAggregator.Register(Events, new TargetingReport(this));
-    }
+    protected override void OnAdded() {}
 
     public override void Activate()
     {
@@ -63,23 +58,6 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
         Value = newMode;
         statusReceipt?.UpdateAppearance(StatusAppearance.IconOnly(Value.Icon));
         Events.Send(new TargetingModeChanged());
-    }
-
-    [Obsolete]
-    private sealed class TargetingReport : ITargetingReport
-    {
-        private readonly TargetingModeProperty subject;
-
-        public ReportType Type => ReportType.EntityMode;
-
-        public GameObject Object => subject.Owner;
-        public ImmutableArray<ITargetingMode> AvailableTargetingModes => subject.AllowedTargetingModes;
-        public ITargetingMode TargetingMode => subject.Value;
-
-        public TargetingReport(TargetingModeProperty subject)
-        {
-            this.subject = subject;
-        }
     }
 
     private sealed class InteractionSpec(TargetingModeProperty subject) : IStatusInteractionSpec

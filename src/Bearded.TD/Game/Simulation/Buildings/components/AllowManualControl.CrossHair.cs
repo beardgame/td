@@ -13,7 +13,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-sealed partial class AllowManualControl
+sealed partial class ManualControl
 {
     public sealed class CrossHair : Component, IManualTarget3, IListener<DrawComponents>
     {

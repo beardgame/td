@@ -2,7 +2,6 @@ using System;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Layers;
-using Bearded.TD.UI.Shapes;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.UI.Window;

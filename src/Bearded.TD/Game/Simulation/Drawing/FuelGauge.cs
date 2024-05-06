@@ -1,15 +1,9 @@
 using System;
-using Bearded.Graphics;
-using Bearded.Graphics.Shapes;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
-using Bearded.TD.Rendering;
-using Bearded.Utilities;
-using Bearded.Utilities.Geometry;
-using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;

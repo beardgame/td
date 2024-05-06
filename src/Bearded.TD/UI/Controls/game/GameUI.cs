@@ -1,11 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Bearded.Graphics;
 using Bearded.TD.Content;
 using Bearded.TD.Game;
-using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
@@ -40,7 +37,6 @@ sealed class GameUI :
 
     public GameUIController GameUIController { get; } = new();
 
-    public GameNotificationsUI NotificationsUI { get; }
     public ActionBar ActionBar { get; } = new();
     public CoreStatsUI CoreStats { get; } = new();
     public TechnologyWindow TechnologyUI { get; } = new();
@@ -53,14 +49,7 @@ sealed class GameUI :
     public event VoidEventHandler? GameOverTriggered;
     public event VoidEventHandler? GameLeft;
 
-    private NavigationController? entityStatusNavigation;
-
     private GameDebugOverlay? debugOverlay;
-
-    public GameUI()
-    {
-        NotificationsUI = new GameNotificationsUI(GameUIController);
-    }
 
     protected override void Initialize(DependencyResolver dependencies, Parameters parameters)
     {
@@ -78,14 +67,11 @@ sealed class GameUI :
 
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
-        NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game, shortcutCapturer, content);
         CoreStats.Initialize(Game, shortcutCapturer);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, Tooltips, content);
         StatisticsSideBar.Initialize(Game, Tooltips);
 
-        Game.SelectionManager.ObjectSelected += onObjectSelected;
-        Game.SelectionManager.ObjectDeselected += onObjectDeselected;
         Game.Meta.Events.Subscribe<GameOverTriggered>(this);
         Game.Meta.Events.Subscribe<TechnologyTokenAwarded>(this);
         Game.Meta.Events.Subscribe<TechnologyTokenConsumed>(this);
@@ -95,7 +81,6 @@ sealed class GameUI :
 
     public override void Terminate()
     {
-        NotificationsUI.Terminate();
         ActionBar.Terminate();
         CoreStats.Terminate();
         TechnologyUI.Terminate();
@@ -123,7 +108,6 @@ sealed class GameUI :
 
         ActionBar.Update();
         CoreStats.Update();
-        NotificationsUI.Update();
 
         updateGameDebugOverlayState();
     }
@@ -154,44 +138,9 @@ sealed class GameUI :
         }
     }
 
-    [Obsolete("Will be replaced by building status")]
-    public void SetOverlayControl(IControlParent overlay)
-    {
-        DebugAssert.State.Satisfies(entityStatusNavigation == null, "Can only initialize entity status UI once.");
-
-        var dependencies = new DependencyResolver();
-        dependencies.Add(Game);
-        dependencies.Add(uiUpdater);
-        dependencies.Add(shortcutCapturer);
-
-        var (models, views) = NavigationFactories.ForBoth()
-            .Add<ReportSubjectOverlay, IReportSubject>(m => new ReportSubjectOverlayControl(m))
-            .ToDictionaries();
-
-        entityStatusNavigation = new NavigationController(
-            overlay,
-            dependencies,
-            models,
-            views);
-        entityStatusNavigation!.Exited += Game.SelectionManager.ResetSelection;
-    }
-
     public void SetWorldOverlay(IGameWorldOverlay overlay)
     {
         BuildingStatusObserver.Create(overlay, Game.SelectionManager);
-    }
-
-    private void onObjectSelected(ISelectable selectedObject)
-    {
-        var subject = selectedObject.Subject;
-        entityStatusNavigation!.ReplaceAll<ReportSubjectOverlay, IReportSubject>(subject);
-        GameUIController.ShowEntityStatus(new GameUIController.OpenEntityStatus(Game.SelectionManager.ResetSelection));
-    }
-
-    private void onObjectDeselected(ISelectable t)
-    {
-        entityStatusNavigation?.CloseAll();
-        GameUIController.HideEntityStatus();
     }
 
     public void HandleEvent(GameOverTriggered @event)

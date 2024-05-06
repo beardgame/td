@@ -6,7 +6,6 @@ using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static Bearded.TD.Constants.Content.CoreUI;
 

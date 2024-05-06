@@ -11,20 +11,20 @@ namespace Bearded.TD.Game.Input;
 
 sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget2
 {
-    private readonly IManualControlReport report;
+    private readonly IManualControl manualControl;
 
     public Position2 Target { get; private set; }
     public bool TriggerDown { get; private set; }
 
-    public ManualControlInteractionHandler(GameInstance game, IManualControlReport report) : base(game)
+    public ManualControlInteractionHandler(GameInstance game, IManualControl manualControl) : base(game)
     {
-        this.report = report;
+        this.manualControl = manualControl;
     }
 
     protected override void OnStart(ICursorHandler cursor)
     {
-        report.StartControl(this, cancelControl);
-        cursor.SetCameraController(new CameraController(Game.CameraController, report, this));
+        manualControl.StartControl(this, cancelControl);
+        cursor.SetCameraController(new CameraController(Game.CameraController, manualControl, this));
     }
 
     private void cancelControl()
@@ -35,7 +35,7 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
     protected override void OnEnd(ICursorHandler cursor)
     {
         cursor.ResetCameraController();
-        report.EndControl();
+        manualControl.EndControl();
     }
 
     public override void Update(ICursorHandler cursor)
@@ -52,15 +52,15 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
     private sealed class CameraController : ICameraController
     {
         private readonly GameCameraController controller;
-        private readonly IManualControlReport report;
+        private readonly IManualControl manualControl;
         private readonly IManualTarget2 target;
 
         private readonly Dictionary<Func<InputState, ActionState>, float> zoomActions;
 
-        public CameraController(GameCameraController controller, IManualControlReport report, IManualTarget2 target)
+        public CameraController(GameCameraController controller, IManualControl manualControl, IManualTarget2 target)
         {
             this.controller = controller;
-            this.report = report;
+            this.manualControl = manualControl;
             this.target = target;
 
             zoomActions = new Dictionary<Func<InputState, ActionState>, float>
@@ -83,7 +83,7 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
 
         private void updateZoom(InputState input)
         {
-            controller.OverrideMaxCameraDistance(report.SubjectRange.NumericValue);
+            controller.OverrideMaxCameraDistance(manualControl.SubjectRange.NumericValue);
             controller.CenterZoomAnchor();
 
             var mouseScroll = -input.Mouse.DeltaScroll * Constants.Camera.ScrollTickValue;
@@ -95,7 +95,7 @@ sealed class ManualControlInteractionHandler : InteractionHandler, IManualTarget
 
         private void centerOnPointBetweenSubjectAndTarget()
         {
-            var subjectP = report.SubjectPosition;
+            var subjectP = manualControl.SubjectPosition;
             var targetP = target.Target;
             var pointBetweenSubjectAndTarget = subjectP + (targetP - subjectP) * 0.5f;
             controller.ScrollToWorldPos(pointBetweenSubjectAndTarget);
