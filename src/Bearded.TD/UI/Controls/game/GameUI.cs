@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Bearded.Graphics;
+using Bearded.TD.Content;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -73,13 +74,14 @@ sealed class GameUI :
         focusManager = dependencies.Resolve<FocusManager>();
         shortcutCapturer = dependencies.Resolve<ShortcutCapturer>();
         Tooltips = dependencies.Resolve<TooltipFactory>();
+        var content = dependencies.Resolve<ContentManager>();
 
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
         NotificationsUI.Initialize(Game, TimeSource);
         ActionBar.Initialize(Game, shortcutCapturer);
         CoreStats.Initialize(Game, shortcutCapturer);
-        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, Tooltips);
+        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, Tooltips, content);
         StatisticsSideBar.Initialize(Game, Tooltips);
 
         Game.SelectionManager.ObjectSelected += onObjectSelected;
