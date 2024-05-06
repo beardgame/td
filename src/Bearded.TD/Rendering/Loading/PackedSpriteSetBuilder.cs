@@ -44,14 +44,12 @@ sealed class PackedSpriteSetBuilder
         IActionQueue glActions,
         Dictionary<string, IEnumerable<ITextureTransformation>> transformationsBySampler)
     {
-        var premultiply = TextureTransformation.Premultiply;
-
         var transformedSamplerImages = samplerData.Select(
             kvp =>
             {
                 var (sampler, image) = kvp;
 
-                var transformations = transformationsBySampler[sampler].Prepend(premultiply);
+                var transformations = transformationsBySampler[sampler];
 
                 return (sampler, ImageTextureData.From(image, transformations));
             }).ToList();

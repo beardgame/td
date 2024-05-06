@@ -5,5 +5,7 @@
         {
             sampler: "diffuse"
         }
-    ]
+    ],
+    padding: 2,
+    premultiply: false,
 }

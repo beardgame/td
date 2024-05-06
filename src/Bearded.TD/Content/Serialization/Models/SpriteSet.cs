@@ -26,6 +26,9 @@ sealed class SpriteSet : IConvertsTo<Content.Models.SpriteSet, (FileInfo, Sprite
     public List<TextureSampler>? TextureSamplers { get; set; }
 
     public SpritePackMode PackMode { get; set; } = SpritePackMode.Any;
+    public int Padding { get; set; }
+
+    public bool PreMultiply { get; set; } = true;
 
     public Content.Models.SpriteSet ToGameModel(ModMetadata contextMeta, (FileInfo, SpriteSetLoader) resolvers)
     {

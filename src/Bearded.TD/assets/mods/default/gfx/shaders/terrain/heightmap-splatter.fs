@@ -11,12 +11,8 @@ out vec4 fragColor;
 void main()
 {
 	vec4 c = texture(splat, fragmentUV);
+	
+	float height = mix(fragmentMinHeight, fragmentMaxHeight, c.r);
 
-	float r = c.a == 0 ? 0 : (c.r / c.a);
-
-	float value = mix(fragmentMinHeight, fragmentMaxHeight, r) * c.a;
-
-    fragColor = vec4(
-    	value, value, value, c.a
-    	);
+    fragColor = vec4(height, height, height, 1) * c.a;
 }

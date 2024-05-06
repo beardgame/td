@@ -13,6 +13,8 @@ readonly record struct ModShaderFile(ShaderType Type, string Filepath, string Fr
 readonly record struct Sampler(string Name, ImmutableArray<string> Transformations);
 readonly record struct SpriteBitmaps(string SpriteId, IDictionary<string, Lazy<Image<Bgra32>>> BitmapsBySampler);
 
+readonly record struct SpriteSetConfiguration(string Id, SpritePackMode PackMode, int Padding, bool Premultiply);
+
 enum SpritePackMode
 {
     Any = 0,
@@ -25,8 +27,7 @@ interface IGraphicsLoader
     ISpriteSetImplementation CreateSpriteSet(
         IEnumerable<Sampler> samplers,
         IEnumerable<SpriteBitmaps> sprites,
-        string id,
-        SpritePackMode packMode);
+        SpriteSetConfiguration config);
 
     IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName);
 }

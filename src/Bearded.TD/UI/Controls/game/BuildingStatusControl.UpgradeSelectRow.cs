@@ -55,7 +55,6 @@ sealed partial class BuildingStatusControl
 
         private void onActiveUpgradeSlotChanged(int? index)
         {
-            Console.WriteLine(index);
             iconRow.Anchor(a => a.Left(buttonLeftMargin(index ?? 0)));
             upgradeChoicesEnabled.SetFromSource(true);
         }

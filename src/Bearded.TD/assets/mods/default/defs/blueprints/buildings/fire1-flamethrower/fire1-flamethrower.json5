@@ -53,24 +53,12 @@
     {
       id: "sprite",
       parameters: {
-        sprite: "buildings.foundation",
-        colorMode: "faction",
-        shader: "building",
-        drawGroup: "building",
-        heightOffset: 0.01,
-        size: 1.82,
-        randomRotationStep: 120
-      }
-    },
-    {
-      id: "sprite",
-      parameters: {
         sprite: "buildings3.cannon-base",
         colorMode: "faction",
         shader: "building",
         drawGroup: "building",
         heightOffset: 0.1,
-        size: 1.2,
+        size: 0.9
       }
     },
     { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },

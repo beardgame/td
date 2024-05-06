@@ -32,16 +32,22 @@ sealed class SpriteSetLoader
             packedSpriteSet);
     }
 
-    private static ISpriteSetImplementation loadPackedSpriteSet(DirectoryInfo directory, ModLoadingContext modLoadingContext,
-        Serialization.Models.SpriteSet jsonModel)
+    private static ISpriteSetImplementation loadPackedSpriteSet(
+        DirectoryInfo directory, ModLoadingContext modLoadingContext, Serialization.Models.SpriteSet jsonModel)
     {
         _ = jsonModel.Id ?? throw new InvalidDataException($"{nameof(jsonModel.Id)} must be non-null");
 
         var samplers = getSamplersWithPreAndSuffixes(jsonModel);
         var sprites = sortFilesBySpriteAndSampler(directory, samplers);
 
-        return modLoadingContext.GraphicsLoader.CreateSpriteSet(
-            samplers.Select(s => s.Sampler), sprites, jsonModel.Id, jsonModel.PackMode);
+        var config = new SpriteSetConfiguration(
+            jsonModel.Id,
+            jsonModel.PackMode,
+            jsonModel.Padding,
+            jsonModel.PreMultiply
+        );
+
+        return modLoadingContext.GraphicsLoader.CreateSpriteSet(samplers.Select(s => s.Sampler), sprites, config);
     }
 
     private static IEnumerable<SpriteBitmaps>
