@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Create test report
         id: test-reporter
-        uses: dorny/test-reporter@v1.9.0
+        uses: dorny/test-reporter@v1.9.1
         with:
           artifact: test-results
           name: xUnit tests
