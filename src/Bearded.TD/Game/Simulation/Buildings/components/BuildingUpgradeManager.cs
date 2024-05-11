@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
@@ -45,7 +44,6 @@ sealed partial class BuildingUpgradeManager
     protected override void OnAdded()
     {
         Events.Subscribe(this);
-        ReportAggregator.Register(Events, new UpgradeReport(this));
         ComponentDependencies.Depend<ObjectAttributes>(Owner, Events, attr => attributes = attr);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
     }

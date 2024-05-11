@@ -5,7 +5,6 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
@@ -31,8 +30,6 @@ sealed class Selectable :
     private ITilePresenceListener? tilePresenceListener;
 
     public bool IsSelectable => visibility?.Visibility.IsVisible() ?? true;
-    public IReportSubject Subject =>
-        Owner.GetComponents<IReportSubject>().SingleOrDefault() ?? new EmptyReportSubject();
     public GameObject Object => Owner;
     public Rectangle BoundingBox { get; private set; }
 

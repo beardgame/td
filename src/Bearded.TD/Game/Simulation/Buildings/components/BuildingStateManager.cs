@@ -3,8 +3,6 @@ using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
-using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Selection;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Shared.Events;
@@ -50,8 +48,6 @@ sealed class BuildingStateManager : Component,
         Events.Subscribe<ObjectRuined>(this);
         Events.Subscribe<PreventPlayerHealthChanges>(this);
         Events.Subscribe<PreventRuin>(this);
-
-        ReportAggregator.Register(Events, new BuildingStateReport(Owner, this));
 
         ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
 
@@ -132,26 +128,6 @@ sealed class BuildingStateManager : Component,
         }
     }
 
-    private sealed class BuildingStateReport : IBuildingStateReport
-    {
-        private readonly IBuildingStateProvider buildingStateProvider;
-
-        public ReportType Type => ReportType.EntityActions;
-
-        public GameObject Building { get; }
-
-        public bool IsMaterialized => buildingStateProvider.State.IsMaterialized;
-
-        public bool CanBeDeleted => buildingStateProvider.State.AcceptsPlayerHealthChanges;
-        public ResourceAmount RefundValue => Building.TotalResourcesInvested() ?? ResourceAmount.Zero;
-
-        public BuildingStateReport(GameObject owner, IBuildingStateProvider buildingStateProvider)
-        {
-            Building = owner;
-            this.buildingStateProvider = buildingStateProvider;
-        }
-    }
-
     private sealed class ActiveBreakage : IBreakageReceipt
     {
         private readonly BuildingState mutableState;
@@ -166,12 +142,4 @@ sealed class BuildingStateManager : Component,
             mutableState.ActiveBreakages.Remove(this);
         }
     }
-}
-
-interface IBuildingStateReport : IReport
-{
-    GameObject Building { get; }
-    bool IsMaterialized { get; }
-    bool CanBeDeleted { get; }
-    ResourceAmount RefundValue { get; }
 }

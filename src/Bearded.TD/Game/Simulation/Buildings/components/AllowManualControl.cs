@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -9,13 +8,10 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("allowManualControl")]
-sealed partial class AllowManualControl : AllowManualOverride<AllowManualControl.Override>, IManualControlReport
+sealed partial class ManualControl : AllowManualOverride<ManualControl.Override>, IManualControl
 {
     public new sealed record Override(Action Cancel, CrossHair CrossHair, Overdrive Overdrive)
         : AllowManualOverride<Override>.Override(Cancel);
-
-    protected override IReport Report => this;
-    public ReportType Type => ReportType.ManualControl;
 
     public Position2 SubjectPosition => Owner.Position.XY();
     public Unit SubjectRange { get; private set; }
@@ -58,4 +54,14 @@ sealed partial class AllowManualControl : AllowManualOverride<AllowManualControl
             turret.StopTargetOverride();
         }
     }
+}
+
+interface IManualControl
+{
+    Position2 SubjectPosition { get; }
+    Unit SubjectRange { get; }
+
+    bool CanBeControlledBy(Faction faction);
+    void StartControl(IManualTarget2 target, Action cancelControl);
+    void EndControl();
 }

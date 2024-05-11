@@ -1,20 +1,13 @@
 ﻿using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-interface IEmergencyEMPReport : IReport
-{
-    bool Available { get; }
-    GameObject Owner { get; }
-}
-
 [Component("emergencyEMP")]
-sealed class EmergencyEMP : Component<EmergencyEMP.IParameters>, IEmergencyEMPReport, IListener<WaveStarted>
+sealed class EmergencyEMP : Component<EmergencyEMP.IParameters>, IListener<WaveStarted>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -27,10 +20,7 @@ sealed class EmergencyEMP : Component<EmergencyEMP.IParameters>, IEmergencyEMPRe
     {
     }
 
-    protected override void OnAdded()
-    {
-        ReportAggregator.Register(Events, this);
-    }
+    protected override void OnAdded() {}
 
     public override void Activate()
     {
@@ -53,7 +43,4 @@ sealed class EmergencyEMP : Component<EmergencyEMP.IParameters>, IEmergencyEMPRe
 
         Available = false;
     }
-
-    ReportType IReport.Type => ReportType.ManualControl;
-    GameObject IEmergencyEMPReport.Owner => base.Owner;
 }

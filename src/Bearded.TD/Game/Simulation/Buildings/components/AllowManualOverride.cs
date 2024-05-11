@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Shared.Events;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -19,11 +18,8 @@ abstract class AllowManualOverride<T>
     private IFactionProvider? factionProvider;
     private IBuildingStateProvider? buildingState;
 
-    protected abstract IReport Report { get; }
-
     protected override void OnAdded()
     {
-        ReportAggregator.Register(Events, Report);
         ComponentDependencies.Depend<IFactionProvider>(Owner, Events, provider => factionProvider = provider);
         ComponentDependencies.Depend<IBuildingStateProvider>(Owner, Events, provider => buildingState = provider);
         Events.Subscribe<ManualOverrideStarted>(this);

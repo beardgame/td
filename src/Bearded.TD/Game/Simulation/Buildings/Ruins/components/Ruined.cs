@@ -4,7 +4,6 @@ using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
@@ -23,7 +22,6 @@ sealed class Ruined
     private readonly Disposer disposer = new();
 
     private IBuildingStateProvider? buildingStateProvider;
-    private ReportAggregator.IReportHandle? reportHandle;
     private IncompleteRepair? incompleteRepair;
 
     private bool deleteNextFrame;
@@ -46,8 +44,6 @@ sealed class Ruined
         Events.Unsubscribe<RepairCancelled>(this);
         Events.Unsubscribe<RepairFinished>(this);
         Events.Unsubscribe(this);
-        reportHandle?.Unregister();
-        reportHandle = null;
         if (incompleteRepair != null)
         {
             Owner.RemoveComponent(incompleteRepair);

@@ -2,7 +2,6 @@ using System;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Enum = System.Enum;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -19,8 +18,6 @@ sealed class DischargeModeProperty : Component, IProperty<CapacitorDischargeMode
 
     protected override void OnAdded()
     {
-        ReportAggregator.Register(Events, new DischargeModeReport(this));
-
         ComponentDependencies.Depend<IStatusTracker>(Owner, Events, t => statusTracker = t);
     }
 
@@ -49,20 +46,6 @@ sealed class DischargeModeProperty : Component, IProperty<CapacitorDischargeMode
             CapacitorDischargeMode.FullCharge => "battery-100".ToStatusIconSpriteId(),
             _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
         };
-    }
-
-    private sealed class DischargeModeReport : IDischargeModeReport
-    {
-        private readonly DischargeModeProperty subject;
-
-        public ReportType Type => ReportType.EntityMode;
-        public GameObject Object => subject.Owner;
-        public CapacitorDischargeMode DischargeMode => subject.Value;
-
-        public DischargeModeReport(DischargeModeProperty subject)
-        {
-            this.subject = subject;
-        }
     }
 
     private sealed class InteractionSpec(DischargeModeProperty subject) : IStatusInteractionSpec

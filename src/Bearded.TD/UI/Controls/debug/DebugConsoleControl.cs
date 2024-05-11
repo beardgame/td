@@ -4,7 +4,6 @@ using Bearded.Graphics;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.UI.Shapes;
-using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
 using Bearded.Utilities.IO;

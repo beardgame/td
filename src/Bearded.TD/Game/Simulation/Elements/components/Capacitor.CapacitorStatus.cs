@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Immutable;
-using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.StatusDisplays;
-using Bearded.TD.Rendering;
-using Bearded.Utilities;
-using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 

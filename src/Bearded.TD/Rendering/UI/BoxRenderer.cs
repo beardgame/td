@@ -1,6 +1,5 @@
 ﻿using Bearded.Graphics;
 using Bearded.TD.Rendering.Shapes;
-using Bearded.TD.UI.Controls;
 using Bearded.TD.UI.Shapes;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;

@@ -38,8 +38,7 @@ sealed class GameUIControl : CompositeControl
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
-        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, gameUI.Tooltips)
-            .BindIsVisible(gameUI.GameUIController.ActionBarVisibility));
+        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, gameUI.Tooltips));
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
             .Anchor(a => a
                 .Top(height: 480)
@@ -70,13 +69,7 @@ sealed class GameUIControl : CompositeControl
         Add(new TechnologyWindowControl(gameUI.TechnologyUI)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
-        var overlayControl = CreateClickThrough();
-        Add(overlayControl);
-        gameUI.SetOverlayControl(overlayControl);
         gameUI.SetWorldOverlay(gameWorldOverlay);
-
-        Add(new GameNotificationsUIControl(gameUI.NotificationsUI)
-            .Anchor(a => a.Left(margin: 0, width: 320))); /* Vertical anchors managed dynamically. */
 
         Add(new GameMenuControl()
             .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)

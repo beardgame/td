@@ -1,18 +1,15 @@
 using System;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Reports;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("allowManualOverdrive")]
-sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.ActiveOverdrive>, IManualOverdrive, IManualOverdriveReport
+sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.ActiveOverdrive>, IManualOverdrive
 {
     public sealed record ActiveOverdrive(Action Cancel, Overdrive Overdrive) : Override(Cancel);
 
     public GameObject Building => Owner;
-    protected override IReport Report => this;
-    public ReportType Type => ReportType.ManualControl;
 
     public bool CanBeEnabledBy(Faction faction) => CanBeOverriddenBy(faction);
 

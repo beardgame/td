@@ -15,7 +15,6 @@ using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
-using Bearded.Utilities.Geometry;
 using static Bearded.TD.Constants.UI;
 using static Bearded.TD.UI.Factories.TextFactories;
 using Button = Bearded.UI.Controls.Button;
