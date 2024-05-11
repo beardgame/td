@@ -27,7 +27,7 @@ abstract record PhysicalFeature
     public sealed record Node(Features.Node Blueprint, IBiome Biome, ImmutableArray<Circle> Circles)
         : WithCircles(Circles);
 
-    public sealed record Connection(FeatureCircle From, FeatureCircle To, Unit Radius)
+    public sealed record Connection(FeatureCircle From, FeatureCircle To, Unit Radius, bool SplitIfPossible = false)
         : PhysicalFeature;
 
     public sealed record Crevice(ImmutableArray<Circle> Circles)

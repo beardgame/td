@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Generation.Semantic.Commands;
 using Bearded.TD.Game.Generation.Semantic.Features;
@@ -7,9 +8,20 @@ using Bearded.TD.Game.Generation.Semantic.Props;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
+using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
+
+using static KnownFeatureType;
+
+file enum KnownFeatureType
+{
+    Node,
+    Connection,
+    Crevice,
+}
 
 static partial class TilemapGenerator
 {
@@ -23,25 +35,30 @@ static partial class TilemapGenerator
         var tilemap =
             new Tilemap<TileGeometry>(radius, _ => new TileGeometry(TileType.Wall, 1, Unit.Zero));
 
-        foreach (var feature in features)
+        var generatorsByType = features.Select<TiledFeature, (KnownFeatureType Type, Action Generate)>(f => f switch
         {
-            switch (feature)
-            {
-                case TiledFeature.Node node:
-                    generateNode(feature, tilemap, node, commandAccumulator, propHintAccumulator, random);
-                    break;
-                case (PhysicalFeature.Connection, _):
-                    generateConnection(feature, tilemap);
-                    break;
-                case (PhysicalFeature.Crevice, _):
-                    generateCrevice(feature, tilemap);
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+            TiledFeature.Node node => (
+                Node, () => generateNode(f, tilemap, node, commandAccumulator, propHintAccumulator, random)
+            ),
+            (PhysicalFeature.Connection connection, _) => (
+                Connection, () => generateConnection(f, tilemap, connection)
+            ),
+            (PhysicalFeature.Crevice, _) => (
+                Crevice, () => generateCrevice(f, tilemap)
+            ),
+            _ => throw new NotSupportedException(),
+        }).ToLookup(g => g.Type);
+
+        generate(Node);
+        generate(Crevice);
+        generate(Connection);
 
         return tilemap;
+
+        void generate(KnownFeatureType type)
+        {
+            generatorsByType[type].ForEach(g => g.Generate());
+        }
     }
 
     private static void generateNode(
@@ -138,11 +155,25 @@ static partial class TilemapGenerator
         }
     }
 
-    private static void generateConnection(TiledFeature feature, Tilemap<TileGeometry> tilemap)
+    private static void generateConnection(
+        TiledFeature feature, Tilemap<TileGeometry> tilemap, PhysicalFeature.Connection connection)
     {
-        foreach (var tile in feature.Tiles)
+        if (connection.SplitIfPossible)
         {
-            tilemap[tile] = new TileGeometry(TileType.Floor, 1, Unit.Zero);
+            foreach (var tile in feature.Tiles)
+            {
+                if (tile.PossibleNeighbours().All(n => feature.Tiles.Contains(n) || tilemap[n].Type == TileType.Floor))
+                    continue;
+
+                tilemap[tile] = new TileGeometry(TileType.Floor, 1, Unit.Zero);
+            }
+        }
+        else
+        {
+            foreach (var tile in feature.Tiles)
+            {
+                tilemap[tile] = new TileGeometry(TileType.Floor, 1, Unit.Zero);
+            }
         }
     }
 }

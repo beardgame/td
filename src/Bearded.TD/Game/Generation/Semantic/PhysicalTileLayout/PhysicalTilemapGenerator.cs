@@ -107,7 +107,7 @@ sealed class PhysicalTilemapGenerator
                         }
                     }
                     break;
-                case PhysicalFeature.Connection(var from, var to, var r):
+                case PhysicalFeature.Connection(var from, var to, var r, _):
                     metadata.Add(new LineSegment(
                         from.Circle.Center,
                         to.Circle.Center,

@@ -34,8 +34,7 @@ sealed class SemanticLevelGenerator : ILevelGenerator
 
         var random = new Random(seed);
 
-        var areaPerNode = 10 * 10;
-        var nodeRadius = ((float) areaPerNode).Sqrted().U() * 0.5f;
+        var nodeRadius = 5.U();
 
         var logicalTilemap = new LogicalTilemapGenerator(logger).Generate(parameters, random);
 

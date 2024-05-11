@@ -95,7 +95,7 @@ sealed class FeatureTileAssigner
 
         foreach (var feature in features)
         {
-            var (from, to, _) = feature;
+            var (from, to, _, _) = feature;
 
             var rayCaster = new LevelRayCaster();
             rayCaster.StartEnumeratingTiles(new Ray(from.Circle.Center, to.Circle.Center));

@@ -42,7 +42,7 @@ sealed class FeatureArranger
         return features.SelectMany(
             f => f switch
             {
-                Connection(var from, var to, _) =>
+                Connection { From: var from, To: var to } =>
                     new Spring(from, to, SpringBehavior.Pull).Yield(),
                 Crevice crevice =>
                     allNodes
@@ -91,12 +91,13 @@ sealed class FeatureArranger
 
         PhysicalFeature newConnection(Connection old)
         {
-            var (from, to, width) = old;
-            return new Connection(
-                new FeatureCircle(newCircleFeatures[from.Feature], from.Index),
-                new FeatureCircle(newCircleFeatures[to.Feature], to.Index),
-                width
-            );
+            var from = old.From;
+            var to = old.To;
+            return old with
+            {
+                From = new FeatureCircle(newCircleFeatures[from.Feature], from.Index),
+                To = new FeatureCircle(newCircleFeatures[to.Feature], to.Index),
+            };
         }
 
         ImmutableArray<Circle> nextCircles(int count)
