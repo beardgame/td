@@ -230,10 +230,12 @@ float hash(vec2 p)
 
 vec4 dither(vec4 color, vec2 seed)
 {
-    float n = (hash(seed) * 2 - 1) * (hash(seed.yx * 12.3) * 2 - 1);
-    n /= 128;
-    color.rgba += n;
-    return color;
+    float n = hash(seed) * hash(seed.yx * 12.3) - 0.5;
+    
+    vec4 added = color.rgba + (n / 128);
+    vec4 multiplied = color.rgba * (1 + n / 4); 
+    
+    return mix(multiplied, added, color.a);
 }
 
 vec4 getBackgroundBlur()
