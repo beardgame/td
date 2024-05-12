@@ -75,6 +75,18 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
             var damage = new TypedDamage(Parameters.Damage, DamageType.Kinetic);
             var hit = getHit(neighbor);
 
+            // Experiment: Deal more damage and die
+
+            var secondsOfDamage = 10.S();
+            var damageScalar = secondsOfDamage * Parameters.AttackRate;
+            damage *= (float)damageScalar;
+            if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, hit))
+            {
+                nextAttack += secondsOfDamage;
+                Events.Send(new EnactDeath());
+            }
+            return;
+
             if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, hit))
             {
                 nextAttack += 1 / Parameters.AttackRate;
