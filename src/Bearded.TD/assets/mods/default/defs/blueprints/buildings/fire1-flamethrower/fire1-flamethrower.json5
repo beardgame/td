@@ -1,70 +1,70 @@
 {
-  id: "fire1-flamethrower",
-  components: [
-    {
-      id: "attributes",
-      parameters: {
-        name: "Flamethrower",
-        icon: "building-icons.dragon-breath",
-      }
-    },
-    { id: "cost", parameters: { resources: 50 } },
-    { id: "footprint", parameters: { footprint: "single" } },
-    { id: "footprintTransformation" },
-    { id: "defaultTileOccupancy" },
-    { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
-    { id: "allowManualControl" },
-    { id: "allowManualOverdrive" },
-    { id: "autoRepair", parameters: { } },
-    { id: "gainXpOnDamage" },
-    { id: "veterancy" },
-    { id: "upgradeSlots", parameters : { additionalSlotTriggers : [ "levelGained" ] } },
-    { id: "passiveVeterancyBonus", parameters : { } },
-    { id: "upgradePips" },
-    { id: "damageNumbers" },
-    {
-      id: "spawnObjectOnLevelGain",
-      parameters: { object: "building-gained-level-effect" },
-    },
+    id: "fire1-flamethrower",
+    components: [
+        {
+            id: "attributes",
+            parameters: {
+                name: "Flamethrower",
+                icon: "building-icons.dragon-breath",
+            }
+        },
+        { id: "cost", parameters: { resources: 50 } },
+        { id: "footprint", parameters: { footprint: "single" } },
+        { id: "footprintTransformation" },
+        { id: "defaultTileOccupancy" },
+        { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
+        { id: "allowManualControl" },
+        { id: "allowManualOverdrive" },
+        { id: "autoRepair", parameters: { } },
+        { id: "gainXpOnDamage" },
+        { id: "veterancy" },
+        { id: "upgradeSlots", parameters : { additionalSlotTriggers : [ "levelGained" ] } },
+        { id: "passiveVeterancyBonus", parameters : { } },
+        { id: "upgradePips" },
+        { id: "damageNumbers" },
+        {
+            id: "spawnObjectOnLevelGain",
+            parameters: { object: "building-gained-level-effect" },
+        },
 
-    {
-      id: "playSoundOnTrigger",
-      parameters: {
-        trigger: "levelGained",
-        sound: "veterancy",
-      },
-    },
-    {
-      id: "turret",
-      onGhost: true,
-      parameters: {
-        weapon: "fire1-flamethrower-weapon",
-        height: 0.3,
-      }
-    },
-    {
-      id: "targetingModes",
-      parameters: {
-      }
-    },
-    { id: "fuelSystem" },
-    { id: "fuelTank", parameters: { fuelCapacity: 150 } },
-    { id: "fuelGauge" },
-    {
-      id: "sprite",
-      parameters: {
-        sprite: "buildings3.cannon-base",
-        colorMode: "faction",
-        shader: "building",
-        drawGroup: "building",
-        heightOffset: 0.1,
-        size: 0.9
-      }
-    },
-    { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
-    { id: "spawnObjectOnMaterialized", parameters: { object: "building-materialized-effect"} },
-    { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "levelGained",
+                sound: "veterancy",
+            },
+        },
+        {
+            id: "turret",
+            onGhost: true,
+            parameters: {
+                weapon: "fire1-flamethrower-weapon",
+                height: 0.3,
+            }
+        },
+        {
+            id: "targetingModes",
+            parameters: {
+            }
+        },
+        { id: "fuelSystem" },
+        { id: "fuelTank", parameters: { fuelCapacity: 150 } },
+        { id: "fuelGauge" },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings3.cannon-base",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                heightOffset: 0.1,
+                size: 0.9
+            }
+        },
+        { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
+        { id: "spawnObjectOnMaterialized", parameters: { object: "building-materialized-effect"} },
+        { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
 
-    { id: "child", parameters: { object: "building-disabled-smoke" } }
-  ]
+        { id: "child", parameters: { object: "building-disabled-smoke" } }
+    ]
 }

@@ -39,6 +39,11 @@ static partial class Constants
             ];
         }
 
+        public static class AnimationDurations
+        {
+            public static readonly TimeSpan Short = 0.06.S();
+        }
+
         public static class Shadows
         {
             public static readonly Color DefaultColor = new(0, 3, 13);
@@ -228,7 +233,7 @@ static partial class Constants
             ];
             public static readonly double StatusRowBackgroundLeftMargin = EdgeWidth - Padding;
 
-            private static readonly ShapeComponent backgroundFade = Fill.With(ShapeColor.From(
+            public static readonly ShapeComponent BackgroundFade = Fill.With(ShapeColor.From(
                 [
                     (0, Color.White),
                     (0.33, Color.White),
@@ -240,16 +245,11 @@ static partial class Constants
                 ).WithFlags(GradientFlags.ExtendBoth).WithBlendMode(ComponentBlendMode.Multiply))
             );
 
-            public static readonly ShapeComponents Background =
-            [
-                Fill.With(GradientDefinition.BlurredBackground()),
-                Fill.With(Colors.Get(BackgroundColor.Default) * 0.8f),
-                Edge.Inner((float)EdgeWidth, Colors.Get(BackgroundColor.TooltipOutline)),
-                backgroundFade,
-            ];
+            public static readonly Color PreviewBackgroundColor = Colors.Get(BackgroundColor.Default) * 0.4f;
+            public static readonly Color ExpandedBackgroundColor = Colors.Get(BackgroundColor.Default) * 0.8f;
 
             public static readonly Shadow Shadow = Shadows.Tooltip;
-            public static readonly ShapeComponents ShadowFade = [backgroundFade];
+            public static readonly ShapeComponents ShadowFade = [BackgroundFade];
         }
 
         public static class Window

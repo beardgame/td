@@ -1,5 +1,5 @@
 ﻿{
-  id: "yellow",
-  overlayColor: "yellow",
-  material: "default"
+    id: "yellow",
+    overlayColor: "yellow",
+    material: "default"
 }

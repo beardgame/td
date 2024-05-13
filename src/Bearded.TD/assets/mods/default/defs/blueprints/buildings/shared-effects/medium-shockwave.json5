@@ -1,25 +1,25 @@
 {
-  id: "medium-shockwave",
-  components: [
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 1,
-        sprite: "default.particle.halo",
-        color: "FF888888",
-        size: 0.4,
-        finalSize: 2,
-        lifetime: 0.5,
-        gravityFactor: 0,
-        offset: [0, 0, 0.1],
-        drawMode: "sprite"
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 0.5
-      }
-    }
-  ]
+    id: "medium-shockwave",
+    components: [
+        {
+            id: "particleSystem",
+            parameters: {
+                count: 1,
+                sprite: "default.particle.halo",
+                color: "FF888888",
+                size: 0.4,
+                finalSize: 2,
+                lifetime: 0.5,
+                gravityFactor: 0,
+                offset: [0, 0, 0.1],
+                drawMode: "sprite"
+            }
+        },
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 0.5
+            }
+        }
+    ]
 }

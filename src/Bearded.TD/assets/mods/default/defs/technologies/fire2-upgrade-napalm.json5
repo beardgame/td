@@ -1,10 +1,10 @@
 {
-  id: "fire2-upgrade-napalm",
-  name: "Napalm",
-  branch: "fire",
-  tier: "medium",
-  unlocks: [
-    { type: "upgrade", blueprint: "fire2-napalm" },
-    { type: "upgrade", blueprint: "fire2-napalmExplosion" }
-  ]
+    id: "fire2-upgrade-napalm",
+    name: "Napalm",
+    branch: "fire",
+    tier: "medium",
+    unlocks: [
+        { type: "upgrade", blueprint: "fire2-napalm" },
+        { type: "upgrade", blueprint: "fire2-napalmExplosion" }
+    ]
 }

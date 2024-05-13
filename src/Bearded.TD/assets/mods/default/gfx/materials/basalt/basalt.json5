@@ -1,14 +1,14 @@
 {
-  id: "basalt",
-  shader: "gpu-terrain-tessellated",
-  textures : [
-    { sampler: "diffuseWall", file: "wall0.jpg" },
-    { sampler: "normalWall", file: "wall0-normal.jpg" },
-    
-    { sampler: "diffuseFloor", file: "floor1.jpg" },
-    { sampler: "normalFloor", file: "floor1-normal.jpg" },
-    
-    { sampler: "diffuseCrossSection", file: "floor2.jpg" },
-    { sampler: "normalCrossSection", file: "floor2-normal.jpg" },
-  ],
+    id: "basalt",
+    shader: "gpu-terrain-tessellated",
+    textures : [
+        { sampler: "diffuseWall", file: "wall0.jpg" },
+        { sampler: "normalWall", file: "wall0-normal.jpg" },
+
+        { sampler: "diffuseFloor", file: "floor1.jpg" },
+        { sampler: "normalFloor", file: "floor1-normal.jpg" },
+
+        { sampler: "diffuseCrossSection", file: "floor2.jpg" },
+        { sampler: "normalCrossSection", file: "floor2-normal.jpg" },
+    ],
 }

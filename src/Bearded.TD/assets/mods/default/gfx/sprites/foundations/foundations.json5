@@ -1,16 +1,16 @@
 ﻿{
-  id: "foundations",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse",
-      prefix: "",
-      suffix: ""
-    },
-    {
-      sampler: "normal",
-      prefix: "",
-      suffix: "-normal"
-    }
-  ]
+    id: "foundations",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse",
+            prefix: "",
+            suffix: ""
+        },
+        {
+            sampler: "normal",
+            prefix: "",
+            suffix: "-normal"
+        }
+    ]
 }

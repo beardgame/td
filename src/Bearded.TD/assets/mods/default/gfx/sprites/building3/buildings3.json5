@@ -1,16 +1,16 @@
 ﻿{
-  id: "buildings3",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse"
-    },
-    {
-      sampler: "normal",
-      suffix: "-height",
-      transformations: [
-        "normalFromHeight",
-      ]
-    }
-  ]
+    id: "buildings3",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        },
+        {
+            sampler: "normal",
+            suffix: "-height",
+            transformations: [
+                "normalFromHeight",
+            ]
+        }
+    ]
 }

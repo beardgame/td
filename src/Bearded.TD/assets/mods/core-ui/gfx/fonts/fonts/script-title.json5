@@ -1,5 +1,5 @@
 {
-  id: "script-title",
-  definition: "chopin-128",
-  material: "chopin-128",
+    id: "script-title",
+    definition: "chopin-128",
+    material: "chopin-128",
 }

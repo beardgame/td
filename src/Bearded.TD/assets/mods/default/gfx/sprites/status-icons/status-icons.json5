@@ -1,11 +1,11 @@
 {
-  id: "status-icons",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse",
-      prefix: "",
-      suffix: ""
-    }
-  ]
+    id: "status-icons",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse",
+            prefix: "",
+            suffix: ""
+        }
+    ]
 }

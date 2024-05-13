@@ -1,11 +1,15 @@
+using Bearded.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
+using static Bearded.TD.Constants.UI;
 using static Bearded.TD.Constants.UI.BuildingStatus;
+using Animations = Bearded.TD.UI.Animation.Animations;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -26,12 +30,8 @@ sealed partial class BuildingStatusControl : CompositeControl
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
         Add(new BlurBackground());
-        this.Add(new ComplexBox
-        {
-            Components = Background,
-            CornerRadius = 5,
-        }.WithDropShadow(Shadow, ShadowFade));
 
+        addBackground(model, animations);
         var innerContainer = new CompositeControl();
         Add(innerContainer.Anchor(a => a.MarginAllSides(Padding).Top()));
 
@@ -82,5 +82,43 @@ sealed partial class BuildingStatusControl : CompositeControl
         }
 
         Size = (300, column.Height + Padding);
+    }
+
+    private void addBackground(BuildingStatus model, Animations animations)
+    {
+        const int fillIndex = 1;
+
+        IAnimationController? backgroundAnimation = null;
+
+        var components = new[]
+        {
+            Fill.With(GradientDefinition.BlurredBackground()),
+            Fill.With(expectedColor()), // Index should match constant
+            Edge.Inner((float) EdgeWidth, Colors.Get(BackgroundColor.TooltipOutline)),
+            BackgroundFade,
+        };
+
+        this.Add(new ComplexBox
+        {
+            Components = ShapeComponents.FromMutable(components),
+            CornerRadius = 5
+        }.WithDropShadow(Shadow, ShadowFade));
+
+        model.ShowExpanded.ControlUpdated += _ => updateBackground();
+        model.ShowExpanded.SourceUpdated += _ => updateBackground();
+
+        return;
+
+        void updateBackground()
+        {
+            backgroundAnimation?.Cancel();
+            var currentColor = components[fillIndex].Color.Definition.Color;
+            var targetColor = expectedColor();
+            backgroundAnimation = animations.Start(AnimationFunction
+                .ColorFromTo(AnimationDurations.Short)
+                .WithState((c => components[fillIndex] = Fill.With(c), currentColor, targetColor)));
+        }
+
+        Color expectedColor() => model.ShowExpanded.Value ? ExpandedBackgroundColor : PreviewBackgroundColor;
     }
 }

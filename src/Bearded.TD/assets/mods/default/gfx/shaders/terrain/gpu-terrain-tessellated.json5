@@ -1,7 +1,7 @@
 {
-  id: "gpu-terrain-tessellated",
-  vertexShader: "gpu-terrain-tess-vs.glsl",
-  tessControlShader: "gpu-terrain-tess-tcs.glsl",
-  tessEvaluationShader: "gpu-terrain-tess-tes.glsl",
-  fragmentShader: "default-terrain.fs"
+    id: "gpu-terrain-tessellated",
+    vertexShader: "gpu-terrain-tess-vs.glsl",
+    tessControlShader: "gpu-terrain-tess-tcs.glsl",
+    tessEvaluationShader: "gpu-terrain-tess-tes.glsl",
+    fragmentShader: "default-terrain.fs"
 }

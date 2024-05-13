@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Immutable;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Networking.Serialization;
@@ -18,11 +20,9 @@ interface ILevelable
 
 readonly record struct VeterancyStatus(
     int Level,
-    Experience Experience,
-    Experience? NextLevelThreshold,
     double PercentageToNextLevel)
 {
-    public static readonly VeterancyStatus Initial = new(0, Experience.Zero, null, 0);
+    public static readonly VeterancyStatus Initial = new(0, 0);
 
     public static VeterancyStatus From(
         int level, Experience experience, ImmutableArray<Experience> levelThresholds)
@@ -33,12 +33,13 @@ readonly record struct VeterancyStatus(
 
         if (level >= levelThresholds.Length)
         {
-            return new VeterancyStatus(level, experience, null, 1);
+            return new VeterancyStatus(level, 1);
         }
 
         var nextThreshold = levelThresholds[level];
-        var percentageToNextLevel = (experience - previousThreshold) / (nextThreshold - previousThreshold);
-        return new VeterancyStatus(level, experience, nextThreshold, percentageToNextLevel);
+        var percentageToNextLevel =
+            Math.Clamp((experience - previousThreshold) / (nextThreshold - previousThreshold), 0, 1);
+        return new VeterancyStatus(level, percentageToNextLevel);
     }
 }
 
@@ -49,13 +50,14 @@ interface IVeterancy
 }
 
 [Component("veterancy")]
-sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable, IVeterancy
+sealed class Veterancy : Component, IListener<GainXp>, IListener<WaveEnded>, ISyncable, ILevelable, IVeterancy
 {
     private readonly ImmutableArray<Experience> levelThresholds;
 
     private int level;
     private Experience experience;
     private Experience previousExperience;
+    private bool activated;
 
     public Veterancy() : this(Constants.Game.Building.VeterancyThresholds) {}
 
@@ -66,7 +68,24 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable, IV
 
     protected override void OnAdded()
     {
-        Events.Subscribe(this);
+        Events.Subscribe<GainXp>(this);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+        Owner.Game.Meta.Events.Subscribe<WaveEnded>(this);
+        activated = true;
+    }
+
+    public override void OnRemoved()
+    {
+        base.OnRemoved();
+        Events.Unsubscribe<GainXp>(this);
+        if (activated)
+        {
+            Owner.Game.Meta.Events.Unsubscribe<WaveEnded>(this);
+        }
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -90,6 +109,14 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable, IV
     public void HandleEvent(GainXp @event)
     {
         AddXp(@event.Amount);
+    }
+
+    public void HandleEvent(WaveEnded @event)
+    {
+        if (GetVeterancyStatus().PercentageToNextLevel >= 0.95)
+        {
+            Owner.Sync(LevelUpGameObject.Command);
+        }
     }
 
     public void AddXp(Experience amount)
@@ -125,21 +152,13 @@ sealed class Veterancy : Component, IListener<GainXp>, ISyncable, ILevelable, IV
         Owner.Game.Meta.Events.Send(new BuildingGainedLevel(Owner));
     }
 
-    public static Veterancy WithLevelThresholds(params Experience[] levelThresholds) =>
-        new(levelThresholds.ToImmutableArray());
+    public static Veterancy WithLevelThresholds(params Experience[] levelThresholds) => new([..levelThresholds]);
 
     public IStateToSync GetCurrentStateToSync() => new VeterancySynchronizedState(this);
 
-    private sealed class VeterancySynchronizedState : IStateToSync
+    private sealed class VeterancySynchronizedState(Veterancy source) : IStateToSync
     {
-        private readonly Veterancy source;
-        private float currentExperience;
-
-        public VeterancySynchronizedState(Veterancy source)
-        {
-            this.source = source;
-            currentExperience = source.experience.NumericValue;
-        }
+        private float currentExperience = source.experience.NumericValue;
 
         public void Serialize(INetBufferStream stream)
         {

@@ -1,13 +1,13 @@
 ﻿{
-  id: "buildings",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse"
-    },
-    {
-      sampler: "normal",
-      suffix: "-normal",
-    }
-  ]
+    id: "buildings",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        },
+        {
+            sampler: "normal",
+            suffix: "-normal",
+        }
+    ]
 }

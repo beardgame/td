@@ -1,99 +1,99 @@
 {
-  id: "core",
-  components: [
-    {
-      id: "attributes",
-      parameters: {
-        name: "Core",
-      }
-    },
-    { id: "tags", parameters: { tags: [ "forbidDeletion" ] } },
-    { id: "cost", parameters: { resources: 1 } },
-    { id: "footprint", parameters: { footprint: "seven" } },
-    { id: "footprintTransformation" },
-    { id: "health", parameters: { maxHealth: 1000 } },
-    { id: "sink" },
-    { id: "defaultTileOccupancy" },
-    { id: "gameOverOnDestroy" },
-    { id: "damageNumbers" },
-    { id: "revealSurroundingZones", parameters: { steps: 1 } },
-    { id: "droneSpawner", parameters: { drone: "simple-drone" } },
+    id: "core",
+    components: [
+        {
+            id: "attributes",
+            parameters: {
+                name: "Core",
+            }
+        },
+        { id: "tags", parameters: { tags: [ "forbidDeletion" ] } },
+        { id: "cost", parameters: { resources: 1 } },
+        { id: "footprint", parameters: { footprint: "seven" } },
+        { id: "footprintTransformation" },
+        { id: "health", parameters: { maxHealth: 1000 } },
+        { id: "sink" },
+        { id: "defaultTileOccupancy" },
+        { id: "gameOverOnDestroy" },
+        { id: "damageNumbers" },
+        { id: "revealSurroundingZones", parameters: { steps: 1 } },
+        { id: "droneSpawner", parameters: { drone: "simple-drone" } },
 
-    { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
+        { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
 
-    { id: "coreStats" },
-    { id: "emergencyEMP", parameters: { object: "emergencyEMP" }},
+        { id: "coreStats" },
+        { id: "emergencyEMP", parameters: { object: "emergencyEMP" }},
 
-    {
-      id: "sprite",
-      parameters: {
-        sprite: "core-effects.core",
-        color: "FFFFFFFF",
-        size: 3,
-        heightOffset: 0.1
-      }
-    },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "core-effects.core",
+                color: "FFFFFFFF",
+                size: 3,
+                heightOffset: 0.1
+            }
+        },
 
-    {
-      id: "sprite",
-      parameters: {
-        sprite: "core.core-shell",
-        colorMode: "faction",
-        shader: "building",
-        drawGroup: "building",
-        size: 3,
-        heightOffset: 0.2,
-      }
-    },
-    {
-      id: "pointlight",
-      parameters: {
-        color: "FFAAAAFF",
-        radius: 5,
-        height: 0.2,
-        intensity: 0.6,
-      }
-    },
-    {
-      id: "pointlight",
-      parameters: {
-        color: "FFAAAAFF",
-        radius: 2,
-        height: 0.6,
-        intensity: 0.8,
-        drawShadow: true,
-      }
-    },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "core.core-shell",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 3,
+                heightOffset: 0.2,
+            }
+        },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "FFAAAAFF",
+                radius: 5,
+                height: 0.2,
+                intensity: 0.6,
+            }
+        },
+        {
+            id: "pointlight",
+            parameters: {
+                color: "FFAAAAFF",
+                radius: 2,
+                height: 0.6,
+                intensity: 0.8,
+                drawShadow: true,
+            }
+        },
 
-    {
-      id: "turret",
-      onGhost: true,
-      parameters: {
-        weapon: "core-gatling-weapon",
-        height: 0.3,
-        neutralDirection: 0,
-        offset: [1, 0]
-      }
-    },
-    {
-      id: "turret",
-      onGhost: true,
-      parameters: {
-        weapon: "core-gatling-weapon",
-        height: 0.3,
-        neutralDirection: 120,
-        offset: [-0.5, 0.866]
-      }
-    },
-    {
-      id: "turret",
-      onGhost: true,
-      parameters: {
-        weapon: "core-gatling-weapon",
-        height: 0.3,
-        neutralDirection: 240,
-        offset: [-0.5, -0.866]
-      }
-    },
-  ]
+        {
+            id: "turret",
+            onGhost: true,
+            parameters: {
+                weapon: "core-gatling-weapon",
+                height: 0.3,
+                neutralDirection: 0,
+                offset: [1, 0]
+            }
+        },
+        {
+            id: "turret",
+            onGhost: true,
+            parameters: {
+                weapon: "core-gatling-weapon",
+                height: 0.3,
+                neutralDirection: 120,
+                offset: [-0.5, 0.866]
+            }
+        },
+        {
+            id: "turret",
+            onGhost: true,
+            parameters: {
+                weapon: "core-gatling-weapon",
+                height: 0.3,
+                neutralDirection: 240,
+                offset: [-0.5, -0.866]
+            }
+        },
+    ]
 }

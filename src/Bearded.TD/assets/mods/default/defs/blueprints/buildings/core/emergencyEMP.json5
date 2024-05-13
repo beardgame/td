@@ -1,57 +1,57 @@
 ﻿{
-  id: "emergencyEMP",
-  components: [
-    {
-      id: "shockwave",
-      parameters: {
-        minRange: 1,
-        maxRange: 14,
-        speed: 6.75,
-        minRangeDamage: 1000,
-        maxRangeDamage: 300
-      }
-    },
-    {
-      id: "damageOnHit",
-      parameters: {
-        excludeBuildings : true
-      }
-    },
-    {
-      id: "stunBuildingsOnHit",
-      parameters: {
-        minDuration: 3,
-        maxDuration: 5
-      }
-    },
-    {
-      id: "animatedSprite",
-      parameters: {
-        sprite: "default.particle.halo",
-        drawGroupOrderKey: -20,
-        randomAngle: true,
-        animation: {
-          timeScale: 2,
-          keyFrames: [
-            {
-              color: "FFD0FF",
-              size: 2
-            },
-            {
-              color: "00000000",
-              size: 30,
-              duration: 1
-            },
-          ]
+    id: "emergencyEMP",
+    components: [
+        {
+            id: "shockwave",
+            parameters: {
+                minRange: 1,
+                maxRange: 14,
+                speed: 6.75,
+                minRangeDamage: 1000,
+                maxRangeDamage: 300
+            }
         },
-        heightOffset: 0.1,
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 2
-      }
-    }
-  ]
+        {
+            id: "damageOnHit",
+            parameters: {
+                excludeBuildings : true
+            }
+        },
+        {
+            id: "stunBuildingsOnHit",
+            parameters: {
+                minDuration: 3,
+                maxDuration: 5
+            }
+        },
+        {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.halo",
+                drawGroupOrderKey: -20,
+                randomAngle: true,
+                animation: {
+                    timeScale: 2,
+                    keyFrames: [
+                        {
+                            color: "FFD0FF",
+                            size: 2
+                        },
+                        {
+                            color: "00000000",
+                            size: 30,
+                            duration: 1
+                        },
+                    ]
+                },
+                heightOffset: 0.1,
+            }
+        },
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 2
+            }
+        }
+    ]
 }

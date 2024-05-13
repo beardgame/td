@@ -1,10 +1,10 @@
 {
-  id: "menu-background",
-  shader: "menu-background",
-  textures : [
-    { sampler: "caveTexture", file: "cave.png" },
-    { sampler: "coreTexture", file: "core.png" },
-    { sampler: "smokeTexture", file: "smoke.png" },
-    { sampler: "smokeTexture2", file: "smoke2.png" },
-  ],
+    id: "menu-background",
+    shader: "menu-background",
+    textures : [
+        { sampler: "caveTexture", file: "cave.png" },
+        { sampler: "coreTexture", file: "core.png" },
+        { sampler: "smokeTexture", file: "smoke.png" },
+        { sampler: "smokeTexture2", file: "smoke2.png" },
+    ],
 }

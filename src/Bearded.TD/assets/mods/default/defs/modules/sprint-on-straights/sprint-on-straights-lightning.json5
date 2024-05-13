@@ -1,41 +1,41 @@
 ﻿{
-  id: "sprint-on-straights-lightning",
-  affinityElement: "lightning",
-  socketShape: "sprintOnStraights",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "sprintOnStraights",
-        parameters: {
-          timeToSprint: 1,
-          minAcceleration: 5,
-          timeToMaxAcceleration: 2,
-          maxAcceleration: 20
+    id: "sprint-on-straights-lightning",
+    affinityElement: "lightning",
+    socketShape: "sprintOnStraights",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "sprintOnStraights",
+                parameters: {
+                    timeToSprint: 1,
+                    minAcceleration: 5,
+                    timeToMaxAcceleration: 2,
+                    maxAcceleration: 20
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "stunNearbyBuildingsWhileSprinting",
+                parameters: {
+                    delayAfterSprintStart: 0.5,
+                    timeBetweenStuns: 0.25,
+                    stunDuration : 0.25,
+                    range: 1.5
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.sprinting-enemy",
+                    element: "lightning",
+                }
+            }
         }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "stunNearbyBuildingsWhileSprinting",
-        parameters: {
-          delayAfterSprintStart: 0.5,
-          timeBetweenStuns: 0.25,
-          stunDuration : 0.25,
-          range: 1.5
-        }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "enemyIcon",
-        parameters: {
-          icon: "enemies.sprinting-enemy",
-          element: "lightning",
-        }
-      }
-    }
-  ]
+    ]
 }

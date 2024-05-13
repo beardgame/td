@@ -1,48 +1,48 @@
 ﻿{
-  id: "sprint-on-straights-kinetic",
-  affinityElement: "kinetics",
-  socketShape: "sprintOnStraights",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "sprintOnStraights",
-        parameters: {
-          timeToSprint: 1,
-          minAcceleration: 10,
-          timeToMaxAcceleration: 2,
-          maxAcceleration: 20,
-        }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "disableDragAfterSprint",
-        parameters: {
-          duration: 0.15,
-        }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "stunBumpedBuildingAfterSprint",
-        parameters: {
-          timeAfterSprint: 0.5,
-          stunDuration : 0.5
-        }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "enemyIcon",
-        parameters: {
-          icon: "enemies.sprinting-enemy",
-          element: "kinetics",
-        }
-      }
-    },
-  ],
+    id: "sprint-on-straights-kinetic",
+    affinityElement: "kinetics",
+    socketShape: "sprintOnStraights",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "sprintOnStraights",
+                parameters: {
+                    timeToSprint: 1,
+                    minAcceleration: 10,
+                    timeToMaxAcceleration: 2,
+                    maxAcceleration: 20,
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "disableDragAfterSprint",
+                parameters: {
+                    duration: 0.15,
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "stunBumpedBuildingAfterSprint",
+                parameters: {
+                    timeAfterSprint: 0.5,
+                    stunDuration : 0.5
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.sprinting-enemy",
+                    element: "kinetics",
+                }
+            }
+        },
+    ],
 }

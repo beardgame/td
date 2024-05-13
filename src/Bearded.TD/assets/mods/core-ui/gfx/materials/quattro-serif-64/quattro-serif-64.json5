@@ -1,7 +1,7 @@
 {
-  id: "quattro-serif-64",
-  shader: "font-msdf",
-  textures : [
-    { sampler: "msdf", file: "quattro.png" },
-  ],
+    id: "quattro-serif-64",
+    shader: "font-msdf",
+    textures : [
+        { sampler: "msdf", file: "quattro.png" },
+    ],
 }

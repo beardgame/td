@@ -1,26 +1,26 @@
 {
-  id: "lightning2-arcBranching",
-  name: "Arc branching",
-  cost: 50,
-  element: "lightning",
-  effects: [
-    {
-      type: "modification",
-      parameters: {
-        attributeType: "arcBranches",
-        mode: "constant",
-        value: 2,
-      }
-    },
-    // standard lightning upgrade: add a bounce
-    {
-      type: "modification",
-      parameters: {
-        attributeType: "arcBounces",
-        mode: "constant",
-        value: 1,
-      },
-      isSideEffect: true
-    }
-  ]
+    id: "lightning2-arcBranching",
+    name: "Arc branching",
+    cost: 50,
+    element: "lightning",
+    effects: [
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "arcBranches",
+                mode: "constant",
+                value: 2,
+            }
+        },
+        // standard lightning upgrade: add a bounce
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "arcBounces",
+                mode: "constant",
+                value: 1,
+            },
+            isSideEffect: true
+        }
+    ]
 }

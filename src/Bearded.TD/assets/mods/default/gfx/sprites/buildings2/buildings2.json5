@@ -1,11 +1,11 @@
 ﻿{
-  id: "buildings2",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse",
-      prefix: "",
-      suffix: ""
-    },
-  ]
+    id: "buildings2",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse",
+            prefix: "",
+            suffix: ""
+        },
+    ]
 }

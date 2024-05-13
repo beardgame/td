@@ -1,53 +1,53 @@
 ﻿{
-  id: "fire1-flamethrower-spent-tanks",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesCollideWithLevel", parameters : {
-      collisionNormalFactor: 0.6,
-      collisionTangentFactor: 0.6,
-      collisionAngularFactor : 0.6,
-    }},
-    { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: 1 } },
+    id: "fire1-flamethrower-spent-tanks",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesCollideWithLevel", parameters : {
+            collisionNormalFactor: 0.6,
+            collisionTangentFactor: 0.6,
+            collisionAngularFactor : 0.6,
+        }},
+        { id: "particlesMoveLinear" },
+        { id: "particlesGravity", parameters: { factor: 1 } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "buildings.flamethrower-fuel",
-      shader: "building-fade",
-      drawGroup: "building",
-      drawMode: "sprite",
-      reverseOrder: true,
-      heightOffset: 0.06,
-    } },
+        { id: "particlesDraw", parameters: {
+            sprite: "buildings.flamethrower-fuel",
+            shader: "building-fade",
+            drawGroup: "building",
+            drawMode: "sprite",
+            reverseOrder: true,
+            heightOffset: 0.06,
+        } },
 
-    { id: "particlesSpawnOnTrigger", parameters:  {
-      count: 1,
-      color: "White",
-      delay: 0.1,
-      lifeTime: 8,
-      lifeTimeNoise: 0.2,
-      offset: [-0.27, -0.01, -0.05],
-      velocity: [-1.5, 0, 0],
-      randomVelocity: 0.2,
-      randomVelocityNoise: 0.3,
-      relativeToDirection: true,
-      angularVelocity: 180,
-      angularVelocityNoise: 1,
-      randomAngularVelocitySign: true,
-      orientation: -90,
-      parentTriggers: ["tankEmptied"],
-      parentHierarchyDepth : 1,
-    }},
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            count: 1,
+            color: "White",
+            delay: 0.1,
+            lifeTime: 8,
+            lifeTimeNoise: 0.2,
+            offset: [-0.27, -0.01, -0.05],
+            velocity: [-1.5, 0, 0],
+            randomVelocity: 0.2,
+            randomVelocityNoise: 0.3,
+            relativeToDirection: true,
+            angularVelocity: 180,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true,
+            orientation: -90,
+            parentTriggers: ["tankEmptied"],
+            parentHierarchyDepth : 1,
+        }},
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0.2, color: "White" },
-          { duration: 0.8, size: 0.2, color: "White" },
-          { duration: 0.2, size: 0.2, color: "00000000" },
-        ],
-      }
-    } },
-  ]
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.2, color: "White" },
+                    { duration: 0.8, size: 0.2, color: "White" },
+                    { duration: 0.2, size: 0.2, color: "00000000" },
+                ],
+            }
+        } },
+    ]
 }
 

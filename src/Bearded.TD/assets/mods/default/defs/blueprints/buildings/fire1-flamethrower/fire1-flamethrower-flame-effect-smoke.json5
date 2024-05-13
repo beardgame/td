@@ -1,58 +1,58 @@
 ﻿{
-  id: "fire1-flamethrower-flame-effect-smoke",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.25 } },
-    { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
+    id: "fire1-flamethrower-flame-effect-smoke",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesGravity", parameters: { factor: -0.25 } },
+        { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "default.large-particles.blackSmoke",
-      drawMode: "sprite",
-      //shader: "flame",
-      drawGroupOrderKey : 1,
-      reverseOrder: true
-    } },
+        { id: "particlesDraw", parameters: {
+            sprite: "default.large-particles.blackSmoke",
+            drawMode: "sprite",
+            //shader: "flame",
+            drawGroupOrderKey : 1,
+            reverseOrder: true
+        } },
 
-    { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
-      interval: 0.05,
-      intervalNoise: 0.2,
-      randomStartInterval: true,
-      betweenLastTwoProjectilesIfCreatedWithin: 0.15,
-      startDelay: 0.05,
+        { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
+            interval: 0.05,
+            intervalNoise: 0.2,
+            randomStartInterval: true,
+            betweenLastTwoProjectilesIfCreatedWithin: 0.15,
+            startDelay: 0.05,
 
-      lifeTime: 0.6,
-      lifeTimeNoise: 0.2,
+            lifeTime: 0.6,
+            lifeTimeNoise: 0.2,
 
-      inheritVelocity: 1.5,
-      velocity: [0, 0, 0.5],
-      velocityNoise: 0,
-      randomVelocity: 0.5,
-      randomVelocityNoise: 0.1,
-      orientationNoise: 1,
-      angularVelocity: 90,
-      angularVelocityNoise: 1,
-      randomAngularVelocitySign: true,
-    } },
+            inheritVelocity: 1.5,
+            velocity: [0, 0, 0.5],
+            velocityNoise: 0,
+            randomVelocity: 0.5,
+            randomVelocityNoise: 0.1,
+            orientationNoise: 1,
+            angularVelocity: 90,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true,
+        } },
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0, size: 0, color: "00000000" },
-          { duration: 0.5, size: 0, color: "00000000" },
-          { duration: 0, size: 0.3, color: "00000000" },
-          { duration: 0.5, size: 0.4, color: "88753822" },
-          { duration: 0.5, size: 0.5, color: "66333333" },
-          { duration: 0.5, size: 0.0, color: "66333333" },
-        ],
-      }
-    } },
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0, size: 0, color: "00000000" },
+                    { duration: 0.5, size: 0, color: "00000000" },
+                    { duration: 0, size: 0.3, color: "00000000" },
+                    { duration: 0.5, size: 0.4, color: "88753822" },
+                    { duration: 0.5, size: 0.5, color: "66333333" },
+                    { duration: 0.5, size: 0.0, color: "66333333" },
+                ],
+            }
+        } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "default.particle.mote",
-      drawMode: "sprite",
-      reverseOrder: true,
-    } }
-  ]
+        { id: "particlesDraw", parameters: {
+            sprite: "default.particle.mote",
+            drawMode: "sprite",
+            reverseOrder: true,
+        } }
+    ]
 }

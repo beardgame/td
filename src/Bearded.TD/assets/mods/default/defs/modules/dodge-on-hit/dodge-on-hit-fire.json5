@@ -1,28 +1,28 @@
 ﻿{
-  id: "dodge-on-hit-fire",
-  affinityElement: "fire",
-  socketShape: "dodgeOnHit",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "boostForwardsOnTakeHit",
-        parameters: {
-          cooldown: 1,
-          impulse: 10,
-          spawnObject: "boost-forward-effect"
+    id: "dodge-on-hit-fire",
+    affinityElement: "fire",
+    socketShape: "dodgeOnHit",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "boostForwardsOnTakeHit",
+                parameters: {
+                    cooldown: 1,
+                    impulse: 10,
+                    spawnObject: "boost-forward-effect"
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.dodgy-enemy",
+                    element: "fire",
+                }
+            }
         }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "enemyIcon",
-        parameters: {
-          icon: "enemies.dodgy-enemy",
-          element: "fire",
-        }
-      }
-    }
-  ]
+    ]
 }

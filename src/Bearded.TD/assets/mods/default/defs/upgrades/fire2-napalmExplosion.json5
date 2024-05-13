@@ -1,26 +1,26 @@
 {
-  id: "fire2-napalmExplosion",
-  name: "Napalm explosion",
-  cost: 50,
-  element: "fire",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "projectileExplosionOnHit",
-        parameters: {
-          projectile: "napalmBlob",
-          onHitLevel: true,
-          onHitEnemy: false,
-          minProjectileNumber: 6,
-          maxProjectileNumber: 8,
-          randomVelocity: 4.5,
-          damageFactor: 1
+    id: "fire2-napalmExplosion",
+    name: "Napalm explosion",
+    cost: 50,
+    element: "fire",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "projectileExplosionOnHit",
+                parameters: {
+                    projectile: "napalmBlob",
+                    onHitLevel: true,
+                    onHitEnemy: false,
+                    minProjectileNumber: 6,
+                    maxProjectileNumber: 8,
+                    randomVelocity: 4.5,
+                    damageFactor: 1
+                }
+            },
+            prerequisites: {
+                requiredTags: [ "fireExplosion", "projectile" ]
+            }
         }
-      },
-      prerequisites: {
-        requiredTags: [ "fireExplosion", "projectile" ]
-      }
-    }
-  ]
+    ]
 }

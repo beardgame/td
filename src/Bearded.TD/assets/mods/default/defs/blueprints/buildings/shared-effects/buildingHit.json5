@@ -1,29 +1,29 @@
 {
-  id: "buildingHit",
-  components: [
-    { id: "inheritDirection" },
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 10,
-        sprite: "default.particle.tracer",
-        color: "00FFFFAA",
-        size: 0.15,
-        lineWidth: 0.15,
-        lifetime: 0.5,
-        randomVelocity: 4,
-        reflectionVelocity: 5,
-        collideWithLevel: true,
-        collisionNormalFactor: 0.8,
-        collisionTangentFactor: 0.8,
-        drawMode: "line"
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 0.5
-      }
-    }
-  ]
+    id: "buildingHit",
+    components: [
+        { id: "inheritDirection" },
+        {
+            id: "particleSystem",
+            parameters: {
+                count: 10,
+                sprite: "default.particle.tracer",
+                color: "00FFFFAA",
+                size: 0.15,
+                lineWidth: 0.15,
+                lifetime: 0.5,
+                randomVelocity: 4,
+                reflectionVelocity: 5,
+                collideWithLevel: true,
+                collisionNormalFactor: 0.8,
+                collisionTangentFactor: 0.8,
+                drawMode: "line"
+            }
+        },
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 0.5
+            }
+        }
+    ]
 }

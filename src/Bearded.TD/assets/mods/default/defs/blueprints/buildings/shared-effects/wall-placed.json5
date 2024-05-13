@@ -1,45 +1,45 @@
 {
-  id: "wall-placed-effect",
-  components: [
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 1,
-        sprite: "default.particle.halo",
-        color: "00888888",
-        colorMode: "factionMultiplied",
-        size: 1,
-        finalSize: 2,
-        lifetime: 0.5,
-        gravityFactor: 0,
-        offset: [0, 0, 0.1],
-        drawMode: "sprite",
-        dontRandomize: true,
-      }
-    },
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 8,
-        sprite: "default.particle.orb-soft",
-        color: "00888888",
-        colorMode: "factionMultiplied",
-        size: 0.2,
-        finalSize: 0.6,
-        lifetime: 0.75,
-        randomVelocity: 5,
-        gravityFactor: 1,
-        collideWithLevel: true,
-        collisionNormalFactor: 0.2,
-        collisionTangentFactor: 0.2,
-        drawMode: "sprite"
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 0.75
-      }
-    }
-  ]
+    id: "wall-placed-effect",
+    components: [
+        {
+            id: "particleSystem",
+            parameters: {
+                count: 1,
+                sprite: "default.particle.halo",
+                color: "00888888",
+                colorMode: "factionMultiplied",
+                size: 1,
+                finalSize: 2,
+                lifetime: 0.5,
+                gravityFactor: 0,
+                offset: [0, 0, 0.1],
+                drawMode: "sprite",
+                dontRandomize: true,
+            }
+        },
+        {
+            id: "particleSystem",
+            parameters: {
+                count: 8,
+                sprite: "default.particle.orb-soft",
+                color: "00888888",
+                colorMode: "factionMultiplied",
+                size: 0.2,
+                finalSize: 0.6,
+                lifetime: 0.75,
+                randomVelocity: 5,
+                gravityFactor: 1,
+                collideWithLevel: true,
+                collisionNormalFactor: 0.2,
+                collisionTangentFactor: 0.2,
+                drawMode: "sprite"
+            }
+        },
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 0.75
+            }
+        }
+    ]
 }

@@ -1,36 +1,36 @@
 {
-  id: "lightning2-lightningExplosion",
-  name: "Lightning explosion",
-  cost: 50,
-  element: "lightning",
-  effects: [
-    {
-      type: "replacement",
-      parameters: {
-        removeKey: "splashDamage",
-        addComponents: [
-          {
-            id: "emitArcOnHit",
+    id: "lightning2-lightningExplosion",
+    name: "Lightning explosion",
+    cost: 50,
+    element: "lightning",
+    effects: [
+        {
+            type: "replacement",
             parameters: {
-              arc: "lightning-explosion-arc",
-              onHitLevel: true,
-              onHitEnemy: true,
-              fractionOfBaseDamage: 1.5,
-              branches: 4,
+                removeKey: "splashDamage",
+                addComponents: [
+                    {
+                        id: "emitArcOnHit",
+                        parameters: {
+                            arc: "lightning-explosion-arc",
+                            onHitLevel: true,
+                            onHitEnemy: true,
+                            fractionOfBaseDamage: 1.5,
+                            branches: 4,
+                        }
+                    }
+                ],
+                replaceMode: "replace"
+            },
+            prerequisites: {
+                requiredTags: [ "hitsLevel" ],
+                forbiddenTags: [ "damageReplaced" ],
             }
-          }
-        ],
-        replaceMode: "replace"
-      },
-      prerequisites: {
-        requiredTags: [ "hitsLevel" ],
-        forbiddenTags: [ "damageReplaced" ],
-      }
-    },
-    {
-      type: "addTags",
-      parameters: [ "damageReplaced" ],
-      isSideEffect: true
-    }
-  ]
+        },
+        {
+            type: "addTags",
+            parameters: [ "damageReplaced" ],
+            isSideEffect: true
+        }
+    ]
 }

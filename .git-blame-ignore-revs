@@ -2,3 +2,5 @@
 231c7f0c6055824c4d7a189f3abc54e9a5b4cbe0
 # Remove quotes around JSON keys for JSON5 readability
 75e4f0720bf743e85c493e4d13278bcc84fdcbc8
+# Change JSON indentation to consistent 4 space indentation
+5916379e25415348282b91567a202b88593da15c

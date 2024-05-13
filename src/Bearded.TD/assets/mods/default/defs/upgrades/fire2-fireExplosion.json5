@@ -1,43 +1,43 @@
 {
-  id: "fire2-fireExplosion",
-  name: "Fire explosion",
-  cost: 50,
-  element: "fire",
-  effects: [
-    {
-      type: "replacement",
-      parameters: {
-        removeKey: "splashDamage",
-        addComponents: [
-          {
-            id: "applyAreaOnFireOnImpact",
+    id: "fire2-fireExplosion",
+    name: "Fire explosion",
+    cost: 50,
+    element: "fire",
+    effects: [
+        {
+            type: "replacement",
             parameters: {
-              range: 1.5,
-              fractionOfBaseDamage: 2,
-              effectDuration: 3
-            }
-          },
-          {
-            id: "spawnObjectOnHit",
-            parameters: {
-              object: "fireExplosion",
-              onHitLevel: true,
-              onHitEnemy: true
+                removeKey: "splashDamage",
+                addComponents: [
+                    {
+                        id: "applyAreaOnFireOnImpact",
+                        parameters: {
+                            range: 1.5,
+                            fractionOfBaseDamage: 2,
+                            effectDuration: 3
+                        }
+                    },
+                    {
+                        id: "spawnObjectOnHit",
+                        parameters: {
+                            object: "fireExplosion",
+                            onHitLevel: true,
+                            onHitEnemy: true
+                        },
+                        keys: [ "splashDamage" ]
+                    }
+                ],
+                replaceMode: "replace"
             },
-            keys: [ "splashDamage" ]
-          }
-        ],
-        replaceMode: "replace"
-      },
-      prerequisites: {
-        requiredTags: [ "grenade" ],
-        forbiddenTags: [ "damageReplaced" ],
-      }
-    },
-    {
-      type: "addTags",
-      parameters: [ "damageReplaced", "fireExplosion" ],
-      isSideEffect: true
-    }
-  ]
+            prerequisites: {
+                requiredTags: [ "grenade" ],
+                forbiddenTags: [ "damageReplaced" ],
+            }
+        },
+        {
+            type: "addTags",
+            parameters: [ "damageReplaced", "fireExplosion" ],
+            isSideEffect: true
+        }
+    ]
 }

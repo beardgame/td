@@ -6,7 +6,7 @@
         { id: "setTiles", parameters: { type: "crevice" } },
         { id: "selectRandom", parameters: { percentage: 0.1 } },
         { id: "setTiles", parameters: { type: "wall" } },
-        
+
         { id: "selectTileType", parameters: { type: "floor" } },
         { id: "selectRandomSubset", parameters: { percentage: 0.1 } },
         {

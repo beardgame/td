@@ -1,50 +1,50 @@
 ﻿{
-  id: "kinetics2-gatling-spent-shells",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesCollideWithLevel", parameters : {
-      collisionNormalFactor: 0.6,
-      collisionTangentFactor: 0.6,
-      collisionAngularFactor : 0.6,
-    }},
-    { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: 1 } },
+    id: "kinetics2-gatling-spent-shells",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesCollideWithLevel", parameters : {
+            collisionNormalFactor: 0.6,
+            collisionTangentFactor: 0.6,
+            collisionAngularFactor : 0.6,
+        }},
+        { id: "particlesMoveLinear" },
+        { id: "particlesGravity", parameters: { factor: 1 } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "default.shells.long-neck",
-      shader: "building-fade",
-      drawGroup: "building",
-      drawMode: "sprite",
-      reverseOrder: true,
-    } },
+        { id: "particlesDraw", parameters: {
+            sprite: "default.shells.long-neck",
+            shader: "building-fade",
+            drawGroup: "building",
+            drawMode: "sprite",
+            reverseOrder: true,
+        } },
 
-    { id: "particlesSpawnOnTrigger", parameters:  {
-      count: 1,
-      color: "White",
-      delay: 0.1,
-      lifeTime: 6,
-      lifeTimeNoise: 0.2,
-      offset: [-0.2, 0.1, 0],
-      velocity: [-0.5, 2, 2],
-      randomVelocity: 0.5,
-      randomVelocityNoise: 0.3,
-      relativeToDirection: true,
-      angularVelocity: 180,
-      angularVelocityNoise: 1,
-      randomAngularVelocitySign: true,
-      orientation: -90,
-      parentTriggers: ["shotProjectile"],
-    }},
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            count: 1,
+            color: "White",
+            delay: 0.1,
+            lifeTime: 6,
+            lifeTimeNoise: 0.2,
+            offset: [-0.2, 0.1, 0],
+            velocity: [-0.5, 2, 2],
+            randomVelocity: 0.5,
+            randomVelocityNoise: 0.3,
+            relativeToDirection: true,
+            angularVelocity: 180,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true,
+            orientation: -90,
+            parentTriggers: ["shotProjectile"],
+        }},
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0.03, color: "White" },
-          { duration: 0.8, size: 0.03, color: "White" },
-          { duration: 0.2, size: 0.03, color: "00000000" },
-        ],
-      }
-    } },
-  ]
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.03, color: "White" },
+                    { duration: 0.8, size: 0.03, color: "White" },
+                    { duration: 0.2, size: 0.03, color: "00000000" },
+                ],
+            }
+        } },
+    ]
 }

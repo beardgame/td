@@ -1,5 +1,5 @@
 {
-  id: "flame",
-  vertexShader: "default-sprite.vs",
-  fragmentShader: "flame.fs"
+    id: "flame",
+    vertexShader: "default-sprite.vs",
+    fragmentShader: "flame.fs"
 }

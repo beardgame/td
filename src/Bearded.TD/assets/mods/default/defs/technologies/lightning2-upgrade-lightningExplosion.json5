@@ -1,9 +1,9 @@
 {
-  id: "lightning2-upgrade-lightningExplosion",
-  name: "Lightning explosion",
-  branch: "lightning",
-  tier: "medium",
-  unlocks: [
-    { type: "upgrade", blueprint: "lightning2-lightningExplosion" }
-  ]
+    id: "lightning2-upgrade-lightningExplosion",
+    name: "Lightning explosion",
+    branch: "lightning",
+    tier: "medium",
+    unlocks: [
+        { type: "upgrade", blueprint: "lightning2-lightningExplosion" }
+    ]
 }

@@ -1,11 +1,11 @@
 ﻿{
-  id: "enemies",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse",
-      prefix: "",
-      suffix: ""
-    }
-  ]
+    id: "enemies",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse",
+            prefix: "",
+            suffix: ""
+        }
+    ]
 }

@@ -12,7 +12,7 @@
                 purpose: "blocker"
             }
         },
-        
+
         { id: "selectTileType", parameters: { type: "floor" } },
         { id: "selectRandomSubset", parameters: { percentage: 0.2 } },
         {
