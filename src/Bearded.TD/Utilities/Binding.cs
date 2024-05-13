@@ -114,14 +114,14 @@ static class Binding
 
     public static IReadonlyBinding<Void> AggregateChanges<TIn>(ReadOnlySpan<IReadonlyBinding<TIn>?> bindings)
     {
-        var aggregated = new Binding<Void>();
+        var aggregated = new EventBinding();
         foreach (var binding in bindings)
         {
             if (binding is null)
                 continue;
 
-            binding.ControlUpdated += _ => aggregated.SetFromControl(default);
-            binding.SourceUpdated += _ => aggregated.SetFromSource(default);
+            binding.ControlUpdated += _ => aggregated.InvokeFromControl();
+            binding.SourceUpdated += _ => aggregated.InvokeFromSource();
         }
 
         return aggregated;
