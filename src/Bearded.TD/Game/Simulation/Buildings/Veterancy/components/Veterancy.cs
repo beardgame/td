@@ -57,6 +57,7 @@ sealed class Veterancy : Component, IListener<GainXp>, IListener<WaveEnded>, ISy
     private int level;
     private Experience experience;
     private Experience previousExperience;
+    private bool activated;
 
     public Veterancy() : this(Constants.Game.Building.VeterancyThresholds) {}
 
@@ -74,13 +75,17 @@ sealed class Veterancy : Component, IListener<GainXp>, IListener<WaveEnded>, ISy
     {
         base.Activate();
         Owner.Game.Meta.Events.Subscribe<WaveEnded>(this);
+        activated = true;
     }
 
     public override void OnRemoved()
     {
         base.OnRemoved();
         Events.Unsubscribe<GainXp>(this);
-        Owner.Game.Meta.Events.Unsubscribe<WaveEnded>(this);
+        if (activated)
+        {
+            Owner.Game.Meta.Events.Unsubscribe<WaveEnded>(this);
+        }
     }
 
     public override void Update(TimeSpan elapsedTime)
