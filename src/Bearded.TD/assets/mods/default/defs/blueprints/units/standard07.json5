@@ -10,8 +10,10 @@
         {
             id: "sprite",
             parameters: {
-                sprite: "particle.orb-soft",
-                color: "ff3979",
+                sprite: "default.fungi.fungus2",
+                shader: "unit",
+                drawGroup: "unit",
+                color: "FFff3979",
                 size: 0.7,
                 heightOffset: 0.1
             }
