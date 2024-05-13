@@ -22,12 +22,14 @@ sealed class MouseStateObserver
 
     private void onMouseMove(MouseEventArgs args)
     {
+        if (MouseIsOver) return;
         MouseIsOver = true;
         StateChanged?.Invoke();
     }
 
     private void onMouseExit(MouseEventArgs args)
     {
+        if (!MouseIsOver) return;
         MouseIsOver = false;
         StateChanged?.Invoke();
     }
