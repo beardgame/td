@@ -49,9 +49,9 @@
       id: "pointlight",
       parameters: {
         color: "FFAAAAFF",
-        radius: 4,
+        radius: 5,
         height: 0.2,
-        intensity: 1,
+        intensity: 0.6,
       }
     },
     {
@@ -60,7 +60,7 @@
         color: "FFAAAAFF",
         radius: 2,
         height: 0.6,
-        intensity: 1,
+        intensity: 0.8,
         drawShadow: true,
       }
     },

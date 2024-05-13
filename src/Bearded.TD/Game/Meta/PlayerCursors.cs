@@ -20,13 +20,13 @@ sealed class PlayerCursors
 {
     private const float playerCursorLightHeight = 1;
     private const float playerCursorLightRadius = 0.5f * (otherCursorLightMinRadius + otherCursorLightMaxRadius);
-    private const float playerCursorAlpha = 0.5f * (otherCursorLightMinAlpha + otherCursorLightMaxAlpha);
+    private const float playerCursorAlpha = otherCursorLightMinAlpha;
 
     private const float otherCursorLightHeight = 1;
     private const float otherCursorLightMinRadius = 2.5f;
     private const float otherCursorLightMaxRadius = 5f;
-    private const float otherCursorLightMinAlpha = .3f;
-    private const float otherCursorLightMaxAlpha = .7f;
+    private const float otherCursorLightMinAlpha = .35f;
+    private const float otherCursorLightMaxAlpha = .5f;
 
     private const float momentumFactor = 1E-5f;
     private const float momentumDecayPerSecond = .99999f;
