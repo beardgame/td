@@ -1,67 +1,67 @@
 {
-  id: "fireExplosion",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesMoveLinear" },
-    { id: "particlesDrag", parameters: { linear: 6, angular: 2 } },
+    id: "fireExplosion",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 6, angular: 2 } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "default.large-particles.flame3",
-      drawMode: "sprite",
-      shader: "flame",
-      drawGroupOrderKey : 2,
-      reverseOrder: false
-    } },
-    
-    { id: "particlesOffsetLifeTime", parameters: {
-      byVelocity: 0.03,
-      constant: -0.4
-    }},
-    { id: "particlesClampVelocity", parameters: {
-      minZ: 0.1,
-      maxZ: 5
-    }},
-    { id: "particlesSortByPredictedZOnce" },
-    
+        { id: "particlesDraw", parameters: {
+            sprite: "default.large-particles.flame3",
+            drawMode: "sprite",
+            shader: "flame",
+            drawGroupOrderKey : 2,
+            reverseOrder: false
+        } },
 
-    { id: "particlesSpawnOnCreate", parameters:  {
-      count: 100,
-      lifeTime: 0.6,
-      lifeTimeNoise: 0.1,
-      
-      offset: [0, 0, 0.01],
-      
-      randomVelocity: 8,
-      randomVelocityNoise: 0.8,
-      
-      orientationNoise: 1,
-      angularVelocity: 90,
-      angularVelocityNoise: 1,
-      randomAngularVelocitySign: true
-    }},
-
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0, color: "00000000" },
-          { duration: 0.2, size: 0, color: "00000000" },
+        { id: "particlesOffsetLifeTime", parameters: {
+            byVelocity: 0.03,
+            constant: -0.4
+        }},
+        { id: "particlesClampVelocity", parameters: {
+            minZ: 0.1,
+            maxZ: 5
+        }},
+        { id: "particlesSortByPredictedZOnce" },
 
 
-          { duration: 0.0, size: 0, color: "00ffd385" },
-          { duration: 0.1, size: 0.22, color: "FFffd385" },
-          { duration: 0.1, size: 0.35, color: "FFff7c39" },
-          { duration: 0.1, size: 0.47, color: "66c05629" },
-          { duration: 0.1, size: 0.6, color: "00753822" },
-        ],
-      }
-    } },
+        { id: "particlesSpawnOnCreate", parameters:  {
+            count: 100,
+            lifeTime: 0.6,
+            lifeTimeNoise: 0.1,
 
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 1
-      }
-    }
-  ]
+            offset: [0, 0, 0.01],
+
+            randomVelocity: 8,
+            randomVelocityNoise: 0.8,
+
+            orientationNoise: 1,
+            angularVelocity: 90,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0, color: "00000000" },
+                    { duration: 0.2, size: 0, color: "00000000" },
+
+
+                    { duration: 0.0, size: 0, color: "00ffd385" },
+                    { duration: 0.1, size: 0.22, color: "FFffd385" },
+                    { duration: 0.1, size: 0.35, color: "FFff7c39" },
+                    { duration: 0.1, size: 0.47, color: "66c05629" },
+                    { duration: 0.1, size: 0.6, color: "00753822" },
+                ],
+            }
+        } },
+
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 1
+            }
+        }
+    ]
 }

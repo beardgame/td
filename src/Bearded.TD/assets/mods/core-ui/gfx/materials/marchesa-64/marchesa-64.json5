@@ -1,7 +1,7 @@
 {
-  id: "marchesa-64",
-  shader: "font-msdf",
-  textures : [
-    { sampler: "msdf", file: "marchesa.png" },
-  ],
+    id: "marchesa-64",
+    shader: "font-msdf",
+    textures : [
+        { sampler: "msdf", file: "marchesa.png" },
+    ],
 }

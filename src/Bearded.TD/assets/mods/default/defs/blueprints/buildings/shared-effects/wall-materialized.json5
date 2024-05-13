@@ -1,38 +1,38 @@
 {
-  id: "wall-materialized-effect",
-  components: [
-    {
-      id: "animatedSprite",
-      parameters: {
-        sprite: "default.particle.halo",
-        colorMode: "factionMultiplied",
-        animation : {
-          timeScale: 0.833,
-          keyFrames: [
-            {
-              color: "00000000",
-              size: 2.5
-            },
-            {
-              color: "00aaaaaa",
-              size: 1,
-              duration: 0.8
-            },
-            {
-              color: "00000000",
-              size: 4,
-              duration: 0.2
-            },
-          ]
+    id: "wall-materialized-effect",
+    components: [
+        {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.halo",
+                colorMode: "factionMultiplied",
+                animation : {
+                    timeScale: 0.833,
+                    keyFrames: [
+                        {
+                            color: "00000000",
+                            size: 2.5
+                        },
+                        {
+                            color: "00aaaaaa",
+                            size: 1,
+                            duration: 0.8
+                        },
+                        {
+                            color: "00000000",
+                            size: 4,
+                            duration: 0.2
+                        },
+                    ]
+                },
+                heightOffset: 0.3,
+            }
         },
-        heightOffset: 0.3,
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 1
-      }
-    }
-  ]
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 1
+            }
+        }
+    ]
 }

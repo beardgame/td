@@ -1,50 +1,50 @@
 {
-  id: "kinetics1-steamHammer",
-  components: [
-    {
-      id: "attributes",
-      parameters: {
-        name: "Steam hammer",
-        icon: "building-icons.earth-crack",
-      }
-    },
-    { id: "cost", parameters: { resources: 50 } },
-    { id: "footprint", parameters: { footprint: "single" } },
-    { id: "footprintTransformation" },
-    { id: "defaultTileOccupancy" },
-    { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
-    { id: "allowManualOverdrive" },
-    { id: "autoRepair", parameters: { } },
-    { id: "gainXpOnDamage" },
-    { id: "veterancy" },
-    { id: "upgradeSlots", parameters : { initialSlots: 1, additionalSlotTriggers : [ "levelGained" ] } },
-    { id: "passiveVeterancyBonus", parameters : { } },
-    { id: "upgradePips" },
-    { id: "damageNumbers" },
-    {
-      id: "spawnObjectOnLevelGain",
-      parameters: { object: "building-gained-level-effect" },
-    },
+    id: "kinetics1-steamHammer",
+    components: [
+        {
+            id: "attributes",
+            parameters: {
+                name: "Steam hammer",
+                icon: "building-icons.earth-crack",
+            }
+        },
+        { id: "cost", parameters: { resources: 50 } },
+        { id: "footprint", parameters: { footprint: "single" } },
+        { id: "footprintTransformation" },
+        { id: "defaultTileOccupancy" },
+        { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
+        { id: "allowManualOverdrive" },
+        { id: "autoRepair", parameters: { } },
+        { id: "gainXpOnDamage" },
+        { id: "veterancy" },
+        { id: "upgradeSlots", parameters : { initialSlots: 1, additionalSlotTriggers : [ "levelGained" ] } },
+        { id: "passiveVeterancyBonus", parameters : { } },
+        { id: "upgradePips" },
+        { id: "damageNumbers" },
+        {
+            id: "spawnObjectOnLevelGain",
+            parameters: { object: "building-gained-level-effect" },
+        },
 
-    {
-      id: "playSoundOnTrigger",
-      parameters: {
-        trigger: "levelGained",
-        sound: "veterancy",
-      },
-    },
-    {
-      id: "turret",
-      onGhost: true,
-      parameters: {
-        weapon: "kinetics1-steamHammer-weapon",
-        height: 0.2
-      },
-    },
-    { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
-    { id: "spawnObjectOnMaterialized", parameters: { object: "building-materialized-effect"} },
-    { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "levelGained",
+                sound: "veterancy",
+            },
+        },
+        {
+            id: "turret",
+            onGhost: true,
+            parameters: {
+                weapon: "kinetics1-steamHammer-weapon",
+                height: 0.2
+            },
+        },
+        { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
+        { id: "spawnObjectOnMaterialized", parameters: { object: "building-materialized-effect"} },
+        { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
 
-    { id: "child", parameters: { object: "building-disabled-smoke" } }
-  ]
+        { id: "child", parameters: { object: "building-disabled-smoke" } }
+    ]
 }

@@ -1,5 +1,5 @@
 {
-  id: "default-title",
-  definition: "quattro-serif-64",
-  material: "quattro-serif-64",
+    id: "default-title",
+    definition: "quattro-serif-64",
+    material: "quattro-serif-64",
 }

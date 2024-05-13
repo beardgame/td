@@ -1,27 +1,27 @@
 {
-  id: "dustExplosion",
-  components: [
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 12,
-        sprite: "default.particle.mote",
-        color: "88555555",
-        size: 0.5,
-        finalSize: 2.5,
-        lifetime: 1,
-        randomVelocity: 0.3,
-        initialVelocity: [0, 0, 0.5],
-        gravityFactor: 0,
-        dontRandomize: true,
-        drawMode: "sprite"
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 1
-      }
-    }
-  ]
+    id: "dustExplosion",
+    components: [
+        {
+            id: "particleSystem",
+            parameters: {
+                count: 12,
+                sprite: "default.particle.mote",
+                color: "88555555",
+                size: 0.5,
+                finalSize: 2.5,
+                lifetime: 1,
+                randomVelocity: 0.3,
+                initialVelocity: [0, 0, 0.5],
+                gravityFactor: 0,
+                dontRandomize: true,
+                drawMode: "sprite"
+            }
+        },
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 1
+            }
+        }
+    ]
 }

@@ -6,7 +6,7 @@
         { id: "selectRandom", parameters: { percentage: 0.05 } },
         { id: "dilateSelection" },
         { id: "setTiles", parameters: { type: "floor" } },
-        
+
         { id: "selectRandom", parameters: { percentage: 0.1 } },
         { id: "setTiles", parameters: { type: "floor" } }
     ]

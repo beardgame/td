@@ -1,7 +1,7 @@
 {
-  id: "water",
-  shader: "water",
-  texturess: [
-    { sampler: "noiseTexture", file: "noise.png" },
-  ]
+    id: "water",
+    shader: "water",
+    texturess: [
+        { sampler: "noiseTexture", file: "noise.png" },
+    ]
 }

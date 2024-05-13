@@ -5,7 +5,7 @@
         { id: "setTiles", parameters: { type: "floor" } },
         { id: "erodeSelection", parameters: { }  },
         { id: "setTiles", parameters: { type: "wall" } },
-        
+
         { id: "selectRandom", parameters: { percentage: 0.1 } },
         { id: "dilateSelection" },
         { id: "setTiles", parameters: { type: "floor" } },

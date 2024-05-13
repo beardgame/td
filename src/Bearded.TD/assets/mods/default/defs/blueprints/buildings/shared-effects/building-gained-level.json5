@@ -1,55 +1,55 @@
 {
-  id: "building-gained-level-effect",
-  components: [
-    {
-      id: "animatedSprite",
-      parameters: {
-        sprite: "default.particle.halo",
-        animation : {
-          keyFrames: [
-            {
-              color: "transparent",
-              size: 0.1,
-            },
-            {
-              color: "4403fcd7",
-              size: 0.5,
-              duration: 0.3
-            },
-            {
-              color: "transparent",
-              size: 3,
-              duration: 1.2
-            },
-          ]
+    id: "building-gained-level-effect",
+    components: [
+        {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.halo",
+                animation : {
+                    keyFrames: [
+                        {
+                            color: "transparent",
+                            size: 0.1,
+                        },
+                        {
+                            color: "4403fcd7",
+                            size: 0.5,
+                            duration: 0.3
+                        },
+                        {
+                            color: "transparent",
+                            size: 3,
+                            duration: 1.2
+                        },
+                    ]
+                },
+                heightOffset: 0.3,
+            }
         },
-        heightOffset: 0.3,
-      }
-    },
-    {
-      id: "particleSystem",
-      parameters: {
-        count: 12,
-        sprite: "default.particle.plus",
-        color: "ff03fcd7",
-        size: 0.1,
-        finalSize: 0.2,
-        lifetime: 1.5,
-        inherentVelocity: [0, 0, 1],
-        randomVelocity: 1,
-        gravityFactor: 0.4,
-        collideWithLevel: true,
-        collisionNormalFactor: 0.8,
-        collisionTangentFactor: 0.2,
-        drawMode: "sprite",
-        offset: [0, 0, 0.4],
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 2
-      }
-    }
-  ]
+        {
+            id: "particleSystem",
+            parameters: {
+                count: 12,
+                sprite: "default.particle.plus",
+                color: "ff03fcd7",
+                size: 0.1,
+                finalSize: 0.2,
+                lifetime: 1.5,
+                inherentVelocity: [0, 0, 1],
+                randomVelocity: 1,
+                gravityFactor: 0.4,
+                collideWithLevel: true,
+                collisionNormalFactor: 0.8,
+                collisionTangentFactor: 0.2,
+                drawMode: "sprite",
+                offset: [0, 0, 0.4],
+            }
+        },
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 2
+            }
+        }
+    ]
 }

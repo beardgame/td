@@ -1,9 +1,9 @@
 {
-  id: "lightning2-upgrade-arcBranching",
-  name: "Arc branching",
-  branch: "lightning",
-  tier: "medium",
-  unlocks: [
-    { type: "upgrade", blueprint: "lightning2-arcBranching" }
-  ]
+    id: "lightning2-upgrade-arcBranching",
+    name: "Arc branching",
+    branch: "lightning",
+    tier: "medium",
+    unlocks: [
+        { type: "upgrade", blueprint: "lightning2-arcBranching" }
+    ]
 }

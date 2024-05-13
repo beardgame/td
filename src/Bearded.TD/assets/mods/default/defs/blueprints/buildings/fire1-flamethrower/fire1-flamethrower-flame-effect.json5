@@ -1,55 +1,55 @@
 ﻿{
-  id: "fire1-flamethrower-flame-effect",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.25 } },
-    { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
+    id: "fire1-flamethrower-flame-effect",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesGravity", parameters: { factor: -0.25 } },
+        { id: "particlesDrag", parameters: { linear: 5, angular: 2 } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "default.large-particles.flame3",
-      drawMode: "sprite",
-      shader: "flame",
-      drawGroupOrderKey : 2,
-      reverseOrder: false
-    } },
+        { id: "particlesDraw", parameters: {
+            sprite: "default.large-particles.flame3",
+            drawMode: "sprite",
+            shader: "flame",
+            drawGroupOrderKey : 2,
+            reverseOrder: false
+        } },
 
-    { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
-      interval: 0.02,
-      intervalNoise: 0.2,
-      randomStartInterval: true,
-      betweenLastTwoProjectilesIfCreatedWithin: 0.15,
-      count: 3,
-      
-      offset: [0.1, 0, 0],
-      offsetNoise: 1,
-      relativeToDirection: true,
+        { id: "particlesSpawnContinuouslyFromParentProjectiles", parameters: {
+            interval: 0.02,
+            intervalNoise: 0.2,
+            randomStartInterval: true,
+            betweenLastTwoProjectilesIfCreatedWithin: 0.15,
+            count: 3,
 
-      lifeTime: 0.4,
-      lifeTimeNoise: 0,
+            offset: [0.1, 0, 0],
+            offsetNoise: 1,
+            relativeToDirection: true,
 
-      inheritVelocity: 2,
-      velocity: [0, 0, 0.5],
-      velocityNoise: 0.1,
-      randomVelocity: 0,
-      randomVelocityNoise: 0.1,
-      orientationNoise: 1,
-      angularVelocity: 90,
-      angularVelocityNoise: 1,
-      randomAngularVelocitySign: true,
-    } },
+            lifeTime: 0.4,
+            lifeTimeNoise: 0,
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0, color: "00ffd385" },
-          { duration: 0.1, size: 0.22, color: "FFffd385" },
-          { duration: 0.1, size: 0.35, color: "FFff7c39" },
-          { duration: 0.1, size: 0.47, color: "66c05629" },
-          { duration: 0.1, size: 0.6, color: "00753822" },
-        ],
-      }
-    } },
-  ]
+            inheritVelocity: 2,
+            velocity: [0, 0, 0.5],
+            velocityNoise: 0.1,
+            randomVelocity: 0,
+            randomVelocityNoise: 0.1,
+            orientationNoise: 1,
+            angularVelocity: 90,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true,
+        } },
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0, color: "00ffd385" },
+                    { duration: 0.1, size: 0.22, color: "FFffd385" },
+                    { duration: 0.1, size: 0.35, color: "FFff7c39" },
+                    { duration: 0.1, size: 0.47, color: "66c05629" },
+                    { duration: 0.1, size: 0.6, color: "00753822" },
+                ],
+            }
+        } },
+    ]
 }

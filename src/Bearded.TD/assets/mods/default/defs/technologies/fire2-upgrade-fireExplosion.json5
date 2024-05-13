@@ -1,9 +1,9 @@
 {
-  id: "fire2-upgrade-fireExplosion",
-  name: "Fire explosion",
-  branch: "fire",
-  tier: "medium",
-  unlocks: [
-    { type: "upgrade", blueprint: "fire2-fireExplosion" }
-  ]
+    id: "fire2-upgrade-fireExplosion",
+    name: "Fire explosion",
+    branch: "fire",
+    tier: "medium",
+    unlocks: [
+        { type: "upgrade", blueprint: "fire2-fireExplosion" }
+    ]
 }

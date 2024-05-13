@@ -1,45 +1,45 @@
 ﻿{
-  id: "kinetics0-cannon-smoke",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.05 } },
-    { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
+    id: "kinetics0-cannon-smoke",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesGravity", parameters: { factor: -0.05 } },
+        { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
 
-    { id: "particlesDraw", parameters: {
-      sprite: "default.particle.mote",
-      drawMode: "sprite",
-      reverseOrder: true
-    } },
+        { id: "particlesDraw", parameters: {
+            sprite: "default.particle.mote",
+            drawMode: "sprite",
+            reverseOrder: true
+        } },
 
-    { id: "particlesSpawnOnTrigger", parameters:  {
-      count: 4,
-      color: "White",
-      delay: 0,
-      lifeTime: 1,
-      lifeTimeNoise: 0.2,
-      offset: [0.5, 0, 0],
-      velocity: [0.4, 0, 0],
-      velocityNoise: 0.3,
-      randomVelocity: 0.15,
-      randomVelocityNoise: 0.3,
-      relativeToDirection: true,
-      angularVelocity: 90,
-      angularVelocityNoise: 0.5,
-      randomAngularVelocitySign: true,
-      parentTriggers: ["shotProjectile"],
-    }},
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            count: 4,
+            color: "White",
+            delay: 0,
+            lifeTime: 1,
+            lifeTimeNoise: 0.2,
+            offset: [0.5, 0, 0],
+            velocity: [0.4, 0, 0],
+            velocityNoise: 0.3,
+            randomVelocity: 0.15,
+            randomVelocityNoise: 0.3,
+            relativeToDirection: true,
+            angularVelocity: 90,
+            angularVelocityNoise: 0.5,
+            randomAngularVelocitySign: true,
+            parentTriggers: ["shotProjectile"],
+        }},
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0.0, color: "00000000" },
-          { duration: 0.2, size: 0.1, color: "55111111" },
-          { duration: 0.4, size: 0.3, color: "88444444" },
-          { duration: 0.4, size: 0.5, color: "00000000" },
-        ],
-      }
-    } }
-  ]
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.0, color: "00000000" },
+                    { duration: 0.2, size: 0.1, color: "55111111" },
+                    { duration: 0.4, size: 0.3, color: "88444444" },
+                    { duration: 0.4, size: 0.5, color: "00000000" },
+                ],
+            }
+        } }
+    ]
 }

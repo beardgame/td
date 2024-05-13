@@ -1,7 +1,7 @@
 {
-  id: "chopin-128",
-  shader: "font-msdf",
-  textures : [
-    { sampler: "msdf", file: "chopin.png" },
-  ],
+    id: "chopin-128",
+    shader: "font-msdf",
+    textures : [
+        { sampler: "msdf", file: "chopin.png" },
+    ],
 }

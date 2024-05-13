@@ -1,98 +1,98 @@
 {
-  id: "fire2-napalm",
-  name: "Napalm",
-  cost: 50,
-  element: "fire",
-  effects: [
-    {
-      type: "modification",
-      parameters: {
-        attributeType: "range",
-        mode: "multiply",
-        value: 1.5,
-      },
-      prerequisites: {
-        requiredTags: [ "flameEmitter" ]
-      }
-    },
-    {
-      type: "modification",
-      parameters: {
-        attributeType: "spreadAngle",
-        mode: "multiply",
-        value: 0.2,
-      },
-      prerequisites: {
-        requiredTags: [ "flameEmitter" ]
-      }
-    },
-    {
-      type: "modification",
-      parameters: {
-        attributeType: "muzzleSpeed",
-        mode: "multiply",
-        value: 0.333,
-      },
-      prerequisites: {
-        requiredTags: [ "flameEmitter" ]
-      }
-    },
-    {
-      type: "modification",
-      parameters: {
-        attributeType: "bulletDropCompensation",
-        mode: "constant",
-        value: 1,
-      },
-      prerequisites: {
-        requiredTags: [ "flameEmitter" ]
-      }
-    },
-    {
-      type: "replacement",
-      parameters: {
-        removeKey: "fireStreamEffect",
-        replaceMode: "replace",
-        addComponents: [
-          { id: "child", parameters: { object: "napalm-flame-stream-liquid" } },
-          { id: "child", parameters: { object: "napalm-flame-stream" } },
-        ],
-      }
-    },
-    {
-      type: "replacement",
-      parameters: {
-        removeKey: "flameDamage",
-        replaceMode: "replace",
-        addComponents: [
-          {
-            id: "applyOnFireOnImpact",
+    id: "fire2-napalm",
+    name: "Napalm",
+    cost: 50,
+    element: "fire",
+    effects: [
+        {
+            type: "modification",
             parameters: {
-              probability: 1,
-              fractionOfBaseDamage: 16,
-              effectDuration: 4
+                attributeType: "range",
+                mode: "multiply",
+                value: 1.5,
+            },
+            prerequisites: {
+                requiredTags: [ "flameEmitter" ]
             }
-          },
-          {
-            id: "spawnObjectOnHit",
+        },
+        {
+            type: "modification",
             parameters: {
-              onHitLevel: true,
-              onHitEnemy: false,
-              object: "napalmPuddle"
+                attributeType: "spreadAngle",
+                mode: "multiply",
+                value: 0.2,
+            },
+            prerequisites: {
+                requiredTags: [ "flameEmitter" ]
             }
-          }
-        ]
-      }
-    },
-    {
-      type: "replacement",
-      parameters: {
-        removeKey: "flamePhysics",
-        replaceMode: "replace",
-        addComponents: [
-          { id: "deleteOnHit" }
-        ]
-      }
-    }
-  ]
+        },
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "muzzleSpeed",
+                mode: "multiply",
+                value: 0.333,
+            },
+            prerequisites: {
+                requiredTags: [ "flameEmitter" ]
+            }
+        },
+        {
+            type: "modification",
+            parameters: {
+                attributeType: "bulletDropCompensation",
+                mode: "constant",
+                value: 1,
+            },
+            prerequisites: {
+                requiredTags: [ "flameEmitter" ]
+            }
+        },
+        {
+            type: "replacement",
+            parameters: {
+                removeKey: "fireStreamEffect",
+                replaceMode: "replace",
+                addComponents: [
+                    { id: "child", parameters: { object: "napalm-flame-stream-liquid" } },
+                    { id: "child", parameters: { object: "napalm-flame-stream" } },
+                ],
+            }
+        },
+        {
+            type: "replacement",
+            parameters: {
+                removeKey: "flameDamage",
+                replaceMode: "replace",
+                addComponents: [
+                    {
+                        id: "applyOnFireOnImpact",
+                        parameters: {
+                            probability: 1,
+                            fractionOfBaseDamage: 16,
+                            effectDuration: 4
+                        }
+                    },
+                    {
+                        id: "spawnObjectOnHit",
+                        parameters: {
+                            onHitLevel: true,
+                            onHitEnemy: false,
+                            object: "napalmPuddle"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            type: "replacement",
+            parameters: {
+                removeKey: "flamePhysics",
+                replaceMode: "replace",
+                addComponents: [
+                    { id: "deleteOnHit" }
+                ]
+            }
+        }
+    ]
 }

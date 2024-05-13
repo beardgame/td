@@ -1,5 +1,5 @@
 {
-  id: "building-fade",
-  vertexShader: "building.vs",
-  fragmentShader: "building-fade.fs"
+    id: "building-fade",
+    vertexShader: "building.vs",
+    fragmentShader: "building-fade.fs"
 }

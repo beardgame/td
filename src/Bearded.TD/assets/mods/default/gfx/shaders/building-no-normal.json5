@@ -1,5 +1,5 @@
 {
-  id: "building-no-normal",
-  vertexShader: "building.vs",
-  fragmentShader: "building-no-normal.fs"
+    id: "building-no-normal",
+    vertexShader: "building.vs",
+    fragmentShader: "building-no-normal.fs"
 }

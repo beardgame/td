@@ -1,28 +1,28 @@
 ﻿{
-  id: "dodge-on-hit-kinetic",
-  affinityElement: "kinetics",
-  socketShape: "dodgeOnHit",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "boostForwardsOnTakeHit",
-        parameters: {
-          cooldown: 1.5,
-          impulse: -10,
-          spawnObject: "dodge-backwards-effect"
+    id: "dodge-on-hit-kinetic",
+    affinityElement: "kinetics",
+    socketShape: "dodgeOnHit",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "boostForwardsOnTakeHit",
+                parameters: {
+                    cooldown: 1.5,
+                    impulse: -10,
+                    spawnObject: "dodge-backwards-effect"
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.dodgy-enemy",
+                    element: "kinetics",
+                }
+            }
         }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "enemyIcon",
-        parameters: {
-          icon: "enemies.dodgy-enemy",
-          element: "kinetics",
-        }
-      }
-    }
-  ],
+    ],
 }

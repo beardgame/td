@@ -1,5 +1,5 @@
 {
-  id: "gpu-terrain",
-  vertexShader: "gpu-terrain.vs",
-  fragmentShader: "default-terrain.fs"
+    id: "gpu-terrain",
+    vertexShader: "gpu-terrain.vs",
+    fragmentShader: "default-terrain.fs"
 }

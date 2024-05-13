@@ -1,5 +1,5 @@
 {
-  id: "building",
-  vertexShader: "building.vs",
-  fragmentShader: "building.fs"
+    id: "building",
+    vertexShader: "building.vs",
+    fragmentShader: "building.fs"
 }

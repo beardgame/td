@@ -20,12 +20,12 @@
         { id: "erodeSelection", parameters: { } },
         { id: "erodeSelection", parameters: { } },
         { id: "tagSelected", parameters: { value: -10 } },
-        
+
         { id: "selectRandom", parameters: { percentage: 0.1 } },
         { id: "tagSelected", parameters: { value: 1 } },
         { id: "selectTag", parameters: { } },
         { id: "setTiles", parameters: { type: "wall" } },
-        
+
         { id: "selectTileType", parameters: { type: "floor" } },
         { id: "selectRandomSubset", parameters: { percentage: 0.1 } },
         {

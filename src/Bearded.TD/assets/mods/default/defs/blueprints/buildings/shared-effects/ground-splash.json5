@@ -1,39 +1,39 @@
 {
-  id: "ground-splash",
-  components: [
-    {
-      id: "animatedSprite",
-      parameters: {
-        sprite: "default.particle.crater",
-        drawGroupOrderKey: -20,
-        randomAngle: true,
-        animation: {
-          timeScale: 2,
-          keyFrames: [
-            {
-              color: "00000000",
-              size: 2
-            },
-            {
-              color: "88444444",
-              size: 2,
-              duration: 0.05
-            },
-            {
-              color: "00000000",
-              size: 2,
-              duration: 0.95
-            },
-          ]
+    id: "ground-splash",
+    components: [
+        {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.crater",
+                drawGroupOrderKey: -20,
+                randomAngle: true,
+                animation: {
+                    timeScale: 2,
+                    keyFrames: [
+                        {
+                            color: "00000000",
+                            size: 2
+                        },
+                        {
+                            color: "88444444",
+                            size: 2,
+                            duration: 0.05
+                        },
+                        {
+                            color: "00000000",
+                            size: 2,
+                            duration: 0.95
+                        },
+                    ]
+                },
+                heightOffset: 0.1,
+            }
         },
-        heightOffset: 0.1,
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 2
-      }
-    }
-  ]
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 2
+            }
+        }
+    ]
 }

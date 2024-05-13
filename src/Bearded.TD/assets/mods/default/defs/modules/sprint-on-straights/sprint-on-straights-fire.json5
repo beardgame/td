@@ -1,41 +1,41 @@
 ﻿{
-  id: "sprint-on-straights-fire",
-  affinityElement: "fire",
-  socketShape: "sprintOnStraights",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "sprintOnStraights",
-        parameters: {
-          timeToSprint: 1,
-          minAcceleration: 5,
-          timeToMaxAcceleration: 2,
-          maxAcceleration: 20
+    id: "sprint-on-straights-fire",
+    affinityElement: "fire",
+    socketShape: "sprintOnStraights",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "sprintOnStraights",
+                parameters: {
+                    timeToSprint: 1,
+                    minAcceleration: 5,
+                    timeToMaxAcceleration: 2,
+                    maxAcceleration: 20
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "spawnObjectOnSprintStart",
+                parameters: {
+                    object: "fire-sprinter-trail",
+                    attach: "whileSprinting",
+                    delete: "afterSprintStop",
+                    deletionDelay: 0.5,
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.sprinting-enemy",
+                    element: "fire",
+                }
+            }
         }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "spawnObjectOnSprintStart",
-        parameters: {
-          object: "fire-sprinter-trail",
-          attach: "whileSprinting",
-          delete: "afterSprintStop",
-          deletionDelay: 0.5,
-        }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "enemyIcon",
-        parameters: {
-          icon: "enemies.sprinting-enemy",
-          element: "fire",
-        }
-      }
-    }
-  ]
+    ]
 }

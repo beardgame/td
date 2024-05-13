@@ -1,30 +1,30 @@
 ﻿{
-  id: "dodge-on-hit-lightning",
-  affinityElement: "lightning",
-  socketShape: "dodgeOnHit",
-  effects: [
-    {
-      type: "component",
-      parameters: {
-        id: "teleportRandomlyOnTakeHit",
-        parameters: {
-          cooldown: 2,
-          minDistance: 1.5,
-          maxDistance: 2.5,
-          spawnObjectBefore: "dodge-teleport-before-effect",
-          spawnObjectAfter: "dodge-teleport-after-effect"
+    id: "dodge-on-hit-lightning",
+    affinityElement: "lightning",
+    socketShape: "dodgeOnHit",
+    effects: [
+        {
+            type: "component",
+            parameters: {
+                id: "teleportRandomlyOnTakeHit",
+                parameters: {
+                    cooldown: 2,
+                    minDistance: 1.5,
+                    maxDistance: 2.5,
+                    spawnObjectBefore: "dodge-teleport-before-effect",
+                    spawnObjectAfter: "dodge-teleport-after-effect"
+                }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "enemyIcon",
+                parameters: {
+                    icon: "enemies.dodgy-enemy",
+                    element: "lightning",
+                }
+            }
         }
-      }
-    },
-    {
-      type: "component",
-      parameters: {
-        id: "enemyIcon",
-        parameters: {
-          icon: "enemies.dodgy-enemy",
-          element: "lightning",
-        }
-      }
-    }
-  ]
+    ]
 }

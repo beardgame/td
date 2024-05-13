@@ -1,9 +1,9 @@
 {
-  id: "building-icons",
-  textureSamplers:
-  [
-    {
-      sampler: "diffuse"
-    }
-  ]
+    id: "building-icons",
+    textureSamplers:
+    [
+        {
+            sampler: "diffuse"
+        }
+    ]
 }

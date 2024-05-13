@@ -1,35 +1,35 @@
 ﻿{
-  id: "fire1-flamethrower-flame-effect-liquid",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesMoveLinear" },
+    id: "fire1-flamethrower-flame-effect-liquid",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
 
-    { id: "particlesDrawConnected", parameters: {
-      sprite: "default.trails.smoke",
-      uvLength : 4,
-      attachLastToObject: true
-    } },
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.trails.smoke",
+            uvLength : 4,
+            attachLastToObject: true
+        } },
 
-    { id: "particlesSpawnOnTrigger", parameters:  {
-      parentTriggers: ["shotProjectile"],
-      lifeTime: 0.15,
-      offset: [0.2, 0, 0],
-      velocity: [12, 0, 0],
-      relativeToDirection: true,
-    } },
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            parentTriggers: ["shotProjectile"],
+            lifeTime: 0.15,
+            offset: [0.2, 0, 0],
+            velocity: [12, 0, 0],
+            relativeToDirection: true,
+        } },
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0.05, color: "00000000" },
-          { duration: 0.2, size: 0.05, color: "00000000" },
-          { duration: 0.1, size: 0.07, color: "White" },
-          { duration: 0.2, size: 0.13, color: "00000000" },
-        ],
-      }
-    } },
-    
-    { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
-  ]
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.05, color: "00000000" },
+                    { duration: 0.2, size: 0.05, color: "00000000" },
+                    { duration: 0.1, size: 0.07, color: "White" },
+                    { duration: 0.2, size: 0.13, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+    ]
 }

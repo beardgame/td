@@ -1,39 +1,39 @@
 {
-  id: "crater",
-  components: [
-    {
-      id: "animatedSprite",
-      parameters: {
-        sprite: "default.particle.crater",
-        drawGroupOrderKey: -20,
-        randomAngle: true,
-        animation : {
-          timeScale: 10,
-          keyFrames: [
-            {
-              color: "00000000",
-              size: 1
-            },
-            {
-              color: "AA888888",
-              size: 1,
-              duration: 0.01
-            },
-            {
-              color: "00000000",
-              size: 1,
-              duration: 0.99
-            },
-          ]
+    id: "crater",
+    components: [
+        {
+            id: "animatedSprite",
+            parameters: {
+                sprite: "default.particle.crater",
+                drawGroupOrderKey: -20,
+                randomAngle: true,
+                animation : {
+                    timeScale: 10,
+                    keyFrames: [
+                        {
+                            color: "00000000",
+                            size: 1
+                        },
+                        {
+                            color: "AA888888",
+                            size: 1,
+                            duration: 0.01
+                        },
+                        {
+                            color: "00000000",
+                            size: 1,
+                            duration: 0.99
+                        },
+                    ]
+                },
+                heightOffset: 0.1,
+            }
         },
-        heightOffset: 0.1,
-      }
-    },
-    {
-      id: "deleteAfter",
-      parameters: {
-        timeSpan: 10
-      }
-    }
-  ]
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 10
+            }
+        }
+    ]
 }

@@ -1,5 +1,5 @@
 {
-  id: "default-text-small",
-  definition: "quattro-sans-16",
-  material: "quattro-sans-16",
+    id: "default-text-small",
+    definition: "quattro-sans-16",
+    material: "quattro-sans-16",
 }

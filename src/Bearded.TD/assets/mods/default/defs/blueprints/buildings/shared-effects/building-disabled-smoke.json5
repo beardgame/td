@@ -1,52 +1,52 @@
 ﻿{
-  id: "building-disabled-smoke",
-  components: [
-    { id: "particles", parameters: { } },
-    { id: "particlesMoveLinear" },
-    { id: "particlesGravity", parameters: { factor: -0.08 } },
-    { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
-    
-    { id: "toggleOnTriggers", parameters:  {
-      name: "toggleSpawning",
-      startDisabled: true,
-      startOnParent: ["objectRuined", "overheated"],
-      stopOnParent: ["objectRepaired", "stopOverheated"]
-    }},
+    id: "building-disabled-smoke",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesGravity", parameters: { factor: -0.08 } },
+        { id: "particlesDrag", parameters: { linear: 0.25, angular: 0.25 } },
 
-    { id: "particlesSpawnContinuously", parameters: {
-      interval: 0.05,
-      intervalNoise: 0.2,
-      lifeTime: 2.5,
-      lifeTimeNoise: 0.2,
+        { id: "toggleOnTriggers", parameters:  {
+            name: "toggleSpawning",
+            startDisabled: true,
+            startOnParent: ["objectRuined", "overheated"],
+            stopOnParent: ["objectRepaired", "stopOverheated"]
+        }},
 
-      velocity: [0, 0, 0.5],
-      velocityNoise: 0.1,
-      randomVelocity: 0.2,
-      randomVelocityNoise: 0.1,
-      orientationNoise: 1,
-      angularVelocity: 90,
-      angularVelocityNoise: 1,
-      randomAngularVelocitySign: true,
+        { id: "particlesSpawnContinuously", parameters: {
+            interval: 0.05,
+            intervalNoise: 0.2,
+            lifeTime: 2.5,
+            lifeTimeNoise: 0.2,
 
-      toggle: "toggleSpawning"
-    } },
+            velocity: [0, 0, 0.5],
+            velocityNoise: 0.1,
+            randomVelocity: 0.2,
+            randomVelocityNoise: 0.1,
+            orientationNoise: 1,
+            angularVelocity: 90,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true,
 
-    { id: "particlesKeyFrames", parameters: {
-      scaleToParticleLifeTime: true,
-      animation: {
-        keyFrames: [
-          { duration: 0.0, size: 0.1, color: "00000000" },
-          { duration: 0.4, size: 0.3, color: "55222222" },
-          { duration: 0.4, size: 0.5, color: "88666666" },
-          { duration: 0.2, size: 0.6, color: "00000000" },
-        ],
-      }
-    } },
-    
-    { id: "particlesDraw", parameters: {
-      sprite: "default.large-particles.blackSmoke",
-      drawMode: "sprite",
-      reverseOrder: true,
-    } }
-  ]
+            toggle: "toggleSpawning"
+        } },
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.1, color: "00000000" },
+                    { duration: 0.4, size: 0.3, color: "55222222" },
+                    { duration: 0.4, size: 0.5, color: "88666666" },
+                    { duration: 0.2, size: 0.6, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesDraw", parameters: {
+            sprite: "default.large-particles.blackSmoke",
+            drawMode: "sprite",
+            reverseOrder: true,
+        } }
+    ]
 }

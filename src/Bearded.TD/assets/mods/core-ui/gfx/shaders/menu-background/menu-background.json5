@@ -1,5 +1,5 @@
 {
-  id: "menu-background",
-  vertexShader: "menu-background.vs",
-  fragmentShader: "menu-background.fs"
+    id: "menu-background",
+    vertexShader: "menu-background.vs",
+    fragmentShader: "menu-background.fs"
 }

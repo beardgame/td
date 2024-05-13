@@ -1,5 +1,5 @@
 {
-  id: "water",
-  vertexShader: "water.vs",
-  fragmentShader: "water.fs"
+    id: "water",
+    vertexShader: "water.vs",
+    fragmentShader: "water.fs"
 }

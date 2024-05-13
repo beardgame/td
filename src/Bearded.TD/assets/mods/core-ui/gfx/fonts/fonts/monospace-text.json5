@@ -1,5 +1,5 @@
 {
-  id: "monospace-text",
-  definition: "firacode-32",
-  material: "firacode-32",
+    id: "monospace-text",
+    definition: "firacode-32",
+    material: "firacode-32",
 }

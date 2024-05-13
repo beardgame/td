@@ -1,5 +1,5 @@
 {
-  id: "font-msdf",
-  vertexShader: "font-msdf.vs",
-  fragmentShader: "font-msdf.fs"
+    id: "font-msdf",
+    vertexShader: "font-msdf.vs",
+    fragmentShader: "font-msdf.fs"
 }

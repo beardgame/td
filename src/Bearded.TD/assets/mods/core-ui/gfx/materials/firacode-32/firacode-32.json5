@@ -1,7 +1,7 @@
 {
-  id: "firacode-32",
-  shader: "font-msdf",
-  textures : [
-    { sampler: "msdf", file: "firacode.png" },
-  ],
+    id: "firacode-32",
+    shader: "font-msdf",
+    textures : [
+        { sampler: "msdf", file: "firacode.png" },
+    ],
 }

@@ -1,5 +1,5 @@
 {
-  id: "deferred-sprite-3d",
-  vertexShader: "deferred-sprite-3d.vs",
-  fragmentShader: "deferred-sprite-3d.fs"
+    id: "deferred-sprite-3d",
+    vertexShader: "deferred-sprite-3d.vs",
+    fragmentShader: "deferred-sprite-3d.fs"
 }

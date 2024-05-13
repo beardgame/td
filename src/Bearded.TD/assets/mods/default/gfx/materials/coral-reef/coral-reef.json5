@@ -1,14 +1,14 @@
 {
-  id: "coral-reef",
-  shader: "gpu-terrain-tessellated",
-  textures : [
-    { sampler: "diffuseWall", file: "wall.jpg" },
-    { sampler: "normalWall", file: "wall-normal.jpg" },
-    
-    { sampler: "diffuseFloor", file: "floor.jpg" },
-    { sampler: "normalFloor", file: "floor-normal.jpg" },
-    
-    { sampler: "diffuseCrossSection", file: "cross.jpg" },
-    { sampler: "normalCrossSection", file: "cross-normal.jpg" },
-  ],
+    id: "coral-reef",
+    shader: "gpu-terrain-tessellated",
+    textures : [
+        { sampler: "diffuseWall", file: "wall.jpg" },
+        { sampler: "normalWall", file: "wall-normal.jpg" },
+
+        { sampler: "diffuseFloor", file: "floor.jpg" },
+        { sampler: "normalFloor", file: "floor-normal.jpg" },
+
+        { sampler: "diffuseCrossSection", file: "cross.jpg" },
+        { sampler: "normalCrossSection", file: "cross-normal.jpg" },
+    ],
 }
