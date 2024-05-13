@@ -23,22 +23,10 @@ sealed partial class StatusTracker
 
     private void removeStatus(Status status)
     {
-        statuses.Remove(status);
+        var success = statuses.Remove(status);
+        System.Diagnostics.Debug.Assert(success);
         StatusRemoved?.Invoke(status);
     }
-
-    private void removedExpiredStatuses()
-    {
-        var expiredStatuses = statuses.Where(hasExpired).ToList();
-        foreach (var s in expiredStatuses)
-        {
-            // Using RemoveWhere would be more efficient, but we're not likely to expire multiple statuses in the same
-            // frame and by using the remove method we ensure that the correct events are invoked.
-            removeStatus(s);
-        }
-    }
-
-    private bool hasExpired(Status status) => status.Expiry is { } expiry && expiry <= Owner.Game.Time;
 
     private sealed class StatusReceipt(Status status, StatusTracker tracker) : IStatusReceipt
     {

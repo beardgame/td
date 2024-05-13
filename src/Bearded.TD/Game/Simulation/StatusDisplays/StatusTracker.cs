@@ -13,8 +13,5 @@ sealed partial class StatusTracker : Component, IStatusTracker
 
     protected override void OnAdded() {}
 
-    public override void Update(TimeSpan elapsedTime)
-    {
-        removedExpiredStatuses();
-    }
+    public override void Update(TimeSpan elapsedTime) { }
 }

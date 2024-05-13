@@ -15,7 +15,7 @@
             id: "damageOnHit",
             parameters: {
                 damageType: "fire",
-                fractionOfBaseDamage: 0.5
+                fractionOfBaseDamage: 0.3
             },
             keys: [ "flameDamage" ]
         },
@@ -23,8 +23,8 @@
             id: "applyOnFireOnImpact",
             parameters: {
                 probability: 0.33,
-                fractionOfBaseDamage: 15,
-                effectDuration: 1.5
+                fractionOfBaseDamage: 10,
+                effectDuration: 2.5
             },
             keys: [ "flameDamage" ]
         },
