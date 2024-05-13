@@ -91,7 +91,10 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
 
     public void FireEMP()
     {
-        coreStats?.FireEMP();
+        if (coreStats is not null)
+        {
+            gameInstance?.Request(FireEmergencyEMP.Request, coreStats.Object);
+        }
     }
 
     public void SkipWaveTimer()
