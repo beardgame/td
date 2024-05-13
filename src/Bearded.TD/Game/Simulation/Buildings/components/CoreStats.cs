@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -10,6 +9,8 @@ sealed class CoreStats : Component, ICoreStats
 {
     private IHealth? health;
     private EmergencyEMP? emp;
+
+    public GameObject Object => Owner;
 
     private bool deleted;
     public bool Deleted => deleted || Owner.Deleted;
@@ -40,13 +41,4 @@ sealed class CoreStats : Component, ICoreStats
     }
 
     public override void Update(TimeSpan elapsedTime) { }
-
-    public void FireEMP()
-    {
-        if (EMPStatus != EMPStatus.Ready)
-        {
-            throw new InvalidOperationException("Cannot fire EMP when it is not ready.");
-        }
-        emp?.Fire();
-    }
 }
