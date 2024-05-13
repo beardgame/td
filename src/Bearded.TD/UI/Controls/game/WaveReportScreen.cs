@@ -15,7 +15,7 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class WaveReportScreen : CompositeControl
 {
-    private const double width = 300;
+    private const double width = 480;
     private const double rightMarginVisible = LayoutMargin;
     private static readonly double rightMarginHidden = -(LayoutMargin + width + Shadows.SmallWindow.PenumbraRadius);
 
