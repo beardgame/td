@@ -60,7 +60,7 @@ static class UIShapeDrawerExtensions
         var penumbra = ShapeComponentsForDrawing.From(Glow.OuterFilled(maxDistance, innerColor), buffer);
         var additional = ShapeComponentsForDrawing.From(overlay.Components, buffer, gradientsInFrame);
 
-        return (innerRadius, penumbra.WithOverlaid(additional));
+        return (innerRadius, penumbra.WithAdjacent(additional));
     }
 
     private static float antumbraAlpha(double antumbraRadius, double penumbraRadius)
