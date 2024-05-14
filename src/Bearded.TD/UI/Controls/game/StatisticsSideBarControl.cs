@@ -11,21 +11,20 @@ namespace Bearded.TD.UI.Controls;
 sealed class StatisticsSideBarControl : CompositeControl
 {
     private readonly StatisticsSideBar statistics;
-    private readonly Animations animations;
+    private readonly UIContext uiContext;
 
     private WaveReportScreen? currentWaveReport;
 
-    public StatisticsSideBarControl(StatisticsSideBar statistics, Animations animations)
+    public StatisticsSideBarControl(StatisticsSideBar statistics, UIContext uiContext)
     {
         this.statistics = statistics;
-        this.animations = animations;
+        this.uiContext = uiContext;
         IsClickThrough = true;
 
-        Add(ButtonFactories.Button(b => b
+        Add(uiContext.Factories.Button(b => b
                 .WithLabel("WR")
                 .WithShadow()
                 .MakeHexagon()
-                .WithAnimations(animations)
                 .WithOnClick(statistics.OpenWaveReport)
                 .WithEnabled(statistics.WaveReportButtonEnabled)
             )
@@ -49,8 +48,7 @@ sealed class StatisticsSideBarControl : CompositeControl
         if (report == null)
             return;
 
-        currentWaveReport = new WaveReportScreen(
-            statistics.Game, report, statistics.CloseWaveReport, animations, statistics.Tooltips);
+        currentWaveReport = new WaveReportScreen(statistics.Game, report, statistics.CloseWaveReport, uiContext);
         currentWaveReport.SetVisible(statistics.WaveReportVisible.Value);
         Add(currentWaveReport);
     }

@@ -10,12 +10,12 @@ sealed class GameEndControl : CompositeControl
 {
     public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
-    public GameEndControl(string text)
+    public GameEndControl(UIFactories factories, string text)
     {
         Add(new BackgroundBox { Color = .5f * Color.Black });
         Add(new Label { Color = Color.PaleVioletRed, FontSize = 24, Text = text }.Anchor(a => a
             .Bottom(margin: 32)));
-        Add(ButtonFactories.Button("back to main menu")
+        Add(factories.Button("back to main menu")
             .Anchor(a => a
                 .Bottom(margin: 4, height: Constants.UI.Button.Height)
                 .Left(relativePercentage: 0.5, margin: -0.5f * Constants.UI.Button.Width))

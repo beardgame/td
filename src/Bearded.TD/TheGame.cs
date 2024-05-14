@@ -18,6 +18,7 @@ using Bearded.TD.Rendering.UI;
 using Bearded.TD.UI;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.UI.Tooltips;
@@ -159,9 +160,17 @@ sealed class TheGame : Window
         rootControl.Add(navigationRoot);
         rootControl.Add(uiOverlay);
 
+        var overlayLayer = new OverlayLayer(uiOverlay);
+        dependencyResolver.Add(overlayLayer);
+
+        var tooltipFactory = new TooltipFactory(overlayLayer);
+        dependencyResolver.Add(tooltipFactory);
+
         eventManager = new EventManager(rootControl, inputManager, shortcuts);
-        var (models, views) =
-            UILibrary.CreateFactories(contentManager, renderContext, new Animations(gameTime, uiAnimationUpdater));
+        var animations = new Animations(gameTime, uiAnimationUpdater);
+        var uiFactories = UIFactories.Create(animations, tooltipFactory);
+        var uiContext = new UIContext(animations, uiFactories, contentManager);
+        var (models, views) = UILibrary.CreateFactories(renderContext, uiContext);
         navigationController =
             new NavigationController(navigationRoot, dependencyResolver, models, views);
         navigationController.Push<MainMenu, Intent>(intent);
@@ -169,11 +178,6 @@ sealed class TheGame : Window
         navigationController.Push<VersionOverlay>(a =>
             a.Bottom(margin: 4, height: 14).Right(margin: 4, width: 100));
         navigationController.Exited += Close;
-
-        var overlayLayer = new OverlayLayer(uiOverlay);
-        dependencyResolver.Add(overlayLayer);
-        var tooltipFactory = new TooltipFactory(overlayLayer);
-        dependencyResolver.Add(tooltipFactory);
 
         var globalShortcuts = ShortcutLayer.CreateBuilder()
             .AddShortcut(Keys.GraveAccent, debugConsole.Toggle)

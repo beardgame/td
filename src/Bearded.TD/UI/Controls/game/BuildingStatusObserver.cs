@@ -88,14 +88,14 @@ sealed class BuildingStatusObserver
 
         var status = new BuildingStatus(
             overlay.RequestDispatcher,
-            overlay.ContentManager,
+            overlay.UIContext.Content,
             overlay.SoundScape,
             t.Object,
             statusTracker,
             upgradeSlots,
             veterancy);
         var statusControl =
-            new BuildingStatusControl(status, overlay.Animations, overlay.Tooltips, overlay.RequestDispatcher);
+            new BuildingStatusControl(status, overlay.UIContext, overlay.RequestDispatcher);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl);
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);

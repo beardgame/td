@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Meta;
 using Bearded.TD.Networking;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Input;
 using Bearded.UI.Controls;
@@ -29,7 +28,6 @@ sealed class GameUI :
 
     public GameInstance Game { get; private set; } = null!;
     public TimeSource TimeSource { get; private set; } = null!;
-    public TooltipFactory Tooltips { get; private set; } = null!;
     private GameRunner runner = null!;
     private InputManager inputManager = null!;
     private FocusManager focusManager = null!;
@@ -62,15 +60,14 @@ sealed class GameUI :
         inputManager = dependencies.Resolve<InputManager>();
         focusManager = dependencies.Resolve<FocusManager>();
         shortcutCapturer = dependencies.Resolve<ShortcutCapturer>();
-        Tooltips = dependencies.Resolve<TooltipFactory>();
         var content = dependencies.Resolve<ContentManager>();
 
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
         ActionBar.Initialize(Game, shortcutCapturer, content);
         CoreStats.Initialize(Game, shortcutCapturer);
-        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, Tooltips, content);
-        StatisticsSideBar.Initialize(Game, Tooltips);
+        TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, content);
+        StatisticsSideBar.Initialize(Game);
 
         Game.Meta.Events.Subscribe<GameOverTriggered>(this);
         Game.Meta.Events.Subscribe<TechnologyTokenAwarded>(this);

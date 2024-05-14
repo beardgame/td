@@ -7,12 +7,13 @@ namespace Bearded.TD.UI.Factories;
 
 static class CollectionEditorFactories
 {
-    public static Control CollectionEditor(List<(string label, Binding<bool> binding)> entries)
+    public static Control CollectionEditor(
+        this UIFactories factories, List<(string label, Binding<bool> binding)> entries)
     {
-        return new CompositeControl()
+        return new CompositeControl
         {
             new Border(),
-            FormFactories.DenseForm(builder =>
+            factories.DenseForm(builder =>
             {
                 builder.MakeScrollable();
                 foreach (var (label, binding) in entries)
@@ -26,7 +27,8 @@ static class CollectionEditorFactories
 
     public static Layouts.IColumnLayout AddCollectionEditor(
         this Layouts.IColumnLayout columnLayout,
+        UIFactories factories,
         List<(string label, Binding<bool> binding)> entries,
         int numRowsShown = 5) =>
-        columnLayout.Add(CollectionEditor(entries), Constants.UI.Form.DenseFormRowHeight * numRowsShown);
+        columnLayout.Add(factories.CollectionEditor(entries), Constants.UI.Form.DenseFormRowHeight * numRowsShown);
 }

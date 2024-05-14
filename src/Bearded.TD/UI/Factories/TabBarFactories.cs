@@ -8,17 +8,17 @@ namespace Bearded.TD.UI.Factories;
 static class TabBarFactories
 {
     public static Layouts.Layout AddTabs(
-        this Layouts.Layout layout, BuilderFunc<Builder> builderFunc)
+        this Layouts.Layout layout, UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var builder = new Builder();
+        var builder = new Builder(factories);
         builderFunc(builder);
         layout.DockFixedSizeToTop(builder.Build(), Constants.UI.NavBar.Height);
         return layout;
     }
 
-    public sealed class Builder
+    public sealed class Builder(UIFactories factories)
     {
-        private readonly List<BuilderFunc<ButtonFactories.TextButtonBuilder>> buttonBuilderFunctions = [];
+        private readonly List<BuilderFunc<ButtonFactory.TextButtonBuilder>> buttonBuilderFunctions = [];
 
         public Builder AddButton(string label, VoidEventHandler onClick, IReadonlyBinding<bool>? isActive = null)
         {
@@ -40,7 +40,7 @@ static class TabBarFactories
             for (var i = 0; i < buttonBuilderFunctions.Count; i++)
             {
                 var leftMargin = i * (Constants.UI.LayoutMargin + Constants.UI.Button.Width);
-                control.Add(ButtonFactories.Button(buttonBuilderFunctions[i]).Anchor(a => a
+                control.Add(factories.Button(buttonBuilderFunctions[i]).Anchor(a => a
                     .Left(leftMargin, Constants.UI.Button.Width)
                     .Top(height: Constants.UI.Button.Height)));
             }

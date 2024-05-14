@@ -10,12 +10,12 @@ sealed class GameMenuControl : OnTopCompositeControl
     public event VoidEventHandler? ResumeGameButtonClicked;
     public event VoidEventHandler? ReturnToMainMenuButtonClicked;
 
-    public GameMenuControl() : base("In-Game Menu")
+    public GameMenuControl(UIFactories factories) : base("In-Game Menu")
     {
         IsClickThrough = true;
         this.Add(new ComplexBox().WithBlurredBackground()); // block click-through
         this.BuildLayout()
-            .AddMenu(b => b
+            .AddMenu(factories, b => b
                 .WithCloseAction("To main menu", () => ReturnToMainMenuButtonClicked?.Invoke())
                 .AddMenuAction("Resume game", () => ResumeGameButtonClicked?.Invoke())
                 .AddMenuAction("Options", () => { }, new Binding<bool>(false))

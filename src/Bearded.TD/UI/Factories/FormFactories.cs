@@ -7,31 +7,33 @@ namespace Bearded.TD.UI.Factories;
 
 static class FormFactories
 {
-    public static Control Form(BuilderFunc<Builder> builderFunc)
+    public static Control Form(this UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var builder = new Builder();
+        var builder = new Builder(factories);
         builderFunc(builder);
         return builder.Build();
     }
 
-    public static Control DenseForm(BuilderFunc<Builder> builderFunc)
+    public static Control DenseForm(this UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var builder = new Builder().MakeDense();
+        var builder = new Builder(factories).MakeDense();
         builderFunc(builder);
         return builder.Build();
     }
 
     public static Layouts.IColumnLayout AddForm(
-        this Layouts.IColumnLayout columnLayout, BuilderFunc<Builder> builderFunc)
+        this Layouts.IColumnLayout columnLayout, UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var builder = new Builder();
+        var builder = new Builder(factories);
         builderFunc(builder);
         columnLayout.Add(builder.Build(), builder.Height);
         return columnLayout;
     }
 
-    public sealed class Builder
+    public sealed class Builder(UIFactories factories)
     {
+        public UIFactories Factories { get; } = factories;
+
         private bool isDense;
         private bool isScrollable;
         private readonly List<(string?, Action<Layouts.Layout>)> rows = new();

@@ -27,7 +27,7 @@ static class ButtonExtensions
         ButtonBackgroundColor colors,
         Action<Color> setFillColor,
         Func<ShapeComponent> getFillComponent,
-        Animations? animations = null,
+        Animations animations,
         IReadonlyBinding<bool>? isEnabled = null,
         IReadonlyBinding<bool>? isActive = null,
         bool alwaysRenderAsEnabled = false)
@@ -57,7 +57,7 @@ static class ButtonExtensions
                 _ => colors.Neutral,
             } ?? Color.Transparent;
 
-            if (skipAnimation || animations == null)
+            if (skipAnimation)
             {
                 backgroundAnimation?.Cancel();
                 setFillColor(color);

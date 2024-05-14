@@ -28,16 +28,18 @@ sealed class TechnologyWindowControl : CompositeControl
     private static readonly double tierColumnWidth = contentWidth / shownTiers.Count;
 
     private readonly TechnologyWindow model;
+    private readonly UIFactories factories;
     private readonly Control window;
 
     private bool dragging;
     private Vector2d lastDragMousePosition;
 
-    public TechnologyWindowControl(TechnologyWindow model)
+    public TechnologyWindowControl(TechnologyWindow model, UIFactories factories)
     {
         this.model = model;
+        this.factories = factories;
         IsClickThrough = true;
-        window = WindowFactories.Window(b => b
+        window = factories.Window(b => b
             .WithTitle("Technology")
             .WithOnClose(model.CloseWindow)
             .WithContent(buildContent())
@@ -196,12 +198,11 @@ sealed class TechnologyWindowControl : CompositeControl
             var buttonColumn = buttons.BuildFixedColumn();
             foreach (var tech in techList)
             {
-                buttonColumn.AddCenteredButton(b => b
+                buttonColumn.AddCenteredButton(factories, b => b
                     .WithLabel(tech.Blueprint.Name)
                     .WithEnabled(tech.IsUnlockedBinding.Or(model.CanUnlockTechnologyNowBinding))
                     .WithActive(tech.IsUnlockedBinding)
-                    .WithTooltip(
-                        model.TooltipFactory, tech.Blueprint.Unlocks.Select(u => u.Description).ToImmutableArray())
+                    .WithTooltip(tech.Blueprint.Unlocks.Select(u => u.Description).ToImmutableArray())
                     .WithOnClick(args =>
                     {
                         if (args.ModifierKeys.IsSupersetOf(Constants.Input.DebugForceModifier))

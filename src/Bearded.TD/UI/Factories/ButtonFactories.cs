@@ -1,61 +1,56 @@
+using Bearded.TD.Content.Mods;
 using Bearded.UI.Controls;
 using static Bearded.TD.Constants.UI.Button;
+using static Bearded.TD.UI.Factories.ButtonFactory;
 
 namespace Bearded.TD.UI.Factories;
 
-static partial class ButtonFactories
+static class ButtonFactories
 {
-    public static Button Button(string label) => Button(b => b.WithLabel(label));
+    public static Button Button(this UIFactories factories, string label) => Button(factories, b => b.WithLabel(label));
 
-    public static Button Button(BuilderFunc<TextButtonBuilder> builderFunc) =>
-        button(new TextButtonBuilder(), builderFunc);
+    public static Button Button(this UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc) =>
+        factories.ButtonFactory.TextButton(builderFunc);
 
-    public static Button StandaloneIconButton(BuilderFunc<IconButtonBuilder> builderFunc) =>
-        button(IconButtonBuilder.ForStandaloneButton(), builderFunc);
+    public static Button StandaloneIconButton(this UIFactories factories, ModAwareSpriteId icon) =>
+        StandaloneIconButton(factories, b => b.WithIcon(icon));
 
-    private static Button button<T>(T builder, BuilderFunc<T> builderFunc) where T : Builder<T>
-    {
-        builderFunc(builder);
-        return builder.Build();
-    }
+    public static Button StandaloneIconButton(this UIFactories factories, BuilderFunc<IconButtonBuilder> builderFunc) =>
+        factories.ButtonFactory.IconButton(builderFunc);
 
     public static Layouts.IColumnLayout AddButton(
-        this Layouts.IColumnLayout columnLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+        this Layouts.IColumnLayout columnLayout, UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc)
     {
-        return columnLayout.Add(Button(builderFunc).WrapVerticallyCentered(Height), Height + 2 * Margin);
+        return columnLayout.Add(factories.Button(builderFunc).WrapVerticallyCentered(Height), Height + 2 * Margin);
     }
 
     public static Layouts.IColumnLayout AddLeftButton(
-        this Layouts.IColumnLayout columnLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+        this Layouts.IColumnLayout columnLayout, UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc)
     {
-        return columnLayout.Add(
-            Button(builderFunc).WrapAligned(Width, Height, 0, 0.5),
-            Height + 2 * Margin);
+        return columnLayout.Add(factories.Button(builderFunc).WrapAligned(Width, Height, 0, 0.5), Height + 2 * Margin);
     }
 
     public static Layouts.IColumnLayout AddCenteredButton(
-        this Layouts.IColumnLayout columnLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+        this Layouts.IColumnLayout columnLayout, UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc)
     {
-        return columnLayout.Add(
-            Button(builderFunc).WrapCentered(Width, Height),
-            Height + 2 * Margin);
+        return columnLayout.Add(factories.Button(builderFunc).WrapCentered(Width, Height), Height + 2 * Margin);
     }
 
     public static Layouts.IRowLayout AddButtonLeft(
-        this Layouts.IRowLayout rowLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+        this Layouts.IRowLayout rowLayout, UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc)
     {
-        return rowLayout.AddLeft(Button(builderFunc).WrapCentered(Width, Height), Width + 2 * Margin);
+        return rowLayout.AddLeft(factories.Button(builderFunc).WrapCentered(Width, Height), Width + 2 * Margin);
     }
 
     public static Layouts.IRowLayout AddButtonRight(
-        this Layouts.IRowLayout rowLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+        this Layouts.IRowLayout rowLayout, UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc)
     {
-        return rowLayout.AddRight(Button(builderFunc).WrapCentered(Width, Height), Width + 2 * Margin);
+        return rowLayout.AddRight(factories.Button(builderFunc).WrapCentered(Width, Height), Width + 2 * Margin);
     }
 
     public static Layouts.IRowLayout AddSquareButtonRight(
-        this Layouts.IRowLayout rowLayout, BuilderFunc<TextButtonBuilder> builderFunc)
+        this Layouts.IRowLayout rowLayout, UIFactories factories, BuilderFunc<TextButtonBuilder> builderFunc)
     {
-        return rowLayout.AddRight(Button(builderFunc).WrapCentered(Height, Height), Height + 2 * Margin);
+        return rowLayout.AddRight(factories.Button(builderFunc).WrapCentered(Height, Height), Height + 2 * Margin);
     }
 }

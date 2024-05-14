@@ -21,17 +21,17 @@ sealed class LobbyControl : CompositeControl
 {
     private readonly Binding<bool> readyEnabled = new();
 
-    public LobbyControl(Lobby model)
+    public LobbyControl(Lobby model, UIFactories factories)
     {
-        var lobbyDetailsControl = new LobbyDetailsControl(model);
+        var lobbyDetailsControl = new LobbyDetailsControl(model, factories);
 
         this.BuildLayout()
             .ForFullScreen()
-            .AddNavBar(b => b
+            .AddNavBar(factories, b => b
                 .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked)
                 .WithForwardButton("Toggle ready", model.OnToggleReadyButtonClicked, readyEnabled))
-            .AddMainSidebar(c => fillSidebar(c, model))
-            .AddTabs(t => t
+            .AddMainSidebar(c => fillSidebar(c, model, factories))
+            .AddTabs(factories, t => t
                 .AddButton("Game settings", lobbyDetailsControl.ShowGameSettings)
                 .AddButton("Player list", lobbyDetailsControl.ShowPlayerList))
             .FillContent(lobbyDetailsControl);
@@ -49,13 +49,13 @@ sealed class LobbyControl : CompositeControl
         }
     }
 
-    private static void fillSidebar(IControlParent sidebar, Lobby model)
+    private static void fillSidebar(IControlParent sidebar, Lobby model, UIFactories factories)
     {
         var logsContent = new LogsControl(model);
         var logsWithTabs = new CompositeControl();
         logsWithTabs
             .BuildLayout()
-            .AddTabs(t => t
+            .AddTabs(factories, t => t
                 .AddButton("Chat", logsContent.ShowChatLog)
                 .AddButton("Loading", logsContent.ShowLoadingLog))
             .FillContent(logsContent);
@@ -153,9 +153,9 @@ sealed class LobbyControl : CompositeControl
         private readonly LobbyPlayerList.ItemSource playerListItemSource;
         private readonly ListControl playerList;
 
-        public LobbyDetailsControl(Lobby model)
+        public LobbyDetailsControl(Lobby model, UIFactories factories)
         {
-            gameSettings = new GameSettingsControl(model);
+            gameSettings = new GameSettingsControl(model, factories);
             playerListItemSource = new LobbyPlayerList.ItemSource(model);
             playerList = new ListControl {ItemSource = playerListItemSource};
             model.PlayersChanged += playerList.Reload;
@@ -189,7 +189,7 @@ sealed class LobbyControl : CompositeControl
 
     private sealed class GameSettingsControl : CompositeControl
     {
-        public GameSettingsControl(Lobby model)
+        public GameSettingsControl(Lobby model, UIFactories factories)
         {
             var modStatusBindings = model.AvailableMods.ToDictionary(
                 mod => mod,
@@ -203,9 +203,9 @@ sealed class LobbyControl : CompositeControl
 
             this.BuildScrollableColumn()
                 .AddHeader("Enabled mods")
-                .AddCollectionEditor(modStatuses)
+                .AddCollectionEditor(factories, modStatuses)
                 .AddHeader("Game settings")
-                .AddForm(builder => builder
+                .AddForm(factories, builder => builder
                     .AddDropdownSelectRow(
                         "Game mode",
                         availableGameModes,
@@ -300,13 +300,15 @@ sealed class LobbyControl : CompositeControl
     {
         private LoadingBlueprintsListRow(string path, Color color, Maybe<TimeSpan> loadingTime)
         {
-            Add(new Label(path)
+            Add(new Label
             {
+                Text = path,
                 Color = color, FontSize = 14, TextAnchor = new Vector2d(0, .5)
             }.Anchor(a => a.Right(margin: 100)));
             loadingTime.Select(time =>
-                    new Label($"{time:s\\.fff}s")
+                    new Label
                     {
+                        Text = $"{time:s\\.fff}s",
                         Color = color, FontSize = 14, TextAnchor = new Vector2d(1, .5)
                     }.Anchor(a => a.Right(width: 100)))
                 .Match(Add);

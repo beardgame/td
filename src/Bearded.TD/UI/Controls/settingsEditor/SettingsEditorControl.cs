@@ -11,15 +11,15 @@ sealed class SettingsEditorControl : CompositeControl
     private readonly Binding<UserSettingsSchema.SettingsGroup?> activeGroup =
         Binding.Create<UserSettingsSchema.SettingsGroup?>(null);
 
-    public SettingsEditorControl(SettingsEditor model)
+    public SettingsEditorControl(SettingsEditor model, UIFactories factories)
     {
-        var tabControl = new SettingsTabControl();
+        var tabControl = new SettingsTabControl(factories);
 
         this.BuildLayout()
             .ForFullScreen()
-            .AddNavBar(b => b
+            .AddNavBar(factories, b => b
                 .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked))
-            .AddTabs(t =>
+            .AddTabs(factories, t =>
             {
                 foreach (var group in model.SettingsGroups)
                 {
@@ -39,12 +39,12 @@ sealed class SettingsEditorControl : CompositeControl
         }
     }
 
-    private sealed class SettingsTabControl : CompositeControl
+    private sealed class SettingsTabControl(UIFactories factories) : CompositeControl
     {
         public void Populate(UserSettingsSchema.SettingsGroup group)
         {
             RemoveAllChildren();
-            this.BuildLayout().FillContent(FormFactories.Form(form =>
+            this.BuildLayout().FillContent(factories.Form(form =>
             {
                 foreach (var setting in group.Settings)
                 {

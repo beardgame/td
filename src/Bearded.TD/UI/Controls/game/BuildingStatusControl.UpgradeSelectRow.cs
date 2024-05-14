@@ -2,9 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
-using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 
@@ -18,8 +16,7 @@ sealed partial class BuildingStatusControl
         private readonly IReadonlyBinding<ResourceAmount> currentResources;
         private readonly Action<IPermanentUpgrade> doUpgrade;
         private readonly Binding<bool> upgradeChoicesEnabled = new(true);
-        private readonly Animations animations;
-        private readonly TooltipFactory tooltipFactory;
+        private readonly UIFactories factories;
         private readonly Control iconRow;
 
         public UpgradeSelectRow(
@@ -27,14 +24,12 @@ sealed partial class BuildingStatusControl
             IReadonlyBinding<int?> activeUpgradeSlot,
             IReadonlyBinding<ResourceAmount> currentResources,
             Action<IPermanentUpgrade> doUpgrade,
-            Animations animations,
-            TooltipFactory tooltipFactory)
+            UIFactories factories)
         {
             this.activeUpgradeSlot = activeUpgradeSlot;
             this.currentResources = currentResources;
             this.doUpgrade = doUpgrade;
-            this.animations = animations;
-            this.tooltipFactory = tooltipFactory;
+            this.factories = factories;
 
             iconRow = new IconRow<IPermanentUpgrade>(availableUpgrades, createControl);
             Add(iconRow);
@@ -63,11 +58,10 @@ sealed partial class BuildingStatusControl
         {
             var resourcesAreSufficient = currentResources.Transform(r => r >= upgrade.Cost);
             return StatusIconFactories.UpgradeChoice(
+                factories,
                 upgrade,
                 _ => onUpgradeSelected(upgrade),
-                resourcesAreSufficient.And(upgradeChoicesEnabled),
-                animations,
-                tooltipFactory);
+                resourcesAreSufficient.And(upgradeChoicesEnabled));
         }
 
         private void onUpgradeSelected(IPermanentUpgrade upgrade)

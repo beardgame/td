@@ -2,12 +2,12 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities.Collections;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
 using static Bearded.TD.UI.Controls.GameDebugOverlay;
-using static Bearded.TD.UI.Factories.ButtonFactories;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -15,23 +15,23 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
 {
     private bool minimized;
 
-    public GameDebugOverlayControl(GameDebugOverlay model) : base("Game Debug Overlay")
+    public GameDebugOverlayControl(GameDebugOverlay model, UIFactories factories) : base("Game Debug Overlay")
     {
         Add(new BackgroundBox {Color = Color.Purple * 0.5f});
 
         Add(new Label {Text = "Debug", FontSize = 16, TextAnchor = new Vector2d(0, 0.5)}
             .Anchor(a => a.Top(4, 16).Left(4, 16)));
 
-        Add(Button("x")
+        Add(factories.Button("x")
             .Anchor(a => a.Top(4, 16).Right(4, 16))
             .Subscribe(b => b.Clicked += model.Close));
 
-        Add(Button("-")
+        Add(factories.Button("-")
             .Anchor(a => a.Top(4, 16).Right(4 + 16 + 4, 16))
             .Subscribe(b => b.Clicked += toggleMinimized));
 
         var itemList = new ListControl(new ViewportClippingLayerControl("Game Debug Overlay List"))
-                {ItemSource = new ActionListItemSource(model.Items)}
+                {ItemSource = new ActionListItemSource(model.Items, factories)}
             .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4));
         Add(itemList);
 
@@ -56,10 +56,12 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
     private sealed class ActionListItemSource : IListItemSource
     {
         private readonly ReadOnlyCollection<Item> items;
+        private readonly UIFactories factories;
 
-        public ActionListItemSource(ReadOnlyCollection<Item> items)
+        public ActionListItemSource(ReadOnlyCollection<Item> items, UIFactories factories)
         {
             this.items = items;
+            this.factories = factories;
         }
 
         public double HeightOfItemAt(int index) => items[index] switch
@@ -80,24 +82,25 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
             };
         }
 
-        private static Control multiSelect(OptionsSetting setting)
+        private Control multiSelect(OptionsSetting setting)
         {
             var optionWidthPercentage = 1.0 / setting.Options.Length;
 
             var container = new CompositeControl
             {
                 new Border(),
-                new Label($"{setting.Name}: {setting.Value}")
+                new Label
                 {
+                    Text = $"{setting.Name}: {setting.Value}",
                     TextAnchor = new Vector2d(0, 0.5),
                     FontSize = 16
                 }.Anchor(a => a.Left(4).Bottom(relativePercentage: 0.5))
             };
             setting.Options
-                .Select((o, i) => Button(o.ToString()).Subscribe(
+                .Select((o, i) => factories.Button(o.ToString() ?? "").Subscribe(
                         b =>
                         {
-                            b.FirstChildOfType<Label>().FontSize = 16;
+                            b.FirstChildOfType<Label>()!.FontSize = 16;
                             b.Clicked += _ => setting.Set(i);
 
                             if (setting.Value.ToString() == o.ToString())
@@ -114,10 +117,10 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
             return container;
         }
 
-        private static Button checkbox(string text, bool value, Action onClick)
-            => Button(text).Subscribe(b =>
+        private Button checkbox(string text, bool value, Action onClick)
+            => factories.Button(text).Subscribe(b =>
             {
-                var label = b.FirstChildOfType<Label>();
+                var label = b.FirstChildOfType<Label>()!;
                 label.TextAnchor = new Vector2d(0, 0.5);
                 label.FontSize = 16;
                 label.Anchor(a => a.Left(4 + 16));
@@ -130,10 +133,10 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
                 b.Clicked += _ => onClick();
             });
 
-        private static Button button(string text, Action onClick)
-            => Button(text).Subscribe(b =>
+        private Button button(string text, Action onClick)
+            => factories.Button(text).Subscribe(b =>
             {
-                var label = b.FirstChildOfType<Label>();
+                var label = b.FirstChildOfType<Label>()!;
                 label.TextAnchor = new Vector2d(0, 0.5);
                 label.FontSize = 16;
                 label.Anchor(a => a.Left(4));
