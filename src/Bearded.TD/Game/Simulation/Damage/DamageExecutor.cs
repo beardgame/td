@@ -37,4 +37,9 @@ readonly struct DamageExecutor
     {
         return new DamageExecutor(source);
     }
+
+    public static DamageExecutor WithoutDamageSource()
+    {
+        return new DamageExecutor(null);
+    }
 }

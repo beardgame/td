@@ -39,7 +39,7 @@ sealed class IgniteNearbyObjectsOnKilled : Component<IgniteNearbyObjectsOnKilled
     {
         AreaOfEffect.ApplyStatusEffect(
             Owner.Game,
-            new OnFire.Effect(Parameters.DamagePerSecond, @event.LastDamageSource, Parameters.Duration),
+            new OnFire.Effect(Parameters.DamagePerSecond, null, Parameters.Duration),
             Owner.Position,
             Parameters.Range);
     }

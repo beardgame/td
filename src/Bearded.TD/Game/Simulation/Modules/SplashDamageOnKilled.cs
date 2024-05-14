@@ -39,7 +39,7 @@ sealed class SplashDamageOnKilled : Component<SplashDamageOnKilled.IParameters>,
 
         AreaOfEffect.Damage(
             Owner.Game,
-            DamageExecutor.FromDamageSource(@event.LastDamageSource),
+            DamageExecutor.WithoutDamageSource(),
             damage,
             Owner.Position,
             Parameters.Range);
