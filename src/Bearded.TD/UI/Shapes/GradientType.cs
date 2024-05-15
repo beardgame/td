@@ -21,9 +21,3 @@ enum GradientTypeSingleColor : byte
     Constant = GradientType.Constant,
     BlurredBackground = GradientType.BlurredBackground,
 }
-
-enum ComponentBlendMode : byte
-{
-    PremultipliedAdd = 0,
-    Multiply = 1,
-}
