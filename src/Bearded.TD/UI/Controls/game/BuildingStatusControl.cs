@@ -63,7 +63,7 @@ sealed partial class BuildingStatusControl : CompositeControl
                         model.ActiveUpgradeSlot,
                         model.CurrentResources,
                         model.ApplyUpgrade,
-                        uiContext.Factories).BindIsVisible(model.ShowUpgradeSelect),
+                        uiContext).BindIsVisible(model.ShowUpgradeSelect),
                     rowHeight);
         }
 

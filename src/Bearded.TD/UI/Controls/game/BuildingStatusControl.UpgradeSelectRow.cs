@@ -57,8 +57,7 @@ sealed partial class BuildingStatusControl
         private Control createControl(IPermanentUpgrade upgrade)
         {
             var resourcesAreSufficient = currentResources.Transform(r => r >= upgrade.Cost);
-            return StatusIconFactories.UpgradeChoice(
-                factories,
+            return uiContext.Factories.UpgradeChoice(
                 upgrade,
                 _ => onUpgradeSelected(upgrade),
                 resourcesAreSufficient.And(upgradeChoicesEnabled));

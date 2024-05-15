@@ -34,8 +34,8 @@ sealed class GameUIControl : CompositeControl
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
-        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, uiContext.Factories));
-        nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats, uiContext.Factories)
+        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, uiContext));
+        nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats, uiContext)
             .Anchor(a => a
                 .Top(height: 480)
                 .Left(margin: -240, width: 480, relativePercentage: .5)));
@@ -62,7 +62,7 @@ sealed class GameUIControl : CompositeControl
             .DockFixedSizeToTop(
                 techButton.WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
                 technologyButtonSize + 4 * Constants.UI.Button.Margin);
-        Add(new TechnologyWindowControl(gameUI.TechnologyUI, uiContext.Factories)
+        Add(new TechnologyWindowControl(gameUI.TechnologyUI, uiContext)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
         gameUI.SetWorldOverlay(gameWorldOverlay);
@@ -112,7 +112,7 @@ sealed class GameUIControl : CompositeControl
 
     private void onGameOver()
     {
-        Add(new GameEndControl(uiContext.Factories, "you lose")
+        Add(new GameEndControl(uiContext, "you lose")
             .Anchor(a => a
                 .Top(margin: 0, height: 64)
                 .Left(relativePercentage: .5, margin: -120, width: 240))
@@ -121,7 +121,7 @@ sealed class GameUIControl : CompositeControl
 
     private void onGameVictory()
     {
-        Add(new GameEndControl(uiContext.Factories, "you win")
+        Add(new GameEndControl(uiContext, "you win")
             .Anchor(a => a
                 .Top(margin: 0, height: 64)
                 .Left(relativePercentage: .5, margin: -120, width: 240))

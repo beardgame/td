@@ -77,15 +77,15 @@ sealed class NumericInput : CompositeControl
         set => textInput.FontSize = value;
     }
 
-    public NumericInput(UIContext uiContext, int value = 0)
+    public NumericInput(UIFactories factories, int value = 0)
     {
         textInput = new TextInput
         {
             AllowSpecialCharacters = false,
             AllowLetters = false
         };
-        plusButton = uiContext.Factories.Button("+");
-        minusButton = uiContext.Factories.Button("-");
+        plusButton = factories.Button("+");
+        minusButton = factories.Button("-");
 
         plusButton.Clicked += _ => stepUp();
         minusButton.Clicked += _ => stepDown();
