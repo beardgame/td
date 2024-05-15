@@ -21,10 +21,10 @@ sealed class FontTest : NavigationNode<Void>
 
 sealed class FontTextControl : CompositeControl
 {
-    public FontTextControl(FontTest model)
+    public FontTextControl(FontTest model, UIContext uiContext)
     {
         Add(new BackgroundBox(Color.DimGray));
-        var closeButton = ButtonFactories.Button("X").Anchor(b => b.Top(8, 16).Right(8, 16));
+        var closeButton = uiContext.Factories.Button("X").Anchor(b => b.Top(8, 16).Right(8, 16));
         closeButton.Clicked += _ => model.Close();
         Add(closeButton);
 

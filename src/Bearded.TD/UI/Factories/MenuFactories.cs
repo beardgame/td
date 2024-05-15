@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
@@ -13,26 +12,25 @@ namespace Bearded.TD.UI.Factories;
 static class MenuFactories
 {
     public static Layouts.Layout AddMenu(
-        this Layouts.Layout layout, BuilderFunc<Builder> builderFunc)
+        this Layouts.Layout layout, UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var builder = new Builder();
-        builderFunc(builder);
-        layout.DockFixedSizeToRight(builder.Build(), Width);
+        var menu = factories.Menu(builderFunc);
+        layout.DockFixedSizeToRight(menu, Width);
         return layout;
     }
 
-    public sealed class Builder
+    public static Control Menu(this UIFactories factories, BuilderFunc<Builder> f)
+    {
+        var builder = new Builder(factories);
+        f(builder);
+        return builder.Build();
+    }
+
+    public sealed class Builder(UIFactories factories)
     {
         private ButtonAction? closeAction;
         private readonly List<ButtonAction> menuActions = new();
-        private Animations? animations;
         private bool blurBackground;
-
-        public Builder WithAnimations(Animations? animations)
-        {
-            this.animations = animations;
-            return this;
-        }
 
         public Builder WithCloseAction(VoidEventHandler onClose) => WithCloseAction("Close", onClose);
 
@@ -85,12 +83,11 @@ static class MenuFactories
 
             Button buttonFor(ButtonAction action)
             {
-                return ButtonFactories
+                return factories
                     .Button(b => b
                         .WithLabel(action.Label)
                         .WithOnClick(action.OnClick)
                         .WithShadow()
-                        .WithAnimations(animations)
                     ).BindIsEnabled(action.IsEnabled);
             }
         }

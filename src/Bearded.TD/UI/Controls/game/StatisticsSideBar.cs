@@ -23,12 +23,10 @@ sealed class StatisticsSideBar : IListener<WaveReportCreated>
 
     public IReadonlyBinding<bool> WaveReportButtonEnabled => lastWaveReport.Transform(r => r != null);
     public GameInstance Game { get; private set; } = null!;
-    public TooltipFactory Tooltips { get; private set; } = null!;
 
-    public void Initialize(GameInstance game, TooltipFactory tooltips)
+    public void Initialize(GameInstance game)
     {
         Game = game;
-        Tooltips = tooltips;
         game.State.Meta.Events.Subscribe(this);
 
         // for debugging

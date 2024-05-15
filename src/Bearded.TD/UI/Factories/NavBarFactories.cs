@@ -7,15 +7,21 @@ namespace Bearded.TD.UI.Factories;
 static class NavBarFactories
 {
     public static Layouts.Layout AddNavBar(
-        this Layouts.Layout layout, BuilderFunc<Builder> builderFunc)
+        this Layouts.Layout layout, UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var builder = new Builder();
-        builderFunc(builder);
-        layout.DockFixedSizeToBottom(builder.Build(), Constants.UI.NavBar.Height);
+        var navBar = factories.NavBar(builderFunc);
+        layout.DockFixedSizeToBottom(navBar, Constants.UI.NavBar.Height);
         return layout;
     }
 
-    public sealed class Builder
+    public static Control NavBar(this UIFactories factories, BuilderFunc<Builder> f)
+    {
+        var builder = new Builder(factories);
+        f(builder);
+        return builder.Build();
+    }
+
+    public sealed class Builder(UIFactories factories)
     {
         private ButtonAction? backAction;
         private ButtonAction? forwardAction;
@@ -40,7 +46,7 @@ static class NavBarFactories
             var control = new CompositeControl();
             if (backAction != null)
             {
-                control.Add(ButtonFactories
+                control.Add(factories
                     .Button(b => b.WithLabel(backAction.Label).WithOnClick(backAction.OnClick))
                     .Anchor(a => a
                         .Left(width: Constants.UI.Button.Width)
@@ -49,7 +55,7 @@ static class NavBarFactories
             }
             if (forwardAction != null)
             {
-                control.Add(ButtonFactories
+                control.Add(factories
                     .Button(b => b.WithLabel(forwardAction.Label).WithOnClick(forwardAction.OnClick))
                     .Anchor(a => a
                         .Right(width: Constants.UI.Button.Width)

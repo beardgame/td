@@ -10,9 +10,9 @@ namespace Bearded.TD.UI.Factories;
 
 static class WindowFactories
 {
-    public static Control Window(BuilderFunc<Builder> builderFunc)
+    public static Control Window(this UIFactories factories, BuilderFunc<Builder> builderFunc)
     {
-        var windowBuilder = new Builder();
+        var windowBuilder = new Builder(factories);
         builderFunc(windowBuilder);
         var control = windowBuilder.Build();
         return control;
@@ -28,7 +28,7 @@ static class WindowFactories
         return control;
     }
 
-    public sealed class Builder
+    public sealed class Builder(UIFactories factories)
     {
         private string? title;
         private VoidEventHandler? onClose;
@@ -84,7 +84,7 @@ static class WindowFactories
 
             var titleBar = new CompositeControl();
             var titleRow = titleBar.BuildFixedRow()
-                .AddSquareButtonRight(b => b.WithLabel("X").WithOnClick(onClose!));
+                .AddSquareButtonRight(factories, b => b.WithLabel("X").WithOnClick(onClose!));
             if (title != null)
                 titleRow.AddHeaderLeft(title, 100);
 

@@ -3,7 +3,6 @@ using Bearded.TD.Game.Commands;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
-using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using OpenTK.Mathematics;
@@ -23,15 +22,14 @@ sealed partial class BuildingStatusControl : CompositeControl
 
     public BuildingStatusControl(
         BuildingStatus model,
-        Animations animations,
-        TooltipFactory tooltipFactory,
+        UIContext uiContext,
         GameRequestDispatcher requestDispatcher)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
         Add(new BlurBackground());
 
-        addBackground(model, animations);
+        addBackground(model, uiContext.Animations);
         var innerContainer = new CompositeControl();
         Add(innerContainer.Anchor(a => a.MarginAllSides(Padding).Top()));
 
@@ -40,13 +38,13 @@ sealed partial class BuildingStatusControl : CompositeControl
 
         if (model.ShowVeterancy)
         {
-            column.Add(new VeterancyRow(model.Veterancy, animations), Veterancy.RowHeight);
+            column.Add(new VeterancyRow(model.Veterancy, uiContext.Animations), Veterancy.RowHeight);
         }
 
         column
             .Add(new IconRow<ObservableStatus>(
                     model.Statuses,
-                    status => StatusIconFactories.StatusIcon(status, animations, requestDispatcher),
+                    status => uiContext.Factories.StatusIcon(status, requestDispatcher),
                     StatusRowBackground),
                 rowHeight);
 
@@ -55,28 +53,24 @@ sealed partial class BuildingStatusControl : CompositeControl
             column
                 .Add(new IconRow<IReadonlyBinding<UpgradeSlot>>(
                         model.Upgrades,
-                        slot => StatusIconFactories.UpgradeSlot(
-                            slot,
+                        slot => uiContext.Factories.UpgradeSlot(slot,
                             model.AvailableUpgrades.IsCountPositive()
                                 .And(Binding.Combine(slot, model.ActiveUpgradeSlot, (s, i) => s.Index == i)),
-                            model.ToggleUpgradeSelect,
-                            animations,
-                            tooltipFactory)),
+                            model.ToggleUpgradeSelect)),
                     rowHeight)
                 .Add(new UpgradeSelectRow(
                         model.AvailableUpgrades,
                         model.ActiveUpgradeSlot,
                         model.CurrentResources,
                         model.ApplyUpgrade,
-                        animations,
-                        tooltipFactory).BindIsVisible(model.ShowUpgradeSelect),
+                        uiContext).BindIsVisible(model.ShowUpgradeSelect),
                     rowHeight);
         }
 
         if (model.ShowDeletion)
         {
             column
-                .AddLeftButton(b => b
+                .AddLeftButton(uiContext.Factories, b => b
                     .WithLabel("Delete")
                     .WithOnClick(model.DeleteBuilding));
         }

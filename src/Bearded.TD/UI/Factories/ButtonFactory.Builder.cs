@@ -17,9 +17,10 @@ namespace Bearded.TD.UI.Factories;
 
 delegate void ButtonClickEventHandler(Button.ClickEventArgs args);
 
-static partial class ButtonFactories
+sealed partial class ButtonFactory
 {
-    public abstract class Builder<T> where T : Builder<T>
+    public abstract class Builder<T>(Animations animations, TooltipFactory tooltips)
+        where T : Builder<T>
     {
         private enum Shape
         {
@@ -29,7 +30,7 @@ static partial class ButtonFactories
         }
 
         private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
-        private (TooltipFactory Factory, TooltipDefinition Definition, TooltipAnchor.Direction Direction)? tooltip;
+        private (TooltipDefinition Definition, TooltipAnchor.Direction Direction)? tooltip;
         private ButtonClickEventHandler? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
@@ -38,17 +39,10 @@ static partial class ButtonFactories
         private bool alwaysRenderAsEnabled;
         private Shape shape;
         private Shadow? shadow;
-        private Animations? animations;
         private bool blurBackground;
         private ButtonBackgroundColor backgroundColors = DefaultBackgroundColors;
 
         protected abstract T This { get; }
-
-        public T WithAnimations(Animations? animations)
-        {
-            this.animations = animations;
-            return This;
-        }
 
         public T WithProgressBar(Binding<double> progress, Color? color = null)
         {
@@ -56,28 +50,26 @@ static partial class ButtonFactories
             return This;
         }
 
-        public T WithTooltip(TooltipFactory factory, string text,
+        public T WithTooltip(
+            string text,
             TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right) =>
-            WithTooltip(factory, TooltipFactories.SimpleTooltip(text), direction);
+            WithTooltip( TooltipFactories.SimpleTooltip(text), direction);
 
         public T WithTooltip(
-            TooltipFactory factory,
             ICollection<string> text,
             TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right) =>
-            WithTooltip(factory, TooltipFactories.SimpleTooltip(text), direction);
+            WithTooltip(TooltipFactories.SimpleTooltip(text), direction);
 
         public T WithTooltip(
-            TooltipFactory factory,
             IReadonlyBinding<string> text,
             TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right) =>
-            WithTooltip(factory, TooltipFactories.SimpleTooltip(text), direction);
+            WithTooltip(TooltipFactories.SimpleTooltip(text), direction);
 
         public T WithTooltip(
-            TooltipFactory factory,
             TooltipDefinition definition,
             TooltipAnchor.Direction direction = TooltipAnchor.Direction.Right)
         {
-            tooltip = (factory, definition, direction);
+            tooltip = (definition, direction);
             return This;
         }
 
@@ -221,7 +213,7 @@ static partial class ButtonFactories
 
             if (tooltip is { } tip)
             {
-                button.Add(new TooltipTarget(tip.Factory, tip.Definition, tip.Direction));
+                button.Add(new TooltipTarget(tooltips, tip.Definition, tip.Direction));
             }
 
             isEnabled.SourceUpdated += enabled => button.IsEnabled = enabled;
@@ -252,7 +244,8 @@ static partial class ButtonFactories
         protected abstract void AddContent(IControlParent control, IReadonlyBinding<Color> color);
     }
 
-    public sealed class TextButtonBuilder : Builder<TextButtonBuilder>
+    public sealed class TextButtonBuilder(Animations animations, TooltipFactory tooltips)
+        : Builder<TextButtonBuilder>(animations, tooltips)
     {
         private IReadonlyBinding<string>? label;
         private IReadonlyBinding<string>? cost;
@@ -305,14 +298,13 @@ static partial class ButtonFactories
         }
     }
 
-    public sealed class IconButtonBuilder : Builder<IconButtonBuilder>
+    public sealed class IconButtonBuilder(Animations animations, TooltipFactory tooltips)
+        : Builder<IconButtonBuilder>(animations, tooltips)
     {
         private IReadonlyBinding<ModAwareSpriteId>? icon;
         private float scale = 1;
 
         protected override IconButtonBuilder This => this;
-
-        public static IconButtonBuilder ForStandaloneButton() => new();
 
         public IconButtonBuilder WithIcon(ModAwareSpriteId icon)
         {

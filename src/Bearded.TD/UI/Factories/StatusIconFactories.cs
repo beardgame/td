@@ -1,8 +1,6 @@
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
-using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -28,13 +26,12 @@ static class StatusIconFactories
      *   - (Maybe) Progress colour: we may separate progress bar colours, e.g. to clearly distinguish hot and cold
      */
     public static Control StatusIcon(
+        this UIFactories factories,
         ObservableStatus status,
-        Animations animations,
         GameRequestDispatcher requestDispatcher)
     {
         // TODO: replace entirely
-        return ButtonFactories.StandaloneIconButton(b => b
-            .WithAnimations(animations)
+        return factories.StandaloneIconButton(b => b
             .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher))
             .AlwaysRenderAsEnabled()
             .WithEnabled(Binding.Constant(status.Spec.IsInteractive))
@@ -57,17 +54,15 @@ static class StatusIconFactories
      *   empty upgrade slot from subsequent slots since you should always fill slots from left to right.
      */
     public static Control UpgradeSlot(
+        this UIFactories factories,
         IReadonlyBinding<UpgradeSlot> upgradeSlot,
         IReadonlyBinding<bool> isActiveSlot,
-        VoidEventHandler onClick,
-        Animations animations,
-        TooltipFactory tooltipFactory)
+        VoidEventHandler onClick)
     {
         var upgrade = upgradeSlot.Transform(slot => slot.Upgrade);
         // TODO: replace entirely
-        return ButtonFactories.Button(b => b
-            .forUpgrade(upgrade, tooltipFactory)
-            .WithAnimations(animations)
+        return factories.Button(b => b
+            .forUpgrade(upgrade)
             .WithOnClick(onClick)
             .AlwaysRenderAsEnabled()
             .WithEnabled(isActiveSlot)
@@ -75,29 +70,26 @@ static class StatusIconFactories
     }
 
     public static Control UpgradeChoice(
+        this UIFactories factories,
         IPermanentUpgrade upgrade,
         ButtonClickEventHandler onClick,
-        IReadonlyBinding<bool> enabled,
-        Animations animations,
-        TooltipFactory tooltipFactory)
+        IReadonlyBinding<bool> enabled)
     {
         var upgradeBinding = Binding.Constant(upgrade);
         // TODO: replace entirely
-        return ButtonFactories.Button(b => b
-            .forUpgrade(upgradeBinding, tooltipFactory)
-            .WithAnimations(animations)
+        return factories.Button(b => b
+            .forUpgrade(upgradeBinding)
             .WithOnClick(onClick)
             .WithEnabled(enabled)
             .MakeHexagon());
     }
 
-    private static ButtonFactories.TextButtonBuilder forUpgrade(
-        this ButtonFactories.TextButtonBuilder builder,
-        IReadonlyBinding<IPermanentUpgrade?> upgrade,
-        TooltipFactory tooltipFactory)
+    private static ButtonFactory.TextButtonBuilder forUpgrade(
+        this ButtonFactory.TextButtonBuilder builder,
+        IReadonlyBinding<IPermanentUpgrade?> upgrade)
     {
         return builder
             .WithLabel(upgrade.Transform(u => u?.Name[..1] ?? ""))
-            .WithTooltip(tooltipFactory, upgrade.Transform(u => u?.Name ?? ""));
+            .WithTooltip(upgrade.Transform(u => u?.Name ?? ""));
     }
 }

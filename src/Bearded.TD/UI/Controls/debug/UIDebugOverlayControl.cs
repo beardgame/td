@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Layers;
 using Bearded.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using static Bearded.TD.UI.Factories.ButtonFactories;
 using MouseButtonEventArgs = Bearded.UI.EventArgs.MouseButtonEventArgs;
 using MouseEventArgs = Bearded.UI.EventArgs.MouseEventArgs;
 
@@ -55,19 +55,21 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
 
     private bool moveControlBox;
 
-    public UIDebugOverlayControl(UIDebugOverlay model) : base("UI Debug Overlay")
+    public UIDebugOverlayControl(UIDebugOverlay model, UIContext uiContext) : base("UI Debug Overlay")
     {
         Add(new BackgroundBox { Color = Color.DarkCyan * 0.2f });
 
         Add(highlightParent = new CompositeControl());
 
+        var factories = uiContext.Factories;
+
         controlBox = new CompositeControl
         {
             new BackgroundBox(),
-            Button("move")
+            factories.Button("move")
                 .Anchor(a => a.Top(margin, buttonDimension).Right(margin + buttonDimension + margin).Left(margin))
                 .Subscribe(b => b.Clicked += toggleMoveControlBox),
-            Button("x")
+            factories.Button("x")
                 .Anchor(a => a.Top(margin, buttonDimension).Right(margin, buttonDimension))
                 .Subscribe(b => b.Clicked += model.Close),
             highlightList.Anchor(a => a.Top(margin + buttonDimension + margin).Bottom(margin).Left(margin).Right(margin))

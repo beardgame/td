@@ -17,9 +17,9 @@ sealed partial class BuildingStatusControl
         private readonly Label levelLabel;
 
         private IAnimationController? experienceAnimation;
-        private float currentAnimationExperience = 0;
-        private float animationStartExperience = 0;
-        private float animationTargetExperience = 0;
+        private float currentAnimationExperience;
+        private float animationStartExperience;
+        private float animationTargetExperience;
         private readonly GradientStop[] experienceBarGradient =
         [
             new GradientStop(0, Veterancy.ExperienceColor),

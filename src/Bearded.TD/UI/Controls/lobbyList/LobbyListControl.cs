@@ -7,19 +7,21 @@ namespace Bearded.TD.UI.Controls;
 
 sealed class LobbyListControl : CompositeControl
 {
-    public LobbyListControl(LobbyList model)
+    public LobbyListControl(LobbyList model, UIContext uiContext)
     {
         var ipBinding = Binding.Create(UserSettings.Instance.Misc.SavedNetworkAddress);
 
         var list = new ListControl {ItemSource = new LobbyListItemSource(model)};
         model.LobbyReceived += _ => list.OnAppendItems(1);
 
+        var factories = uiContext.Factories;
+
         this.BuildLayout()
             .ForFullScreen()
-            .AddNavBar(b => b
+            .AddNavBar(factories, b => b
                 .WithBackButton("Back to menu", model.OnBackToMenuButtonClicked))
             .AddMainSidebar(c => c.BuildFixedColumn()
-                .AddForm(f => f
+                .AddForm(factories, f => f
                     .AddTextInputRow("Custom IP", ipBinding)
                     .AddButtonRow("Connect", () => model.OnConnectManualButtonClicked(ipBinding.Value))
                     .AddButtonRow("Refresh lobbies", model.OnRefreshLobbiesButtonClicked)))

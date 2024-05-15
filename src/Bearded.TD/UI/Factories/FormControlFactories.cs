@@ -11,13 +11,9 @@ namespace Bearded.TD.UI.Factories;
 
 static class FormControlFactories
 {
-    public static Control Checkbox(Binding<bool> valueBinding)
+    public static Control Checkbox(this UIFactories factories, Binding<bool> valueBinding)
     {
-        var checkbox = ButtonFactories.IconButtonBuilder
-            .ForStandaloneButton()
-            .WithIcon(Constants.Content.CoreUI.Sprites.CheckMark)
-            .Build();
-
+        var checkbox = factories.StandaloneIconButton(Constants.Content.CoreUI.Sprites.CheckMark);
         var check = checkbox.Children.First(c => c is Sprite);
 
         checkbox.Clicked += _ => toggleCheckboxState();
@@ -38,13 +34,17 @@ static class FormControlFactories
     }
 
     public static Control ButtonSelect<T>(
-        IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding, out double width)
+        this UIFactories factories,
+        IEnumerable<T> options,
+        Func<T, string> renderer,
+        Binding<T> valueBinding,
+        out double width)
     {
         var control = new CompositeControl();
         var row = control.BuildFixedRow();
         foreach (var o in options)
         {
-            var button = ButtonFactories.Button(b => b
+            var button = factories.Button(b => b
                 .WithLabel(renderer(o))
                 .WithActive(valueBinding.Transform(v => Equals(v, o)))
                 .WithOnClick(() => valueBinding.SetFromControl(o)));
@@ -55,11 +55,11 @@ static class FormControlFactories
     }
 
     public static Control DropdownSelect<T>(
-            IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding) =>
-        DropdownSelect(Binding.Create(options), renderer, valueBinding);
+        this UIFactories factories, IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding) =>
+        DropdownSelect(factories, Binding.Create(options), renderer, valueBinding);
 
     public static Control DropdownSelect<T>(
-        Binding<IEnumerable<T>> options, Func<T, string> renderer, Binding<T> valueBinding)
+        this UIFactories factories, Binding<IEnumerable<T>> options, Func<T, string> renderer, Binding<T> valueBinding)
     {
         // TODO: implement an actual dropdown select
 
@@ -70,7 +70,7 @@ static class FormControlFactories
         options.SourceUpdated += updateOptions;
         valueBinding.SourceUpdated += _ => updateValidity();
 
-        var button = ButtonFactories.Button(b => b
+        var button = factories.Button(b => b
             .WithLabel(valueBinding.Transform(renderer))
             .WithError(errorBinding)
             .WithOnClick(advanceSelection));
@@ -104,9 +104,10 @@ static class FormControlFactories
         }
     }
 
-    public static Control NumberSelect(int minValue, int maxValue, Binding<int> valueBinding)
+    public static Control NumberSelect(
+        this UIFactories factories, int minValue, int maxValue, Binding<int> valueBinding)
     {
-        var numericInput = new NumericInput(valueBinding.Value)
+        var numericInput = new NumericInput(factories, valueBinding.Value)
         {
             MinValue = minValue,
             MaxValue = maxValue
@@ -135,7 +136,7 @@ static class FormControlFactories
         return builder.AddFormRow(
             label,
             layout => layout.DockFixedSizeToLeft(
-                Checkbox(valueBinding).WrapVerticallyCentered(Constants.UI.Checkbox.Size),
+                builder.Factories.Checkbox(valueBinding).WrapVerticallyCentered(Constants.UI.Checkbox.Size),
                 Constants.UI.Checkbox.Size));
     }
 
@@ -147,10 +148,10 @@ static class FormControlFactories
 
     public static FormFactories.Builder AddButtonRow(
         this FormFactories.Builder builder,
-        BuilderFunc<ButtonFactories.TextButtonBuilder> builderFunc)
+        BuilderFunc<ButtonFactory.TextButtonBuilder> builderFunc)
     {
         return builder.AddFormRow(null, layout => layout.DockFixedSizeToRight(
-            ButtonFactories.Button(builderFunc).WrapVerticallyCentered(Constants.UI.Button.Height),
+            builder.Factories.Button(builderFunc).WrapVerticallyCentered(Constants.UI.Button.Height),
             Constants.UI.Button.Width));
     }
 
@@ -170,7 +171,8 @@ static class FormControlFactories
         return builder.AddFormRow(
             label,
             layout => layout.DockFixedSizeToRight(
-                ButtonSelect(options, renderer, valueBinding, out var width).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                ButtonSelect(builder.Factories, options, renderer, valueBinding, out var width)
+                    .WrapVerticallyCentered(Constants.UI.Form.InputHeight),
                 width));
     }
 
@@ -205,7 +207,8 @@ static class FormControlFactories
         return builder.AddFormRow(
             label,
             layout => layout.DockFixedSizeToRight(
-                DropdownSelect(optionsBinding, renderer, valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                DropdownSelect(builder.Factories, optionsBinding, renderer, valueBinding)
+                    .WrapVerticallyCentered(Constants.UI.Form.InputHeight),
                 Constants.UI.Form.InputWidth));
     }
 
@@ -219,7 +222,8 @@ static class FormControlFactories
         return builder.AddFormRow(
             label,
             layout => layout.DockFixedSizeToRight(
-                NumberSelect(minValue, maxValue, valueBinding).WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                NumberSelect(builder.Factories, minValue, maxValue, valueBinding)
+                    .WrapVerticallyCentered(Constants.UI.Form.InputHeight),
                 Constants.UI.Form.InputWidth));
     }
 

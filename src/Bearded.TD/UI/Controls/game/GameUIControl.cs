@@ -1,5 +1,4 @@
 ﻿using System;
-using Bearded.TD.Content;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
@@ -15,43 +14,40 @@ sealed class GameUIControl : CompositeControl
     private const double technologyButtonSize = 96;
 
     private readonly GameUI gameUI;
-    private readonly Animations animations;
+    private readonly UIContext uiContext;
 
-    public GameUIControl(
-        GameUI gameUI, ContentManager contentManager, RenderContext renderContext, Animations animations)
+    public GameUIControl(GameUI gameUI, RenderContext renderContext, UIContext uiContext)
     {
+        this.gameUI = gameUI;
+        this.uiContext = uiContext;
+
+        CanBeFocused = true;
+
         var gameWorldControl = new GameWorldControl(gameUI.Game, renderContext, gameUI.TimeSource);
         var gameWorldOverlay = new GameWorldOverlay(
             gameUI.Game.Camera,
-            animations,
-            gameUI.Tooltips,
+            uiContext,
             new GameRequestDispatcher(gameUI.Game),
-            contentManager,
             gameUI.Game.Meta.SoundScape);
-
-        this.gameUI = gameUI;
-        this.animations = animations;
-
-        CanBeFocused = true;
 
         Add(gameWorldControl);
 
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
-        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, gameUI.Tooltips));
-        nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats)
+        nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, uiContext));
+        nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats, uiContext)
             .Anchor(a => a
                 .Top(height: 480)
                 .Left(margin: -240, width: 480, relativePercentage: .5)));
         nonDiegeticUIWrapper.Add(gameWorldOverlay);
         Add(nonDiegeticUIWrapper);
 
-        Add(new StatisticsSideBarControl(gameUI.StatisticsSideBar, animations).Anchor(a => a
+        Add(new StatisticsSideBarControl(gameUI.StatisticsSideBar, uiContext).Anchor(a => a
             .Top(technologyButtonSize + 8 * Constants.UI.Button.Margin)
             .Bottom(Constants.UI.Button.SquareButtonSize + 4 * Constants.UI.Button.Margin)
         ));
 
-        var techButton = ButtonFactories.StandaloneIconButton(b => b
+        var techButton = uiContext.Factories.StandaloneIconButton(b => b
             .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
             .MakeHexagon()
             .WithShadow()
@@ -59,19 +55,19 @@ sealed class GameUIControl : CompositeControl
             .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
             .WithOnClick(gameUI.GameUIController.ShowTechnologyModal));
 
-        techButton.Add(techButtonGlow());
+        techButton.Add(techButtonGlow(uiContext.Animations));
 
         this.BuildLayout()
             .ForFullScreen()
             .DockFixedSizeToTop(
                 techButton.WrapAligned(technologyButtonSize, technologyButtonSize, 1, 0.5),
                 technologyButtonSize + 4 * Constants.UI.Button.Margin);
-        Add(new TechnologyWindowControl(gameUI.TechnologyUI)
+        Add(new TechnologyWindowControl(gameUI.TechnologyUI, uiContext)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
 
         gameUI.SetWorldOverlay(gameWorldOverlay);
 
-        Add(new GameMenuControl()
+        Add(new GameMenuControl(uiContext)
             .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
             .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));
@@ -83,7 +79,7 @@ sealed class GameUIControl : CompositeControl
         gameUI.GameLeft += gameWorldControl.CleanUp;
     }
 
-    private Control techButtonGlow()
+    private Control techButtonGlow(Animations animations)
     {
         var components = new ShapeComponent[1];
         var control = new ComplexHexagon
@@ -116,7 +112,7 @@ sealed class GameUIControl : CompositeControl
 
     private void onGameOver()
     {
-        Add(new GameEndControl("you lose")
+        Add(new GameEndControl(uiContext, "you lose")
             .Anchor(a => a
                 .Top(margin: 0, height: 64)
                 .Left(relativePercentage: .5, margin: -120, width: 240))
@@ -125,7 +121,7 @@ sealed class GameUIControl : CompositeControl
 
     private void onGameVictory()
     {
-        Add(new GameEndControl("you win")
+        Add(new GameEndControl(uiContext, "you win")
             .Anchor(a => a
                 .Top(margin: 0, height: 64)
                 .Left(relativePercentage: .5, margin: -120, width: 240))

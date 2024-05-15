@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
-using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.UI.Shapes;
 using Bearded.UI.Controls;
@@ -32,15 +31,15 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
         }.AsReadOnly();
 
     private readonly DebugConsole debug;
-    private readonly Animations animations;
+    private readonly UIContext uiContext;
     private readonly ListControl logBox = new(new ViewportClippingLayerControl("Debug Console Log"), startStuckToBottom: true);
     private readonly RotatingListItemSource<Logger.Entry> listItemSource;
     private readonly TextInput commandInput;
 
-    public DebugConsoleControl(DebugConsole debug, Animations animations) : base("Debug Console")
+    public DebugConsoleControl(DebugConsole debug, UIContext uiContext) : base("Debug Console")
     {
         this.debug = debug;
-        this.animations = animations;
+        this.uiContext = uiContext;
 
         listItemSource = new RotatingListItemSource<Logger.Entry>(
             logBox, debug.GetLastLogEntries(logHistoryLength / 2), getControlForEntry,
@@ -113,7 +112,7 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
             return label;
 
         var background = new BackgroundBox();
-        animations.Start(NewEntryBackgroundAnimation, (background, color));
+        uiContext.Animations.Start(NewEntryBackgroundAnimation, (background, color));
         return new CompositeControl { background, label };
     }
 

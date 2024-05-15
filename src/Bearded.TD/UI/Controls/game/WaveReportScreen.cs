@@ -3,7 +3,6 @@ using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
-using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
@@ -27,8 +26,7 @@ sealed class WaveReportScreen : CompositeControl
 
     private readonly GameInstance game;
     private readonly WaveReport report;
-    private readonly Animations animations;
-    private readonly TooltipFactory tooltips;
+    private readonly UIContext uiContext;
 
     private float visiblePercentage;
     private bool targetVisibility;
@@ -39,17 +37,14 @@ sealed class WaveReportScreen : CompositeControl
         GameInstance game,
         WaveReport report,
         VoidEventHandler close,
-        Animations animations,
-        TooltipFactory tooltips)
+        UIContext uiContext)
     {
         this.game = game;
         this.report = report;
-        this.animations = animations;
-        this.tooltips = tooltips;
-
+        this.uiContext = uiContext;
         this.Anchor(a => a.Right(rightMarginHidden, width));
 
-        Add(WindowFactories.Window(b => b
+        Add(uiContext.Factories.Window(b => b
             .WithTitle("Wave Report")
             .WithOnClose(close)
             .WithContent(buildWindowContent())
@@ -98,7 +93,7 @@ sealed class WaveReportScreen : CompositeControl
         targetVisibility = visible;
 
         currentSlideAnimation?.Cancel();
-        currentSlideAnimation = animations.Start(slide, (this, visiblePercentage, visible ? 1 : 0));
+        currentSlideAnimation = uiContext.Animations.Start(slide, (this, visiblePercentage, visible ? 1 : 0));
     }
 
     private Control buildWindowContent()
@@ -139,8 +134,7 @@ sealed class WaveReportScreen : CompositeControl
             var model = TowerDamageDisplay.From(tower, game);
             var towerControl = new CompositeControl
             {
-                ReportFactories.TowerDamageDisplay(model, animations, towerHeight, tooltips)
-                    .Anchor(a => a.MarginAllSides(margin)),
+                uiContext.Factories.TowerDamageDisplay(model, towerHeight).Anchor(a => a.MarginAllSides(margin)),
             };
             row.AddLeft(towerControl, towerWidth);
 
@@ -198,9 +192,9 @@ sealed class WaveReportScreen : CompositeControl
             .ToList();
         var totalDamage = AccumulatedDamage.Aggregate(sortedDamage.Select(d => d.AccumulatedDamage));
 
-        var pieChart = ReportFactories.DamagePieChart(sortedDamage);
-        var totalDamageLine = ReportFactories.SingleDamageAndEfficiency(totalDamage, lineHeight);
-        var damageByType = ReportFactories.StackedDamageAndEfficiencies(sortedDamage);
+        var pieChart = ReportFactory.DamagePieChart(sortedDamage);
+        var totalDamageLine = ReportFactory.SingleDamageAndEfficiency(totalDamage, lineHeight);
+        var damageByType = ReportFactory.StackedDamageAndEfficiencies(sortedDamage);
 
         container.Add(
         [

@@ -23,7 +23,6 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
     private ShortcutCapturer shortcutCapturer = null!;
     private FactionTechnology factionTechnology = null!;
     private Binding<bool> windowVisibility = null!;
-    public TooltipFactory TooltipFactory { get; private set; } = null!;
     private ContentManager content = null!;
     public TechTree TechTree { get; private set; } = null!;
     public Binding<bool> CanUnlockTechnologyNowBinding { get; private set; } = null!;
@@ -38,16 +37,15 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
             .Build();
     }
 
-    public void Initialize(GameInstance game,
+    public void Initialize(
+        GameInstance game,
         Binding<bool> windowVisibility,
         ShortcutCapturer shortcutCapturer,
-        TooltipFactory tooltipFactory,
         ContentManager content)
     {
         this.game = game;
         this.shortcutCapturer = shortcutCapturer;
         this.windowVisibility = windowVisibility;
-        TooltipFactory = tooltipFactory;
         this.content = content;
 
         if (!this.game.Me.Faction.TryGetBehaviorIncludingAncestors(out factionTechnology))

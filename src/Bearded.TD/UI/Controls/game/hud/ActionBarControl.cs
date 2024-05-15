@@ -12,13 +12,13 @@ namespace Bearded.TD.UI.Controls;
 sealed class ActionBarControl : CompositeControl
 {
     private readonly ActionBar model;
-    private readonly TooltipFactory tooltips;
+    private readonly UIContext uiContext;
     private readonly List<Button> buttons = [];
 
-    public ActionBarControl(ActionBar model, TooltipFactory tooltips)
+    public ActionBarControl(ActionBar model, UIContext uiContext)
     {
         this.model = model;
-        this.tooltips = tooltips;
+        this.uiContext = uiContext;
         IsClickThrough = true;
 
         model.Entries
@@ -78,7 +78,7 @@ sealed class ActionBarControl : CompositeControl
     private Button buttonForIndex(int i)
     {
         var binding = model.Entries.ListElementByIndex<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>(i);
-        var button = ButtonFactories.StandaloneIconButton(b => b
+        var button = uiContext.Factories.StandaloneIconButton(b => b
             .WithEnabled(binding.Transform(e => e is not null))
             .WithIcon(binding.Transform(e => e?.Icon ?? default))
             .WithIconScale(0.75f)
@@ -87,7 +87,7 @@ sealed class ActionBarControl : CompositeControl
             .WithShadow()
             .WithBlurredBackground()
             .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
-            .WithTooltip(tooltips, binding.Transform(e => e?.Label ?? ""), TooltipAnchor.Direction.Top)
+            .WithTooltip(binding.Transform(e => e?.Label ?? ""), TooltipAnchor.Direction.Top)
         ).Anchor(a => a
             .Left(margin: buttonLeftMargin(i), width: buttonSize, relativePercentage: 0.5)
             .Bottom(margin: buttonBottomMargin, height: buttonSize)

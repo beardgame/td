@@ -7,6 +7,9 @@ namespace Bearded.TD.UI.Factories;
 
 static class Layouts
 {
+    // TODO: replace layouts with layout builders that don't finalise until done and can contain references to UI
+    //       factories and other context
+
     public static Control WrapHorizontallyCentered(this Control control, double width)
     {
         var wrapper = CompositeControl.CreateClickThrough();
