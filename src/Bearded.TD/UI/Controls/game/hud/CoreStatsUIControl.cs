@@ -15,7 +15,7 @@ sealed class CoreStatsUIControl : CompositeControl
     private const double healthBarHeight = Constants.UI.Button.Height;
     private const double waveStatsWidth = Constants.UI.Button.Width + 2 * LayoutMarginSmall;
 
-    public CoreStatsUIControl(CoreStatsUI model, UIFactories factories)
+    public CoreStatsUIControl(CoreStatsUI model, UIContext uiContext)
     {
         IsClickThrough = true;
         this.BindIsVisible(model.Visible);
@@ -23,7 +23,7 @@ sealed class CoreStatsUIControl : CompositeControl
         this.BuildLayout()
             .ForContentBox()
             .DockFixedSizeToTop(new CoreHealthBar(model.Health), healthBarHeight)
-            .FillContent(new GamePhaseAwareStatus(model, factories));
+            .FillContent(new GamePhaseAwareStatus(model, uiContext));
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
@@ -86,15 +86,15 @@ sealed class CoreStatsUIControl : CompositeControl
 
     private sealed class GamePhaseAwareStatus : CompositeControl
     {
-        public GamePhaseAwareStatus(CoreStatsUI model, UIFactories factories)
+        public GamePhaseAwareStatus(CoreStatsUI model, UIContext uiContext)
         {
             IsClickThrough = true;
 
-            var upcomingWaveInfo = new UpcomingWaveInformation(model.UpcomingWave, model.SkipWaveTimer, factories);
+            var upcomingWaveInfo = new UpcomingWaveInformation(model.UpcomingWave, model.SkipWaveTimer, uiContext);
             Add(upcomingWaveInfo
                 .Anchor(a => a.HorizontallyCentered(width: waveStatsWidth).Top(height: upcomingWaveInfo.Height))
                 .BindIsVisible(model.CurrentPhase.Transform(phase => phase == CoreStatsUI.GamePhase.BetweenWaves)));
-            Add(new EMP(model.EMPAvailable, model.FireEMP, factories)
+            Add(new EMP(model.EMPAvailable, model.FireEMP, uiContext)
                 .Anchor(a =>
                     a.HorizontallyCentered(width: Constants.UI.Button.Width).Top(height: Constants.UI.Button.Height))
                 .BindIsVisible(model.CurrentPhase.Transform(phase => phase == CoreStatsUI.GamePhase.InWave)));
@@ -109,7 +109,7 @@ sealed class CoreStatsUIControl : CompositeControl
         public UpcomingWaveInformation(
             IReadonlyBinding<CoreStatsUI.UpcomingWaveCountdown?> upcomingWave,
             VoidEventHandler skipWaveTimer,
-            UIFactories factories)
+            UIContext uiContext)
         {
             Add(new BackgroundBox());
 
@@ -120,7 +120,7 @@ sealed class CoreStatsUIControl : CompositeControl
                 .AddLabel(
                     upcomingWave.Transform(stats => stats?.TimeLeft?.ToDisplayString() ?? "-"), Label.TextAnchorCenter)
                 .AddCenteredButton(
-                    factories,
+                    uiContext.Factories,
                     b => b
                         .WithLabel("Summon Wave")
                         .WithOnClick(skipWaveTimer)
@@ -133,10 +133,10 @@ sealed class CoreStatsUIControl : CompositeControl
 
     private sealed class EMP : CompositeControl
     {
-        public EMP(IReadonlyBinding<bool> isAvailable, VoidEventHandler activateEMP, UIFactories factories)
+        public EMP(IReadonlyBinding<bool> isAvailable, VoidEventHandler activateEMP, UIContext uiContext)
         {
             Add(new BackgroundBox());
-            Add(factories.Button(b => b
+            Add(uiContext.Factories.Button(b => b
                 .WithLabel("EMP")
                 .WithEnabled(isAvailable)
                 .WithOnClick(activateEMP)));

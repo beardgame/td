@@ -15,8 +15,10 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
 {
     private bool minimized;
 
-    public GameDebugOverlayControl(GameDebugOverlay model, UIFactories factories) : base("Game Debug Overlay")
+    public GameDebugOverlayControl(GameDebugOverlay model, UIContext uiContext) : base("Game Debug Overlay")
     {
+        var factories = uiContext.Factories;
+
         Add(new BackgroundBox {Color = Color.Purple * 0.5f});
 
         Add(new Label {Text = "Debug", FontSize = 16, TextAnchor = new Vector2d(0, 0.5)}
@@ -31,7 +33,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
             .Subscribe(b => b.Clicked += toggleMinimized));
 
         var itemList = new ListControl(new ViewportClippingLayerControl("Game Debug Overlay List"))
-                {ItemSource = new ActionListItemSource(model.Items, factories)}
+                {ItemSource = new ActionListItemSource(model.Items, uiContext)}
             .Anchor(a => a.Top(4 + 16 + 4).Right(4).Left(4).Bottom(4));
         Add(itemList);
 
@@ -56,12 +58,12 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
     private sealed class ActionListItemSource : IListItemSource
     {
         private readonly ReadOnlyCollection<Item> items;
-        private readonly UIFactories factories;
+        private readonly UIContext uiContext;
 
-        public ActionListItemSource(ReadOnlyCollection<Item> items, UIFactories factories)
+        public ActionListItemSource(ReadOnlyCollection<Item> items, UIContext uiContext)
         {
             this.items = items;
-            this.factories = factories;
+            this.uiContext = uiContext;
         }
 
         public double HeightOfItemAt(int index) => items[index] switch
@@ -97,7 +99,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
                 }.Anchor(a => a.Left(4).Bottom(relativePercentage: 0.5))
             };
             setting.Options
-                .Select((o, i) => factories.Button(o.ToString() ?? "").Subscribe(
+                .Select((o, i) => uiContext.Factories.Button(o.ToString() ?? "").Subscribe(
                         b =>
                         {
                             b.FirstChildOfType<Label>()!.FontSize = 16;
@@ -118,7 +120,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
         }
 
         private Button checkbox(string text, bool value, Action onClick)
-            => factories.Button(text).Subscribe(b =>
+            => uiContext.Factories.Button(text).Subscribe(b =>
             {
                 var label = b.FirstChildOfType<Label>()!;
                 label.TextAnchor = new Vector2d(0, 0.5);
@@ -134,7 +136,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
             });
 
         private Button button(string text, Action onClick)
-            => factories.Button(text).Subscribe(b =>
+            => uiContext.Factories.Button(text).Subscribe(b =>
             {
                 var label = b.FirstChildOfType<Label>()!;
                 label.TextAnchor = new Vector2d(0, 0.5);

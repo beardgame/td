@@ -16,7 +16,7 @@ sealed partial class BuildingStatusControl
         private readonly IReadonlyBinding<ResourceAmount> currentResources;
         private readonly Action<IPermanentUpgrade> doUpgrade;
         private readonly Binding<bool> upgradeChoicesEnabled = new(true);
-        private readonly UIFactories factories;
+        private readonly UIContext uiContext;
         private readonly Control iconRow;
 
         public UpgradeSelectRow(
@@ -24,12 +24,12 @@ sealed partial class BuildingStatusControl
             IReadonlyBinding<int?> activeUpgradeSlot,
             IReadonlyBinding<ResourceAmount> currentResources,
             Action<IPermanentUpgrade> doUpgrade,
-            UIFactories factories)
+            UIContext uiContext)
         {
             this.activeUpgradeSlot = activeUpgradeSlot;
             this.currentResources = currentResources;
             this.doUpgrade = doUpgrade;
-            this.factories = factories;
+            this.uiContext = uiContext;
 
             iconRow = new IconRow<IPermanentUpgrade>(availableUpgrades, createControl);
             Add(iconRow);

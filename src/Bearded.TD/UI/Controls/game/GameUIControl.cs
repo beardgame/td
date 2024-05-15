@@ -16,8 +16,7 @@ sealed class GameUIControl : CompositeControl
     private readonly GameUI gameUI;
     private readonly UIContext uiContext;
 
-    public GameUIControl(
-        GameUI gameUI, RenderContext renderContext, UIContext uiContext)
+    public GameUIControl(GameUI gameUI, RenderContext renderContext, UIContext uiContext)
     {
         this.gameUI = gameUI;
         this.uiContext = uiContext;
@@ -68,7 +67,7 @@ sealed class GameUIControl : CompositeControl
 
         gameUI.SetWorldOverlay(gameWorldOverlay);
 
-        Add(new GameMenuControl(uiContext.Factories)
+        Add(new GameMenuControl(uiContext)
             .Subscribe(ctrl => ctrl.ResumeGameButtonClicked += gameUI.OnResumeGameButtonClicked)
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked)
             .BindIsVisible(gameUI.GameUIController.GameMenuVisibility));

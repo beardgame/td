@@ -11,9 +11,11 @@ sealed class SettingsEditorControl : CompositeControl
     private readonly Binding<UserSettingsSchema.SettingsGroup?> activeGroup =
         Binding.Create<UserSettingsSchema.SettingsGroup?>(null);
 
-    public SettingsEditorControl(SettingsEditor model, UIFactories factories)
+    public SettingsEditorControl(SettingsEditor model, UIContext uiContext)
     {
-        var tabControl = new SettingsTabControl(factories);
+        var tabControl = new SettingsTabControl(uiContext);
+
+        var factories = uiContext.Factories;
 
         this.BuildLayout()
             .ForFullScreen()
@@ -39,12 +41,12 @@ sealed class SettingsEditorControl : CompositeControl
         }
     }
 
-    private sealed class SettingsTabControl(UIFactories factories) : CompositeControl
+    private sealed class SettingsTabControl(UIContext uiContext) : CompositeControl
     {
         public void Populate(UserSettingsSchema.SettingsGroup group)
         {
             RemoveAllChildren();
-            this.BuildLayout().FillContent(factories.Form(form =>
+            this.BuildLayout().FillContent(uiContext.Factories.Form(form =>
             {
                 foreach (var setting in group.Settings)
                 {

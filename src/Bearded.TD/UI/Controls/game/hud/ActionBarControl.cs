@@ -12,13 +12,13 @@ namespace Bearded.TD.UI.Controls;
 sealed class ActionBarControl : CompositeControl
 {
     private readonly ActionBar model;
-    private readonly UIFactories factories;
+    private readonly UIContext uiContext;
     private readonly List<Button> buttons = [];
 
-    public ActionBarControl(ActionBar model, UIFactories factories)
+    public ActionBarControl(ActionBar model, UIContext uiContext)
     {
         this.model = model;
-        this.factories = factories;
+        this.uiContext = uiContext;
         IsClickThrough = true;
 
         model.Entries
@@ -78,7 +78,7 @@ sealed class ActionBarControl : CompositeControl
     private Button buttonForIndex(int i)
     {
         var binding = model.Entries.ListElementByIndex<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>(i);
-        var button = factories.StandaloneIconButton(b => b
+        var button = uiContext.Factories.StandaloneIconButton(b => b
             .WithEnabled(binding.Transform(e => e is not null))
             .WithIcon(binding.Transform(e => e?.Icon ?? default))
             .WithIconScale(0.75f)

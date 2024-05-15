@@ -21,9 +21,11 @@ sealed class LobbyControl : CompositeControl
 {
     private readonly Binding<bool> readyEnabled = new();
 
-    public LobbyControl(Lobby model, UIFactories factories)
+    public LobbyControl(Lobby model, UIContext uiContext)
     {
-        var lobbyDetailsControl = new LobbyDetailsControl(model, factories);
+        var lobbyDetailsControl = new LobbyDetailsControl(model, uiContext);
+
+        var factories = uiContext.Factories;
 
         this.BuildLayout()
             .ForFullScreen()
@@ -153,9 +155,9 @@ sealed class LobbyControl : CompositeControl
         private readonly LobbyPlayerList.ItemSource playerListItemSource;
         private readonly ListControl playerList;
 
-        public LobbyDetailsControl(Lobby model, UIFactories factories)
+        public LobbyDetailsControl(Lobby model, UIContext uiContext)
         {
-            gameSettings = new GameSettingsControl(model, factories);
+            gameSettings = new GameSettingsControl(model, uiContext);
             playerListItemSource = new LobbyPlayerList.ItemSource(model);
             playerList = new ListControl {ItemSource = playerListItemSource};
             model.PlayersChanged += playerList.Reload;
@@ -189,7 +191,7 @@ sealed class LobbyControl : CompositeControl
 
     private sealed class GameSettingsControl : CompositeControl
     {
-        public GameSettingsControl(Lobby model, UIFactories factories)
+        public GameSettingsControl(Lobby model, UIContext uiContext)
         {
             var modStatusBindings = model.AvailableMods.ToDictionary(
                 mod => mod,
@@ -200,6 +202,8 @@ sealed class LobbyControl : CompositeControl
             var levelSize = Binding.Create(model.LevelSize, model.OnSetLevelSize);
             var levelGenerationMethod =
                 Binding.Create(model.LevelGenerationMethod, model.OnSetLevelGenerationMethod);
+
+            var factories = uiContext.Factories;
 
             this.BuildScrollableColumn()
                 .AddHeader("Enabled mods")

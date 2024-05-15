@@ -55,11 +55,13 @@ sealed class UIDebugOverlayControl : OnTopCompositeControl
 
     private bool moveControlBox;
 
-    public UIDebugOverlayControl(UIDebugOverlay model, UIFactories factories) : base("UI Debug Overlay")
+    public UIDebugOverlayControl(UIDebugOverlay model, UIContext uiContext) : base("UI Debug Overlay")
     {
         Add(new BackgroundBox { Color = Color.DarkCyan * 0.2f });
 
         Add(highlightParent = new CompositeControl());
+
+        var factories = uiContext.Factories;
 
         controlBox = new CompositeControl
         {

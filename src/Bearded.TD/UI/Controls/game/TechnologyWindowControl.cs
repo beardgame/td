@@ -28,18 +28,18 @@ sealed class TechnologyWindowControl : CompositeControl
     private static readonly double tierColumnWidth = contentWidth / shownTiers.Count;
 
     private readonly TechnologyWindow model;
-    private readonly UIFactories factories;
+    private readonly UIContext uiContext;
     private readonly Control window;
 
     private bool dragging;
     private Vector2d lastDragMousePosition;
 
-    public TechnologyWindowControl(TechnologyWindow model, UIFactories factories)
+    public TechnologyWindowControl(TechnologyWindow model, UIContext uiContext)
     {
         this.model = model;
-        this.factories = factories;
+        this.uiContext = uiContext;
         IsClickThrough = true;
-        window = factories.Window(b => b
+        window = uiContext.Factories.Window(b => b
             .WithTitle("Technology")
             .WithOnClose(model.CloseWindow)
             .WithContent(buildContent())
@@ -198,7 +198,7 @@ sealed class TechnologyWindowControl : CompositeControl
             var buttonColumn = buttons.BuildFixedColumn();
             foreach (var tech in techList)
             {
-                buttonColumn.AddCenteredButton(factories, b => b
+                buttonColumn.AddCenteredButton(uiContext.Factories, b => b
                     .WithLabel(tech.Blueprint.Name)
                     .WithEnabled(tech.IsUnlockedBinding.Or(model.CanUnlockTechnologyNowBinding))
                     .WithActive(tech.IsUnlockedBinding)
