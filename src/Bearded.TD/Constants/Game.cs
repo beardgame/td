@@ -56,7 +56,7 @@ static partial class Constants
             public static readonly Color ArmorColor = Color.SpringGreen;
             public static readonly Color ShieldColor = Color.DeepSkyBlue;
 
-            public static readonly Color EnemyIndicatorColor = Color.Orange;
+            public static readonly Color EnemyIndicatorColor = Color.Orange * 0.25f;
 
             public static class StatusDisplay
             {
