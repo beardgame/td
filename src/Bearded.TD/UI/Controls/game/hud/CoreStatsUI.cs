@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -9,6 +10,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.Utilities;
 using Bearded.UI.EventArgs;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -22,13 +24,13 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
     private GameInstance? gameInstance;
     private ShortcutCapturer? shortcutCapturer;
     private ICoreStats? coreStats;
-    private UpcomingWaveInfo? upcomingWaveInfo;
+    private WaveInfo? waveInfo;
 
     public Binding<bool> Visible { get; } = new();
     public Binding<CoreHealthStats> Health { get; } = new();
     public Binding<bool> EMPAvailable { get; } = new();
     public Binding<GamePhase> CurrentPhase { get; } = new(GamePhase.BetweenWaves);
-    public Binding<UpcomingWaveCountdown?> UpcomingWave { get; } = new();
+    public Binding<WaveState?> Wave { get; } = new();
 
     public CoreStatsUI()
     {
@@ -64,7 +66,7 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
 
     public void HandleEvent(WaveScheduled @event)
     {
-        upcomingWaveInfo = new UpcomingWaveInfo(@event.WaveName, @event.SpawnStart, @event.CanSummonNow);
+        waveInfo = new WaveInfo(@event.WaveId, @event.WaveName, @event.SpawnStart, @event.CanSummonNow);
     }
 
     public void HandleEvent(WaveStarted @event)
@@ -79,6 +81,10 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
     public void HandleEvent(WaveEnded @event)
     {
         CurrentPhase.SetFromSource(GamePhase.BetweenWaves);
+        if (waveInfo.HasValue && waveInfo.Value.WaveId == @event.WaveId)
+        {
+            waveInfo = null;
+        }
     }
 
     private void tryFireEMP()
@@ -116,23 +122,29 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
             CurrentHealth = coreStats?.CurrentHealth ?? Health.Value.CurrentHealth
         });
         EMPAvailable.SetFromSource(coreStats?.EMPStatus == EMPStatus.Ready);
-        UpcomingWave.SetFromSource(upcomingWaveInfo is null || gameInstance is null
+        Wave.SetFromSource(waveInfo is null || gameInstance is null
             ? null
-            : upcomingWaveInfo.Value.ToCountdown(gameInstance.State.Time));
+            : waveInfo.Value.ToCountdown(gameInstance.State.Time, CurrentPhase.Value));
     }
 
     public readonly record struct CoreHealthStats(
         HitPoints MaxHealth, HitPoints HealthAtWaveStart, HitPoints CurrentHealth);
 
-    private readonly record struct UpcomingWaveInfo(string Name, Instant? StartTime, Func<bool> CanSummonNow)
+    private readonly record struct WaveInfo(
+        Id<Wave> WaveId,
+        string Name,
+        Instant? StartTime,
+        Func<bool> CanSummonNow)
     {
-        public UpcomingWaveCountdown ToCountdown(Instant currentTime) => new(
+        public WaveState ToCountdown(Instant currentTime, GamePhase phase) => new(
             Name,
-            StartTime is null ? null : TimeSpan.Max(TimeSpan.Zero, StartTime.Value - currentTime),
-            CanSummonNow());
+            StartTime is null || phase != GamePhase.BetweenWaves
+                ? null
+                : TimeSpan.Max(TimeSpan.Zero, StartTime.Value - currentTime),
+            CanSummonNow() && phase == GamePhase.BetweenWaves);
     }
 
-    public readonly record struct UpcomingWaveCountdown(string Name, TimeSpan? TimeLeft, bool CanSkip);
+    public readonly record struct WaveState(string Name, TimeSpan? TimeLeft, bool CanSkip);
 
     public enum GamePhase
     {

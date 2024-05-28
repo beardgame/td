@@ -1,19 +1,21 @@
-using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
-using Bearded.UI;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.UI;
+using static Bearded.TD.Constants.UI.Window;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class CoreStatsUIControl : CompositeControl
+sealed partial class CoreStatsUIControl : CompositeControl
 {
     private const double healthBarHeight = Constants.UI.Button.Height;
+    private const double empBoxWidth = Constants.UI.Button.Width + 2 * LayoutMarginSmall;
+    private const double empBoxHeight = Constants.UI.Button.Height + 2 * LayoutMarginSmall;
     private const double waveStatsWidth = Constants.UI.Button.Width + 2 * LayoutMarginSmall;
+    public const double Width = 640;
+    public const double Height = healthBarHeight + empBoxHeight + 3 * LayoutMargin;
 
     public CoreStatsUIControl(CoreStatsUI model, UIContext uiContext)
     {
@@ -22,112 +24,56 @@ sealed class CoreStatsUIControl : CompositeControl
 
         this.BuildLayout()
             .ForContentBox()
+            .DockFixedSizeToLeft(new StaticWaveInformation(model.Wave), waveStatsWidth)
+            .DockFixedSizeToRight(
+                new UpcomingWaveInformation(model.Wave, model.CurrentPhase, model.SkipWaveTimer, uiContext),
+                waveStatsWidth)
             .DockFixedSizeToTop(new CoreHealthBar(model.Health), healthBarHeight)
-            .FillContent(new GamePhaseAwareStatus(model, uiContext));
+            .DockFixedSizeToTop(
+                new EMP(model.EMPAvailable, model.FireEMP, uiContext)
+                    .WrapHorizontallyCentered(empBoxWidth)
+                    .BindIsVisible(model.CurrentPhase.Transform(phase => phase == CoreStatsUI.GamePhase.InWave)),
+                empBoxHeight);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
 
-    private sealed class CoreHealthBar : CompositeControl
+    private sealed class StaticWaveInformation : CompositeControl
     {
-        private static readonly Color healthColor = Color.Green;
-        private static readonly Color remainderColor = Color.DimGray;
-        private static readonly Color lostHealthColor = Color.Lerp(healthColor, remainderColor, 0.8f);
-
-        private readonly Control healthControl;
-        private readonly Control lostHealthControl;
-        private readonly Control remainderControl;
-
-        public CoreHealthBar(Binding<CoreStatsUI.CoreHealthStats> health)
+        public StaticWaveInformation(
+            IReadonlyBinding<CoreStatsUI.WaveState?> wave)
         {
-            healthControl = new BackgroundBox(healthColor);
-            lostHealthControl = new BackgroundBox(lostHealthColor);
-            remainderControl = new BackgroundBox(remainderColor);
-            Add(healthControl);
-            Add(lostHealthControl);
-            Add(remainderControl);
-            Add(new Border());
+            this.Add(createWaveInfoBackground());
 
-            updateValues(health.Value);
-            health.SourceUpdated += updateValues;
+            var content = CreateClickThrough();
+            var column = content.BuildFixedColumn();
+            column.AddLabel(wave.Transform(w => w?.Name ?? "<none>"), textAnchor: Label.TextAnchorCenter);
 
-            var transformedBinding = health.Transform(stats =>
-                $"{stats.CurrentHealth.NumericValue} / {stats.MaxHealth.NumericValue}");
-            Add(TextFactories.Label(transformedBinding, Label.TextAnchorCenter));
-        }
-
-        private void updateValues(CoreStatsUI.CoreHealthStats stats)
-        {
-            updateAnchors(stats);
-        }
-
-        private void updateAnchors(CoreStatsUI.CoreHealthStats stats)
-        {
-            var healthPercentage = stats.MaxHealth > HitPoints.Zero ? (stats.CurrentHealth / stats.MaxHealth) : 0;
-            var waveStartHealthPercentage =
-                stats.MaxHealth > HitPoints.Zero ? (stats.HealthAtWaveStart / stats.MaxHealth) : 0;
-
-            var firstSplit = new Anchor(healthPercentage, 0);
-            var secondSplit = new Anchor(waveStartHealthPercentage, 0);
-
-            healthControl.SetAnchors(
-                new Anchors(new Anchor(0, 0), firstSplit).H,
-                healthControl.VerticalAnchors);
-            lostHealthControl.SetAnchors(
-                new Anchors(firstSplit, secondSplit).H,
-                lostHealthControl.VerticalAnchors);
-            remainderControl.SetAnchors(
-                new Anchors(secondSplit, new Anchor(1, 0)).H,
-                remainderControl.VerticalAnchors);
-        }
-
-        protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
-    }
-
-    private sealed class GamePhaseAwareStatus : CompositeControl
-    {
-        public GamePhaseAwareStatus(CoreStatsUI model, UIContext uiContext)
-        {
-            IsClickThrough = true;
-
-            var upcomingWaveInfo = new UpcomingWaveInformation(model.UpcomingWave, model.SkipWaveTimer, uiContext);
-            Add(upcomingWaveInfo
-                .Anchor(a => a.HorizontallyCentered(width: waveStatsWidth).Top(height: upcomingWaveInfo.Height))
-                .BindIsVisible(model.CurrentPhase.Transform(phase => phase == CoreStatsUI.GamePhase.BetweenWaves)));
-            Add(new EMP(model.EMPAvailable, model.FireEMP, uiContext)
-                .Anchor(a =>
-                    a.HorizontallyCentered(width: Constants.UI.Button.Width).Top(height: Constants.UI.Button.Height))
-                .BindIsVisible(model.CurrentPhase.Transform(phase => phase == CoreStatsUI.GamePhase.InWave)));
+            Add(content.Anchor(a => a.VerticallyCentered(column.Height)));
         }
     }
 
     private sealed class UpcomingWaveInformation : CompositeControl
     {
-        private readonly double contentHeight;
-        public double Height => contentHeight + 2 * LayoutMarginSmall;
-
         public UpcomingWaveInformation(
-            IReadonlyBinding<CoreStatsUI.UpcomingWaveCountdown?> upcomingWave,
+            IReadonlyBinding<CoreStatsUI.WaveState?> wave,
+            IReadonlyBinding<CoreStatsUI.GamePhase> phase,
             VoidEventHandler skipWaveTimer,
             UIContext uiContext)
         {
-            Add(new BackgroundBox());
+            this.Add(createWaveInfoBackground());
 
-            var content = new CompositeControl();
-            var column = content.BuildFixedColumn();
-            column
-                .AddLabel(upcomingWave.Transform(stats => stats?.Name ?? "<none>"), textAnchor: Label.TextAnchorCenter)
-                .AddLabel(
-                    upcomingWave.Transform(stats => stats?.TimeLeft?.ToDisplayString() ?? "-"), Label.TextAnchorCenter)
-                .AddCenteredButton(
-                    uiContext.Factories,
-                    b => b
-                        .WithLabel("Summon Wave")
-                        .WithOnClick(skipWaveTimer)
-                        .WithEnabled(upcomingWave.Transform(stats => stats?.CanSkip ?? false)));
-            contentHeight = column.Height;
+            // TODO: add information about upcoming enemies
 
-            this.BuildLayout().ForInnerContent().FillContent(content);
+            var button = uiContext.Factories.Button(b => b
+                .WithLabel(wave.Transform(stats => stats?.TimeLeft?.ToDisplayString() ?? "Summon"))
+                .WithOnClick(skipWaveTimer)
+                .WithEnabled(wave.Transform(stats => stats?.CanSkip ?? false)));
+            button.BindIsVisible(phase.Transform(p => p == CoreStatsUI.GamePhase.BetweenWaves));
+            Add(button.Anchor(a => a
+                .Left(LayoutMarginSmall)
+                .Right(LayoutMarginSmall)
+                .Bottom(LayoutMarginSmall, Constants.UI.Button.Height)));
         }
     }
 
@@ -135,11 +81,23 @@ sealed class CoreStatsUIControl : CompositeControl
     {
         public EMP(IReadonlyBinding<bool> isAvailable, VoidEventHandler activateEMP, UIContext uiContext)
         {
-            Add(new BackgroundBox());
             Add(uiContext.Factories.Button(b => b
-                .WithLabel("EMP")
-                .WithEnabled(isAvailable)
-                .WithOnClick(activateEMP)));
+                    .WithLabel("EMP")
+                    .WithEnabled(isAvailable)
+                    .WithOnClick(activateEMP)
+                    .WithShadow()
+                    .WithBlurredBackground())
+                .Anchor(a => a.Centered(Constants.UI.Button.Width, Constants.UI.Button.Height)));
         }
     }
+
+    private static Control[] createWaveInfoBackground() =>
+        new ComplexBox
+        {
+            CornerRadius = CornerRadius,
+            Components = BackgroundComponents,
+        }.WithDecorations(new Decorations(
+            Shadow: Shadow,
+            BlurredBackground: BlurredBackground.Default
+        ));
 }

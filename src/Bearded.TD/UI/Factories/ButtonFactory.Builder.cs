@@ -29,13 +29,11 @@ sealed partial class ButtonFactory
             Hexagon,
         }
 
-        private (IReadonlyBinding<double> Progress, Color? Color)? progressBar;
         private (TooltipDefinition Definition, TooltipAnchor.Direction Direction)? tooltip;
         private ButtonClickEventHandler? onClick;
         private IReadonlyBinding<bool> isEnabled = Binding.Constant(true);
         private IReadonlyBinding<bool> isActive = Binding.Constant(false);
         private IReadonlyBinding<bool> isError = Binding.Constant(false);
-        private bool isDangerous;
         private bool alwaysRenderAsEnabled;
         private Shape shape;
         private Shadow? shadow;
@@ -43,12 +41,6 @@ sealed partial class ButtonFactory
         private ButtonBackgroundColor backgroundColors = DefaultBackgroundColors;
 
         protected abstract T This { get; }
-
-        public T WithProgressBar(Binding<double> progress, Color? color = null)
-        {
-            progressBar = (progress, color);
-            return This;
-        }
 
         public T WithTooltip(
             string text,
@@ -127,12 +119,6 @@ sealed partial class ButtonFactory
             return This;
         }
 
-        public T MakeDangerous()
-        {
-            isDangerous = true;
-            return This;
-        }
-
         public T AlwaysRenderAsEnabled()
         {
             alwaysRenderAsEnabled = true;
@@ -204,12 +190,6 @@ sealed partial class ButtonFactory
             button.Add(shape);
             contentColor.SourceUpdated += setEdgeColor;
             setEdgeColor(contentColor.Value);
-
-            if (progressBar.HasValue)
-            {
-                var progressColor = progressBar.Value.Color ?? Color.White * .25f;
-                button.Add(ProgressBarFactories.BareProgressBar(progressBar.Value.Progress, progressColor));
-            }
 
             if (tooltip is { } tip)
             {
