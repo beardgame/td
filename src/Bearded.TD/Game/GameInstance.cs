@@ -8,6 +8,7 @@ using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Debug;
 using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.GameLoop;
@@ -46,6 +47,8 @@ sealed class GameInstance
 
     private SelectionManager? selectionManager;
     public SelectionManager SelectionManager => selectionManager!;
+
+    public ActiveOverlays Overlays { get; } = new();
 
     private readonly IdCollection<Player> players = new();
     public ReadOnlyCollection<Player> Players => players.AsReadOnly;
