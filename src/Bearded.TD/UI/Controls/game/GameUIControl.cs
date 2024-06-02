@@ -37,8 +37,8 @@ sealed class GameUIControl : CompositeControl
         nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, uiContext));
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats, uiContext)
             .Anchor(a => a
-                .Top(height: 480)
-                .Left(margin: -240, width: 480, relativePercentage: .5)));
+                .Top(height: CoreStatsUIControl.Height)
+                .HorizontallyCentered(CoreStatsUIControl.Width)));
         nonDiegeticUIWrapper.Add(gameWorldOverlay);
         Add(nonDiegeticUIWrapper);
 
