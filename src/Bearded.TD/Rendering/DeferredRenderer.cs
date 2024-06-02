@@ -47,7 +47,9 @@ sealed class DeferredRenderer
 
     private ViewportSize viewport;
 
-    public IRenderSetting DepthBuffer { get; }
+    private readonly Texture depthBufferTexture;
+    public IRenderSetting GetDepthBufferUniform(string name, TextureUnit unit)
+        => new TextureUniform(name, unit, depthBufferTexture);
 
     public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; } = new();
     public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; } = new();
@@ -86,9 +88,10 @@ sealed class DeferredRenderer
             UpscaleDepthMask = RenderTargetWithDepthAndColors("UpscaleDepthMask", textures.DepthMask),
         };
 
-        DepthBuffer = new TextureUniform("depthBuffer", TextureUnit.Texture1, textures.Depth.Texture);
+        depthBufferTexture = textures.Depth.Texture;
 
         var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
+        var levelOverlayDecalRenderer = Enumerable.Empty<IRenderer>();
 
         var resizedBuffers = Resize(s => s.Resolution,
             textures.DepthMask, textures.Diffuse, textures.Normal,
@@ -104,6 +107,13 @@ sealed class DeferredRenderer
                     ClearDepth(),
                     Do(s => s.Content.LevelRenderer.Render()),
                     renderDrawGroups(solidLevelDrawGroups),
+                    WithContext(
+                        c => c.SetDebugName("Render level overlay decals")
+                            .BindRenderTarget(targets.GeometryDiffuseOnly)
+                            .SetDepthMode(TestOnly(DepthFunction.Less))
+                            .SetBlendMode(Premultiplied),
+                        Render(levelOverlayDecalRenderer)
+                    ),
                     WithContext(
                         c => c.SetBlendMode(Premultiplied),
                         renderDrawGroups(worldDrawGroups))
@@ -196,7 +206,7 @@ sealed class DeferredRenderer
             settings.ViewMatrix, settings.ProjectionMatrix,
             settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
             new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer.Texture),
-            DepthBuffer, gBufferResolution
+            GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1), gBufferResolution
         };
 
         var pointLight = BatchedRenderer.From(PointLights.ToRenderable(), neededSettings);

@@ -7,7 +7,8 @@ using Bearded.TD.Rendering.Deferred.Level;
 
 namespace Bearded.TD.Rendering;
 
-// TODO: this class is very small, review if we need it?
+// TODO: refactor into more semantic interface for deferred renderer
+// don't expose actual renderers
 sealed class ContentRenderers : IDisposable
 {
     private readonly IDrawableRenderers drawableRenderers;

@@ -56,7 +56,7 @@ sealed class FluidGeometry
                 context.Settings.FarPlaneUnitX,
                 context.Settings.FarPlaneUnitY,
                 context.Settings.CameraPosition,
-                context.DeferredRenderer.DepthBuffer,
+                context.DeferredRenderer.GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1),
             }.Concat(material.Textures.Select(
                 (t, i) =>
                 {

@@ -31,6 +31,12 @@ uniform usamplerBuffer componentBuffer;
 
 uniform sampler2D intermediateBlurBackground;
 
+uniform sampler2D depthBuffer;
+uniform vec3 farPlaneBaseCorner;
+uniform vec3 farPlaneUnitX;
+uniform vec3 farPlaneUnitY;
+uniform vec3 cameraPosition;
+
 uniform float uiTime;
 
 in vec3 p_position;
@@ -45,6 +51,22 @@ flat in uint p_firstComponent;
 flat in int p_componentCount;
 
 out vec4 fragColor;
+
+vec3 getFragmentPositionFromDepth(vec2 uv)
+{
+    uv = clamp(uv, 0.001, 0.999);
+
+    float depth = texture(depthBuffer, uv).x;
+
+    vec3 pointOnFarPlane = farPlaneBaseCorner
+        + farPlaneUnitX * uv.x
+        + farPlaneUnitY * uv.y;
+
+    vec3 fragmentPositionRelativeToCamera = pointOnFarPlane * depth;
+    vec3 fragmentPosition = fragmentPositionRelativeToCamera - cameraPosition;
+
+    return fragmentPosition;
+}
 
 float signedDistanceToEdge()
 {
