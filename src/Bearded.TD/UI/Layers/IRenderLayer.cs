@@ -17,5 +17,5 @@ interface IDeferredRenderLayer : IRenderLayer
     float FarPlaneDistance { get; }
     float Time { get; }
     float HexagonalFallOffDistance { get; }
-    ContentRenderers ContentRenderers { get; }
+    DeferredContent Content { get; }
 }

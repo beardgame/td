@@ -26,7 +26,7 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
 
     public float HexagonalFallOffDistance => (game.State.Level.Radius - 0.25f) * Constants.Game.World.HexagonWidth;
 
-    public ContentRenderers ContentRenderers => renderer.ContentRenderers;
+    public DeferredContent Content => renderer.Content;
 
     public GameWorldControl(GameInstance game, RenderContext renderContext, ITimeSource time)
     {
@@ -44,7 +44,7 @@ sealed class GameWorldControl : RenderLayerCompositeControl, IDeferredRenderLaye
     public override void Draw()
     {
         updateMatrices();
-        renderer.Render();
+        renderer.Draw();
     }
 
     private void updateMatrices()

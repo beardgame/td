@@ -1,14 +1,16 @@
-﻿using Bearded.TD.Content.Models;
+﻿using Bearded.Graphics.Rendering;
+using Bearded.Graphics.Shading;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
+using Shader = Bearded.TD.Content.Models.Shader;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 
-sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevealed>
+sealed class LevelRenderer : IRenderer, IListener<TileDrawInfoChanged>, IListener<ZoneRevealed>
 {
     public Heightmap Heightmap { get; }
     private readonly BiomeMaterials biomeMaterials;
@@ -61,12 +63,17 @@ sealed class LevelRenderer : IListener<TileDrawInfoChanged>, IListener<ZoneRevea
         heightmapToLevelRenderer.Resize(settings.TerrainMeshResolution);
     }
 
+    public void SetShaderProgram(ShaderProgram program)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public void Render()
     {
         heightmapToLevelRenderer.RenderAll();
     }
 
-    public void CleanUp()
+    public void Dispose()
     {
         Heightmap.Dispose();
         biomeBuffer.Dispose();

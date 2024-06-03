@@ -20,6 +20,16 @@ sealed class NoOpDrawableRenderers : IDrawableRenderers
         throw new InvalidOperationException("Cannot create custom renderers in tests");
     }
 
+    public void CreateAndRegisterRenderer(IDrawable drawable, DrawOrderGroup group, int drawGroupOrderKey)
+    {
+        throw new InvalidOperationException("Cannot create renderers in tests");
+    }
+
+    public void RegisterRenderer(IRenderer renderer, DrawOrderGroup group, int drawGroupOrderKey)
+    {
+        throw new InvalidOperationException("Cannot register renderers in tests");
+    }
+
     public void RenderDrawGroup(DrawOrderGroup @group) { }
     public void DisposeAll() { }
     public void ClearAll() { }

@@ -5,6 +5,7 @@ using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Shading;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
@@ -18,7 +19,7 @@ using static Bearded.TD.Tiles.Level;
 
 namespace Bearded.TD.Rendering.Deferred;
 
-sealed class FluidGeometry
+sealed class FluidGeometry : IDrawable
 {
     private static readonly Vector2 rightVector = Direction.Right.Vector();
     private static readonly Vector2 upRightVector = Direction.UpRight.Vector();
@@ -27,6 +28,9 @@ sealed class FluidGeometry
     private readonly int radius;
     private readonly GeometryLayer levelGeometry;
     private readonly Fluid fluid;
+    private readonly RenderContext context;
+    private readonly Material material;
+    private readonly List<TextureUniform> textures;
 
     private readonly Tilemap<(float SurfaceLevel, bool HasFluid)> height;
     private readonly Tilemap<Vector2> flow;
@@ -34,56 +38,31 @@ sealed class FluidGeometry
     // TODO: use a non-indexed mesh builder instead?
     private readonly ExpandingIndexedTrianglesMeshBuilder<FluidVertex> meshBuilder
         = new();
-    private readonly List<Texture> textures = new();
-
-    private readonly IRenderer renderer;
 
     public FluidGeometry(GameInstance game, Fluid fluid, RenderContext context, Material material)
     {
         radius = game.State.Level.Radius;
         levelGeometry = game.State.GeometryLayer;
         this.fluid = fluid;
+        this.context = context;
+        this.material = material;
 
         height = new Tilemap<(float, bool)>(radius + 1);
         flow = new Tilemap<Vector2>(radius + 1);
 
-        renderer = BatchedRenderer.From(meshBuilder.ToRenderable(),
-            new[]{
-                context.Settings.ViewMatrix,
-                context.Settings.ProjectionMatrix,
-                context.Settings.Time,
-                context.Settings.FarPlaneBaseCorner,
-                context.Settings.FarPlaneUnitX,
-                context.Settings.FarPlaneUnitY,
-                context.Settings.CameraPosition,
-                context.DeferredRenderer.GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1),
-            }.Concat(material.Textures.Select(
-                (t, i) =>
-                {
-                    var texture = Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap());
-                    textures.Add(texture);
-                    return new TextureUniform(
-                        t.UniformName,
-                        TextureUnit.Texture0 + i,
-                        texture
-                    );
-                })
-            )
-        );
-        material.Shader.RendererShader.UseOnRenderer(renderer);
+        textures = material.Textures.Select(
+            (t, i) => new TextureUniform(
+                t.UniformName,
+                TextureUnit.Texture0 + i,
+                Texture.From(ImageTextureData.From(t.Texture), c => c.GenerateMipmap())
+            )).ToList();
     }
 
-    public void Render()
+    private void rebuildGeometry()
     {
-        if (fluid.IsEmpty)
-            return;
-
         resetFlow();
         prepareHeightAndFlow();
         createGeometry();
-
-        renderer.Render();
-        meshBuilder.Clear();
     }
 
     private void resetFlow()
@@ -202,11 +181,51 @@ sealed class FluidGeometry
         );
     }
 
-    public void CleanUp()
+    public void Clear()
+    {
+        meshBuilder.Clear();
+    }
+
+    public void Dispose()
     {
         meshBuilder.Dispose();
-        renderer.Dispose();
         foreach (var t in textures)
-            t.Dispose();
+            t.Value.Dispose();
+    }
+
+    public IRenderer CreateRendererWithSettings(IEnumerable<IRenderSetting> settings)
+    {
+        var renderer = new FluidRenderer(this, context, settings);
+        material.Shader.RendererShader.UseOnRenderer(renderer);
+        return renderer;
+    }
+
+    private sealed class FluidRenderer(
+        FluidGeometry geometry,
+        RenderContext context,
+        IEnumerable<IRenderSetting> settings)
+        : IRenderer
+    {
+        private readonly IRenderer renderer = BatchedRenderer.From(
+            geometry.meshBuilder.ToRenderable(),
+            [
+                ..settings,
+                ..geometry.textures,
+                context.DeferredRenderer.GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1),
+            ]
+        );
+
+        public void Render()
+        {
+            if (geometry.fluid.IsEmpty)
+                return;
+
+            geometry.rebuildGeometry();
+
+            renderer.Render();
+        }
+
+        public void Dispose() => renderer.Dispose();
+        public void SetShaderProgram(ShaderProgram program) => renderer.SetShaderProgram(program);
     }
 }

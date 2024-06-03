@@ -3,37 +3,36 @@ using System.Drawing;
 using System.Linq;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
+using Bearded.Graphics.Pipelines.Context;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.Textures;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering.Deferred;
-using Bearded.TD.Rendering.Deferred.Level;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
-using Bearded.TD.Utilities.Collections;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using static Bearded.Graphics.Pipelines.Context.CullMode;
-using static Bearded.TD.Content.Models.DrawOrderGroup;
 
 namespace Bearded.TD.Rendering;
 
-using static Graphics.Pipelines.Context.BlendMode;
-using static Graphics.Pipelines.Context.DepthMode;
+using static BlendMode;
+using static CullMode;
+using static DepthMode;
+using static DrawOrderGroup;
 using static Pipeline;
 using static Pipeline<DeferredRenderer.RenderState>;
 
 sealed class DeferredRenderer
 {
-    private static readonly DrawOrderGroup[] solidLevelDrawGroups = { SolidLevelDetails };
-    private static readonly DrawOrderGroup[] worldDrawGroups = { Building, Unit };
-    private static readonly DrawOrderGroup[] worldDetailGroups = { LevelDetail };
-    private static readonly DrawOrderGroup[] postLightGroups = { Particle, Unknown };
-    private static readonly DrawOrderGroup[] ignoreDepthGroup = { IgnoreDepth };
+    private static readonly DrawOrderGroup[] solidLevelDrawGroups = [Level, SolidLevelDetails];
+    private static readonly DrawOrderGroup[] worldDrawGroups = [Building, Unit];
+    private static readonly DrawOrderGroup[] worldDetailGroups = [LevelDetail];
+    private static readonly DrawOrderGroup[] postLightGroups = [Fluids, Particle, Unknown];
+    private static readonly DrawOrderGroup[] ignoreDepthGroup = [IgnoreDepth];
 
-    public sealed record RenderState(Vector2i Resolution, RenderTarget FinalRenderTarget, ContentRenderers Content);
+    public sealed record RenderState(Vector2i Resolution, RenderTarget FinalRenderTarget, DeferredContent Content);
 
     private readonly CoreShaders shaders;
     private readonly CoreRenderSettings settings;
@@ -105,7 +104,6 @@ sealed class DeferredRenderer
                 InOrder(
                     ClearColor(),
                     ClearDepth(),
-                    Do(s => s.Content.LevelRenderer.Render()),
                     renderDrawGroups(solidLevelDrawGroups),
                     WithContext(
                         c => c.SetDebugName("Render level overlay decals")
@@ -159,10 +157,8 @@ sealed class DeferredRenderer
                         c => c.SetDebugName("Render fluids and other post-light groups")
                             .SetDepthMode(TestOnly(DepthFunction.Less))
                             .SetBlendMode(Premultiplied),
-                        InOrder(
-                            Do(s => s.Content.FluidGeometries.ForEach(f => f.Render())),
-                            renderDrawGroups(postLightGroups)
-                        )),
+                        renderDrawGroups(postLightGroups)
+                        ),
                     WithContext(
                         c => c.SetDebugName("Render depth ignoring groups")
                             .SetBlendMode(Premultiplied),
@@ -227,23 +223,22 @@ sealed class DeferredRenderer
 
     private void render(IDeferredRenderLayer deferredLayer, RenderTarget target, Vector2i resolution)
     {
-        var state = new RenderState(resolution, target, deferredLayer.ContentRenderers);
+        var state = new RenderState(resolution, target, deferredLayer.Content);
 
         pipeline.Execute(state);
     }
 
     private void prepareForRendering(IDeferredRenderLayer deferredLayer, Vector2i resolution)
     {
-        var levelRenderer = deferredLayer.ContentRenderers.LevelRenderer;
-        levelRenderer.PrepareForRender();
-        prepareUniforms(deferredLayer, resolution, levelRenderer.Heightmap);
+        prepareUniforms(deferredLayer, resolution);
     }
 
-    private void prepareUniforms(IDeferredRenderLayer deferredLayer, Vector2i resolution, Heightmap heightmap)
+    private void prepareUniforms(IDeferredRenderLayer deferredLayer, Vector2i resolution)
     {
+        var heightmap = deferredLayer.Content.Heightmap;
         heightmapTexture.Value = heightmap.Texture;
-        heightmapRadius.Value = heightmap.RadiusUniform.Value;
-        heightmapPixelSizeUV.Value = heightmap.PixelSizeUVUniform.Value;
+        heightmapRadius.Value = heightmap.Radius;
+        heightmapPixelSizeUV.Value = heightmap.PixelSizeUV;
         gBufferResolution.Value = new Vector2(resolution.X, resolution.Y);
         hexagonalFallOffDistance.Value = deferredLayer.HexagonalFallOffDistance;
     }

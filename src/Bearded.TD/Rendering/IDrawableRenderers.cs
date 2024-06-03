@@ -16,6 +16,12 @@ interface IDrawableRenderers
         IDrawable drawable,
         IRenderSetting[] customRenderSettings);
 
+    public void CreateAndRegisterRenderer(
+        IDrawable drawable,
+        DrawOrderGroup group, int drawGroupOrderKey);
+
+    public void RegisterRenderer(IRenderer renderer, DrawOrderGroup group, int drawGroupOrderKey);
+
     void RenderDrawGroup(DrawOrderGroup group);
     void DisposeAll();
     void ClearAll();
