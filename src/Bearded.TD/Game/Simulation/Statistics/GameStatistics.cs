@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Statistics.commands;
 using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
@@ -26,22 +27,24 @@ sealed class GameStatistics
     private readonly TowerArchive towerArchive = new();
     private readonly Dictionary<GameObject, TowerStatistics> statsByTower = new();
 
-    public static IGameStatistics CreateSubscribed(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
+    public static IGameStatistics CreateSubscribed(GameState gameState)
     {
-        var instance = new GameStatistics(dispatcher, events);
+        var instance = new GameStatistics(gameState);
+
+        var events = gameState.Meta.Events;
         events.Subscribe<WaveStarted>(instance);
         events.Subscribe<WaveEnded>(instance);
         events.Subscribe<BuildingConstructionFinished>(instance);
+
         return instance;
     }
 
-    private readonly IDispatcher<GameInstance> dispatcher;
-    private readonly GlobalGameEvents events;
+    private readonly GameState gameState;
+    private IDispatcher<GameInstance> dispatcher => gameState.Meta.Dispatcher;
 
-    private GameStatistics(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
+    private GameStatistics(GameState gameState)
     {
-        this.dispatcher = dispatcher;
-        this.events = events;
+        this.gameState = gameState;
     }
 
     public void HandleEvent(WaveStarted @event)
@@ -51,9 +54,8 @@ sealed class GameStatistics
 
     public void HandleEvent(WaveEnded @event)
     {
-        // TODO: synchronize using dispatcher
         var waveReport = WaveReport.Create(statsByTower.Select(kvp => kvp.Value.ToStats(towerArchive.Find(kvp.Key))));
-        events.Send(new WaveReportCreated(@event.WaveId, waveReport));
+        dispatcher.RunOnlyOnServer(OpenWaveReport.Command, gameState, @event.WaveId, waveReport);
     }
 
     public void HandleEvent(BuildingConstructionFinished @event)
