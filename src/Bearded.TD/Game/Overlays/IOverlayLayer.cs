@@ -3,5 +3,5 @@
 interface IOverlayLayer
 {
     DrawOrder DrawOrder { get; }
-    void Render(IOverlayRenderContext context);
+    void Render(IOverlayDrawer context);
 }
