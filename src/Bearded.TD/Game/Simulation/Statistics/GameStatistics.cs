@@ -53,28 +53,6 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
                 DamageByType: kvp.Value.ToTypedAccumulatedDamages()
             )));
         events.Send(new WaveReportCreated(@event.WaveId, waveReport));
-
-#if DEBUG
-        // TODO: delete debug code
-        foreach (var (id, stats) in statsByTower)
-        {
-            var list = stats.ToTypedAccumulatedDamages().Select(toString).ToList();
-
-            Console.WriteLine($"{id}");
-            foreach (var s in list)
-            {
-                Console.WriteLine(s);
-            }
-            Console.WriteLine();
-        }
-
-        return;
-
-        string toString(WaveReport.TypedAccumulatedDamage tad)
-        {
-            return $"{tad.Type} -> {tad.DamageDone} / {tad.AttemptedDamage} ({tad.Efficiency:P})";
-        }
-#endif
     }
 
 
