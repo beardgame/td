@@ -5,36 +5,35 @@ using System.Linq;
 
 namespace Bearded.TD.Game.Overlays;
 
+interface IActiveOverlay
+{
+    void Deactivate();
+}
+
 sealed class ActiveOverlays
 {
-    readonly record struct ActiveOverlay(int Id, IOverlayLayer Layer);
+    private sealed class ActiveOverlay(ActiveOverlays overlays, IOverlayLayer layer) : IActiveOverlay
+    {
+        public IOverlayLayer Layer { get; } = layer;
+
+        public void Deactivate()
+        {
+            overlays.overlays[Layer.DrawOrder].Remove(this);
+        }
+    }
 
     private readonly FrozenDictionary<DrawOrder, List<ActiveOverlay>> overlays = Enum
         .GetValues<DrawOrder>()
         .ToFrozenDictionary(o => o, _ => new List<ActiveOverlay>());
 
-    private int lastId;
-
-    public Controller Add(IOverlayLayer overlay)
+    public IActiveOverlay Activate(IOverlayLayer overlay)
     {
-        var activeOverlay = new ActiveOverlay(++lastId, overlay);
+        var activeOverlay = new ActiveOverlay(this, overlay);
         overlays[overlay.DrawOrder].Add(activeOverlay);
 
-        return new Controller(this, overlay.DrawOrder, activeOverlay.Id);
+        return activeOverlay;
     }
 
     public IEnumerable<IOverlayLayer> LayersFor(DrawOrder drawOrder)
         => overlays[drawOrder].Select(o => o.Layer);
-
-    public readonly struct Controller(ActiveOverlays overlays, DrawOrder drawOrder, int id)
-        : IDisposable
-    {
-        public void Hide()
-        {
-            var i = id;
-            overlays.overlays[drawOrder].RemoveAll(o => o.Id == i);
-        }
-
-        void IDisposable.Dispose() => Hide();
-    }
 }
