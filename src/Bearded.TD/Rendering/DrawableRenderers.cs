@@ -73,7 +73,7 @@ sealed class DrawableRenderers : IDrawableRenderers
             return (TDrawableType)obj;
 
         var newDrawable = createDrawable();
-        createAndRegisterRenderer(newDrawable, drawGroup, drawGroupOrderKey);
+        CreateAndRegisterRenderer(newDrawable, drawGroup, drawGroupOrderKey);
         knownDrawables.Add(key, newDrawable);
 
         return newDrawable;
@@ -88,12 +88,17 @@ sealed class DrawableRenderers : IDrawableRenderers
         );
     }
 
-    private void createAndRegisterRenderer(
+    public void CreateAndRegisterRenderer(
         IDrawable drawable,
         DrawOrderGroup group, int drawGroupOrderKey)
     {
         var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
 
+        RegisterRenderer(renderer, group, drawGroupOrderKey);
+    }
+
+    public void RegisterRenderer(IRenderer renderer, DrawOrderGroup group, int drawGroupOrderKey)
+    {
         var renderers = renderersByDrawGroup[group];
 
         renderers.AddSorted((drawGroupOrderKey, renderer), drawOrderKeyComparer);

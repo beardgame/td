@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Debug;
@@ -34,7 +35,6 @@ sealed class GameRenderer
     private readonly GameInstance game;
     private readonly CoreDrawers drawers;
     private readonly LevelRenderer levelRenderer;
-    private readonly FluidGeometry waterGeometry;
 
     private readonly IShapeDrawer2<Color> shapeDrawer;
     private readonly TextDrawerWithDefaults<Color> debugGeometryTextDrawer;
@@ -44,7 +44,7 @@ sealed class GameRenderer
     private IIterativePathfinder? debugPathFinder;
     private DateTime nextPathfinderDebugStep;
 
-    public ContentRenderers ContentRenderers { get; }
+    public DeferredContent Content { get; }
 
     public GameRenderer(GameInstance game, RenderContext renderContext, ITimeSource time)
     {
@@ -56,12 +56,13 @@ sealed class GameRenderer
         var waterMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("water")];
 
         levelRenderer = new LevelRenderer(game, renderContext, levelShader, time);
+        game.Meta.DrawableRenderers.RegisterRenderer(levelRenderer, DrawOrderGroup.Level, 0);
 
-        waterGeometry = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
+        var water = new FluidGeometry(game, game.State.FluidLayer.Water, renderContext, waterMaterial);
+        game.Meta.DrawableRenderers.CreateAndRegisterRenderer(water, DrawOrderGroup.Fluids, 0);
 
-        ContentRenderers = new ContentRenderers(
+        Content = new DeferredContent(
             levelRenderer,
-            new [] { waterGeometry },
             game.Meta.DrawableRenderers
         );
 
@@ -72,13 +73,14 @@ sealed class GameRenderer
             fontHeight: .3f * HexagonSide, parameters: Color.Beige, alignHorizontal: .5f, alignVertical: .5f);
     }
 
-    public void Render()
+    public void Draw()
     {
-        ContentRenderers.ClearAll();
+        game.Meta.DrawableRenderers.ClearAll();
 
         game.PlayerCursors.DrawCursors(drawers);
         drawGameObjects();
         drawDebug();
+        levelRenderer.PrepareForRender();
     }
 
     private void drawGameObjects()
@@ -535,9 +537,7 @@ sealed class GameRenderer
 
     public void CleanUp()
     {
-        levelRenderer.CleanUp();
-        waterGeometry.CleanUp();
-        ContentRenderers.Dispose();
+        game.Meta.DrawableRenderers.DisposeAll();
     }
 
 }

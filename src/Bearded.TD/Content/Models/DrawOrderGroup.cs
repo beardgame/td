@@ -4,10 +4,12 @@ enum DrawOrderGroup
 {
     // When adding new groups, make sure the LayerRenderer or DeferredRenderer know about them, or they won't render
     Unknown,
+    Level,
     SolidLevelDetails,
     LevelDetail,
     Building,
     Unit,
+    Fluids,
     Particle,
     IgnoreDepth,
 
