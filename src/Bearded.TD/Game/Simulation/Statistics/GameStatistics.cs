@@ -4,7 +4,6 @@ using System.Linq;
 using Bearded.TD.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Statistics.commands;
@@ -73,7 +72,7 @@ sealed class GameStatistics
             {
                 DebugAssert.State.IsInvalid("Tower should have been archived when it was finished building.");
             }
-            statistics = new TowerStatistics(obj.FindId());
+            statistics = new TowerStatistics();
             statsByTower.Add(obj, statistics);
         }
 
@@ -83,7 +82,7 @@ sealed class GameStatistics
             damageResult.TotalExactDamage.Type);
     }
 
-    private sealed class TowerStatistics(Id<GameObject> id)
+    private sealed class TowerStatistics
     {
         private readonly Dictionary<DamageType, AccumulatedDamage> accumulatedDamageByType = new();
 
