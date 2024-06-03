@@ -25,8 +25,8 @@ static partial class Constants
 
             public const float HexagonDistanceY = HexagonSide * 1.5f; // vertical distance between hexagons
 
-            public static readonly Difference2 HexagonGridUnitX = new Difference2(HexagonDistanceX, 0); // step in (1, 0) direction
-            public static readonly Difference2 HexagonGridUnitY = new Difference2(HexagonDistanceX * 0.5f, HexagonDistanceY); // step in (0, 1) direction
+            public static readonly Difference2 HexagonGridUnitX = new(HexagonDistanceX, 0); // step in (1, 0) direction
+            public static readonly Difference2 HexagonGridUnitY = new(HexagonDistanceX * 0.5f, HexagonDistanceY); // step in (0, 1) direction
 
             public static readonly Unit HexagonInnerRadius = (HexagonWidth * 0.5f).U();
             public static readonly Squared<Unit> HexagonInnerRadiusSquared = HexagonInnerRadius.Squared;
@@ -36,10 +36,8 @@ static partial class Constants
         public static class GameUI
         {
             public const int ActionBarSize = 10;
-            public static readonly TimeSpan NotificationDuration = 5.S();
 
-            public static Color ActionBackgroundColor = new Color(27, 81, 156) * 0.75f;
-            public static Color UrgentBackgroundColor = new Color(246, 190, 0) * 0.75f;
+            public static readonly Color UrgentBackgroundColor = new Color(246, 190, 0) * 0.75f;
 
             public static readonly Color ResourcesColor = new Color(255, 191, 0); // amber
             public static readonly Color TechPointsColor = Color.Turquoise;
@@ -61,20 +59,12 @@ static partial class Constants
             public static class StatusDisplay
             {
                 public static readonly Color HitPointsBackgroundColor = Color.DarkGray;
-                public static readonly Color NegativeColor = Color.OrangeRed;
-                public static readonly Color NeutralColor = Color.WhiteSmoke;
-                public static readonly Color PositiveColor = Color.Lime;
-                public static readonly Color ForegroundColor = Color.White;
-                public static readonly Color BackgroundColor = Color.White * 0.4f;
 
                 // Note: dimensions are in game space, i.e. expressed in hex distance
                 public const float PrimaryHitPointsBarHeight = 0.1f;
                 public const float SecondaryHitPointsBarHeight = 0.5f * PrimaryHitPointsBarHeight;
 
-                public const int StatusIconsPerRow = 4;
-
                 public const float ElementMargin = 0.01f;
-                public const float LineWidth = 0.005f;
                 public const float Width = 1;
 
                 // Offset is measured between the centre of the game object to the centre of the primary HP bar
@@ -100,7 +90,7 @@ static partial class Constants
             public const double RuinedPercentage = 0.5;
 
             public static readonly ImmutableArray<Experience> VeterancyThresholds =
-                ImmutableArray.Create(1200.Xp(), 4800.Xp(), 15000.Xp(), 34000.Xp(), 60000.Xp(), 80000.Xp());
+                [1200.Xp(), 4800.Xp(), 15000.Xp(), 34000.Xp(), 60000.Xp(), 80000.Xp()];
         }
 
         public static class Enemy
@@ -130,7 +120,7 @@ static partial class Constants
 
         public static class Physics
         {
-            public static readonly Acceleration Gravity = new Acceleration(-20f);
+            public static readonly Acceleration Gravity = new(-20f);
             public static readonly Acceleration3 Gravity3 = Acceleration2.Zero.WithZ(Gravity);
         }
 
