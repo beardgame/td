@@ -28,6 +28,6 @@ sealed class SerializableWaveReport
 
     public WaveReport ToInstance(GameInstance game)
     {
-        return WaveReport.Create(towers.Select(t => t.ToInstance(game)).ToImmutableArray());
+        return WaveReport.Create(towers.Select(t => t!.ToInstance(game)).ToImmutableArray());
     }
 }

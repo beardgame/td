@@ -31,7 +31,8 @@ static class OpenWaveReport
             game.Meta.Events.Send(new WaveReportCreated(wave, waveReport));
         }
 
-        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer();
+        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer =>
+            new Serializer(wave, waveReport);
     }
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
