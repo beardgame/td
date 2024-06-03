@@ -7,7 +7,7 @@ using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Controls;
@@ -26,11 +26,11 @@ sealed record TowerDamageDisplay(
     ModAwareSpriteId Sprite,
     IReadonlyBinding<UntypedDamage> TotalDamageDone,
     IReadonlyBinding<double> TotalEfficiency,
-    IReadonlyBinding<ImmutableArray<WaveReport.TypedAccumulatedDamage>> DamageByType,
+    IReadonlyBinding<ImmutableArray<TypedAccumulatedDamage>> DamageByType,
     Action? OnClick = null
 )
 {
-    public static TowerDamageDisplay From(WaveReport.Tower data, GameInstance? game = null)
+    public static TowerDamageDisplay From(TowerStatistics data, GameInstance? game = null)
     {
         data.GameObject.TryGetSingleComponent<IObjectAttributes>(out var attributes);
 
@@ -171,7 +171,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
         }
     }
 
-    public static Control DamagePieChart(IEnumerable<WaveReport.TypedAccumulatedDamage> data)
+    public static Control DamagePieChart(IEnumerable<TypedAccumulatedDamage> data)
     {
         const float shadow = 0.05f;
 
@@ -208,7 +208,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
     }
 
     public static Control StackedDamageAndEfficiencies(
-        IEnumerable<WaveReport.TypedAccumulatedDamage> damage,
+        IEnumerable<TypedAccumulatedDamage> damage,
         double lineHeight = Text.LineHeight,
         double? fontSizeOverride = null)
     {
@@ -220,7 +220,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
 
     public static void AddStackedDamageAndEfficiencies(
         Layouts.IColumnLayout column,
-        IEnumerable<WaveReport.TypedAccumulatedDamage> damage,
+        IEnumerable<TypedAccumulatedDamage> damage,
         double lineHeight = Text.LineHeight,
         double? fontSizeOverride = null)
     {
@@ -233,7 +233,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
     }
 
     public static Control SingleDamageAndEfficiency(
-        WaveReport.AccumulatedDamage damage, double fontSize = Text.FontSize)
+        AccumulatedDamage damage, double fontSize = Text.FontSize)
     {
         var damageColor = Colors.Experience;
         var damageDone = damage.DamageDone;
@@ -243,7 +243,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
     }
 
     public static Control SingleDamageAndEfficiency(
-        WaveReport.TypedAccumulatedDamage damage, double fontSize = Text.FontSize)
+        TypedAccumulatedDamage damage, double fontSize = Text.FontSize)
     {
         var damageColor = damage.Type.GetColor();
         var damageDone = damage.DamageDone;

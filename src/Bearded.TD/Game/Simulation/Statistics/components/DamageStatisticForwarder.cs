@@ -11,13 +11,10 @@ sealed class DamageStatisticForwarder : Component
 
     public override void Activate()
     {
-        if (Owner.TryGetSingleComponent<IIdProvider>(out var idProvider))
+        Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
         {
-            Events.Subscribe(Listener.ForEvent<CausedDamage>(e =>
-            {
-                Owner.Game.Statistics.RegisterDamage(idProvider.Id, Owner, e.Result);
-            }));
-        }
+            Owner.Game.Statistics.RegisterDamage(Owner, e.Result);
+        }));
     }
 
     public override void Update(TimeSpan elapsedTime) {}

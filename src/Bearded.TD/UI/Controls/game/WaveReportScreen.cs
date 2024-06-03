@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
@@ -8,7 +9,6 @@ using Bearded.UI.Controls;
 using Bearded.Utilities;
 using static Bearded.TD.Constants.Content.CoreUI;
 using static Bearded.TD.Constants.UI;
-using static Bearded.TD.Game.Simulation.Statistics.WaveReport;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -122,7 +122,7 @@ sealed class WaveReportScreen : CompositeControl
             .Take(towerCount)
             .ToList();
 
-        var mostEfficientTower = report.AllTowers.MaxBy(t => t.TotalEfficiency)?.GameObject;
+        var mostEfficientTower = report.AllTowers.MaxBy(t => t.TotalEfficiency).GameObject;
 
         var margin = LayoutMarginSmall;
         var iconSize = towerWidth / 3;
