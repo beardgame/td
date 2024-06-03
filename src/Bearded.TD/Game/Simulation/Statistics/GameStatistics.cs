@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Commands;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities;
+using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Statistics;
 
@@ -16,8 +19,10 @@ interface IGameStatistics
     void RegisterDamage(GameObject obj, FinalDamageResult damageResult);
 }
 
-sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener<WaveEnded>
+sealed class GameStatistics
+    : IGameStatistics, IListener<WaveStarted>, IListener<WaveEnded>, IListener<BuildingConstructionFinished>
 {
+    private readonly TowerArchive towerArchive = new();
     private readonly Dictionary<GameObject, TowerStatistics> statsByTower = new();
 
     public static IGameStatistics CreateSubscribed(IDispatcher<GameInstance> dispatcher, GlobalGameEvents events)
@@ -25,6 +30,7 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
         var instance = new GameStatistics(dispatcher, events);
         events.Subscribe<WaveStarted>(instance);
         events.Subscribe<WaveEnded>(instance);
+        events.Subscribe<BuildingConstructionFinished>(instance);
         return instance;
     }
 
@@ -45,15 +51,24 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
     public void HandleEvent(WaveEnded @event)
     {
         // TODO: synchronize using dispatcher
-        var waveReport = WaveReport.Create(statsByTower.Select(kvp => kvp.Value.ToStats()));
+        var waveReport = WaveReport.Create(statsByTower.Select(kvp => kvp.Value.ToStats(towerArchive.Find(kvp.Key))));
         events.Send(new WaveReportCreated(@event.WaveId, waveReport));
+    }
+
+    public void HandleEvent(BuildingConstructionFinished @event)
+    {
+        towerArchive.EnsureTowerExists(@event.GameObject);
     }
 
     public void RegisterDamage(GameObject obj, FinalDamageResult damageResult)
     {
         if (!statsByTower.TryGetValue(obj, out var statistics))
         {
-            statistics = new TowerStatistics(obj);
+            if (towerArchive.EnsureTowerExists(obj))
+            {
+                DebugAssert.State.IsInvalid("Tower should have been archived when it was finished building.");
+            }
+            statistics = new TowerStatistics(obj.FindId());
             statsByTower.Add(obj, statistics);
         }
 
@@ -63,7 +78,7 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
             damageResult.TotalExactDamage.Type);
     }
 
-    private sealed class TowerStatistics(GameObject obj)
+    private sealed class TowerStatistics(Id<GameObject> id)
     {
         private readonly Dictionary<DamageType, AccumulatedDamage> accumulatedDamageByType = new();
 
@@ -75,9 +90,9 @@ sealed class GameStatistics : IGameStatistics, IListener<WaveStarted>, IListener
             accumulatedDamageByType[damageType] = AccumulatedDamage.Combine(existingDamage, addedDamage);
         }
 
-        public Data.TowerStatistics ToStats() => new()
+        public Data.TowerStatistics ToStats(TowerMetadata metadata) => new()
         {
-            GameObject = obj,
+            Metadata = metadata,
             DamageByType = toTypedAccumulatedDamages()
         };
 

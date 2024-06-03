@@ -32,15 +32,15 @@ sealed record TowerDamageDisplay(
 {
     public static TowerDamageDisplay From(TowerStatistics data, GameInstance? game = null)
     {
-        data.GameObject.TryGetSingleComponent<IObjectAttributes>(out var attributes);
+        var attributes = data.Metadata.Attributes;
 
         return new TowerDamageDisplay(
-            attributes?.Name ?? "???",
-            attributes?.Icon ?? Constants.Content.CoreUI.Sprites.QuestionMark,
+            attributes.Name,
+            attributes.Icon ?? Constants.Content.CoreUI.Sprites.QuestionMark,
             Binding.Constant(data.TotalDamageDone),
             Binding.Constant(data.TotalEfficiency),
             Binding.Constant(data.DamageByType),
-            scrollTo(data.GameObject)
+            data.Metadata.LiveObject is { } o ? scrollTo(o) : null
         );
 
         Action? scrollTo(GameObject obj) =>

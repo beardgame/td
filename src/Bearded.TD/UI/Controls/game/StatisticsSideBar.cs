@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Damage;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.Shared.Events;
@@ -58,7 +57,7 @@ sealed class StatisticsSideBar : IListener<WaveReportCreated>
 
         return Enumerable.Range(1, 10)
             .Select(_ => new TowerStatistics(
-                new GameObject(null, default, default),
+                TowerMetadata.CreateDefault(),
                 [
                     ..damageTypes.RandomSubset(random.Next(1, 3), random).Select(t =>
                     {
