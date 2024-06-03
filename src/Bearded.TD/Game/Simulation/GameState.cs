@@ -97,7 +97,7 @@ sealed class GameState
             new MultipleSinkNavigationSystem(Meta.Events, Level, PassabilityObserver.GetLayer(Passability.WalkingUnit));
         Factions = factions.AsReadOnly();
 
-        Statistics = GameStatistics.CreateSubscribed(Meta.Dispatcher, Meta.Events);
+        Statistics = GameStatistics.CreateSubscribed(this);
         WaveDirector = new WaveDirector(this);
         ExplorationManager = new ExplorationManager(this);
     }
