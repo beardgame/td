@@ -16,6 +16,7 @@ namespace Bearded.TD.Game.Simulation.Statistics;
 
 interface IGameStatistics
 {
+    TowerMetadata FindTowerMetadata(Id<GameObject> id);
     void RegisterDamage(GameObject obj, FinalDamageResult damageResult);
 }
 
@@ -59,6 +60,8 @@ sealed class GameStatistics
     {
         towerArchive.EnsureTowerExists(@event.GameObject);
     }
+
+    public TowerMetadata FindTowerMetadata(Id<GameObject> id) => towerArchive.Find(id);
 
     public void RegisterDamage(GameObject obj, FinalDamageResult damageResult)
     {
