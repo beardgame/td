@@ -1,3 +1,6 @@
 ﻿namespace Bearded.TD.Game.Overlays;
 
-struct OverlayRenderContext;
+interface IOverlayDrawer
+{
+    
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Bearded.TD.Game.Overlays;
@@ -12,6 +13,8 @@ interface IActiveOverlay
 
 sealed class ActiveOverlays
 {
+    public static ImmutableArray<DrawOrder> DrawOrdersInOrder { get; } = [..Enum.GetValues<DrawOrder>()];
+
     private sealed class ActiveOverlay(ActiveOverlays overlays, IOverlayLayer layer) : IActiveOverlay
     {
         public IOverlayLayer Layer { get; } = layer;
@@ -22,9 +25,8 @@ sealed class ActiveOverlays
         }
     }
 
-    private readonly FrozenDictionary<DrawOrder, List<ActiveOverlay>> overlays = Enum
-        .GetValues<DrawOrder>()
-        .ToFrozenDictionary(o => o, _ => new List<ActiveOverlay>());
+    private readonly FrozenDictionary<DrawOrder, List<ActiveOverlay>> overlays =
+        DrawOrdersInOrder.ToFrozenDictionary(o => o, _ => new List<ActiveOverlay>());
 
     public IActiveOverlay Activate(IOverlayLayer overlay)
     {
