@@ -1,5 +1,52 @@
 # Changelog
 
+## v0.27
+
+* Added new screen to show damage statistics at the end of each wave
+  * Shows towers with most damage and highest accuracy
+  * Shows distribution of damage across elements
+* Expanded functionality of building status overlay
+  * Added support for building upgrades
+  * Added information about veterancy level and progress
+  * Added support for switching targeting and discharge modes
+  * Added button for building deletion
+  * Added building name
+  * Added support for the Core and walls
+  * Made a clearer distinction between the preview and opened version of the overlay
+* Removed old building status screen and status overlay
+* Removed notifications
+* Improved the layout of the top HUD
+* Added sound effects for several actions
+  * Placing a building
+  * Upgrading a building
+  * Unlocking a technology
+* Added a background blur effect to several UI elements
+* Added a glow to the technology button if a new technology is available
+* Improved UI colours
+* Added tooltips to the action bar buttons
+* Removed hover effects on non-interactive buttons
+* Fixed text being misaligned in most UI
+* Made improvements to damage numbers by grouping nearby numbers into one
+* Reduced the brightness of player cursors
+* Reduced the brightness of the enemy path indicators
+* Reduced the overall brightness of the game
+* Reduced size of all towers
+* Replaced enemy debug shapes with rendered sprite
+* Aligned crevice drops more closely with tile boundaries
+* Removed timers between enemy waves
+* Added more options for level topology
+* Balance: enemies now deal a single chunk of damage and die instantly upon reaching the Core
+* Balance: reduced how effective fire damage is
+* Balance: made towers receive their veterancy level on wave end if they are within 5% of levelling
+* Balance: stopped attributing damage to towers caused by exploding enemies
+* Bug fix: button states are now correctly initialized rather than requiring a mouse hover
+* Bug fix: fixed gaps in the level heightmap
+* Bug fix: allowed multiplayer clients to fire EMPs and receive EMP events
+* Bug fix: fixed enemy spawn locations not being placed correctly for multiplayer clients
+* Bug fix: fixed kinetics towers jamming not being synchronised in multiplayer
+* Bug fix: fixed multiplayer clients always interpreting each enemy as a unique form
+* Bug fix: fixed a crash that happened for some building statuses with an expiry time
+
 ## v0.26
 
 * Replaced main menu design
