@@ -30,7 +30,7 @@
                 replaceMode: "replace"
             },
             prerequisites: {
-                requiredTags: [ "grenade" ],
+                requiredTags: [ "hitsLevel" ],
                 forbiddenTags: [ "damageReplaced" ],
             }
         },
