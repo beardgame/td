@@ -20,7 +20,7 @@ jobs:
       - name: Extract version number
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - uses: robinraju/release-downloader@v1.10
+      - uses: robinraju/release-downloader@v1.11
         with:
           tag: ${{ RELEASE_VERSION }}
           fileName: "Bearded.TD.MasterServer-${{ RELEASE_VERSION }}-linux-x64.zip"
