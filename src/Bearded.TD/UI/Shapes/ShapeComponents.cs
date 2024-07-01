@@ -44,14 +44,14 @@ readonly partial struct ShapeComponents
         mutableComponents = components;
     }
 
-    public static ShapeComponents From(ImmutableArray<ShapeComponent> components)
+    private static ShapeComponents fromImmutable(ImmutableArray<ShapeComponent> components)
         => new(components);
 
     public static ShapeComponents FromMutable(ShapeComponent[] components)
         => new(components);
 
     public static implicit operator ShapeComponents(ShapeComponent components)
-        => [components];
+        => fromImmutable([components]);
 
 }
 
@@ -59,7 +59,7 @@ readonly partial struct ShapeComponents
 readonly partial struct ShapeComponents : IEnumerable<ShapeComponent>
 {
     public static ShapeComponents From(ReadOnlySpan<ShapeComponent> components)
-        => From(components.ToImmutableArray());
+        => fromImmutable([..components]);
 
     IEnumerator<ShapeComponent> IEnumerable<ShapeComponent>.GetEnumerator() => throw doNotEnumerate();
     IEnumerator IEnumerable.GetEnumerator() => throw doNotEnumerate();

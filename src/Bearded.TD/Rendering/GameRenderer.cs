@@ -36,7 +36,7 @@ sealed class GameRenderer
         renderers.RegisterRenderer(level, DrawOrderGroup.Level, 0);
         renderers.CreateAndRegisterRendererFor(water, DrawOrderGroup.Fluids, 0);
 
-        OverlayRenderers.Configure(game.Overlays, context, renderers);
+        OverlayRenderers.Configure(game.Overlays, context, renderers, game.Blueprints);
 
         Content = new DeferredContent(level, renderers);
     }

@@ -1,5 +1,5 @@
 ﻿{
 	name: "The Game",
 	id:  "default",
-	dependencies: []
+	dependencies: [ { id: "core-ui"} ]
 }
