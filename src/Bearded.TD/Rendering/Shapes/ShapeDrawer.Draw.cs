@@ -20,7 +20,7 @@ sealed partial class ShapeDrawer : IShapeDrawer
         var w = radius + components.MaxDistance;
         var h = w * (1 / 0.86602540378f);
         cornerRadius = Min(radius, cornerRadius);
-        var shape = HexagonPointRadius(xyz.Xy, radius, cornerRadius, 0.5f, 1);
+        var shape = HexagonPointRadius(components.Flags, xyz.Xy, radius, cornerRadius, 0.5f, 1);
         addQuad(x - w, x + w, y - h, y + h, z, components.Components, shape);
     }
 
@@ -28,7 +28,7 @@ sealed partial class ShapeDrawer : IShapeDrawer
     {
         var (x, y, z) = xyz;
         var r = radius + components.MaxDistance;
-        var geometry = CirclePointRadius(xyz.Xy, radius);
+        var geometry = CirclePointRadius(components.Flags, xyz.Xy, radius);
         addQuad(x - r, x + r, y - r, y + r, z, components.Components, geometry);
     }
 
@@ -70,7 +70,7 @@ sealed partial class ShapeDrawer : IShapeDrawer
             addQuad(leftOuter, rightOuter, topOuter, bottomOuter, z, components.Components,
                 // squircleness parameters are hardcoded to subjectively most pleasing values for now
                 // though setting both to 0 would be more performant where possible
-                RectangleCornerSize(xyz.Xy, wh, cornerRadius, 0.5f, 1));
+                RectangleCornerSize(components.Flags, xyz.Xy, wh, cornerRadius, 0.5f, 1));
             return;
         }
         /*
@@ -124,11 +124,6 @@ sealed partial class ShapeDrawer : IShapeDrawer
 
     private void addQuad(float x0, float x1, float y0, float y1, float z, ShapeVertex.ShapeComponents components, ShapeData shape)
     {
-        meshBuilder.AddQuad(
-            new ShapeVertex(new Vector3(x0, y0, z), shape, components),
-            new ShapeVertex(new Vector3(x1, y0, z), shape, components),
-            new ShapeVertex(new Vector3(x1, y1, z), shape, components),
-            new ShapeVertex(new Vector3(x0, y1, z), shape, components)
-        );
+        meshBuilder.AddQuad(x0, x1, y0, y1, z, components, shape);
     }
 }

@@ -26,7 +26,8 @@ sealed class OverlayDrawer(ShapeDrawer shapes, ComponentBuffer componentBuffer, 
         var componentsForDrawing = ShapeComponentsForDrawing.From(
             [Fill.With(color)],
             componentBuffer,
-            (gradients, frame)
+            (gradients, frame),
+            ShapeFlags.ProjectOnDepthBuffer
         );
 
         shapes.Draw(shape, componentsForDrawing);

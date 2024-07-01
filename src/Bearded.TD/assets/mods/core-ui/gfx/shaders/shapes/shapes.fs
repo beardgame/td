@@ -9,6 +9,8 @@ const int SHAPE_TYPE_CIRCLE = 2; // center and radius
 const int SHAPE_TYPE_RECTANGLE = 3; // top-left, width, height, corner radius
 const int SHAPE_TYPE_HEXAGON = 4; // center and radius
 
+const int SHAPE_FLAG_PROJECT_ON_DEPTHBUFFER = 1;
+
 const int GRADIENT_TYPE_NONE = 0;
 const int GRADIENT_TYPE_CONSTANT = 1;
 const int GRADIENT_BLURRED_BACKGROUND = 2;
@@ -42,7 +44,7 @@ uniform float uiTime;
 in vec3 p_position;
 in vec2 p_screenUV;
 
-flat in int p_shapeType;
+flat in int p_shapeType1Flags1;
 flat in vec4 p_shapeData;
 flat in vec3 p_shapeData2;
 flat in vec4 p_edgeData;
@@ -68,10 +70,9 @@ vec3 getFragmentPositionFromDepth(vec2 uv)
     return fragmentPosition;
 }
 
-float signedDistanceToEdge()
+float signedDistanceToEdge(vec2 p0, int type)
 {
-    vec2 p0 = p_position.xy;
-    switch(p_shapeType) {
+    switch(type) {
         case SHAPE_TYPE_LINE:
         {
             vec2 p1 = p_shapeData.xy;
@@ -447,8 +448,19 @@ vec4 blend(vec4 a, vec4 b, BitField bits)
 vec4 getFragmentColor()
 {
     vec4 ret = vec4(0);
+    
+    vec2 xy = p_position.xy;
 
-    float signedDistance = signedDistanceToEdge();
+    int type = p_shapeType1Flags1 & 0xFF;
+    int flags = (p_shapeType1Flags1 >> 8) & 0xFF;
+    
+    if ((flags & SHAPE_FLAG_PROJECT_ON_DEPTHBUFFER) != 0)
+    {
+        vec3 projected = getFragmentPositionFromDepth(p_screenUV);
+        xy = projected.xy;
+    }
+
+    float signedDistance = signedDistanceToEdge(xy, type);
     float antiAliasWidth = ANTI_ALIAS_WIDTH * fwidth(signedDistance) * 1;
     
     for(int i = 0; i < p_componentCount; i++)
@@ -482,7 +494,7 @@ void main()
 
     if (DEBUG_SHAPE != 0)
     {
-        float signedDistance = signedDistanceToEdge();
+        float signedDistance = signedDistanceToEdge(p_position.xy, p_shapeType1Flags1 & 0xFF);
         float a = 0.5 + cos(signedDistance * 3.14) * 0.3;
         vec2 xy = abs(fract(p_position.xy * vec2(0.2)) - vec2(0.5));
         float d = length(xy);
@@ -492,17 +504,17 @@ void main()
         if (signedDistance < 0)
         {
             c = vec4(1, 0, 0, 1);
-            s = smoothstep(0.1, 0f, xy.y) * smoothstep(0.45, 0.4, d);
+            s = smoothstep(0.1, 0.0, xy.y) * smoothstep(0.45, 0.4, d);
         }
         else if (signedDistance > 0)
         {
             c = vec4(0, 1, 0, 1);
-            s = smoothstep(0.1, 0f, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
+            s = smoothstep(0.1, 0.0, min(xy.x, xy.y)) * smoothstep(0.45, 0.4, d);
         }
         else
         {
             c = vec4(0, 0, 1, 1);
-            s = smoothstep(0.1, 0f, abs(d - 0.35));
+            s = smoothstep(0.1, 0.0, abs(d - 0.35));
         }
         fragColor = mix(fragColor, c * a + vec4(1) * clamp(s, 0, 1), DEBUG_SHAPE);
     }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Immutable;
+using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Shapes;
 
@@ -28,13 +30,16 @@ sealed partial class ShapeDrawer
                 (context.Renderers.Gradients.TextureUniform, "gradientBuffer"),
                 (context.Renderers.ShapeComponents.TextureUniform, "componentBuffer"),
                 (context.Compositor.IntermediateBlurTextureUniform, "intermediateBlurBackground"),
+                (context.DeferredRenderer.GetDepthBufferUniform, "depthBuffer"),
             ])
         );
     }
 
-    public static ShapeDrawer CreateUnregistered(ReadOnlySpan<TextureUniformFactory> textures)
+    public static ShapeDrawer CreateUnregistered(
+        ReadOnlySpan<TextureUniformFactory> textures,
+        Func<IIndexedTrianglesMeshBuilder<ShapeVertex, ushort>, IMeshBuilder>? meshBuilderFactory = null)
     {
-        return new ShapeDrawer(build(textures));
+        return new ShapeDrawer(meshBuilderFactory, build(textures));
 
         // TODO: a little experiment to see if we can make multiple texture uniforms more readable
         // consider creating a public helper somewhere?
@@ -46,6 +51,33 @@ sealed partial class ShapeDrawer
                 builder.Add(factory.Create(factory.Name, TextureUnit.Texture0 + builder.Count));
             }
             return builder.ToImmutable();
+        }
+    }
+
+    public interface IMeshBuilder
+    {
+        void AddQuad(
+            float x0, float x1, float y0, float y1, float z,
+            ShapeVertex.ShapeComponents components,
+            ShapeData shape
+            );
+    }
+
+    private sealed class DefaultMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort> mesh)
+        : IMeshBuilder
+    {
+        public void AddQuad(
+            float x0, float x1, float y0, float y1, float z,
+            ShapeVertex.ShapeComponents components,
+            ShapeData shape
+            )
+        {
+            mesh.AddQuad(
+                new ShapeVertex(new Vector3(x0, y0, z), shape, components),
+                new ShapeVertex(new Vector3(x1, y0, z), shape, components),
+                new ShapeVertex(new Vector3(x1, y1, z), shape, components),
+                new ShapeVertex(new Vector3(x0, y1, z), shape, components)
+            );
         }
     }
 }

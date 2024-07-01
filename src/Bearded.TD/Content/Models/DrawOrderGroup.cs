@@ -6,6 +6,9 @@ enum DrawOrderGroup
     Unknown,
     Level,
     SolidLevelDetails,
+
+    LevelProjected,
+
     LevelDetail,
     Building,
     Unit,

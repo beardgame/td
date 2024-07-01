@@ -27,6 +27,7 @@ using static Pipeline<DeferredRenderer.RenderState>;
 sealed class DeferredRenderer
 {
     private static readonly DrawOrderGroup[] solidLevelDrawGroups = [Level, SolidLevelDetails];
+    private static readonly DrawOrderGroup[] levelDecalDrawGroup = [LevelProjected];
     private static readonly DrawOrderGroup[] worldDrawGroups = [Building, Unit];
     private static readonly DrawOrderGroup[] worldDetailGroups = [LevelDetail];
     private static readonly DrawOrderGroup[] postLightGroups = [Fluids, Particle, Unknown];
@@ -90,7 +91,6 @@ sealed class DeferredRenderer
         depthBufferTexture = textures.Depth.Texture;
 
         var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
-        var levelOverlayDecalRenderer = Enumerable.Empty<IRenderer>();
 
         var resizedBuffers = Resize(s => s.Resolution,
             textures.DepthMask, textures.Diffuse, textures.Normal,
@@ -108,9 +108,9 @@ sealed class DeferredRenderer
                     WithContext(
                         c => c.SetDebugName("Render level overlay decals")
                             .BindRenderTarget(targets.GeometryDiffuseOnly)
-                            .SetDepthMode(TestOnly(DepthFunction.Less))
+                            .SetDepthMode(TestOnly(DepthFunction.Greater))
                             .SetBlendMode(Premultiplied),
-                        Render(levelOverlayDecalRenderer)
+                        renderDrawGroups(levelDecalDrawGroup)
                     ),
                     WithContext(
                         c => c.SetBlendMode(Premultiplied),
