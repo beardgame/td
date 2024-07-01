@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Meta;
+using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -96,7 +97,9 @@ sealed class BuildingStatusObserver
             veterancy);
         var statusControl =
             new BuildingStatusControl(status, overlay.UIContext, overlay.RequestDispatcher);
-        currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl);
+        var towerRange = TowerRangeOverlayLayer.CreateAndActivateForGameObject(
+            overlay.ActiveOverlays, t.Object, RangeDrawStyle.DrawFull);
+        currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl, towerRange);
         var objectPos = t.Object.Position.XY();
         var anchorPos = new Position2(t.BoundingBox.Right.U(), objectPos.Y);
         overlay.AddControl(
@@ -110,13 +113,15 @@ sealed class BuildingStatusObserver
         if (currentlyShown is null) return;
         overlay.RemoveControl(currentlyShown.Control);
         currentlyShown.Status.Dispose();
+        currentlyShown.TowerRange?.Deactivate();
         currentlyShown = null;
     }
 
     private sealed record CurrentlyShownBuilding(
         GameObject Selected,
         BuildingStatus Status,
-        BuildingStatusControl Control)
+        BuildingStatusControl Control,
+        IActiveOverlay? TowerRange)
     {
         public bool IsExpanded => Status.ShowExpanded.Value;
     }

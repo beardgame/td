@@ -8,13 +8,13 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Input;
 
-sealed class BuildableAreaOverlay : IOverlayLayer
+sealed class BuildableAreaOverlayLayer : IOverlayLayer
 {
     private readonly GameState game;
 
     public DrawOrder DrawOrder => DrawOrder.BuildableArea;
 
-    public BuildableAreaOverlay(GameState game)
+    public BuildableAreaOverlayLayer(GameState game)
     {
         this.game = game;
     }

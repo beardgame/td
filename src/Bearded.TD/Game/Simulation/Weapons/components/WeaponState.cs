@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -9,7 +8,6 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 interface IWeaponState : IPositionable, IDirected
 {
     bool IsEnabled { get; }
-    TileRangeDrawer.RangeDrawStyle RangeDrawStyle { get; }
     Direction2 NeutralDirection { get; }
     Angle? MaximumTurningAngle { get; }
     ITargetingMode TargetingMode { get; }
@@ -35,9 +33,6 @@ sealed class WeaponState : Component, IWeaponState
 
     private readonly List<IWeaponDisabledReason> disabledReasons = new();
     public bool IsEnabled => disabledReasons.Count == 0;
-
-    public TileRangeDrawer.RangeDrawStyle RangeDrawStyle =>
-        turret.BuildingState?.RangeDrawing ?? TileRangeDrawer.RangeDrawStyle.DoNotDraw;
 
     public WeaponState(ITurret turret)
     {

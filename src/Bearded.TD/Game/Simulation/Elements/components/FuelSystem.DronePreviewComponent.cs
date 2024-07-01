@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.Simulation.Drawing.TileRangeDrawer;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 

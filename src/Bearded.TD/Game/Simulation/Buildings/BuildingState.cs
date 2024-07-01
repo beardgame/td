@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
-using Bearded.TD.Game.Simulation.Drawing;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 sealed class BuildingState : IBuildingState
 {
     // Derived properties (IBuildingState implementation)
-    public TileRangeDrawer.RangeDrawStyle RangeDrawing => TileRangeDrawStyle.FromSelectionState(SelectionState);
+    [Obsolete("Should be handled by UI code")]
+    public RangeDrawStyle RangeDrawing => TileRangeDrawStyle.FromSelectionState(SelectionState);
     public bool IsGhost => false;
     public bool IsMaterialized { get; set; }
     public bool IsCompleted { get; set; }
@@ -16,7 +17,7 @@ sealed class BuildingState : IBuildingState
 
     // Mutable state
     public SelectionState SelectionState { get; set; }
-    public List<IBreakageReceipt> ActiveBreakages { get; } = new();
+    public List<IBreakageReceipt> ActiveBreakages { get; } = [];
     public bool IsDead { get; set; }
     public bool AcceptsPlayerHealthChanges { get; set; } = true;
 

@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.UI.Controls;
 
 namespace Bearded.TD.Game.Input;
 
@@ -16,7 +17,8 @@ sealed class BuildingInteractionHandler : InteractionHandler
     private readonly ContentManager contentManager;
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
-    private IActiveOverlay? activeOverlay;
+    private IActiveOverlay? buildableAreaOverlay;
+    private IActiveOverlay? towerRangeOverlay;
     private DynamicFootprintTileNotifier? ghostTileOccupation;
 
     public BuildingInteractionHandler(
@@ -34,7 +36,9 @@ sealed class BuildingInteractionHandler : InteractionHandler
         Game.State.Add(ghost);
         Game.PlayerCursors.AttachGhost(blueprint);
 
-        activeOverlay = Game.Overlays.Activate(new BuildableAreaOverlay(Game.State));
+        buildableAreaOverlay = Game.Overlays.Activate(new BuildableAreaOverlayLayer(Game.State));
+        towerRangeOverlay =
+            TowerRangeOverlayLayer.CreateAndActivateForGameObject(Game.Overlays, ghost, RangeDrawStyle.DrawFull);
     }
 
     public override void Update(ICursorHandler cursor)
@@ -68,7 +72,10 @@ sealed class BuildingInteractionHandler : InteractionHandler
         ghostTileOccupation = null;
         Game.PlayerCursors.DetachGhost();
 
-        activeOverlay?.Deactivate();
-        activeOverlay = null;
+        buildableAreaOverlay?.Deactivate();
+        buildableAreaOverlay = null;
+
+        towerRangeOverlay?.Deactivate();
+        towerRangeOverlay = null;
     }
 }
