@@ -1,5 +1,6 @@
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering;
 
@@ -15,12 +16,19 @@ sealed class NoOpDrawableRenderers : IDrawableRenderers
         throw new InvalidOperationException("Cannot create drawable sprites in tests");
     }
 
-    public IRenderer CreateCustomRendererFor(IDrawable drawable, IRenderSetting[] customRenderSettings)
+    public IRenderer CreateAndRegisterRendererFor(IRendererShader shader, DrawOrderGroup drawGroup,
+        int drawGroupOrderKey,
+        Func<IEnumerable<IRenderSetting>, IRenderer> createRenderer)
+    {
+        throw new InvalidOperationException("Cannot create renderers in tests");
+    }
+
+    public IRenderer CreateUnregisteredRendererFor(IDrawable drawable, IRenderSetting[] customRenderSettings)
     {
         throw new InvalidOperationException("Cannot create custom renderers in tests");
     }
 
-    public void CreateAndRegisterRenderer(IDrawable drawable, DrawOrderGroup group, int drawGroupOrderKey)
+    public IRenderer CreateAndRegisterRendererFor(IDrawable drawable, DrawOrderGroup group, int drawGroupOrderKey)
     {
         throw new InvalidOperationException("Cannot create renderers in tests");
     }

@@ -60,7 +60,7 @@ static class GradientUIExtensions
         var expectsGradient = definition.Type >= Linear;
         var gotGradient = !gradientId.IsNone;
 
-        Debug.Assert(expectsGradient == gotGradient,
+        System.Diagnostics.Debug.Assert(expectsGradient == gotGradient,
             expectsGradient
                 ? $"Gradient ID required for gradient type {definition.Type}."
                 : $"Gradient ID not allowed for gradient type {definition.Type}."

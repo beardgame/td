@@ -204,28 +204,24 @@ sealed class FluidGeometry : IDrawable
         FluidGeometry geometry,
         RenderContext context,
         IEnumerable<IRenderSetting> settings)
-        : IRenderer
+        : RendererDecorator(
+            BatchedRenderer.From(
+                geometry.meshBuilder.ToRenderable(),
+                [
+                    ..settings,
+                    ..geometry.textures,
+                    context.DeferredRenderer.GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1),
+                ]
+            ))
     {
-        private readonly IRenderer renderer = BatchedRenderer.From(
-            geometry.meshBuilder.ToRenderable(),
-            [
-                ..settings,
-                ..geometry.textures,
-                context.DeferredRenderer.GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1),
-            ]
-        );
-
-        public void Render()
+        public override void Render()
         {
             if (geometry.fluid.IsEmpty)
                 return;
 
             geometry.rebuildGeometry();
 
-            renderer.Render();
+            base.Render();
         }
-
-        public void Dispose() => renderer.Dispose();
-        public void SetShaderProgram(ShaderProgram program) => renderer.SetShaderProgram(program);
     }
 }

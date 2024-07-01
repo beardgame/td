@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Shapes;
 using Bearded.Graphics.Text;
@@ -19,12 +16,8 @@ using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TileVisibility = Bearded.TD.Game.Simulation.Exploration.TileVisibility;
-using TimeSpan = System.TimeSpan;
 
-namespace Bearded.TD.Rendering;
-
-using static Color;
-using static Bearded.TD.Constants.Game.World;
+namespace Bearded.TD.Rendering.Debug;
 
 sealed class DebugGameRenderer(GameInstance game, RenderContext context)
 {
@@ -32,14 +25,12 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
     private readonly IShapeDrawer2<Color> shapeDrawer = context.Drawers.Primitives;
 
     private readonly TextDrawerWithDefaults<Color> debugGeometryTextDrawer = context.Drawers.InGameFont
-        .With(fontHeight: .3f * HexagonSide, parameters: Orange, alignHorizontal: .5f);
+        .With(fontHeight: .3f * Constants.Game.World.HexagonSide, parameters: Color.Orange, alignHorizontal: .5f);
 
     private readonly TextDrawerWithDefaults<Color> debugCoordinateTextDrawer = context.Drawers.InGameFont
-        .With(fontHeight: .3f * HexagonSide, parameters: Beige, alignHorizontal: .5f, alignVertical: .5f);
+        .With(fontHeight: .3f * Constants.Game.World.HexagonSide, parameters: Color.Beige, alignHorizontal: .5f, alignVertical: .5f);
 
-    private Tile pathfinderDebugTarget;
-    private IIterativePathfinder? debugPathFinder;
-    private DateTime nextPathfinderDebugStep;
+    private readonly DebugPathfinderOverlay pathfinderDebugOverlay = new(game, context.Drawers);
 
     public void Draw()
     {
@@ -91,15 +82,12 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
             drawDebugLevelMetadata();
         }
 
-        if (settings.DebugPathfinder > 0)
-        {
-            debugPathfinder();
-        }
+        pathfinderDebugOverlay.UpdateAndDrawTextIf(settings.DebugPathfinder > 0);
     }
 
     private void drawDebugPassabilityLayer()
     {
-        const float lineWidth = HexagonSide * 0.1f;
+        const float lineWidth = Constants.Game.World.HexagonSide * 0.1f;
 
         var passabilityLayer = game.State.PassabilityObserver.GetLayer(Passability.WalkingUnit);
 
@@ -113,12 +101,12 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
             {
                 if (passability.PassableDirections.Includes(direction))
                 {
-                    var v = direction.Vector() * HexagonWidth * 0.5f;
+                    var v = direction.Vector() * Constants.Game.World.HexagonWidth * 0.5f;
 
-                    shapeDrawer.DrawLine(p + v, p + v + v, lineWidth, Green);
+                    shapeDrawer.DrawLine(p + v, p + v + v, lineWidth, Color.Green);
                 }
 
-                shapeDrawer.FillCircle(p, HexagonSide * 0.25f, passability.IsPassable ? Green : Red, 3);
+                shapeDrawer.FillCircle(p, Constants.Game.World.HexagonSide * 0.25f, passability.IsPassable ? Color.Green : Color.Red, 3);
             }
         }
     }
@@ -132,8 +120,8 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
         {
             var color = visibilityLayer[zone] switch
             {
-                ZoneVisibility.Invisible => DarkOrange,
-                ZoneVisibility.Revealed => LightGreen,
+                ZoneVisibility.Invisible => Color.DarkOrange,
+                ZoneVisibility.Revealed => Color.LightGreen,
                 _ => throw new ArgumentOutOfRangeException(),
             };
 
@@ -151,14 +139,14 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
         {
             var color = visibilityLayer[tile] switch
             {
-                TileVisibility.Invisible => DarkOrange,
-                TileVisibility.Revealed => YellowGreen,
-                TileVisibility.Visible => LightGreen,
+                TileVisibility.Invisible => Color.DarkOrange,
+                TileVisibility.Revealed => Color.YellowGreen,
+                TileVisibility.Visible => Color.LightGreen,
                 _ => throw new ArgumentOutOfRangeException(),
             };
 
             var xyz = Level.GetPosition(tile).NumericValue;
-            shapeDrawer.FillCircle(xyz, HexagonSide, color * a, 6);
+            shapeDrawer.FillCircle(xyz, Constants.Game.World.HexagonSide, color * a, 6);
         }
     }
 
@@ -171,7 +159,7 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
         foreach (var tile in Tilemap.GetOutwardSpiralForTilemapWith(game.State.Level.Radius))
         {
             var xyz = Level.GetPosition(tile).NumericValue;
-            shapeDrawer.FillCircle(xyz, HexagonSide, biomeLayer[tile].OverlayColor * a, 6);
+            shapeDrawer.FillCircle(xyz, Constants.Game.World.HexagonSide, biomeLayer[tile].OverlayColor * a, 6);
         }
     }
 
@@ -186,10 +174,10 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
             var height = tileGeometry.Geometry.FloorHeight.NumericValue;
             var hardness = tileGeometry.Geometry.Hardness;
 
-            var color = Lerp(Green, Red,
+            var color = Color.Lerp(Color.Green, Color.Red,
                     (float) (UserSettings.Instance.Debug.LevelGeometryShowHeights ? (height + 0.5f) : hardness))
                 * 0.75f;
-            shapeDrawer.FillCircle(p.WithZ(height), HexagonSide, color, 6);
+            shapeDrawer.FillCircle(p.WithZ(height), Constants.Game.World.HexagonSide, color, 6);
 
             if (UserSettings.Instance.Debug.LevelGeometryLabels)
             {
@@ -227,8 +215,8 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
             var alpha = Math.Min(numericFluidLevel * 10, 0.5f);
             shapeDrawer.FillCircle(
                 tilePos.WithZ(numericFluidLevel + groundHeight.NumericValue),
-                HexagonSide,
-                DodgerBlue * alpha,
+                Constants.Game.World.HexagonSide,
+                Color.DodgerBlue * alpha,
                 6);
         }
 
@@ -257,7 +245,7 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
 
             var d = otherP - tileP;
 
-            shapeDrawer.DrawLine(tileP + d * p, tileP + d * q, lineWidth, Aquamarine * 1f);
+            shapeDrawer.DrawLine(tileP + d * p, tileP + d * q, lineWidth, Color.Aquamarine * 1f);
         }
     }
 
@@ -284,7 +272,7 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
                     break;
                 case LevelDebugMetadata.Tile tile:
                     var xyz = Level.GetPosition(tile.XY).WithZ(tile.Z).NumericValue;
-                    shapeDrawer.FillCircle(xyz, HexagonSide, tile.Color, 6);
+                    shapeDrawer.FillCircle(xyz, Constants.Game.World.HexagonSide, tile.Color, 6);
                     break;
             }
         });
@@ -292,9 +280,9 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
 
     private void drawDebugCoordinates()
     {
-        var topLeftOffset = Direction2.FromDegrees(150).Vector * HexagonSide * .6f;
-        var bottomOffset = Direction2.FromDegrees(270).Vector * HexagonSide * .6f;
-        var topRightOffset = Direction2.FromDegrees(30).Vector * HexagonSide * .6f;
+        var topLeftOffset = Direction2.FromDegrees(150).Vector * Constants.Game.World.HexagonSide * .6f;
+        var bottomOffset = Direction2.FromDegrees(270).Vector * Constants.Game.World.HexagonSide * .6f;
+        var topRightOffset = Direction2.FromDegrees(30).Vector * Constants.Game.World.HexagonSide * .6f;
 
         foreach (var tile in Tilemap.EnumerateTilemapWith(game.State.Level.Radius))
         {
@@ -327,162 +315,4 @@ sealed class DebugGameRenderer(GameInstance game, RenderContext context)
             }
         }
     }
-
-
-    private void debugPathfinder()
-    {
-        var cursor = game.PlayerInput.CursorPosition;
-        var cursorTile = Level.GetTile(cursor);
-        Pathfinder.Result? result = null;
-        var success = false;
-        var timer = new Stopwatch();
-
-        var gameState = game.State;
-
-        double? costFunction(Tile tile, Direction step)
-        {
-            var neighbour = tile.Neighbor(step);
-            return
-                gameState.Level.IsValid(tile)
-                && gameState.GeometryLayer[tile].Type == TileType.Floor
-                && gameState.Level.IsValid(neighbour)
-                && gameState.GeometryLayer[neighbour].Type == TileType.Floor
-                    ? 1
-                    : null;
-        }
-
-        var pathfinder = UserSettings.Instance.Debug.DebugPathfinder switch
-        {
-            1 => Pathfinder.CreateAStar(costFunction, 1),
-            2 => Pathfinder.CreateBidirectionalAStar(costFunction, 1),
-            _ => null
-        };
-
-        if (pathfinder == null)
-        {
-            return;
-        }
-
-        try
-        {
-            timer.Start();
-
-            result = pathfinder.FindPath(Tile.Origin, cursorTile);
-
-            timer.Stop();
-
-            success = true;
-        }
-        catch (Exception e)
-        {
-            var lines = e.ToString().Split('\n', '\r', StringSplitOptions.RemoveEmptyEntries);
-            var p = cursor.NumericValue.WithZ();
-            foreach (var line in lines)
-            {
-                drawers.InGameFont.DrawLine(
-                    Red, p, line,
-                    fontHeight: 0.5f
-                );
-                p.Y -= 0.5f;
-            }
-        }
-
-        var (argb, text) =
-            success
-                ? result == null
-                    ? (Yellow, $"no path found in {timer.Elapsed.TotalMilliseconds:0.00}ms")
-                    : (Lime, $"path found in {timer.Elapsed.TotalMilliseconds:0.00}ms")
-                : (Red, $"pathfinder crashed after {timer.Elapsed.TotalMilliseconds:0.00}ms");
-
-        drawers.InGameFont.DrawLine(
-            argb, cursor.NumericValue.WithZ(), text,
-            fontHeight: 0.5f,
-            alignVertical: 1f
-        );
-
-        if (pathfinderDebugTarget != cursorTile || debugPathFinder == null)
-        {
-            pathfinderDebugTarget = cursorTile;
-            debugPathFinder = pathfinder.FindPathIteratively(Tile.Origin, cursorTile);
-            nextPathfinderDebugStep = DateTime.Now;
-        }
-
-        if (nextPathfinderDebugStep <= DateTime.Now)
-        {
-            try
-            {
-                debugPathFinder.TryAdvanceStep();
-
-                nextPathfinderDebugStep += TimeSpan.FromMilliseconds(50);
-            }
-            catch
-            {
-                nextPathfinderDebugStep = DateTime.MaxValue;
-            }
-        }
-
-        var debugState = debugPathFinder.GetCurrentState();
-
-        foreach (var tile in debugState.SeenTiles.Distinct())
-        {
-            drawers.Primitives.FillCircle(
-                Level.GetPosition(tile).NumericValue, HexagonSide, Yellow * 0.25f, 6);
-        }
-
-        foreach (var tile in debugState.OpenTiles.Distinct())
-        {
-            drawers.Primitives.FillCircle(
-                Level.GetPosition(tile).NumericValue, HexagonSide, Blue * 0.25f, 6);
-        }
-
-        foreach (var tile in debugState.NextOpenTiles)
-        {
-            drawers.Primitives.FillCircle(
-                Level.GetPosition(tile).NumericValue, HexagonSide, Red * 0.5f, 6);
-        }
-
-        var debugLines = new List<string>();
-
-        if (result != null)
-        {
-            var tile = Tile.Origin;
-
-            var pathColor = Lime * 0.5f;
-
-            foreach (var direction in result.Path)
-            {
-                tile = tile.Neighbor(direction);
-                drawers.Primitives.FillCircle(
-                    Level.GetPosition(tile).NumericValue, HexagonSide, pathColor, 6);
-            }
-
-            debugLines.Add($"path steps: {result.Path.Length}");
-            debugLines.Add($"path cost: {result.Cost}");
-        }
-
-        var finalStateDebugPathfinder = pathfinder.FindPathIteratively(Tile.Origin, cursorTile);
-        while (finalStateDebugPathfinder.TryAdvanceStep())
-        {
-        }
-
-        var finalDebugState = finalStateDebugPathfinder.GetCurrentState();
-
-        debugLines.Add($"nodes considered: {finalDebugState.SeenTiles.Count()}");
-        debugLines.Add($"nodes expanded: {finalDebugState.SeenTiles.Except(finalDebugState.OpenTiles).Count()}");
-
-
-        {
-            var p = cursor.NumericValue.WithZ();
-            p.Y += debugLines.Count * 0.5f;
-            foreach (var line in debugLines)
-            {
-                drawers.InGameFont.DrawLine(
-                    Aqua, p, line,
-                    fontHeight: 0.5f, alignVertical: 1
-                );
-                p.Y -= 0.5f;
-            }
-        }
-    }
-
 }

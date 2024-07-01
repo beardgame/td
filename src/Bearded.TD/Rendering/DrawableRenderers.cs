@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.Linq;
@@ -73,13 +74,25 @@ sealed class DrawableRenderers : IDrawableRenderers
             return (TDrawableType)obj;
 
         var newDrawable = createDrawable();
-        CreateAndRegisterRenderer(newDrawable, drawGroup, drawGroupOrderKey);
+        CreateAndRegisterRendererFor(newDrawable, drawGroup, drawGroupOrderKey);
         knownDrawables.Add(key, newDrawable);
 
         return newDrawable;
     }
 
-    public IRenderer CreateCustomRendererFor(
+    public IRenderer CreateAndRegisterRendererFor(IRendererShader shader, DrawOrderGroup drawGroup,
+        int drawGroupOrderKey,
+        Func<IEnumerable<IRenderSetting>, IRenderer> createRenderer)
+    {
+        var renderer = createRenderer(defaultRenderSettings);
+        shader.UseOnRenderer(renderer);
+
+        RegisterRenderer(renderer, drawGroup, drawGroupOrderKey);
+
+        return renderer;
+    }
+
+    public IRenderer CreateUnregisteredRendererFor(
         IDrawable drawable,
         IRenderSetting[] customRenderSettings)
     {
@@ -88,13 +101,15 @@ sealed class DrawableRenderers : IDrawableRenderers
         );
     }
 
-    public void CreateAndRegisterRenderer(
+    public IRenderer CreateAndRegisterRendererFor(
         IDrawable drawable,
         DrawOrderGroup group, int drawGroupOrderKey)
     {
         var renderer = drawable.CreateRendererWithSettings(defaultRenderSettings);
 
         RegisterRenderer(renderer, group, drawGroupOrderKey);
+
+        return renderer;
     }
 
     public void RegisterRenderer(IRenderer renderer, DrawOrderGroup group, int drawGroupOrderKey)

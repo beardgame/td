@@ -2,8 +2,10 @@ using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Drawing;
+using Bearded.TD.Rendering.Debug;
 using Bearded.TD.Rendering.Deferred;
 using Bearded.TD.Rendering.Deferred.Level;
+using Bearded.TD.Rendering.Overlays;
 using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Rendering;
@@ -32,7 +34,9 @@ sealed class GameRenderer
         var water = new FluidGeometry(game, game.State.FluidLayer.Water, context, waterMaterial);
 
         renderers.RegisterRenderer(level, DrawOrderGroup.Level, 0);
-        renderers.CreateAndRegisterRenderer(water, DrawOrderGroup.Fluids, 0);
+        renderers.CreateAndRegisterRendererFor(water, DrawOrderGroup.Fluids, 0);
+
+        OverlayRenderers.Configure(game.Overlays, context, renderers);
 
         Content = new DeferredContent(level, renderers);
     }

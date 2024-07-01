@@ -48,7 +48,7 @@ sealed class PackedSpriteSet : ISpriteSetImplementation
     {
         // TODO: who is responsible for cleaning these up?
         var drawable = DrawableSpriteSet.Create(textures, sprites, shader, createVertex);
-        var renderer = drawableRenderers.CreateCustomRendererFor(drawable, customRenderSettings);
+        var renderer = drawableRenderers.CreateUnregisteredRendererFor(drawable, customRenderSettings);
         return (drawable, renderer);
     }
 

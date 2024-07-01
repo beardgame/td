@@ -10,6 +10,8 @@ namespace Bearded.TD.Rendering.Vertices;
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ColorVertexData : IVertexData
 {
+    public static ColorVertexData Create(Vector3 xyz, Color color) => new(xyz, color);
+
     private readonly Vector3 position;
     private readonly Color color;
 
@@ -18,10 +20,6 @@ public readonly struct ColorVertexData : IVertexData
             MakeAttributeTemplate<Vector3>("v_position"),
             MakeAttributeTemplate<Color>("v_color")
         );
-
-    public ColorVertexData(float x, float y, float z, Color color) : this(new Vector3(x, y, z), color)
-    {
-    }
 
     public ColorVertexData(Vector3 position, Color color)
     {

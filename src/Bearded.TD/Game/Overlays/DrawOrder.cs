@@ -8,4 +8,5 @@ enum DrawOrder
     Planning,
     TowerHighlight,
     TowerRange,
+    Debug,
 }

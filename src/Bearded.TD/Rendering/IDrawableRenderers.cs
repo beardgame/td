@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content.Models;
 
 namespace Bearded.TD.Rendering;
@@ -12,15 +14,18 @@ interface IDrawableRenderers
         Func<TDrawableType> createDrawable)
         where TDrawableType : IDrawable;
 
-    public IRenderer CreateCustomRendererFor(
+    IRenderer CreateAndRegisterRendererFor(IRendererShader shader, DrawOrderGroup drawGroup, int drawGroupOrderKey,
+        Func<IEnumerable<IRenderSetting>, IRenderer> createRenderer);
+
+    IRenderer CreateUnregisteredRendererFor(
         IDrawable drawable,
         IRenderSetting[] customRenderSettings);
 
-    public void CreateAndRegisterRenderer(
+    IRenderer CreateAndRegisterRendererFor(
         IDrawable drawable,
         DrawOrderGroup group, int drawGroupOrderKey);
 
-    public void RegisterRenderer(IRenderer renderer, DrawOrderGroup group, int drawGroupOrderKey);
+    void RegisterRenderer(IRenderer renderer, DrawOrderGroup group, int drawGroupOrderKey);
 
     void RenderDrawGroup(DrawOrderGroup group);
     void DisposeAll();
