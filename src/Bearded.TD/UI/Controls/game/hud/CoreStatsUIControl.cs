@@ -97,7 +97,7 @@ sealed partial class CoreStatsUIControl : CompositeControl
             CornerRadius = CornerRadius,
             Components = BackgroundComponents,
         }.WithDecorations(new Decorations(
-            Shadow: Shadow,
+            Shadow: Shadows.Popup,
             BlurredBackground: BlurredBackground.Default
         ));
 }
