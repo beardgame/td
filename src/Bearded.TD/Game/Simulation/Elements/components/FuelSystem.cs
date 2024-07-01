@@ -12,7 +12,6 @@ using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.Simulation.Drawing.TileRangeDrawer;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Elements;

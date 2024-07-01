@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
-using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.Geometry;
@@ -18,9 +13,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 [Component("range")]
 sealed class Range :
     Component<Range.IParameters>,
-    IWeaponRange,
-    IWeaponRangeDrawer,
-    IListener<DrawComponents>
+    IWeaponRange
 {
     public enum Type
     {
@@ -33,15 +26,14 @@ sealed class Range :
     private IRanger ranger = null!;
     private IWeaponState weapon = null!;
     private PassabilityLayer passabilityLayer = null!;
-    private TileRangeDrawer tileRangeDrawer = null!;
 
     private Unit currentRange;
     private Angle? currentMaxTurningAngle;
+    private Tile currentTile;
     private Instant nextTileInRangeRecalculationTime;
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
 
     Unit IWeaponRange.Range => currentRange;
-    private bool skipDrawThisFrame;
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -54,9 +46,7 @@ sealed class Range :
         Type Type { get; }
     }
 
-    public Range(IParameters parameters) : base(parameters)
-    {
-    }
+    public Range(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -75,21 +65,9 @@ sealed class Range :
     public override void Activate()
     {
         passabilityLayer = Owner.Game.PassabilityObserver.GetLayer(Passability.Projectile);
-
-        tileRangeDrawer = new TileRangeDrawer(
-            Owner.Game, () => weapon.RangeDrawStyle, getTilesToDraw, Color.Green);
-
-        Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
-    {
-        Events.Unsubscribe(this);
-    }
-
-    public override void Update(TimeSpan elapsedTime)
-    {
-    }
+    public override void Update(TimeSpan elapsedTime) { }
 
     public ImmutableArray<Tile> GetTilesInRange()
     {
@@ -100,7 +78,9 @@ sealed class Range :
     private void ensureTilesInRangeUpToDate()
     {
         var rangeChanged = currentRange != Parameters.Range
-            || !currentMaxTurningAngle.Equals(weapon.MaximumTurningAngle);
+            || !currentMaxTurningAngle.Equals(weapon.MaximumTurningAngle)
+            || currentTile != Level.GetTile(weapon.Position)
+            || tilesInRange.IsDefault;
 
         if (rangeChanged || Owner.Game.Time >= nextTileInRangeRecalculationTime)
         {
@@ -112,42 +92,13 @@ sealed class Range :
     {
         currentMaxTurningAngle = weapon.MaximumTurningAngle;
         currentRange = Parameters.Range;
-        var tile = Level.GetTile(weapon.Position);
+        currentTile = Level.GetTile(weapon.Position);
 
         tilesInRange = ranger.GetTilesInRange(
-            Owner.Game, passabilityLayer, tile, Parameters.MinimumRange, Parameters.Range
+            Owner.Game, passabilityLayer, currentTile, Parameters.MinimumRange, Parameters.Range
             );
 
         nextTileInRangeRecalculationTime = Owner.Game.Time + Parameters.ReCalculateTilesInRangeInterval;
-    }
-
-    public void HandleEvent(DrawComponents e)
-    {
-        tileRangeDrawer.Draw();
-    }
-
-    private IEnumerable<Tile> getTilesToDraw()
-    {
-        if (skipDrawThisFrame)
-        {
-            skipDrawThisFrame = false;
-            return ImmutableHashSet<Tile>.Empty;
-        }
-
-        var allTiles = ImmutableHashSet.CreateRange(
-            (Owner.Parent?.GetComponents<ITurret>() ?? Enumerable.Empty<ITurret>())
-            .Select(t => t.Weapon)
-            .SelectMany(w => w.GetComponents<IWeaponRangeDrawer>())
-            .SelectMany(r => r.TakeOverDrawingThisFrame()));
-        skipDrawThisFrame = false;
-        return allTiles;
-    }
-
-    IEnumerable<Tile> IWeaponRangeDrawer.TakeOverDrawingThisFrame()
-    {
-        skipDrawThisFrame = true;
-        recalculateTilesInRange();
-        return tilesInRange;
     }
 }
 

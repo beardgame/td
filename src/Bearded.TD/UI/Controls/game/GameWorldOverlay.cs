@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Bearded.TD.Audio;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Overlays;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -14,6 +15,7 @@ namespace Bearded.TD.UI.Controls;
 
 interface IGameWorldOverlay
 {
+    public ActiveOverlays ActiveOverlays { get; }
     public UIContext UIContext { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
     public ISoundScape SoundScape { get; }
@@ -38,17 +40,20 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     private readonly GameCamera camera;
     private readonly List<OverlayControl> controls = [];
 
+    public ActiveOverlays ActiveOverlays { get; }
     public UIContext UIContext { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
     public ISoundScape SoundScape { get; }
 
     public GameWorldOverlay(
         GameCamera camera,
+        ActiveOverlays activeOverlays,
         UIContext uiContext,
         GameRequestDispatcher requestDispatcher,
         ISoundScape soundScape) : base("Game World Overlay")
     {
         this.camera = camera;
+        ActiveOverlays = activeOverlays;
         UIContext = uiContext;
         RequestDispatcher = requestDispatcher;
         SoundScape = soundScape;
