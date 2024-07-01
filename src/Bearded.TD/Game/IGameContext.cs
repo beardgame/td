@@ -23,7 +23,7 @@ sealed class ServerGameContext : IGameContext
     public IDispatcher<GameInstance> Dispatcher { get; }
     public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
     public IGameSynchronizer GameSynchronizer { get; }
-    public Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
+    public Func<GameInstance, PlayerManager?> PlayerManagerFactory { get; }
     public Action<GameInstance> DataMessageHandlerInitializer { get; }
 
     public ServerGameContext(ServerNetworkInterface network, Logger logger)
@@ -50,7 +50,7 @@ sealed class ClientGameContext : IGameContext
     public IDispatcher<GameInstance> Dispatcher { get; }
     public IRequestDispatcher<Player, GameInstance> RequestDispatcher { get; }
     public IGameSynchronizer GameSynchronizer { get; }
-    public Func<GameInstance, PlayerManager> PlayerManagerFactory { get; }
+    public Func<GameInstance, PlayerManager?> PlayerManagerFactory { get; }
     public Action<GameInstance> DataMessageHandlerInitializer { get; }
 
     public ClientGameContext(ClientNetworkInterface network, Logger logger)

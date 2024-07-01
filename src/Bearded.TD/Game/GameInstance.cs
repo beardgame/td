@@ -178,15 +178,15 @@ sealed class GameInstance
         Meta.SetBlueprints(blueprints);
     }
 
-    public void InitializeState(GameState state)
+    public void InitializeState(GameState initialState)
     {
-        if (this.state != null)
+        if (state != null)
             throw new InvalidOperationException("Cannot override the game state once set.");
 
         gatherBlueprints();
-        Meta.SetState(state);
+        Meta.SetState(initialState);
 
-        this.state = state;
+        state = initialState;
     }
 
     public void PrepareUI()
