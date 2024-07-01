@@ -14,7 +14,7 @@ sealed class TowerRangeOverlayLayer : IOverlayLayer
     public static IActiveOverlay? CreateAndActivateForGameObject(
         ActiveOverlays overlays, GameObject gameObject, RangeDrawStyle drawStyle)
     {
-        if (!gameObject.GetComponents<ITurret>().Any() || drawStyle == RangeDrawStyle.DoNotDraw)
+        if (drawStyle == RangeDrawStyle.DoNotDraw)
         {
             return null;
         }
@@ -22,6 +22,11 @@ sealed class TowerRangeOverlayLayer : IOverlayLayer
         var weaponRanges = gameObject.GetComponents<ITurret>()
             .SelectMany(turret => turret.Weapon.GetComponents<IWeaponRange>())
             .ToImmutableArray();
+        if (weaponRanges.IsEmpty)
+        {
+            return null;
+        }
+
         var overlay = new TowerRangeOverlayLayer(weaponRanges, drawStyle);
         return overlays.Activate(overlay);
     }
