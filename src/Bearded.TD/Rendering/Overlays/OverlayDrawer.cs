@@ -21,4 +21,12 @@ sealed class OverlayDrawer(ExpandingIndexedTrianglesMeshBuilder<ColorVertexData>
 
         drawer.FillCircle(p.WithZ(height.NumericValue), HexagonSide, color, 6);
     }
+
+    public void Area(Color color, IArea area, Unit height = default)
+    {
+        foreach (var tile in area)
+        {
+            Tile(color, tile, height);
+        }
+    }
 }
