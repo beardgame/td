@@ -15,7 +15,6 @@ using OpenTK.Mathematics;
 namespace Bearded.TD.Rendering.Custom;
 
 sealed class MainMenuBackground(
-    Shader shader,
     IndexedTrianglesMeshBuilder<UVColorVertex> meshBuilder,
     IEnumerable<IDisposable> disposables,
     IEnumerable<IRenderSetting> settings)
@@ -54,7 +53,7 @@ sealed class MainMenuBackground(
             var meshBuilder = new IndexedTrianglesMeshBuilder<UVColorVertex>();
             disposables.Add(meshBuilder);
 
-            return new MainMenuBackground(material.Shader, meshBuilder, disposables, settings);
+            return new MainMenuBackground(meshBuilder, disposables, settings);
         }
     }
 
@@ -83,13 +82,9 @@ sealed class MainMenuBackground(
 
     public IRenderer CreateRendererWithSettings(IEnumerable<IRenderSetting> additionalSettings)
     {
-        var renderer = Renderer.From(
+        return Renderer.From(
             meshBuilder.ToRenderable(),
             settings.Concat(additionalSettings)
         );
-
-        shader.RendererShader.UseOnRenderer(renderer);
-
-        return renderer;
     }
 }

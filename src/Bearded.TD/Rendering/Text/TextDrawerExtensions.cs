@@ -22,7 +22,7 @@ static class TextDrawerExtensions
         shader ??= font.Material.Shader;
         return drawableRenderers.GetOrCreateDrawableFor(
             template, shader, drawGroup, drawGroupOrderKey,
-            () => TextDrawer.Create(font, config, createVertex, shader)
+            () => TextDrawer.Create(font, config, createVertex)
         );
     }
 }

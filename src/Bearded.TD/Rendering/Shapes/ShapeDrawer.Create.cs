@@ -22,12 +22,19 @@ sealed partial class ShapeDrawer
     {
         return renderers.GetOrCreateDrawableFor(
             DrawableTemplate.Instance, shader, drawGroup, drawGroupOrderKey,
-            () => new ShapeDrawer(shader, textures([
-                (context.Renderers.Gradients.TextureUniform, "gradientBuffer"),
-                (context.Renderers.ShapeComponents.TextureUniform, "componentBuffer"),
-                (context.Compositor.IntermediateBlurTextureUniform, "intermediateBlurBackground"),
-            ]))
+            () => CreateUnregistered(context)
         );
+
+    }
+
+    public static ShapeDrawer CreateUnregistered(
+        RenderContext context)
+    {
+        return new ShapeDrawer(textures([
+            (context.Renderers.Gradients.TextureUniform, "gradientBuffer"),
+            (context.Renderers.ShapeComponents.TextureUniform, "componentBuffer"),
+            (context.Compositor.IntermediateBlurTextureUniform, "intermediateBlurBackground"),
+        ]));
 
         // TODO: a little experiment to see if we can make multiple texture uniforms more readable
         // consider creating a public helper somewhere?

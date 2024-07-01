@@ -16,8 +16,7 @@ static class TextDrawer
 {
     public static TextDrawer<TVertex, TVertexParameters> Create<TVertex, TVertexParameters>(
         Font font, TextDrawerConfiguration config,
-        CreateVertex<TVertex, TVertexParameters> createVertex,
-        Shader shader)
+        CreateVertex<TVertex, TVertexParameters> createVertex)
         where TVertex : struct, IVertexData
     {
         var disposables = new List<IDisposable>(font.Material.Textures.Count + 1);
@@ -46,7 +45,6 @@ static class TextDrawer
         return new TextDrawer<TVertex, TVertexParameters>(
             font.Definition,
             settings,
-            shader,
             meshBuilder,
             createVertex,
             disposables,

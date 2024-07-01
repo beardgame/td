@@ -15,7 +15,6 @@ static class DrawableSpriteSet
     public static DrawableSpriteSet<TVertex, TVertexData> Create<TVertex, TVertexData>(
         ImmutableArray<TextureUniform> textures,
         ImmutableDictionary<string, SpriteParameters> baseSprites,
-        Shader shader,
         CreateVertex<TVertex, TVertexData> createVertex)
         where TVertex : struct, IVertexData
     {
@@ -24,7 +23,7 @@ static class DrawableSpriteSet
             kvp => kvp.Key,
             kvp => new DrawableSprite<TVertex, TVertexData>(meshBuilder, createVertex, kvp.Value)
         );
-        return new DrawableSpriteSet<TVertex, TVertexData>(meshBuilder, shader, sprites, textures);
+        return new DrawableSpriteSet<TVertex, TVertexData>(meshBuilder, sprites, textures);
     }
 }
 
@@ -32,7 +31,6 @@ sealed class DrawableSpriteSet<TVertex, TVertexData> : IDrawable
     where TVertex : struct, IVertexData
 {
     private readonly ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder;
-    private readonly Shader shader;
     private readonly Dictionary<string, DrawableSprite<TVertex, TVertexData>> sprites;
     private readonly ImmutableArray<TextureUniform> textures;
 
@@ -40,12 +38,10 @@ sealed class DrawableSpriteSet<TVertex, TVertexData> : IDrawable
     // and/or hide this class behind a IDrawableSpriteSet<TVertexData> - except.. do we actually use it anywhere?
     public DrawableSpriteSet(
         ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder,
-        Shader shader,
         Dictionary<string, DrawableSprite<TVertex, TVertexData>> sprites,
         ImmutableArray<TextureUniform> textures)
     {
         this.meshBuilder = meshBuilder;
-        this.shader = shader;
         this.sprites = sprites;
         this.textures = textures;
     }
@@ -69,8 +65,6 @@ sealed class DrawableSpriteSet<TVertex, TVertexData> : IDrawable
             meshBuilder.ToRenderable(),
             textures.Concat(additionalSettings)
         );
-
-        shader.RendererShader.UseOnRenderer(renderer);
 
         return renderer;
     }
