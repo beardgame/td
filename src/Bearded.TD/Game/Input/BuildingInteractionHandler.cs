@@ -1,6 +1,7 @@
 ﻿using Bearded.TD.Audio;
 using Bearded.TD.Content;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.Footprints;
@@ -15,6 +16,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
     private readonly ContentManager contentManager;
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
+    private IActiveOverlay? activeOverlay;
     private DynamicFootprintTileNotifier? ghostTileOccupation;
 
     public BuildingInteractionHandler(
@@ -31,6 +33,8 @@ sealed class BuildingInteractionHandler : InteractionHandler
         ghost = BuildingFactory.CreateGhost(blueprint, faction, out ghostTileOccupation);
         Game.State.Add(ghost);
         Game.PlayerCursors.AttachGhost(blueprint);
+
+        activeOverlay = Game.Overlays.Activate(new BuildableAreaOverlay(Game.State));
     }
 
     public override void Update(ICursorHandler cursor)
@@ -63,5 +67,8 @@ sealed class BuildingInteractionHandler : InteractionHandler
         ghost = null;
         ghostTileOccupation = null;
         Game.PlayerCursors.DetachGhost();
+
+        activeOverlay?.Deactivate();
+        activeOverlay = null;
     }
 }

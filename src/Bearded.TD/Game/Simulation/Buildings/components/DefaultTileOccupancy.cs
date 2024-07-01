@@ -7,7 +7,6 @@ using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities.Collections;
@@ -108,21 +107,10 @@ sealed class DefaultTileOccupancy : Component,
 
     private static bool isTileValidForBuilding(GameState game, Tile tile)
     {
-        return game.Level.IsValid(tile)
-            && game.GeometryLayer[tile].Type == TileType.Floor
-            && game.VisibilityLayer[tile].IsRevealed()
-            && tileContainsNoNonBuildingTileBlocker(game, tile)
-            && tileContainsNoBuildingOrReplaceableBuilding(game, tile);
-    }
-
-    private static bool tileContainsNoNonBuildingTileBlocker(GameState game, Tile tile)
-    {
-        return game.TileBlockerLayer[tile]?.GetComponents<IBuildingStateProvider>().Any() ?? true;
-    }
-
-    private static bool tileContainsNoBuildingOrReplaceableBuilding(GameState game, Tile tile)
-    {
-        return game.BuildingLayer.GetObjectsOnTile(tile).All(b => b.TryGetSingleComponent<CanBeBuiltOn>(out _));
+        return
+            game.Level.IsValid(tile) &&
+            game.VisibilityLayer[tile].IsRevealed() &&
+            BuildableTileChecker.TileIsBuildable(game, tile);
     }
 
     private static ResourceAmount totalRefundsForReplacing(GameState game, IEnumerable<Tile> tiles)
