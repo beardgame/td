@@ -74,7 +74,8 @@ sealed class DrawableRenderers : IDrawableRenderers
             return (TDrawableType)obj;
 
         var newDrawable = createDrawable();
-        CreateAndRegisterRendererFor(newDrawable, drawGroup, drawGroupOrderKey);
+        var renderer = CreateAndRegisterRendererFor(newDrawable, drawGroup, drawGroupOrderKey);
+        shader.RendererShader.UseOnRenderer(renderer);
         knownDrawables.Add(key, newDrawable);
 
         return newDrawable;

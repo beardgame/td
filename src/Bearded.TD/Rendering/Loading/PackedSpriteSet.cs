@@ -35,7 +35,7 @@ sealed class PackedSpriteSet : ISpriteSetImplementation
     {
         return drawableRenderers.GetOrCreateDrawableFor(
             spriteSet, shader, drawGroup, drawGroupOrderKey,
-            () => DrawableSpriteSet.Create(textures, sprites, shader, createVertex)
+            () => DrawableSpriteSet.Create(textures, sprites, createVertex)
         );
     }
 
@@ -47,8 +47,10 @@ sealed class PackedSpriteSet : ISpriteSetImplementation
         where TVertex : struct, IVertexData
     {
         // TODO: who is responsible for cleaning these up?
-        var drawable = DrawableSpriteSet.Create(textures, sprites, shader, createVertex);
+        var drawable = DrawableSpriteSet.Create(textures, sprites, createVertex);
         var renderer = drawableRenderers.CreateUnregisteredRendererFor(drawable, customRenderSettings);
+        shader.RendererShader.UseOnRenderer(renderer);
+
         return (drawable, renderer);
     }
 

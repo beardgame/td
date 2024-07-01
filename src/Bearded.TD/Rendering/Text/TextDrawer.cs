@@ -22,7 +22,6 @@ readonly record struct TextDrawerConfiguration(
 sealed class TextDrawer<TVertex, TVertexParameters>(
     IFontDefinition font,
     IEnumerable<IRenderSetting> settings,
-    Shader shader,
     ExpandingIndexedTrianglesMeshBuilder<TVertex> meshBuilder,
     CreateVertex<TVertex, TVertexParameters> createTextVertex,
     IEnumerable<IDisposable> disposables,
@@ -134,14 +133,10 @@ sealed class TextDrawer<TVertex, TVertexParameters>(
 
     public IRenderer CreateRendererWithSettings(IEnumerable<IRenderSetting> additionalSettings)
     {
-        var renderer = BatchedRenderer.From(
+        return BatchedRenderer.From(
             meshBuilder.ToRenderable(),
             settings.Concat(additionalSettings)
         );
-
-        shader.RendererShader.UseOnRenderer(renderer);
-
-        return renderer;
     }
 
     public void Clear()
