@@ -50,6 +50,7 @@ static partial class Constants
 
             public static readonly Shadow Default = Shadow((0, 2, 0), 5, DefaultColor * 0.5f);
             public static readonly Shadow Tooltip = Shadow((0, 4, 0), 10, DefaultColor * 0.5f);
+            public static readonly Shadow Popup = Shadow((0, 5, 0), 25, DefaultColor * 0.6f);
             public static readonly Shadow SmallWindow = Shadow((0, 6, 0), 50, DefaultColor * 0.65f);
             public static readonly Shadow LargeWindow = Shadow((0, 10, 0), 75, DefaultColor * 0.75f);
         }
