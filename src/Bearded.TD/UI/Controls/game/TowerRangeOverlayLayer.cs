@@ -22,36 +22,25 @@ sealed class TowerRangeOverlayLayer : IOverlayLayer
         var weaponRanges = gameObject.GetComponents<ITurret>()
             .SelectMany(turret => turret.Weapon.GetComponents<IWeaponRange>())
             .ToImmutableArray();
-        var reader = new TowerRangeReader(weaponRanges);
-
-        var overlay = new TowerRangeOverlayLayer(reader, drawStyle);
+        var overlay = new TowerRangeOverlayLayer(weaponRanges, drawStyle);
         return overlays.Activate(overlay);
     }
 
-    private readonly TowerRangeReader reader;
+    private readonly ImmutableArray<IWeaponRange> weaponRanges;
     private readonly RangeDrawStyle drawStyle;
 
     public DrawOrder DrawOrder => DrawOrder.TowerRange;
 
-    private TowerRangeOverlayLayer(TowerRangeReader reader, RangeDrawStyle drawStyle)
+    private TowerRangeOverlayLayer(ImmutableArray<IWeaponRange> weaponRanges, RangeDrawStyle drawStyle)
     {
-        this.reader = reader;
+        this.weaponRanges = weaponRanges;
         this.drawStyle = drawStyle;
     }
 
     public void Draw(IOverlayDrawer context)
     {
-        context.Area(
-            Color.Green * (drawStyle == RangeDrawStyle.DrawFull ? 0.5f : 0.25f),
-            reader.GetAreaInRange());
-    }
-
-    private sealed class TowerRangeReader(ImmutableArray<IWeaponRange> weaponRanges)
-    {
-        public IArea GetAreaInRange()
-        {
-            var allTiles = weaponRanges.SelectMany(r => r.GetTilesInRange());
-            return Area.From(allTiles);
-        }
+        var allTilesInRange = weaponRanges.SelectMany(r => r.GetTilesInRange());
+        var area = Area.From(allTilesInRange);
+        context.Area(Color.Green * (drawStyle == RangeDrawStyle.DrawFull ? 0.5f : 0.25f), area);
     }
 }
