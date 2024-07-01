@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Tiles;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -20,60 +19,28 @@ sealed class TowerRangeOverlayLayer : IOverlayLayer
             return null;
         }
 
-        var reader = new TowerRangeReader();
-        gameObject.AddComponent(reader);
-        var overlay = new TowerRangeOverlayLayer(reader, drawStyle);
-        var activeOverlay = overlays.Activate(overlay);
-        return new ActiveTowerRangeOverlay(activeOverlay, gameObject, reader);
+        var weaponRanges = gameObject.GetComponents<ITurret>()
+            .SelectMany(turret => turret.Weapon.GetComponents<IWeaponRange>())
+            .ToImmutableArray();
+        var overlay = new TowerRangeOverlayLayer(weaponRanges, drawStyle);
+        return overlays.Activate(overlay);
     }
 
-    private readonly TowerRangeReader reader;
+    private readonly ImmutableArray<IWeaponRange> weaponRanges;
     private readonly RangeDrawStyle drawStyle;
 
     public DrawOrder DrawOrder => DrawOrder.TowerRange;
 
-    private TowerRangeOverlayLayer(TowerRangeReader reader, RangeDrawStyle drawStyle)
+    private TowerRangeOverlayLayer(ImmutableArray<IWeaponRange> weaponRanges, RangeDrawStyle drawStyle)
     {
-        this.reader = reader;
+        this.weaponRanges = weaponRanges;
         this.drawStyle = drawStyle;
     }
 
     public void Draw(IOverlayDrawer context)
     {
-        context.Area(
-            Color.Green * (drawStyle == RangeDrawStyle.DrawFull ? 0.5f : 0.25f),
-            reader.GetAreaInRange());
-    }
-
-    private sealed class TowerRangeReader : Component
-    {
-        private ImmutableArray<IWeaponRange> weaponRanges = [];
-
-        public IArea GetAreaInRange()
-        {
-            var allTiles = weaponRanges.SelectMany(r => r.GetTilesInRange());
-            return Area.From(allTiles);
-        }
-
-        protected override void OnAdded() { }
-
-        public override void Activate()
-        {
-            weaponRanges = Owner.GetComponents<ITurret>()
-                .SelectMany(turret => turret.Weapon.GetComponents<IWeaponRange>())
-                .ToImmutableArray();
-        }
-
-        public override void Update(TimeSpan elapsedTime) { }
-    }
-
-    private sealed class ActiveTowerRangeOverlay(IActiveOverlay overlay, GameObject gameObject, TowerRangeReader reader)
-        : IActiveOverlay
-    {
-        public void Deactivate()
-        {
-            overlay.Deactivate();
-            gameObject.RemoveComponent(reader);
-        }
+        var allTilesInRange = weaponRanges.SelectMany(r => r.GetTilesInRange());
+        var area = Area.From(allTilesInRange);
+        context.Area(Color.Green * (drawStyle == RangeDrawStyle.DrawFull ? 0.5f : 0.25f), area);
     }
 }

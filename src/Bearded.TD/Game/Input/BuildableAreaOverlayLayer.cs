@@ -25,7 +25,7 @@ sealed class BuildableAreaOverlayLayer : IOverlayLayer
             .Where(t => isTileRevealed(t) && !BuildableTileChecker.TileIsBuildable(game, t));
         foreach (var tile in revealedBlockedTiles)
         {
-            context.Tile(Color.Red, tile);
+            context.Tile(Color.Red * 0.25f, tile);
         }
     }
 
