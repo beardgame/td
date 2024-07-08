@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
 using Bearded.Graphics.Vertices;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
@@ -65,6 +66,7 @@ enum ShapeType : byte
     CirclePointRadius = 2,
     RectangleCornerSize = 3,
     HexagonPointRadius = 4,
+    HexGrid = 5,
 }
 
 [Flags]
@@ -117,4 +119,7 @@ readonly struct ShapeData
         Vector2 center, float radius, float cornerRadius,
         float innerGlowRoundness, float centerRoundness) =>
         new(ShapeType.HexagonPointRadius, flags, center.X, center.Y, radius, cornerRadius, innerGlowRoundness, centerRoundness, 0);
+
+    public static ShapeData HexGrid(ShapeFlags flags, Tile bitFieldOrigin, HexGridBitField bits, float cornerRadius, float innerGlowRoundness, float centerRoundness) =>
+        new(ShapeType.HexGrid, flags, BitConverter.Int32BitsToSingle(bitFieldOrigin.X), BitConverter.Int32BitsToSingle(bitFieldOrigin.Y), bits.ToFloatBits(), cornerRadius, innerGlowRoundness, centerRoundness, 0);
 }

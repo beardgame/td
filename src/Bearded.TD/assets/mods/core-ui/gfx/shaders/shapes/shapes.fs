@@ -8,6 +8,7 @@ const int SHAPE_TYPE_LINE = 1; // point to point
 const int SHAPE_TYPE_CIRCLE = 2; // center and radius
 const int SHAPE_TYPE_RECTANGLE = 3; // top-left, width, height, corner radius
 const int SHAPE_TYPE_HEXAGON = 4; // center and radius
+const int SHAPE_TYPE_HEXGRID = 5; // origin tile and 4x4 bitfield
 
 const int SHAPE_FLAG_PROJECT_ON_DEPTHBUFFER = 1;
 
@@ -68,6 +69,33 @@ vec3 getFragmentPositionFromDepth(vec2 uv)
     vec3 fragmentPosition = fragmentPositionRelativeToCamera - cameraPosition;
 
     return fragmentPosition;
+}
+
+float smoothMerge(float d1, float d2, float r){
+    vec2 intersectionSpace = vec2(d1 - r, d2 - r);
+    intersectionSpace = min(intersectionSpace, 0);
+    float insideDistance = -length(intersectionSpace);
+    float simpleUnion = min(d1, d2);
+    float outsideDistance = max(simpleUnion, r);
+    return insideDistance + outsideDistance;
+}
+
+float hexDistance(vec2 p, float radius, float cornerRadius, float innerGlowRoundness, float centerRoundness)
+{
+    const vec3 k = vec3(-0.866025404, 0.5, 0.577350269);
+    float d = length(p);
+    float cornersToCenter = 1 - clamp(d / radius * -k.x, 0, 1);
+    float roundness = mix(innerGlowRoundness, centerRoundness, cornersToCenter);
+    cornerRadius += radius * roundness * cornersToCenter;
+    cornerRadius = min(cornerRadius, radius);
+
+    float r = radius - cornerRadius;
+    vec2 d2 = abs(p.yx);
+    d2 -= 2.0 * min(dot(k.xy, d2), 0.0) * k.xy;
+    d2 -= vec2(clamp(d2.x, -k.z * r, k.z * r), r);
+    float hexDistance = length(d2) * sign(d2.y);
+
+    return hexDistance - cornerRadius;
 }
 
 float signedDistanceToEdge(vec2 p0, int type)
@@ -133,7 +161,6 @@ float signedDistanceToEdge(vec2 p0, int type)
         }
         case SHAPE_TYPE_HEXAGON:
         {
-            const vec3 k = vec3(-0.866025404, 0.5, 0.577350269);
             vec2 center = p_shapeData.xy;
             float cornerR = p_shapeData.w;
             float radius = p_shapeData.z;
@@ -142,19 +169,35 @@ float signedDistanceToEdge(vec2 p0, int type)
             float innerGlowRoundness = p_shapeData2.x + 0.5;
             float centerRoundness = p_shapeData2.y + 0.5;
 
-            float d = length(p);
-            float cornersToCenter = 1 - clamp(d / radius * -k.x, 0, 1);
-            float roundness = mix(innerGlowRoundness, centerRoundness, cornersToCenter);
-            cornerR += radius * roundness * cornersToCenter;
-            cornerR = min(cornerR, radius);
+            return hexDistance(p, radius, cornerR, innerGlowRoundness, centerRoundness);
+        }
+        case SHAPE_TYPE_HEXGRID:
+        {
+            ivec2 originTile = floatBitsToInt(p_shapeData.xy);
+            int bitfield = floatBitsToInt(p_shapeData.z);
             
-            float r = radius - cornerR;
-            vec2 d2 = abs(p.yx);
-            d2 -= 2.0 * min(dot(k.xy, d2), 0.0) * k.xy;
-            d2 -= vec2(clamp(d2.x, -k.z * r, k.z * r), r);
-            float hexDistance = length(d2) * sign(d2.y);
+            float cornerR = p_shapeData.w;
+            float innerGlowRoundness = p_shapeData2.x + 0.5;
+            float centerRoundness = p_shapeData2.y + 0.5;
             
-            return hexDistance - cornerR;
+            float distance = 1.0 / 0;
+            
+            for (int i = 0; i < 16; i++)
+            {
+                if ((bitfield & (1 << i)) == 0)
+                    continue;
+                
+                int x = i % 4;
+                int y = i / 4;
+
+                ivec2 tile = originTile + ivec2(x, y);
+                vec2 center = vec2(tile.x + tile.y * 0.5, tile.y * 0.866025404);
+                
+                float d = hexDistance(p0 - center, 0.5, cornerR, innerGlowRoundness, centerRoundness);
+                
+                distance = smoothMerge(distance, d, cornerR);
+            }
+            return distance;
         }
     }
     

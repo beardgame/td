@@ -3,6 +3,8 @@ using System.Collections.Immutable;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
+using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -56,9 +58,15 @@ sealed partial class ShapeDrawer
 
     public interface IMeshBuilder
     {
-        void AddQuad(
+        void AddRectangle(
             float x0, float x1, float y0, float y1, float z,
             ShapeVertex.ShapeComponents components,
+            ShapeData shape
+            );
+
+        void AddParallelogram(
+            Vector2 xy, Vector2 side1, Vector2 side2,
+            ShapeComponentsForDrawing components,
             ShapeData shape
             );
     }
@@ -66,7 +74,7 @@ sealed partial class ShapeDrawer
     private sealed class DefaultMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort> mesh)
         : IMeshBuilder
     {
-        public void AddQuad(
+        public void AddRectangle(
             float x0, float x1, float y0, float y1, float z,
             ShapeVertex.ShapeComponents components,
             ShapeData shape
@@ -77,6 +85,17 @@ sealed partial class ShapeDrawer
                 new ShapeVertex(new Vector3(x1, y0, z), shape, components),
                 new ShapeVertex(new Vector3(x1, y1, z), shape, components),
                 new ShapeVertex(new Vector3(x0, y1, z), shape, components)
+            );
+        }
+
+        public void AddParallelogram(
+            Vector2 xy, Vector2 side1, Vector2 side2, ShapeComponentsForDrawing components, ShapeData shape)
+        {
+            mesh.AddQuad(
+                new ShapeVertex(xy.WithZ(0), shape, components.Components),
+                new ShapeVertex((xy + side1).WithZ(0), shape, components.Components),
+                new ShapeVertex((xy + side1 + side2).WithZ(0), shape, components.Components),
+                new ShapeVertex((xy + side2).WithZ(0), shape, components.Components)
             );
         }
     }
