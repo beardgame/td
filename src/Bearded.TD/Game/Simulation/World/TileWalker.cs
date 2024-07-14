@@ -12,6 +12,7 @@ sealed class TileWalker
 
     public Position2 Position { get; private set; }
     public Tile CurrentTile { get; private set; }
+    public Direction CurrentDirection { get; private set; }
     private Position2 currentTilePosition => Level.GetPosition(CurrentTile);
     private Tile goalTile;
     private Position2 goalPosition => Level.GetPosition(goalTile);
@@ -61,7 +62,9 @@ sealed class TileWalker
             {
                 setCurrentTile(goalTile);
             }
-            goalTile = goalTile.Neighbor(owner.GetNextDirection());
+
+            CurrentDirection = owner.GetNextDirection();
+            goalTile = goalTile.Neighbor(CurrentDirection);
 
             if (goalTile == CurrentTile)
             {

@@ -1,5 +1,6 @@
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -29,10 +30,10 @@ static class GameLoopObjectFactory
         return obj;
     }
 
-    public static GameObject CreateEnemyPathIndicator(Tile tile)
+    public static GameObject CreateEnemyPathIndicator(Tile tile, NextDirectionFinder.Bias bias)
     {
         var obj = GameObjectFactory.CreateWithoutRenderer(null, Level.GetPosition(tile).WithZ(0.U()));
-        obj.AddComponent(new EnemyPathIndicator(tile));
+        obj.AddComponent(new EnemyPathIndicator(tile, bias));
         return obj;
     }
 }

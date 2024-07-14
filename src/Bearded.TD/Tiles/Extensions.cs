@@ -86,6 +86,26 @@ static class Extensions
     public static IEnumerable<Direction> Enumerate(this Directions directions)
         => Extensions.directions.Where(direction => directions.Includes(direction));
 
+    public static IEnumerable<Direction> EnumerateClockwise(this Directions directions, Direction start)
+    {
+        var offset = Math.Max(0, Array.IndexOf(Extensions.directions, start));
+        for (var i = Extensions.directions.Length - 1; i >= 0; i--)
+        {
+            var dir = Extensions.directions[(i + offset) % Extensions.directions.Length];
+            if (directions.Includes(dir)) yield return dir;
+        }
+    }
+
+    public static IEnumerable<Direction> EnumerateCounterClockwise(this Directions directions, Direction start)
+    {
+        var offset = Math.Max(0, Array.IndexOf(Extensions.directions, start));
+        for (var i = 0; i < Extensions.directions.Length; i++)
+        {
+            var dir = Extensions.directions[(i + offset) % Extensions.directions.Length];
+            if (directions.Includes(dir)) yield return dir;
+        }
+    }
+
     public static Vector2 CornerBefore(this Direction direction) => corners[(int) direction - 1];
     public static Vector2 CornerAfter(this Direction direction) => corners[(int) direction];
     public static Direction2 SpaceTimeDirection(this Direction direction) => direction2s[(int) direction];

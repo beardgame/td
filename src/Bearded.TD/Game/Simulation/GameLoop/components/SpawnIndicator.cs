@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,6 +11,8 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Navigation.NextDirectionFinder;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
@@ -24,6 +27,7 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
     private readonly List<QueuedEnemyForm> futureSpawns = new();
     private readonly Tile tile;
     private Instant nextIndicatorSpawn;
+    private Bias nextIndicatorBias;
 
     public SpawnIndicator(Tile tile)
     {
@@ -40,11 +44,10 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (Owner.Game.Time >= nextIndicatorSpawn)
-        {
-            Owner.Game.Add(GameLoopObjectFactory.CreateEnemyPathIndicator(tile));
-            nextIndicatorSpawn = Owner.Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
-        }
+        if (Owner.Game.Time < nextIndicatorSpawn) return;
+        Owner.Game.Add(GameLoopObjectFactory.CreateEnemyPathIndicator(tile, nextIndicatorBias));
+        nextIndicatorSpawn = Owner.Game.Time + Constants.Game.Enemy.TimeBetweenIndicators;
+        nextIndicatorBias = (Bias) (((int) nextIndicatorBias + 1) % Enum.GetValues(typeof(Bias)).Length);
     }
 
     public override void OnRemoved()

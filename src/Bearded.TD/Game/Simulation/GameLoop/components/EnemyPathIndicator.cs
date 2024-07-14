@@ -17,6 +17,7 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
     private static readonly TimeSpan trailTimeout = 1.S();
 
     private readonly Tile startTile;
+    private readonly NextDirectionFinder.Bias bias;
     private TileWalker? tileWalker;
     private PassabilityLayer passabilityLayer = null!;
     private readonly TrailTracer trail = new(trailTimeout, newPartDistanceThreshold: 2.U());
@@ -29,9 +30,10 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
 
     public bool Deleted => Owner.Deleted;
 
-    public EnemyPathIndicator(Tile currentTile)
+    public EnemyPathIndicator(Tile currentTile, NextDirectionFinder.Bias bias)
     {
         startTile = currentTile;
+        this.bias = bias;
     }
 
     protected override void OnAdded() {}
@@ -69,7 +71,8 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
 
     public Direction GetNextDirection()
     {
-        var desiredDirection = Owner.Game.Navigator.GetDirectionToSink(currentTile);
+        var desiredDirection = NextDirectionFinder.FindNextDirection(
+            Owner.Game.Navigator, tileWalker!.CurrentTile, tileWalker.CurrentDirection, bias);
         var isPassable = passabilityLayer[currentTile.Neighbor(desiredDirection)].IsPassable;
 
         if (!isPassable)
