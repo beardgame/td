@@ -8,7 +8,6 @@ using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.UI.Shortcuts;
-using Bearded.TD.UI.Tooltips;
 using Bearded.TD.Utilities;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 

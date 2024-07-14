@@ -6,10 +6,11 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
+sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>, IListener<TierUnlocked>
 {
     private readonly FactionTechnology factionTechnology;
     private readonly GlobalGameEvents events;
@@ -24,7 +25,8 @@ sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
         this.factionTechnology = factionTechnology;
         this.events = events;
 
-        events.Subscribe(this);
+        events.Subscribe<TechnologyUnlocked>(this);
+        events.Subscribe<TierUnlocked>(this);
     }
 
     public void HandleEvent(TechnologyUnlocked @event)
@@ -36,9 +38,19 @@ sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
             .SetUnlocked();
     }
 
+    public void HandleEvent(TierUnlocked @event)
+    {
+        if (factionTechnology != @event.FactionTechnology) return;
+        Branches[@event.Branch]
+            .Tiers[@event.Tier]
+            .Technologies
+            .ForEach(t => t.CheckUnlockable(factionTechnology));
+    }
+
     public void Dispose()
     {
-        events.Unsubscribe(this);
+        events.Unsubscribe<TechnologyUnlocked>(this);
+        events.Unsubscribe<TierUnlocked>(this);
     }
 
     public static TechTree FromBlueprints(
@@ -66,15 +78,7 @@ sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
             events);
     }
 
-    public sealed class Branch
-    {
-        public ImmutableDictionary<TechnologyTier, Tier> Tiers { get; }
-
-        public Branch(ImmutableDictionary<TechnologyTier, Tier> tiers)
-        {
-            Tiers = tiers;
-        }
-    }
+    public sealed record Branch(ImmutableDictionary<TechnologyTier, Tier> Tiers);
 
     public sealed class Tier
     {
@@ -104,25 +108,33 @@ sealed class TechTree : IDisposable, IListener<TechnologyUnlocked>
     public sealed class Technology
     {
         public ITechnologyBlueprint Blueprint { get; }
-        public bool IsUnlocked { get; private set; }
+        public Binding<bool> IsUnlockableBinding { get; }
         public Binding<bool> IsUnlockedBinding { get; }
 
-        private Technology(ITechnologyBlueprint blueprint, bool isUnlocked)
+        private Technology(ITechnologyBlueprint blueprint, bool isUnlockable, bool isUnlocked)
         {
             Blueprint = blueprint;
-            IsUnlocked = isUnlocked;
-            IsUnlockedBinding = Binding.Create(IsUnlocked);
+            IsUnlockableBinding = Binding.Create(isUnlockable);
+            IsUnlockedBinding = Binding.Create(isUnlocked);
+        }
+
+        public void CheckUnlockable(FactionTechnology technology)
+        {
+            IsUnlockableBinding.SetFromSource(technology.CanUnlockTechnology(Blueprint));
         }
 
         public void SetUnlocked()
         {
-            IsUnlocked = true;
+            IsUnlockableBinding.SetFromSource(false);
             IsUnlockedBinding.SetFromSource(true);
         }
 
         public static Technology FromBlueprint(ITechnologyBlueprint blueprint, FactionTechnology factionTechnology)
         {
-            return new Technology(blueprint, !factionTechnology.IsTechnologyLocked(blueprint));
+            return new Technology(
+                blueprint,
+                factionTechnology.CanUnlockTechnology(blueprint),
+                !factionTechnology.IsTechnologyLocked(blueprint));
         }
     }
 }

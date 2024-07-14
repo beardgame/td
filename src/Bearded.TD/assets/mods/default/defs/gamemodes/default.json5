@@ -49,6 +49,12 @@
             }
         },
         {
+            id: "unlockTiersAtThresholds",
+            parameters: {
+                faction: "players",
+            }
+        },
+        {
             id: "unlockTechnology",
             parameters: {
                 faction: "players",

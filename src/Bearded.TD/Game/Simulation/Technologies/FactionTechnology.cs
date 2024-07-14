@@ -11,9 +11,10 @@ namespace Bearded.TD.Game.Simulation.Technologies;
 [FactionBehavior("technology")]
 sealed class FactionTechnology : FactionBehavior
 {
-    private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = new();
-    private readonly HashSet<IGameObjectBlueprint> unlockedBuildings = new();
-    private readonly HashSet<IPermanentUpgrade> unlockedUpgrades = new();
+    private readonly HashSet<TechnologyBranchTier> unlockedTiers = [];
+    private readonly HashSet<ITechnologyBlueprint> unlockedTechnologies = [];
+    private readonly HashSet<IGameObjectBlueprint> unlockedBuildings = [];
+    private readonly HashSet<IPermanentUpgrade> unlockedUpgrades = [];
 
     public bool HasTechnologyToken { get; private set; }
 
@@ -27,14 +28,36 @@ sealed class FactionTechnology : FactionBehavior
 
     public bool CanUnlockTechnology(ITechnologyBlueprint technology) =>
         IsTechnologyLocked(technology)
+        && hasRequiredTier(technology)
         && HasAllRequiredTechs(technology);
 
     public bool IsTechnologyLocked(ITechnologyBlueprint technology) => !unlockedTechnologies.Contains(technology);
+
+    private bool hasRequiredTier(ITechnologyBlueprint technology) =>
+        technology.Tier == TechnologyTier.Free || IsTierUnlocked(technology.Branch, technology.Tier);
+
+    public bool IsTierUnlocked(TechnologyBranch branch, TechnologyTier tier) =>
+        IsTierUnlocked(new TechnologyBranchTier(branch, tier));
+
+    public bool IsTierUnlocked(TechnologyBranchTier branchTier) => unlockedTiers.Contains(branchTier);
 
     public bool HasAllRequiredTechs(ITechnologyBlueprint technology) =>
         technology.RequiredTechs.All(unlockedTechnologies.Contains);
 
     private bool canAffordNow() => HasTechnologyToken;
+
+    public void UnlockTier(TechnologyBranch branch, TechnologyTier tier)
+    {
+        UnlockTier(new TechnologyBranchTier(branch, tier));
+    }
+
+    public void UnlockTier(TechnologyBranchTier branchTier)
+    {
+        if (unlockedTiers.Add(branchTier))
+        {
+            Events.Send(new TierUnlocked(this, branchTier));
+        }
+    }
 
     public void UnlockTechnology(ITechnologyBlueprint technology)
     {

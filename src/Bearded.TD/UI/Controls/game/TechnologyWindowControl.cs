@@ -200,7 +200,7 @@ sealed class TechnologyWindowControl : CompositeControl
             {
                 buttonColumn.AddCenteredButton(uiContext.Factories, b => b
                     .WithLabel(tech.Blueprint.Name)
-                    .WithEnabled(tech.IsUnlockedBinding.Or(model.CanUnlockTechnologyNowBinding))
+                    .WithEnabled(tech.IsUnlockableBinding.And(model.CanUnlockTechnologyNowBinding))
                     .WithActive(tech.IsUnlockedBinding)
                     .WithTooltip(tech.Blueprint.Unlocks.Select(u => u.Description).ToImmutableArray())
                     .WithOnClick(args =>
