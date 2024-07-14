@@ -79,6 +79,6 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
 
     private Direction tryToGetUnstuck(Tile tile)
     {
-        return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbour(tile);
+        return Owner.Game.Navigator.GetDirectionToClosestToSinkNeighbor(tile);
     }
 }

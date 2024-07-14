@@ -34,16 +34,16 @@ sealed partial class MultipleSinkNavigationSystem : IListener<TilePassabilityCha
 
     public Direction GetDirectionToSink(Tile from) => graph[from].Direction;
 
-    public Direction GetDirectionToClosestToSinkNeighbour(Tile from)
+    public Direction GetDirectionToClosestToSinkNeighbor(Tile from)
     {
         var minDirection = Direction.Unknown;
         var minDistance = int.MaxValue;
         foreach (var direction in level.ValidDirectionsFrom(from))
         {
-            var neighbour = from.Neighbor(direction);
-            if (!passability[neighbour].IsPassable)
+            var neighbor = from.Neighbor(direction);
+            if (!passability[neighbor].IsPassable)
                 continue;
-            var node = graph[neighbour];
+            var node = graph[neighbor];
             if (node.Distance >= minDistance)
                 continue;
             minDirection = direction;
@@ -88,17 +88,17 @@ sealed partial class MultipleSinkNavigationSystem : IListener<TilePassabilityCha
         {
             foreach (var direction in level.ValidDirectionsFrom(tile))
             {
-                var neighbourTile = tile.Neighbor(direction);
-                var neighbourNode = graph[neighbourTile];
-                if (neighbourNode.IsInvalid || neighbourNode.IsSink)
+                var neighborTile = tile.Neighbor(direction);
+                var neighborNode = graph[neighborTile];
+                if (neighborNode.IsInvalid || neighborNode.IsSink)
                     continue;
-                if (neighbourNode.Direction == direction.Opposite())
+                if (neighborNode.Direction == direction.Opposite())
                 {
-                    invalidateTile(neighbourTile);
+                    invalidateTile(neighborTile);
                 }
                 else
                 {
-                    touchTile(neighbourTile);
+                    touchTile(neighborTile);
                 }
             }
         }
@@ -116,16 +116,16 @@ sealed partial class MultipleSinkNavigationSystem : IListener<TilePassabilityCha
 
             foreach (var direction in passableDirectionsFrom(tile).Enumerate())
             {
-                var neighbourTile = tile.Neighbor(direction);
-                var neighbourNode = graph[neighbourTile];
-                if (neighbourNode.Distance > newDistance)
+                var neighborTile = tile.Neighbor(direction);
+                var neighborNode = graph[neighborTile];
+                if (neighborNode.Distance > newDistance)
                 {
-                    updateTile(neighbourTile, newDistance, direction.Opposite());
+                    updateTile(neighborTile, newDistance, direction.Opposite());
                 }
-                else if (neighbourNode.Distance < newDistance
-                         && neighbourNode.Direction == direction.Opposite())
+                else if (neighborNode.Distance < newDistance
+                         && neighborNode.Direction == direction.Opposite())
                 {
-                    invalidateTile(neighbourTile);
+                    invalidateTile(neighborTile);
                     invalidatedAChild = true;
                 }
             }
@@ -146,8 +146,8 @@ sealed partial class MultipleSinkNavigationSystem : IListener<TilePassabilityCha
         updateTile(tile, backupSink);
         foreach (var direction in passableDirectionsFrom(tile).Enumerate())
         {
-            var neighbour = tile.Neighbor(direction);
-            touchTile(neighbour);
+            var neighbor = tile.Neighbor(direction);
+            touchTile(neighbor);
         }
     }
     public void RemoveSink(Tile tile)
