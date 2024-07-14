@@ -34,6 +34,36 @@ sealed partial class MultipleSinkNavigationSystem : IListener<TilePassabilityCha
 
     public Direction GetDirectionToSink(Tile from) => graph[from].Direction;
 
+    public Directions GetAllDirectionsToSink(Tile from)
+    {
+        var result = Directions.None;
+        var fromDistance = graph[from].Distance;
+        foreach (var direction in level.ValidDirectionsFrom(from))
+        {
+            var neighbor = from.Neighbor(direction);
+            if (!passability[neighbor].IsPassable)
+            {
+                continue;
+            }
+
+            var neighborDistance = graph[neighbor].Distance;
+            // The neighbor is closer to the sink than our current tile, so it's a valid direction to travel in.
+            // This distance should only be one fewer than our current distance if the graph is well-formed.
+            if (neighborDistance < fromDistance)
+            {
+                result = result.And(direction);
+            }
+        }
+
+        // Fallback: use the direction we would pick anyway.
+        if (!result.Any())
+        {
+            result = result.And(GetDirectionToSink(from));
+        }
+
+        return result;
+    }
+
     public Direction GetDirectionToClosestToSinkNeighbor(Tile from)
     {
         var minDirection = Direction.Unknown;
