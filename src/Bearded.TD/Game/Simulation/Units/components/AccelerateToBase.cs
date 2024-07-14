@@ -66,7 +66,7 @@ sealed class AccelerateToBase : Component<AccelerateToBase.IParameters>, IEnemyM
 
     private Direction getBestDirection(Tile tile)
     {
-        var desiredDirection = Owner.Game.Navigator.GetDirections(tile);
+        var desiredDirection = Owner.Game.Navigator.GetDirectionToSink(tile);
 
         if (desiredDirection == Direction.Unknown && !passabilityLayer[tile].IsPassable)
         {

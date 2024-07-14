@@ -69,7 +69,7 @@ sealed class EnemyPathIndicator : Component, ITileWalkerOwner, IRenderable
 
     public Direction GetNextDirection()
     {
-        var desiredDirection = Owner.Game.Navigator.GetDirections(currentTile);
+        var desiredDirection = Owner.Game.Navigator.GetDirectionToSink(currentTile);
         var isPassable = passabilityLayer[currentTile.Neighbor(desiredDirection)].IsPassable;
 
         if (!isPassable)

@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bearded.Graphics;
-using Bearded.Graphics.Shapes;
+﻿using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
-using Bearded.Utilities;
-using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Game.Simulation.Navigation;
 
-sealed class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
+sealed partial class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
 {
     private readonly GlobalGameEvents events;
     private readonly Level level;
     private readonly PassabilityLayer passability;
-    private readonly Queue<Tile> updateFront = new Queue<Tile>();
-    private readonly HashSet<Tile> updatesInQueue = new HashSet<Tile>();
+    private readonly Queue<Tile> updateFront = new();
+    private readonly HashSet<Tile> updatesInQueue = [];
 
     private readonly Tilemap<Node> graph;
 
@@ -39,7 +32,7 @@ sealed class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
         events.Subscribe(this);
     }
 
-    public Direction GetDirections(Tile from) => graph[from].Direction;
+    public Direction GetDirectionToSink(Tile from) => graph[from].Direction;
 
     public Direction GetDirectionToClosestToSinkNeighbour(Tile from)
     {
@@ -187,109 +180,17 @@ sealed class MultipleSinkNavigationSystem : IListener<TilePassabilityChanged>
         return passability[tile].PassableDirections;
     }
 
-    public void DrawDebug(CoreDrawers drawers, bool drawWeights)
-    {
-        var shapeDrawer = drawers.ConsoleBackground;
-        var textDrawer = drawers.InGameFont;
-
-        const float lineWidth = HexagonSide * 0.05f;
-        const float fontHeight = HexagonSide;
-
-        var weightsFontColor = Color.Orange;
-
-        const float w = HexagonDistanceX * 0.5f - 0.1f;
-        const float h = HexagonDistanceY * 0.5f - 0.1f;
-
-        if (drawWeights)
-        {
-            var i = 0;
-            foreach (var tile in updateFront)
-            {
-                var p = Level.GetPosition(tile).NumericValue;
-
-                shapeDrawer.FillRectangle(p.X - w, p.Y - h, w * 2, h * 2, weightsFontColor * 0.3f);
-
-                textDrawer.DrawLine(
-                    xyz: p.WithZ(),
-                    text: $"{i}",
-                    fontHeight: fontHeight,
-                    alignHorizontal: 0.5f,
-                    alignVertical: 1f,
-                    parameters: weightsFontColor);
-                i++;
-            }
-        }
-
-        foreach (var tile in graph)
-        {
-            var node = graph[tile];
-
-            var p = Level.GetPosition(tile).NumericValue;
-
-            var d = node.Direction.Vector() * HexagonWidth;
-
-            if (!node.IsSink)
-            {
-                var pointsToTile = tile.Neighbor(node.Direction);
-                var pointsToNode = graph[pointsToTile];
-
-                if (!pointsToNode.IsInvalid && pointsToNode.Distance >= node.Distance)
-                {
-                    shapeDrawer.FillRectangle(p.X - w, p.Y - h, w * 2, h * 2, Color.Red * 0.3f);
-                }
-
-                var color = (pointsToNode.IsInvalid ? Color.Red : Color.DarkGreen) * 0.8f;
-                shapeDrawer.DrawLine(p, p + d, lineWidth, color);
-                shapeDrawer.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularRight, lineWidth, color);
-                shapeDrawer.DrawLine(p + d, p + .9f * d + .1f * d.PerpendicularLeft, lineWidth, color);
-            }
-
-            if (drawWeights && !node.IsInvalid)
-            {
-                var color = Color.Yellow;
-                var distance = node.Distance;
-                if (distance >= backupSinkDistance)
-                {
-                    distance -= backupSinkDistance;
-                    color = Color.Red;
-                }
-
-                if (!node.IsSink && level.ValidNeighboursOf(tile).Select(t => graph[t])
-                        .Any(n => !n.IsInvalid && !n.IsSink && Math.Abs(n.Distance - node.Distance) > 1))
-                {
-                    color = Color.MediumPurple;
-                }
-
-                textDrawer.DrawLine(
-                    xyz: p.WithZ(),
-                    text: $"{distance}",
-                    fontHeight: fontHeight,
-                    alignHorizontal: 0.5f,
-                    parameters: color);
-            }
-        }
-    }
-
     private const int backupSinkDistance = 100_000_000;
 
-    private static Node none => new Node(int.MaxValue, Direction.Unknown);
-    private static Node sink => new Node(0, Direction.Unknown);
-    private static Node backupSink => new Node(backupSinkDistance, Direction.Unknown);
+    private static Node none => new(int.MaxValue, Direction.Unknown);
+    private static Node sink => new(0, Direction.Unknown);
+    private static Node backupSink => new(backupSinkDistance, Direction.Unknown);
 
-    private readonly struct Node
+    private readonly record struct Node(int Distance, Direction Direction)
     {
-        public int Distance { get; }
-        public Direction Direction { get; }
-
-        public Node(int distance, Direction direction)
-        {
-            Distance = distance;
-            Direction = direction;
-        }
-
-        public Node Invalidated => new Node(int.MaxValue, Direction);
+        public Node Invalidated => this with { Distance = int.MaxValue };
 
         public bool IsInvalid => Distance == int.MaxValue;
-        public bool IsSink => Distance == 0 || Distance == backupSinkDistance;
+        public bool IsSink => Distance is 0 or backupSinkDistance;
     }
 }

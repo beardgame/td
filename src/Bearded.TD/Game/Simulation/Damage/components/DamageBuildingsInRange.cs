@@ -64,7 +64,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
     {
         while (nextAttack <= Owner.Game.Time)
         {
-            var desiredDirection = Owner.Game.Navigator.GetDirections(tilePresence.OccupiedTiles.Single());
+            var desiredDirection = Owner.Game.Navigator.GetDirectionToSink(tilePresence.OccupiedTiles.Single());
 
             var neighbor = tilePresence.OccupiedTiles.Single().Neighbor(desiredDirection);
             if (!Owner.Game.BuildingLayer.TryGetMaterializedBuilding(neighbor, out var target))
