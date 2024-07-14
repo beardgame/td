@@ -6,6 +6,7 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.Linq;
 using static Bearded.TD.Constants.Game.WaveGeneration;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -17,6 +18,7 @@ sealed partial class WaveGenerator
     private const int minGroupSize = 7;
     private const int maxGroupSize = minGroupSize * 3;
     private const double targetDensity = 0.6;
+    private const float maxSpawnPerturbation = 0.2f;
     private static readonly ImmutableDictionary<Archetype, TimeSpan> targetSpawnRates = ImmutableDictionary.CreateRange(
         new Dictionary<Archetype, TimeSpan>
         {
@@ -47,7 +49,7 @@ sealed partial class WaveGenerator
         var allBatchesPerLocation = composition.Batches
             .SelectMany(comp => generateBatchesPerLocation(comp, spawnLocationCount, random))
             .ToImmutableArray();
-        var spawnTimes = new EnemySpawnTimes(spawnEventsBatchedInDuration(allBatchesPerLocation));
+        var spawnTimes = new EnemySpawnTimes(spawnEventsBatchedInDuration(allBatchesPerLocation, random));
         return new EnemySpawnScript(
             spawnTimes.SpawnTimes.SelectMany(_ => spawnLocationArray,
                     (time, location) => new EnemySpawnScript.EnemySpawnEvent(location, time.TimeOffset, time.EnemyForm))
@@ -118,7 +120,7 @@ sealed partial class WaveGenerator
     private record struct EnemyFormWithArchetype(EnemyForm Form, Archetype Archetype);
 
     private static ImmutableArray<EnemySpawnTimes.EnemySpawnTime> spawnEventsBatchedInDuration(
-        IList<BatchSequence> batchSequences)
+        IList<BatchSequence> batchSequences, Random random)
     {
         var enemyCountByArchetype = batchSequences.SelectMany(s => s.Forms)
             .GroupBy(f => f.Archetype)
@@ -137,7 +139,9 @@ sealed partial class WaveGenerator
             foreach (var (form, archetype) in batchSequence.Forms)
             {
                 var spawnRate = spawnRates[archetype];
-                result.Add(new EnemySpawnTimes.EnemySpawnTime(offset + 0.5f * spawnRate, form));
+                var offsetWithinWindow =
+                    (0.5f + random.NextFloat(-maxSpawnPerturbation, maxSpawnPerturbation)) * spawnRate;
+                result.Add(new EnemySpawnTimes.EnemySpawnTime(offset + offsetWithinWindow, form));
                 offset += spawnRate;
             }
 
