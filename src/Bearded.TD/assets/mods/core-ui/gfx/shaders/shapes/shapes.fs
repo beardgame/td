@@ -26,6 +26,7 @@ const uint GRADIENT_FLAG_GLOWFADE = 1;
 const uint GRADIENT_FLAG_DITHER = 2;
 const uint GRADIENT_FLAG_EXTEND_NEGATIVE = 4;
 const uint GRADIENT_FLAG_EXTEND_POSITIVE = 8;
+const uint GRADIENT_FLAG_REPEAT = 16;
 
 const float ANTI_ALIAS_WIDTH = 1;
 
@@ -333,7 +334,12 @@ vec4 getBackgroundBlur()
     return color;
 }
 
-vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
+float repeat(float t)
+{
+    return fract(t);
+}
+
+vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex, uint flags)
 {
     switch(type)
     {
@@ -351,6 +357,10 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
             vec2 p1 = parameters.zw;
             vec2 d = p1 - p0;
             float projection = dot(d, p_position.xy - p0) / dot(d, d);
+            if ((flags & GRADIENT_FLAG_REPEAT) != 0)
+            {
+                projection = repeat(projection);
+            }
             return getColorInGradient(gradientIndex, projection);
         }
         case GRADIENT_TYPE_RADIAL_RADIUS:
@@ -358,6 +368,10 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
             vec2 center = parameters.xy;
             float radius = parameters.z;
             float distance = length(p_position.xy - center) / radius;
+            if ((flags & GRADIENT_FLAG_REPEAT) != 0)
+            {
+                distance = repeat(distance);
+            }
             return getColorInGradient(gradientIndex, distance);
         }
         case GRADIENT_TYPE_RADIAL_POINT_ON_EDGE:
@@ -366,10 +380,18 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
             vec2 pointOnEdge = parameters.zw;
             float radius = length(pointOnEdge - center);
             float distance = length(p_position.xy - center) / radius;
+            if ((flags & GRADIENT_FLAG_REPEAT) != 0)
+            {
+                distance = repeat(distance);
+            }
             return getColorInGradient(gradientIndex, distance);
         }
         case GRADIENT_TYPE_ALONG_EDGE_NORMAL:
         {
+            if ((flags & GRADIENT_FLAG_REPEAT) != 0)
+            {
+                t = repeat(t);
+            }
             return getColorInGradient(gradientIndex, t);
         }
         case GRADIENT_ARC_AROUND_POINT:
@@ -386,6 +408,10 @@ vec4 getColor(vec4 parameters, float t, uint type, uint gradientIndex)
             float angle = atan(d.y, d.x);
             float normalizedAngle = mod(angle + startAngle, TAU) / totalAngle;
             float distance = length(d);
+            if ((flags & GRADIENT_FLAG_REPEAT) != 0)
+            {
+                normalizedAngle = repeat(normalizedAngle);
+            }
             return getColorInGradient(gradientIndex, normalizedAngle, 0.25 / distance, 8);
         }
         case GRADIENT_BLURRED_BACKGROUND:
@@ -419,7 +445,7 @@ vec4 getColor(BitField bits, uint gradientId, vec4 parameters, float t)
     uint type = getType(bits);
     uint flags = getFlags(bits);
     
-    vec4 color = getColor(parameters, t, type, gradientId);
+    vec4 color = getColor(parameters, t, type, gradientId, flags);
     
     if ((flags & GRADIENT_FLAG_GLOWFADE) != 0)
     {
