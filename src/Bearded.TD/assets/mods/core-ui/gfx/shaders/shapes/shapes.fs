@@ -526,7 +526,11 @@ vec4 getFragmentColor()
     if ((flags & SHAPE_FLAG_PROJECT_ON_DEPTHBUFFER) != 0)
     {
         vec3 projected = getFragmentPositionFromDepth(p_screenUV);
-        xy = projected.xy;
+        if (projected.z > p_position.z)
+        {
+            // geometry behind level, project onto it
+            xy = projected.xy;
+        }
     }
 
     float signedDistance = signedDistanceToEdge(xy, type);

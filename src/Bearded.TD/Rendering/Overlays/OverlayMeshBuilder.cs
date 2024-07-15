@@ -10,7 +10,9 @@ namespace Bearded.TD.Rendering.Overlays;
 sealed class OverlayMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort> mesh)
     : ShapeDrawer.IMeshBuilder
 {
-    private readonly ShapeDrawer3<ShapeVertex, (ShapeData Data, ShapeVertex.ShapeComponents Components)> drawer =
+    private readonly ShapeDrawer2<ShapeVertex, (ShapeData Data, ShapeVertex.ShapeComponents Components)> drawer2 =
+        new(mesh, createVertex);
+    private readonly ShapeDrawer3<ShapeVertex, (ShapeData Data, ShapeVertex.ShapeComponents Components)> drawer3 =
         new(mesh, createVertex);
 
     private static ShapeVertex createVertex(
@@ -23,7 +25,8 @@ sealed class OverlayMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort
         ShapeData shapeData)
     {
         z -= 0.1f;
-        drawer.DrawCuboid(x0, y0, z, x1 - x0, y1 - y0, 2 - z, (shapeData, components));
+        drawer2.FillRectangle(x0, y0, z, x1 - x0, y1 - y0, (shapeData, components));
+        //drawer3.DrawCuboid(x0, y0, z, x1 - x0, y1 - y0, 2 - z, (shapeData, components));
     }
 
     public void AddParallelogram(
@@ -35,6 +38,15 @@ sealed class OverlayMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort
         var xy1 = xy + side1;
         var xy2 = xy + side1 + side2;
         var xy3 = xy + side2;
+
+        mesh.AddQuad(
+            new ShapeVertex(xy.WithZ(z0), shape, components.Components),
+            new ShapeVertex(xy1.WithZ(z0), shape, components.Components),
+            new ShapeVertex(xy2.WithZ(z0), shape, components.Components),
+            new ShapeVertex(xy3.WithZ(z0), shape, components.Components)
+            );
+
+        return; // 3d version below
 
         mesh.Add(8, 36, out var vertices, out var indices, out var indexOffset);
 

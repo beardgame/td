@@ -14,6 +14,8 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using static OpenTK.Graphics.OpenGL.DepthFunction;
+using Color = Bearded.Graphics.Color;
 
 namespace Bearded.TD.Rendering;
 
@@ -28,6 +30,7 @@ sealed class DeferredRenderer
 {
     private static readonly DrawOrderGroup[] solidLevelDrawGroups = [Level, SolidLevelDetails];
     private static readonly DrawOrderGroup[] levelDecalDrawGroup = [LevelProjected];
+    private static readonly DrawOrderGroup[] projectedFloatingDrawGroup = [LevelProjectedFloatingOverlay];
     private static readonly DrawOrderGroup[] worldDrawGroups = [Building, Unit];
     private static readonly DrawOrderGroup[] worldDetailGroups = [LevelDetail];
     private static readonly DrawOrderGroup[] postLightGroups = [Fluids, Particle, Unknown];
@@ -106,11 +109,22 @@ sealed class DeferredRenderer
                     ClearDepth(),
                     renderDrawGroups(solidLevelDrawGroups),
                     WithContext(
-                        c => c.SetDebugName("Render level overlay decals")
+                        c => c.SetDebugName("Render level decals")
                             .BindRenderTarget(targets.GeometryDiffuseOnly)
-                            .SetDepthMode(TestOnly(DepthFunction.Greater))
+                            .SetDepthMode(TestOnly(Gequal))
                             .SetBlendMode(Premultiplied),
                         renderDrawGroups(levelDecalDrawGroup)
+                    ),
+                    WithContext(
+                        c => c.SetDebugName("Render projected floating overlays")
+                            .BindRenderTarget(targets.Composition)
+                            .SetDepthMode(Disable)
+                            .SetBlendMode(Premultiplied)
+                            .SetCullMode(RenderFront),
+                        InOrder(
+                            ClearColor(Color.Black),
+                            renderDrawGroups(projectedFloatingDrawGroup)
+                        )
                     ),
                     WithContext(
                         c => c.SetBlendMode(Premultiplied),
@@ -119,7 +133,7 @@ sealed class DeferredRenderer
             WithContext(
                 c => c.SetDebugName("Render level details")
                     .BindRenderTarget(targets.GeometryDiffuseOnly)
-                    .SetDepthMode(TestOnly(DepthFunction.Less))
+                    .SetDepthMode(TestOnly(Less))
                     .SetBlendMode(Premultiplied),
                 renderDrawGroups(worldDetailGroups)
                 )
@@ -129,7 +143,7 @@ sealed class DeferredRenderer
             WithContext(
                 c => c.SetDebugName("Render lights to light accumulation buffer")
                     .BindRenderTarget(targets.LightAccum)
-                    .SetDepthMode(TestOnly(DepthFunction.Gequal))
+                    .SetDepthMode(TestOnly(Gequal))
                     .SetBlendMode(Premultiplied)
                     .SetCullMode(RenderBack),
                 InOrder(
@@ -138,7 +152,8 @@ sealed class DeferredRenderer
                 )),
             WithContext(
                 c => c.SetDebugName("Composite final image")
-                    .BindRenderTarget(targets.Composition),
+                    .BindRenderTarget(targets.Composition)
+                    .SetBlendMode(Premultiplied),
                 InOrder(
                     WithContext(
                         c => c.SetDebugName("Composite light buffer and g-buffers"),
@@ -155,13 +170,11 @@ sealed class DeferredRenderer
                         )),
                     WithContext(
                         c => c.SetDebugName("Render fluids and other post-light groups")
-                            .SetDepthMode(TestOnly(DepthFunction.Less))
-                            .SetBlendMode(Premultiplied),
+                            .SetDepthMode(TestOnly(Less)),
                         renderDrawGroups(postLightGroups)
                         ),
                     WithContext(
-                        c => c.SetDebugName("Render depth ignoring groups")
-                            .SetBlendMode(Premultiplied),
+                        c => c.SetDebugName("Render depth ignoring groups"),
                         renderDrawGroups(ignoreDepthGroup)
                         )
                 ))

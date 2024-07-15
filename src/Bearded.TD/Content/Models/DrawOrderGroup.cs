@@ -9,6 +9,8 @@ enum DrawOrderGroup
 
     LevelProjected,
 
+    LevelProjectedFloatingOverlay,
+
     LevelDetail,
     Building,
     Unit,

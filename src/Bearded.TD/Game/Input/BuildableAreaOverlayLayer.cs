@@ -16,10 +16,8 @@ sealed class BuildableAreaOverlayLayer(GameState game) : IOverlayLayer
     {
         var revealedBlockedTiles = Tilemap.EnumerateTilemapWith(game.Level.Radius)
             .Where(t => isTileRevealed(t) && !BuildableTileChecker.TileIsBuildable(game, t));
-        foreach (var tile in revealedBlockedTiles)
-        {
-            context.Draw(tile, OverlayBrush.BlockedTile);
-        }
+        
+        context.Draw(Area.From(revealedBlockedTiles), OverlayBrush.BlockedTile);
     }
 
     private bool isTileRevealed(Tile tile)

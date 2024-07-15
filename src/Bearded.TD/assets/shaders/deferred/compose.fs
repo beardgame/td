@@ -61,8 +61,7 @@ void main()
     falloff *= falloff;
 
     rgb *= falloff;
-
-
+    
     vec2 heightMapUV =
         fragmentPosition.xy / heightmapRadius // -1..1
         * 0.5 + 0.5; // 0..1
@@ -72,5 +71,5 @@ void main()
 
     rgb *= visibility;
 
-    outColor = vec4(rgb, albedo.a);
+    outColor = vec4(rgb, 0);
 }

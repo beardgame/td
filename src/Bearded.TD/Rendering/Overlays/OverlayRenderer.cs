@@ -34,7 +34,7 @@ static class OverlayRenderers
 
         renderers.CreateAndRegisterRendererFor(
             shapeShader.RendererShader,
-            DrawOrderGroup.LevelProjected, 0,
+            DrawOrderGroup.LevelProjectedFloatingOverlay, 0,
             settings => new OverlayRenderer(shapeDrawer, gradients, components, overlays, drawer, settings)
         );
     }

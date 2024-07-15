@@ -1,12 +1,9 @@
 ﻿using System;
-using Bearded.Graphics;
 using Bearded.TD.Game.Overlays;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.TD.Tiles;
-using Bearded.TD.UI.Shapes;
 using Bearded.UI;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Rendering.Shapes.Shapes;
 using static Bearded.UI.Interval;
 
@@ -24,7 +21,9 @@ sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer,
 
         var shape = Hexagon(p, r, 0.2f);
         var frame = new Frame(FromStartAndSize(p.X - r, w), FromStartAndSize(p.Y - r, w));
-        var components = brush.Components.ForDrawingWith(componentBuffer, gradients, frame);
+        var components = brush.Components
+            .ForDrawingWith(componentBuffer, gradients, frame)
+            .WithFlags(ShapeFlags.ProjectOnDepthBuffer);
 
         shapes.Draw(shape, components);
     }
@@ -48,7 +47,9 @@ sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer,
             return;
 
         var frame = new Frame(FromStartAndSize(0, 1), FromStartAndSize(0, 1));
-        var components = brush.Components.ForDrawingWith(componentBuffer, gradients, frame);
+        var components = brush.Components
+            .ForDrawingWith(componentBuffer, gradients, frame)
+            .WithFlags(ShapeFlags.ProjectOnDepthBuffer);
 
         var cellCountX = (maxX - minX) / 3 + 1;
         var cellCountY = (maxY - minY) / 3 + 1;
