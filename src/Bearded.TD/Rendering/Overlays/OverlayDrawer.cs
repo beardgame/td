@@ -15,27 +15,21 @@ namespace Bearded.TD.Rendering.Overlays;
 sealed class OverlayDrawer(ShapeDrawer shapes, ComponentBuffer componentBuffer, GradientBuffer gradients)
     : IOverlayDrawer
 {
-    public void Tile(Color color, Tile tile, Unit height = default)
+    public void Draw(Tile tile, OverlayBrush brush)
     {
-        var p = Level.GetPosition(tile).NumericValue.WithZ(height.NumericValue);
+        var p = Level.GetPosition(tile).NumericValue.WithZ();
 
         const float w = Constants.Game.World.HexagonWidth;
         const float r = w * 0.5f;
 
         var shape = Hexagon(p, r, 0.2f);
         var frame = new Frame(FromStartAndSize(p.X - r, w), FromStartAndSize(p.Y - r, w));
+        var components = brush.Components.ForDrawingWith(componentBuffer, gradients, frame);
 
-        var componentsForDrawing = ShapeComponentsForDrawing.From(
-            [Fill.With(color)],
-            componentBuffer,
-            (gradients, frame),
-            ShapeFlags.ProjectOnDepthBuffer
-        );
-
-        shapes.Draw(shape, componentsForDrawing);
+        shapes.Draw(shape, components);
     }
 
-    public void Area(Color color, IArea area, Unit height = default)
+    public void Draw(IArea area, OverlayBrush brush)
     {
         var minX = int.MaxValue;
         var minY = int.MaxValue;
@@ -54,12 +48,7 @@ sealed class OverlayDrawer(ShapeDrawer shapes, ComponentBuffer componentBuffer, 
             return;
 
         var frame = new Frame(FromStartAndSize(0, 1), FromStartAndSize(0, 1));
-        var componentsForDrawing = ShapeComponentsForDrawing.From(
-            [Glow.Outer(0.2f, color)],
-            componentBuffer,
-            (gradients, frame),
-            ShapeFlags.ProjectOnDepthBuffer
-        );
+        var components = brush.Components.ForDrawingWith(componentBuffer, gradients, frame);
 
         var cellCountX = (maxX - minX) / 3 + 1;
         var cellCountY = (maxY - minY) / 3 + 1;
@@ -77,7 +66,7 @@ sealed class OverlayDrawer(ShapeDrawer shapes, ComponentBuffer componentBuffer, 
                 if (bits.IsEmpty)
                     continue;
 
-                shapes.Draw(HexGrid(origin, bits, 0.2f), componentsForDrawing);
+                shapes.Draw(HexGrid(origin, bits, 0.2f), components);
             }
         }
     }

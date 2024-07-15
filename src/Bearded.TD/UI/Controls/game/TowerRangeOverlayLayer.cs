@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
-using Bearded.Graphics;
 using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -46,6 +46,12 @@ sealed class TowerRangeOverlayLayer : IOverlayLayer
     {
         var allTilesInRange = weaponRanges.SelectMany(r => r.GetTilesInRange());
         var area = Area.From(allTilesInRange);
-        context.Area(Color.Green * (drawStyle == RangeDrawStyle.DrawFull ? 0.5f : 0.25f), area);
+        var brush = drawStyle switch
+        {
+            RangeDrawStyle.DrawFull => OverlayBrush.TowerRangeFull,
+            RangeDrawStyle.DrawMinimally => OverlayBrush.TowerRangeMinimal,
+            _ => throw new ArgumentOutOfRangeException(nameof(drawStyle)),
+        };
+        context.Draw(area, brush);
     }
 }

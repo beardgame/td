@@ -1,12 +1,9 @@
-﻿using Bearded.Graphics;
-using Bearded.TD.Tiles;
-using Bearded.Utilities.SpaceTime;
+﻿using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Overlays;
 
 interface IOverlayDrawer
 {
-    void Tile(Color color, Tile tile, Unit height = default);
-
-    void Area(Color color, IArea area, Unit height = default);
+    void Draw(Tile tile, OverlayBrush brush);
+    void Draw(IArea area, OverlayBrush brush);
 }

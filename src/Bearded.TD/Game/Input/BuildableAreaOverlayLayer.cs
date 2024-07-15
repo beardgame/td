@@ -8,16 +8,9 @@ using Bearded.TD.Tiles;
 
 namespace Bearded.TD.Game.Input;
 
-sealed class BuildableAreaOverlayLayer : IOverlayLayer
+sealed class BuildableAreaOverlayLayer(GameState game) : IOverlayLayer
 {
-    private readonly GameState game;
-
     public DrawOrder DrawOrder => DrawOrder.BuildableArea;
-
-    public BuildableAreaOverlayLayer(GameState game)
-    {
-        this.game = game;
-    }
 
     public void Draw(IOverlayDrawer context)
     {
@@ -25,7 +18,7 @@ sealed class BuildableAreaOverlayLayer : IOverlayLayer
             .Where(t => isTileRevealed(t) && !BuildableTileChecker.TileIsBuildable(game, t));
         foreach (var tile in revealedBlockedTiles)
         {
-            context.Tile(Color.Red * 0.25f, tile);
+            context.Draw(tile, OverlayBrush.BlockedTile);
         }
     }
 
