@@ -263,7 +263,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
     }
 
     private static Control singleDamageAndEfficiency(
-        double fontSize, float damageEfficiency, UntypedDamage damageDone, Color damageColor)
+        double fontSize, double damageEfficiency, UntypedDamage damageDone, Color damageColor)
     {
         var anchor = (1, 0.5);
         var efficiencyColor = Colors.DamageEfficiency(damageEfficiency);

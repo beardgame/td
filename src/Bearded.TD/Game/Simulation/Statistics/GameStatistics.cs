@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.Statistics.commands;
 using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.Statistics;
@@ -18,6 +19,7 @@ interface IGameStatistics
 {
     TowerMetadata FindTowerMetadata(Id<GameObject> id);
     void RegisterDamage(GameObject obj, FinalDamageResult damageResult);
+    ITowerStatisticObserver ObserveTower(GameObject obj);
 }
 
 sealed class GameStatistics
@@ -25,6 +27,8 @@ sealed class GameStatistics
 {
     private readonly TowerArchive towerArchive = new();
     private readonly Dictionary<GameObject, TowerStatistics> statsByTower = new();
+    private readonly List<TowerStatisticObserver> observers = [];
+    private readonly MultiDictionary<GameObject, TowerStatisticObserver> observersByTower = new();
 
     public static IGameStatistics CreateSubscribed(GameState gameState)
     {
@@ -48,7 +52,13 @@ sealed class GameStatistics
 
     public void HandleEvent(WaveStarted @event)
     {
+        // Clear this dictionary first. That way, observers can immediately start observing again and already get a
+        // reference to the new tower statistics.
         statsByTower.Clear();
+
+        observers.ForEach(o => o.Dispose());
+        observers.Clear();
+        observersByTower.Clear();
     }
 
     public void HandleEvent(WaveEnded @event)
@@ -66,25 +76,48 @@ sealed class GameStatistics
 
     public void RegisterDamage(GameObject obj, FinalDamageResult damageResult)
     {
-        if (!statsByTower.TryGetValue(obj, out var statistics))
-        {
-            if (towerArchive.EnsureTowerExists(obj))
-            {
-                DebugAssert.State.IsInvalid("Tower should have been archived when it was finished building.");
-            }
-            statistics = new TowerStatistics();
-            statsByTower.Add(obj, statistics);
-        }
+        var statistics = findStatistics(obj);
 
         statistics.RegisterDamage(
             damageResult.TotalExactDamage.Untyped(),
             damageResult.AttemptedDamage.Untyped(),
             damageResult.TotalExactDamage.Type);
+        observersByTower[obj].ForEach(o => o.Notify());
+    }
+
+    public ITowerStatisticObserver ObserveTower(GameObject obj)
+    {
+        var statistics = findStatistics(obj);
+        var observer = new TowerStatisticObserver(this, obj, statistics);
+        observers.Add(observer);
+        observersByTower.Add(obj, observer);
+        return observer;
+    }
+
+    private TowerStatistics findStatistics(GameObject obj)
+    {
+        if (statsByTower.TryGetValue(obj, out var statistics)) return statistics;
+        if (towerArchive.EnsureTowerExists(obj))
+        {
+            DebugAssert.State.IsInvalid("Tower should have been archived when it was finished building.");
+        }
+        statistics = new TowerStatistics();
+        statsByTower.Add(obj, statistics);
+
+        return statistics;
+    }
+
+    private void removeObserver(TowerStatisticObserver observer)
+    {
+        observers.Remove(observer);
+        observersByTower.Remove(observer.Object, observer);
     }
 
     private sealed class TowerStatistics
     {
         private readonly Dictionary<DamageType, AccumulatedDamage> accumulatedDamageByType = new();
+
+        public AccumulatedDamage TotalDamage => AccumulatedDamage.Aggregate(accumulatedDamageByType.Values);
 
         public void RegisterDamage(UntypedDamage damageDone, UntypedDamage damageAttempted, DamageType damageType)
         {
@@ -104,5 +137,32 @@ sealed class GameStatistics
             accumulatedDamageByType
                 .Select(kvp => new TypedAccumulatedDamage(kvp.Key, kvp.Value))
                 .ToImmutableArray();
+    }
+
+    private sealed class TowerStatisticObserver(
+        GameStatistics gameStatistics,
+        GameObject obj,
+        TowerStatistics towerStatistics) : ITowerStatisticObserver
+    {
+        public GameObject Object => obj;
+        public AccumulatedDamage TotalDamage => towerStatistics.TotalDamage;
+
+        public event VoidEventHandler? StatisticsUpdated;
+        public event VoidEventHandler? Disposed;
+
+        public void StopObserving()
+        {
+            gameStatistics.removeObserver(this);
+        }
+
+        public void Notify()
+        {
+            StatisticsUpdated?.Invoke();
+        }
+
+        public void Dispose()
+        {
+            Disposed?.Invoke();
+        }
     }
 }
