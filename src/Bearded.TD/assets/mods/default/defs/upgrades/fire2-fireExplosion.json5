@@ -36,7 +36,7 @@
         },
         {
             type: "addTags",
-            parameters: [ "damageReplaced", "fireExplosion" ],
+            parameters: [ "damageReplaced", "fire", "fireExplosion", "elementalDamage" ],
             isSideEffect: true
         }
     ]

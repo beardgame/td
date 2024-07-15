@@ -17,22 +17,30 @@
                 }
             },
             prerequisites: {
-                requiredTags: [ "bullet" ]
+                requiredTags: [ "bullet" ],
+                forbiddenTags: [ "elementalDamage" ],
             }
         },
         {
             type: "component",
             parameters: { id: "child", parameters: { object: "charged-projectile-trail", surviveParent: true } },
             prerequisites: {
-                requiredTags: [ "bullet" ]
+                requiredTags: [ "bullet" ],
+                forbiddenTags: [ "elementalDamage" ],
             }
         },
         {
             type: "component",
             parameters: { id: "child", parameters: { object: "charged-projectile-trail-long", surviveParent: true } },
             prerequisites: {
-                requiredTags: [ "bullet" ]
+                requiredTags: [ "bullet" ],
+                forbiddenTags: [ "elementalDamage" ],
             }
         },
+        {
+            type: "addTags",
+            parameters: [ "lightning", "elementalDamage" ],
+            isSideEffect: true,
+        }
     ]
 }
