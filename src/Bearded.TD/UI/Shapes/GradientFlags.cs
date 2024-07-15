@@ -11,4 +11,5 @@ enum GradientFlags : ushort
     ExtendNegative = 4,
     ExtendPositive = 8,
     ExtendBoth = ExtendNegative | ExtendPositive,
+    Repeat = 16,
 }

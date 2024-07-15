@@ -12,7 +12,7 @@ using static Bearded.UI.Interval;
 
 namespace Bearded.TD.Rendering.Overlays;
 
-sealed class OverlayDrawer(ShapeDrawer shapes, ComponentBuffer componentBuffer, GradientBuffer gradients)
+sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer, GradientBuffer gradients)
     : IOverlayDrawer
 {
     public void Draw(Tile tile, OverlayBrush brush)
