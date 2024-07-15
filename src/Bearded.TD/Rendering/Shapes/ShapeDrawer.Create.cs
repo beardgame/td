@@ -4,7 +4,6 @@ using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
