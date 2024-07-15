@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Overlays;
 
 sealed class BuildingHighlighter(ActiveOverlays activeOverlays)
 {
-    public IHighlightedBuilding HighlightBuilding(GameObject obj)
+    public IHighlightedBuilding StartPersistentBuildingHighlight(GameObject obj)
     {
         if (!obj.TryGetTilePresence(out var presence) || !presence.OccupiedTiles.Any())
         {

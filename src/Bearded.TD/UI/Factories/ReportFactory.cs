@@ -5,6 +5,7 @@ using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game;
+using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Statistics.Data;
@@ -27,7 +28,8 @@ sealed record TowerDamageDisplay(
     IReadonlyBinding<UntypedDamage> TotalDamageDone,
     IReadonlyBinding<double> TotalEfficiency,
     IReadonlyBinding<ImmutableArray<TypedAccumulatedDamage>> DamageByType,
-    Action? OnClick = null
+    Action? OnClick = null,
+    ButtonHoverAction.HoverStartEffect<BuildingHighlighter.IHighlightedBuilding>? HighlightBuilding = null
 )
 {
     public static TowerDamageDisplay From(TowerStatistics data, GameInstance? game = null)
@@ -40,7 +42,8 @@ sealed record TowerDamageDisplay(
             Binding.Constant(data.TotalDamageDone),
             Binding.Constant(data.TotalEfficiency),
             Binding.Constant(data.DamageByType),
-            data.Metadata.LiveObject is { } o ? scrollTo(o) : null
+            data.Metadata.LiveObject is { } o ? scrollTo(o) : null,
+            data.Metadata.LiveObject is { } o1 ? highlight(o1) : null
         );
 
         Action? scrollTo(GameObject obj) =>
@@ -49,14 +52,19 @@ sealed record TowerDamageDisplay(
                 null => null,
                 _ => () => game.CameraController.ScrollToWorldPos(obj.Position.XY()),
             };
+
+        ButtonHoverAction.HoverStartEffect<BuildingHighlighter.IHighlightedBuilding>? highlight(GameObject obj) =>
+            game switch
+            {
+                null => null,
+                _ => () => new BuildingHighlighter(game.Overlays).StartPersistentBuildingHighlight(obj)
+            };
     }
 }
 
 sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
 {
-    public Control TowerDamageDisplay(
-        TowerDamageDisplay model,
-        double? expectedControlHeight = null)
+    public Control TowerDamageDisplay(TowerDamageDisplay model, double? expectedControlHeight = null)
     {
         var expectedHeight = expectedControlHeight ?? 100;
         var expectedWidth = expectedHeight * (4f / 6f);
@@ -133,6 +141,8 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
 
         if (model.OnClick is { } onClick)
             button.Clicked += _ => onClick();
+        if (model.HighlightBuilding is { } highlightBuilding)
+            button.AddHoverAction(highlightBuilding, b => b.EndHighlight());
 
         // TODO: button builders should just support tooltips
         var definition = createTooltipDefinition(model);
