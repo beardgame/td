@@ -1,5 +1,4 @@
 using System.Linq;
-using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 
@@ -35,7 +34,7 @@ sealed class BuildingHighlighter(ActiveOverlays activeOverlays)
         {
             foreach (var tile in tilePresence.OccupiedTiles)
             {
-                context.Tile(Color.DeepPink, tile);
+                context.Draw(tile, OverlayBrush.TowerHighlight);
             }
         }
     }

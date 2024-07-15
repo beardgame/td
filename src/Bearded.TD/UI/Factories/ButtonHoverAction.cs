@@ -10,12 +10,6 @@ static class ButtonHoverAction
 
     public delegate void HoverEndEffect<in T>(T state);
 
-    public static void HighlightBuildingOnHover(
-        this Button button, BuildingHighlighter highlighter, GameObject building)
-    {
-        button.AddHoverAction(() => highlighter.StartPersistentBuildingHighlight(building), b => b.EndHighlight());
-    }
-
     public static void AddHoverAction<T>(
         this Button button, HoverStartEffect<T> startHover, HoverEndEffect<T> endHover)
     {
