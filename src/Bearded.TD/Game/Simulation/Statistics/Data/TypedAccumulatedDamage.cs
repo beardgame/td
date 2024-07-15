@@ -6,5 +6,5 @@ sealed record TypedAccumulatedDamage(DamageType Type, AccumulatedDamage Accumula
 {
     public UntypedDamage DamageDone => AccumulatedDamage.DamageDone;
     public UntypedDamage AttemptedDamage => AccumulatedDamage.AttemptedDamage;
-    public float Efficiency => AccumulatedDamage.Efficiency;
+    public double Efficiency => AccumulatedDamage.Efficiency;
 }

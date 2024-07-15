@@ -6,7 +6,7 @@ namespace Bearded.TD.Game.Simulation.Statistics.Data;
 
 sealed record AccumulatedDamage(UntypedDamage DamageDone, UntypedDamage AttemptedDamage)
 {
-    public float Efficiency => AttemptedDamage <= UntypedDamage.Zero ? 0 : DamageDone / AttemptedDamage;
+    public double Efficiency => AttemptedDamage <= UntypedDamage.Zero ? 0 : DamageDone / AttemptedDamage;
 
     public static AccumulatedDamage Zero => new(UntypedDamage.Zero, UntypedDamage.Zero);
 

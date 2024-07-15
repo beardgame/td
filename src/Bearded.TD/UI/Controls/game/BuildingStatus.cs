@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Bearded.TD.Audio;
 using Bearded.TD.Content;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
@@ -10,6 +11,8 @@ using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Game.Simulation.Statistics;
+using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -30,18 +33,21 @@ sealed class BuildingStatus
     private readonly ContentManager contentManager;
     private readonly ISoundScape soundScape;
     private readonly GameObject building;
+    private readonly IGameStatistics gameStatistics;
     private readonly IObjectAttributes attributes;
     private readonly GlobalGameEvents events;
     private readonly FactionResources? resources;
     private readonly IStatusTracker statusTracker;
     private readonly IUpgradeSlots? upgradeSlots;
     private readonly IVeterancy? veterancy;
+    private ITowerStatisticObserver towerStatisticObserver;
 
     private readonly Binding<bool> showExpanded = new(false);
     private readonly ObservableCollection<ObservableStatus> statuses;
     private readonly ObservableCollection<IReadonlyBinding<UpgradeSlot>> upgrades;
     private readonly ObservableCollection<IPermanentUpgrade> availableUpgrades;
     private readonly Binding<VeterancyStatus> veterancyStatus = new();
+    private readonly Binding<AccumulatedDamage> damageThisWave = new(AccumulatedDamage.Zero);
     private readonly Binding<int?> activeUpgradeSlot = new();
     private readonly Binding<bool> showUpgradeSelect = new();
     private readonly Binding<ResourceAmount> currentResources = new();
@@ -52,10 +58,12 @@ sealed class BuildingStatus
 
     public IReadonlyBinding<bool> ShowExpanded => showExpanded;
     public string BuildingName => attributes.Name;
+    public ModAwareSpriteId? Icon => attributes.Icon;
     public ReadOnlyObservableCollection<ObservableStatus> Statuses { get; }
     public ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>> Upgrades { get; }
     public ReadOnlyObservableCollection<IPermanentUpgrade> AvailableUpgrades { get; }
     public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
+    public IReadonlyBinding<AccumulatedDamage> DamageThisWave => damageThisWave;
     public IReadonlyBinding<int?> ActiveUpgradeSlot => activeUpgradeSlot;
     public IReadonlyBinding<bool> ShowUpgradeSelect => showUpgradeSelect;
     public IReadonlyBinding<ResourceAmount> CurrentResources => currentResources;
@@ -71,12 +79,14 @@ sealed class BuildingStatus
     {
         this.requestDispatcher = requestDispatcher;
         this.building = building;
+        gameStatistics = building.Game.Statistics;
         attributes = this.building.AttributesOrDefault();
         events = building.Game.Meta.Events;
         building.FindFaction().TryGetBehaviorIncludingAncestors(out resources);
         this.statusTracker = statusTracker;
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
+        towerStatisticObserver = observeStatistics();
         this.soundScape = soundScape;
         this.contentManager = contentManager;
 
@@ -96,6 +106,7 @@ sealed class BuildingStatus
         veterancyStatus.SetFromSource(veterancy?.GetVeterancyStatus() ?? VeterancyStatus.Initial);
         activeUpgradeSlot.SetFromSource(findActiveUpgradeSlot());
         currentResources.SetFromSource(resources?.CurrentResources ?? ResourceAmount.Zero);
+        onTowerStatisticsUpdated();
 
         statusTracker.StatusAdded += statusAdded;
         statusTracker.StatusRemoved += statusRemoved;
@@ -121,6 +132,25 @@ sealed class BuildingStatus
         return foundSlot >= 0 ? foundSlot : null;
     }
 
+    private ITowerStatisticObserver observeStatistics()
+    {
+        var observer = gameStatistics.ObserveTower(building);
+        observer.StatisticsUpdated += onTowerStatisticsUpdated;
+        observer.Disposed += onTowerStatisticsDisposed;
+        return observer;
+    }
+
+    private void onTowerStatisticsUpdated()
+    {
+        damageThisWave.SetFromSource(towerStatisticObserver.TotalDamage);
+    }
+
+    private void onTowerStatisticsDisposed()
+    {
+        towerStatisticObserver = observeStatistics();
+        damageThisWave.SetFromSource(AccumulatedDamage.Zero);
+    }
+
     public void Dispose()
     {
         foreach (var s in statuses)
@@ -139,6 +169,7 @@ sealed class BuildingStatus
         {
             veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
         }
+        towerStatisticObserver.StopObserving();
 
         events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
         events.Unsubscribe<ResourcesProvided>(this);

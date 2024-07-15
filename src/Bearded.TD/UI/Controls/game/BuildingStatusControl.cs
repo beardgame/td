@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
@@ -31,7 +34,6 @@ sealed partial class BuildingStatusControl : CompositeControl
 
         addBackground(model, uiContext.Animations);
         var innerContainer = new CompositeControl();
-        Add(innerContainer.Anchor(a => a.MarginAllSides(Padding).Top()));
 
         var column = innerContainer.BuildFixedColumn();
         column.AddHeader(Binding.Constant(model.BuildingName));
@@ -75,7 +77,24 @@ sealed partial class BuildingStatusControl : CompositeControl
                     .WithOnClick(model.DeleteBuilding));
         }
 
-        Size = (300, column.Height + Padding);
+        // TODO: make this less hardcoded
+
+        const float ratio = 4.0f / 6.0f;
+        var displayControlHeight = Math.Min(column.Height, 100);
+        var displayControlWidth = ratio * displayControlHeight;
+
+        var towerDamageDisplay = new TowerDamageDisplay(
+            model.BuildingName,
+            model.Icon ?? Constants.Content.CoreUI.Sprites.QuestionMark,
+            model.DamageThisWave.Transform(d => d.DamageDone),
+            model.DamageThisWave.Transform(d => d.Efficiency),
+            Binding.Constant(ImmutableArray<TypedAccumulatedDamage>.Empty));
+        var damageDisplayControl = uiContext.Factories.TowerDamageDisplay(towerDamageDisplay, displayControlHeight);
+
+        Add(damageDisplayControl.Anchor(a => a.Top(0, displayControlHeight).Left(0, displayControlWidth)));
+        Add(innerContainer.Anchor(a => a.Left(Padding + displayControlWidth)));
+
+        Size = (300, column.Height);
     }
 
     private void addBackground(BuildingStatus model, Animations animations)

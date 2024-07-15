@@ -29,7 +29,7 @@
         },
         {
             type: "addTags",
-            parameters: [ "damageReplaced" ],
+            parameters: [ "damageReplaced", "lightning", "elementalDamage" ],
             isSideEffect: true
         }
     ]

@@ -14,7 +14,8 @@
                 }
             },
             prerequisites: {
-                requiredTags: [ "bullet" ]
+                requiredTags: [ "bullet" ],
+                forbiddenTags: [ "elementalDamage" ],
             }
         },
         {
@@ -28,20 +29,22 @@
                 }
             },
             prerequisites: {
-                requiredTags: [ "bullet" ]
+                requiredTags: [ "bullet" ],
+                forbiddenTags: [ "elementalDamage" ],
             }
         },
         {
             type: "component",
             parameters: { id: "child", parameters: { object: "incendiary-projectile-trail", surviveParent: true } },
             prerequisites: {
-                requiredTags: [ "bullet" ]
+                requiredTags: [ "bullet" ],
+                forbiddenTags: [ "elementalDamage" ],
             }
         },
         {
             type: "addTags",
-            parameters: [ "fire" ],
-            isSideEffect: true
+            parameters: [ "fire", "elementalDamage" ],
+            isSideEffect: true,
         },
     ]
 }
