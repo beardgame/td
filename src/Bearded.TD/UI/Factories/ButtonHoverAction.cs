@@ -1,5 +1,3 @@
-using Bearded.TD.Game.Overlays;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.UI.Controls;
 
 namespace Bearded.TD.UI.Factories;
