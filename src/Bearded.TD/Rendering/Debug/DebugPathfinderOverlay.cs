@@ -8,6 +8,7 @@ using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
+using Bearded.TD.UI.Shapes;
 using Bearded.Utilities;
 
 namespace Bearded.TD.Rendering.Debug;
@@ -158,32 +159,38 @@ sealed class DebugPathfinderOverlay(GameInstance game, CoreDrawers drawers) : IO
         if (debugPathFinder == null)
             return;
 
+        var brushes = (
+            Seen: new OverlayBrush(Fill.With(Color.Yellow * 0.25f)),
+            Open: new OverlayBrush(Fill.With(Color.Blue * 0.25f)),
+            NextOpen: new OverlayBrush(Fill.With(Color.Red * 0.5f)),
+            Path: new OverlayBrush(Fill.With(Color.Lime * 0.5f))
+        );
+
         var debugState = debugPathFinder.GetCurrentState();
 
         foreach (var tile in debugState.SeenTiles.Distinct())
         {
-            context.Tile(Color.Yellow * 0.25f, tile);
+            context.Draw(tile, brushes.Seen);
         }
 
         foreach (var tile in debugState.OpenTiles.Distinct())
         {
-            context.Tile(Color.Blue * 0.25f, tile);
+            context.Draw(tile, new(Fill.With(Color.Blue * 0.25f)));
         }
 
         foreach (var tile in debugState.NextOpenTiles)
         {
-            context.Tile(Color.Red * 0.5f, tile);
+            context.Draw(tile, new(Fill.With(Color.Red * 0.5f)));
         }
 
         if (result != null)
         {
             var tile = Tile.Origin;
-            var pathColor = Color.Lime * 0.5f;
 
             foreach (var direction in result.Path)
             {
                 tile = tile.Neighbor(direction);
-                context.Tile(pathColor, tile);
+                context.Draw(tile, new(Fill.With(Color.Lime * 0.5f)));
             }
         }
     }
