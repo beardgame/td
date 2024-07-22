@@ -15,19 +15,23 @@ sealed class BuildingInteractionHandler : InteractionHandler
     private readonly Faction faction;
     private readonly IGameObjectBlueprint blueprint;
     private readonly ContentManager contentManager;
+    private readonly GridVisibility gridVisibility;
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
-    private IActiveOverlay? buildableAreaOverlay;
-    private IActiveOverlay? gridLinesOverlay;
     private IActiveOverlay? towerRangeOverlay;
     private DynamicFootprintTileNotifier? ghostTileOccupation;
 
     public BuildingInteractionHandler(
-        GameInstance game, Faction faction, IGameObjectBlueprint blueprint, ContentManager contentManager) : base(game)
+        GameInstance game,
+        Faction faction,
+        IGameObjectBlueprint blueprint,
+        ContentManager contentManager,
+        GridVisibility gridVisibility) : base(game)
     {
         this.faction = faction;
         this.blueprint = blueprint;
         this.contentManager = contentManager;
+        this.gridVisibility = gridVisibility;
         TileSelection = TileSelection.FromFootprint(blueprint.GetFootprint());
     }
 
@@ -37,8 +41,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
         Game.State.Add(ghost);
         Game.PlayerCursors.AttachGhost(blueprint);
 
-        buildableAreaOverlay = Game.Overlays.Activate(new BuildableAreaOverlayLayer(Game.State));
-        gridLinesOverlay = Game.Overlays.Activate(new GridOverlayLayer(Game.State));
+        gridVisibility.OnStartBuilding();
         towerRangeOverlay =
             TowerRangeOverlayLayer.CreateAndActivateForGameObject(Game.Overlays, ghost, RangeDrawStyle.DrawFull);
     }
@@ -74,11 +77,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
         ghostTileOccupation = null;
         Game.PlayerCursors.DetachGhost();
 
-        buildableAreaOverlay?.Deactivate();
-        buildableAreaOverlay = null;
-
-        gridLinesOverlay?.Deactivate();
-        gridLinesOverlay = null;
+        gridVisibility.OnEndBuilding();
 
         towerRangeOverlay?.Deactivate();
         towerRangeOverlay = null;

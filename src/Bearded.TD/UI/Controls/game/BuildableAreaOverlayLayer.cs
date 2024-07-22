@@ -5,7 +5,7 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Input;
+namespace Bearded.TD.UI.Controls;
 
 sealed class BuildableAreaOverlayLayer(GameState game) : IOverlayLayer
 {

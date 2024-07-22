@@ -32,6 +32,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     private GameInstance game = null!;
     private ShortcutCapturer shortcutCapturer = null!;
     private ContentManager contentManager = null!;
+    private GridVisibility gridVisibility = null!;
     private FactionResources? resources;
 
     public ActionBar()
@@ -50,11 +51,17 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         return builder.Build();
     }
 
-    public void Initialize(GameInstance game, ShortcutCapturer shortcutCapturer, ContentManager contentManager)
+    // ReSharper disable ParameterHidesMember
+    public void Initialize(
+        GameInstance game,
+        ShortcutCapturer shortcutCapturer,
+        ContentManager contentManager,
+        GridVisibility gridVisibility)
     {
         this.game = game;
         this.shortcutCapturer = shortcutCapturer;
         this.contentManager = contentManager;
+        this.gridVisibility = gridVisibility;
         shortcutCapturer.AddLayer(shortcuts);
 
         var faction = game.Me.Faction;
@@ -71,6 +78,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
         game.Meta.Events.Subscribe(this);
     }
+    // ReSharper enable ParameterHidesMember
 
     public void Update()
     {
@@ -112,7 +120,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
     private ActionBarEntry makeEntryFromBlueprint(IGameObjectBlueprint blueprint)
     {
-        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint, contentManager);
+        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint, contentManager, gridVisibility);
         var attributes = blueprint.AttributesOrDefault();
         return new ActionBarEntry(
             attributes.Name,

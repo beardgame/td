@@ -65,7 +65,7 @@ sealed class GameUI :
 
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
 
-        ActionBar.Initialize(Game, shortcutCapturer, content);
+        ActionBar.Initialize(Game, shortcutCapturer, content, GridVisibility);
         CoreStats.Initialize(Game, shortcutCapturer);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, content);
         GridVisibility.Initialize(Game.Overlays, Game.State);

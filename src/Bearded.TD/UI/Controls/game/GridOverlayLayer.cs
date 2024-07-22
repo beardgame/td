@@ -4,7 +4,7 @@ using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Tiles;
 
-namespace Bearded.TD.Game.Input;
+namespace Bearded.TD.UI.Controls;
 
 sealed class GridOverlayLayer(GameState game) : IOverlayLayer
 {

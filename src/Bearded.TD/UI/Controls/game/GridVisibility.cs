@@ -1,5 +1,4 @@
 using System;
-using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Utilities;
@@ -16,6 +15,7 @@ sealed class GridVisibility
     private IActiveOverlay? activeGridOverlay;
     private IActiveOverlay? activeBuildableAreaOverlay;
 
+    private bool isBuilding;
     public Binding<VisibilityMode> Visibility { get; } = new(VisibilityMode.None);
 
     // ReSharper disable once ParameterHidesMember
@@ -24,14 +24,33 @@ sealed class GridVisibility
         this.activeOverlays = activeOverlays;
         gridOverlayLayer = new GridOverlayLayer(gameState);
         buildableAreaOverlayLayer = new BuildableAreaOverlayLayer(gameState);
-        Visibility.SourceUpdated += onVisibilitySet;
-        Visibility.ControlUpdated += onVisibilitySet;
+        Visibility.SourceUpdated += onVisibilityUpdated;
+        Visibility.ControlUpdated += onVisibilityUpdated;
     }
 
-    private void onVisibilitySet(VisibilityMode newMode)
+    public void OnStartBuilding()
     {
-        updateOverlay(newMode.ShowsGrid(), ref activeGridOverlay, gridOverlayLayer);
-        updateOverlay(newMode.ShowsBuildableArea(), ref activeBuildableAreaOverlay, buildableAreaOverlayLayer);
+        isBuilding = true;
+        updateOverlays(Visibility.Value);
+    }
+
+    public void OnEndBuilding()
+    {
+        isBuilding = false;
+        updateOverlays(Visibility.Value);
+    }
+
+    private void onVisibilityUpdated(VisibilityMode newVisibility)
+    {
+        updateOverlays(newVisibility);
+    }
+
+    private void updateOverlays(VisibilityMode visibility)
+    {
+        updateOverlay(
+            isBuilding || visibility.ShowsGrid(), ref activeGridOverlay, gridOverlayLayer);
+        updateOverlay(
+            isBuilding || visibility.ShowsBuildableArea(), ref activeBuildableAreaOverlay, buildableAreaOverlayLayer);
     }
 
     private void updateOverlay(bool expectedVisibility, ref IActiveOverlay? activeOverlay, IOverlayLayer overlayLayer)
