@@ -51,8 +51,8 @@ sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer,
             .ForDrawingWith(componentBuffer, gradients, frame)
             .WithFlags(ShapeFlags.ProjectOnDepthBuffer);
 
-        var cellCountX = (maxX - minX) / 3 + 1;
-        var cellCountY = (maxY - minY) / 3 + 1;
+        var cellCountX = (maxX - minX + 4) / 3;
+        var cellCountY = (maxY - minY + 4) / 3;
 
         var firstOrigin = new Tile(minX - 1, minY - 1);
 
