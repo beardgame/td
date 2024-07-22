@@ -71,5 +71,5 @@ void main()
 
     rgb *= visibility;
 
-    outColor = vec4(rgb, 0);
+    outColor = vec4(rgb, albedo.a);
 }

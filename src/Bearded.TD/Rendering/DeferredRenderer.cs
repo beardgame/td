@@ -158,10 +158,11 @@ sealed class DeferredRenderer
             WithContext(
                 c => c.SetDebugName("Composite final image")
                     .BindRenderTarget(targets.Composition)
-                    .SetBlendMode(invertedPremultiplied),
+                    .SetBlendMode(Premultiplied),
                 InOrder(
                     WithContext(
-                        c => c.SetDebugName("Composite light buffer and g-buffers"),
+                        c => c.SetDebugName("Composite light buffer and g-buffers")
+                            .SetBlendMode(invertedPremultiplied),
                         PostProcess(shaders.GetShaderProgram("deferred/compose"), out _,
                             TextureUniforms(
                                 (textures.Diffuse, "albedoTexture"),
