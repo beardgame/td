@@ -1,5 +1,4 @@
 using System.Linq;
-using Bearded.Graphics;
 using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation;
 using Bearded.TD.Game.Simulation.Buildings;
@@ -16,7 +15,7 @@ sealed class BuildableAreaOverlayLayer(GameState game) : IOverlayLayer
     {
         var revealedBlockedTiles = Tilemap.EnumerateTilemapWith(game.Level.Radius)
             .Where(t => isTileRevealed(t) && !BuildableTileChecker.TileIsBuildable(game, t));
-        
+
         context.Draw(Area.From(revealedBlockedTiles), OverlayBrush.BlockedTile);
     }
 

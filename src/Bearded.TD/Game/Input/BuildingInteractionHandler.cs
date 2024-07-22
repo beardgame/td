@@ -18,6 +18,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
     protected override TileSelection TileSelection { get; }
     private GameObject? ghost;
     private IActiveOverlay? buildableAreaOverlay;
+    private IActiveOverlay? gridLinesOverlay;
     private IActiveOverlay? towerRangeOverlay;
     private DynamicFootprintTileNotifier? ghostTileOccupation;
 
@@ -37,6 +38,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
         Game.PlayerCursors.AttachGhost(blueprint);
 
         buildableAreaOverlay = Game.Overlays.Activate(new BuildableAreaOverlayLayer(Game.State));
+        gridLinesOverlay = Game.Overlays.Activate(new GridOverlayLayer(Game.State));
         towerRangeOverlay =
             TowerRangeOverlayLayer.CreateAndActivateForGameObject(Game.Overlays, ghost, RangeDrawStyle.DrawFull);
     }
@@ -74,6 +76,9 @@ sealed class BuildingInteractionHandler : InteractionHandler
 
         buildableAreaOverlay?.Deactivate();
         buildableAreaOverlay = null;
+
+        gridLinesOverlay?.Deactivate();
+        gridLinesOverlay = null;
 
         towerRangeOverlay?.Deactivate();
         towerRangeOverlay = null;
