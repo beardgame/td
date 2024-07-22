@@ -19,7 +19,7 @@ sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer,
         const float w = Constants.Game.World.HexagonWidth;
         const float r = w * 0.5f;
 
-        var shape = Hexagon(p, r, 0.2f);
+        var shape = Hexagon(p, r, brush.CornerRadius);
         var frame = new Frame(FromStartAndSize(p.X - r, w), FromStartAndSize(p.Y - r, w));
         var components = brush.Components
             .ForDrawingWith(componentBuffer, gradients, frame)
@@ -67,7 +67,7 @@ sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer,
                 if (bits.IsEmpty)
                     continue;
 
-                shapes.Draw(HexGrid(origin, bits, 0.2f), components);
+                shapes.Draw(HexGrid(origin, bits, brush.CornerRadius), components);
             }
         }
     }
