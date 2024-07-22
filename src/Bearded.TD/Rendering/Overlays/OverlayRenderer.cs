@@ -58,8 +58,9 @@ sealed class OverlayRenderer(
 
         foreach (var drawOrder in ActiveOverlays.DrawOrdersInOrder)
         {
-            foreach (var layer in overlays.LayersFor(drawOrder))
+            foreach (var (layer, mask) in overlays.LayersFor(drawOrder))
             {
+                drawer.Mask = mask;
                 layer.Draw(drawer);
             }
         }

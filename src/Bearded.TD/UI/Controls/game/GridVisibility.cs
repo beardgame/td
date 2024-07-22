@@ -18,6 +18,7 @@ sealed class GridVisibility
     private IActiveOverlay? activeBuildableAreaOverlay;
 
     private bool isBuilding;
+    private IPositionable? anchor;
     public Binding<VisibilityMode> Visibility { get; } = new(VisibilityMode.None);
 
     public ShortcutLayer Shortcuts { get; }
@@ -39,14 +40,16 @@ sealed class GridVisibility
         Visibility.ControlUpdated += onVisibilityUpdated;
     }
 
-    public void OnStartBuilding()
+    public void OnStartBuilding(IPositionable? maskAnchor)
     {
+        anchor = maskAnchor;
         isBuilding = true;
         updateOverlays(Visibility.Value);
     }
 
     public void OnEndBuilding()
     {
+        anchor = null;
         isBuilding = false;
         updateOverlays(Visibility.Value);
     }
@@ -70,7 +73,9 @@ sealed class GridVisibility
         if (currentVisibility == expectedVisibility) return;
         if (expectedVisibility)
         {
-            activeOverlay = activeOverlays.Activate(overlayLayer);
+            var mask = anchor == null ? null : new FadedCircleMask(anchor, 4, 3);
+
+            activeOverlay = activeOverlays.Activate(overlayLayer, mask);
         }
         else
         {

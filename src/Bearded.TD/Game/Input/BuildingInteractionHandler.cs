@@ -41,7 +41,7 @@ sealed class BuildingInteractionHandler : InteractionHandler
         Game.State.Add(ghost);
         Game.PlayerCursors.AttachGhost(blueprint);
 
-        gridVisibility.OnStartBuilding();
+        gridVisibility.OnStartBuilding(ghost);
         towerRangeOverlay =
             TowerRangeOverlayLayer.CreateAndActivateForGameObject(Game.Overlays, ghost, RangeDrawStyle.DrawFull);
     }

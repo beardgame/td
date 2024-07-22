@@ -12,6 +12,8 @@ namespace Bearded.TD.Rendering.Overlays;
 sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer, GradientBuffer gradients)
     : IOverlayDrawer
 {
+    public IOverlayMask? Mask { get; set; }
+
     public void Draw(Tile tile, OverlayBrush brush)
     {
         var p = Level.GetPosition(tile).NumericValue.WithZ();
@@ -50,6 +52,12 @@ sealed class OverlayDrawer(IShapeDrawer shapes, ComponentBuffer componentBuffer,
         var components = brush.Components
             .ForDrawingWith(componentBuffer, gradients, frame)
             .WithFlags(ShapeFlags.ProjectOnDepthBuffer);
+
+        if (Mask != null)
+        {
+            var mask = ShapeComponentsForDrawing.From(Mask.Mask, componentBuffer, (gradients, frame));
+            components = components.WithAdjacent(mask);
+        }
 
         var cellCountX = (maxX - minX + 4) / 3;
         var cellCountY = (maxY - minY + 4) / 3;

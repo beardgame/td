@@ -11,13 +11,16 @@ interface IActiveOverlay
     void Deactivate();
 }
 
+readonly record struct MaskedOverlay(IOverlayLayer Layer, IOverlayMask? Mask);
+
 sealed class ActiveOverlays
 {
     public static ImmutableArray<DrawOrder> DrawOrdersInOrder { get; } = [..Enum.GetValues<DrawOrder>()];
 
-    private sealed class ActiveOverlay(ActiveOverlays overlays, IOverlayLayer layer) : IActiveOverlay
+    private sealed class ActiveOverlay(ActiveOverlays overlays, IOverlayLayer layer, IOverlayMask? mask) : IActiveOverlay
     {
         public IOverlayLayer Layer { get; } = layer;
+        public IOverlayMask? Mask { get; } = mask;
 
         public void Deactivate()
         {
@@ -28,14 +31,14 @@ sealed class ActiveOverlays
     private readonly FrozenDictionary<DrawOrder, List<ActiveOverlay>> overlays =
         DrawOrdersInOrder.ToFrozenDictionary(o => o, _ => new List<ActiveOverlay>());
 
-    public IActiveOverlay Activate(IOverlayLayer overlay)
+    public IActiveOverlay Activate(IOverlayLayer overlay, IOverlayMask? mask = null)
     {
-        var activeOverlay = new ActiveOverlay(this, overlay);
+        var activeOverlay = new ActiveOverlay(this, overlay, mask);
         overlays[overlay.DrawOrder].Add(activeOverlay);
 
         return activeOverlay;
     }
 
-    public IEnumerable<IOverlayLayer> LayersFor(DrawOrder drawOrder)
-        => overlays[drawOrder].Select(o => o.Layer);
+    public IEnumerable<MaskedOverlay> LayersFor(DrawOrder drawOrder)
+        => overlays[drawOrder].Select(o => new MaskedOverlay(o.Layer, o.Mask));
 }
