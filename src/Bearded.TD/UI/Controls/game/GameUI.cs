@@ -38,6 +38,7 @@ sealed class GameUI :
     public ActionBar ActionBar { get; } = new();
     public CoreStatsUI CoreStats { get; } = new();
     public TechnologyWindow TechnologyUI { get; } = new();
+    public GridVisibility GridVisibility { get; } = new();
     public StatisticsSideBar StatisticsSideBar { get; } = new();
     private Binding<bool> techTokenIsAvailable { get; } = new(false);
     public IReadonlyBinding<bool> TechTokenIsAvailable => techTokenIsAvailable;
@@ -67,6 +68,7 @@ sealed class GameUI :
         ActionBar.Initialize(Game, shortcutCapturer, content);
         CoreStats.Initialize(Game, shortcutCapturer);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, content);
+        GridVisibility.Initialize(Game.Overlays, Game.State);
         StatisticsSideBar.Initialize(Game);
 
         Game.Meta.Events.Subscribe<GameOverTriggered>(this);

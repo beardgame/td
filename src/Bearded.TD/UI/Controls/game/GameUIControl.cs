@@ -1,4 +1,5 @@
 ﻿using System;
+using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Rendering;
 using Bearded.TD.UI.Animation;
@@ -6,6 +7,7 @@ using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using static Bearded.TD.Constants.Content.CoreUI;
 
 namespace Bearded.TD.UI.Controls;
 
@@ -49,7 +51,7 @@ sealed class GameUIControl : CompositeControl
         ));
 
         var techButton = uiContext.Factories.StandaloneIconButton(b => b
-            .WithIcon(Constants.Content.CoreUI.Sprites.Technology)
+            .WithIcon(Sprites.Technology)
             .MakeHexagon()
             .WithShadow()
             .WithBlurredBackground()
@@ -65,6 +67,19 @@ sealed class GameUIControl : CompositeControl
                 technologyButtonSize + 4 * Constants.UI.Button.Margin);
         Add(new TechnologyWindowControl(gameUI.TechnologyUI, uiContext)
             .BindIsVisible(gameUI.GameUIController.TechnologyModalVisibility));
+
+        var gridVisibility = gameUI.GridVisibility;
+        var gridButton = uiContext.Factories.StandaloneIconButton(b => b
+            .WithIcon(gridVisibility.Visibility.Transform(gridVisibilitySprite))
+            .WithIconScale(0.7f)
+            .MakeHexagon()
+            .WithShadow()
+            .WithBlurredBackground()
+            .WithBackgroundColors(Constants.UI.Button.DefaultBackgroundColors * 0.8f)
+            .WithOnClick(() => gridVisibility.Visibility.SetFromControl(gridVisibility.Visibility.Value.Next())));
+        Add(gridButton.Anchor(a => a
+            .Top(4 * Constants.UI.Button.Margin, Constants.UI.Button.SmallSquareButtonSize)
+            .Right(technologyButtonSize + Constants.UI.Button.Margin * 4, Constants.UI.Button.SmallSquareButtonSize)));
 
         gameUI.SetWorldOverlay(gameWorldOverlay);
 
@@ -127,5 +142,15 @@ sealed class GameUIControl : CompositeControl
                 .Top(margin: 0, height: 64)
                 .Left(relativePercentage: .5, margin: -120, width: 240))
             .Subscribe(ctrl => ctrl.ReturnToMainMenuButtonClicked += gameUI.OnReturnToMainMenuButtonClicked));
+    }
+
+    private static ModAwareSpriteId gridVisibilitySprite(GridVisibility.VisibilityMode v)
+    {
+        return v switch {
+            GridVisibility.VisibilityMode.None => Sprites.GridNone,
+            GridVisibility.VisibilityMode.GridOnly => Sprites.GridLines,
+            GridVisibility.VisibilityMode.GridAndBuildableArea => Sprites.GridFill,
+            _ => throw new ArgumentOutOfRangeException(nameof(v), v, null)
+        };
     }
 }

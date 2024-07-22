@@ -317,7 +317,9 @@ sealed partial class ButtonFactory
             control.Add(iconControl);
 
             icon.SourceUpdated += id => iconControl.SpriteId = id;
+            icon.ControlUpdated += id => iconControl.SpriteId = id;
             color.SourceUpdated += c => iconControl.Color = c;
+            color.ControlUpdated += c => iconControl.Color = c;
 
             iconControl.BindIsVisible(icon.Transform(id => id.SpriteSet.IsValid && !string.IsNullOrWhiteSpace(id.Id)));
         }

@@ -42,6 +42,9 @@ static partial class Constants
                 private static ModAwareSpriteId hud(string id) => new(new ModAwareId(ModId, "hud"), id);
 
                 public static readonly ModAwareSpriteId Technology = hud("microscope-lens");
+                public static readonly ModAwareSpriteId GridNone = hud("grid-none");
+                public static readonly ModAwareSpriteId GridLines = hud("grid-lines");
+                public static readonly ModAwareSpriteId GridFill = hud("grid-fill");
 
                 public static ModAwareSpriteId Targeting(string id) => new(new ModAwareId(ModId, "targeting"), id);
             }
