@@ -14,6 +14,8 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using static OpenTK.Graphics.OpenGL.BlendEquationMode;
+using static OpenTK.Graphics.OpenGL.BlendingFactor;
 using static OpenTK.Graphics.OpenGL.DepthFunction;
 using Color = Bearded.Graphics.Color;
 
@@ -28,6 +30,8 @@ using static Pipeline<DeferredRenderer.RenderState>;
 
 sealed class DeferredRenderer
 {
+    private static readonly BlendMode invertedPremultiplied = new(OneMinusDstAlpha, One, FuncAdd);
+
     private static readonly DrawOrderGroup[] solidLevelDrawGroups = [Level, SolidLevelDetails];
     private static readonly DrawOrderGroup[] levelDecalDrawGroup = [LevelProjected];
     private static readonly DrawOrderGroup[] projectedFloatingDrawGroup = [LevelProjectedFloatingOverlay];
@@ -51,6 +55,7 @@ sealed class DeferredRenderer
     private ViewportSize viewport;
 
     private readonly Texture depthBufferTexture;
+
     public IRenderSetting GetDepthBufferUniform(string name, TextureUnit unit)
         => new TextureUniform(name, unit, depthBufferTexture);
 
@@ -118,11 +123,11 @@ sealed class DeferredRenderer
                     WithContext(
                         c => c.SetDebugName("Render projected floating overlays")
                             .BindRenderTarget(targets.Composition)
-                            .SetDepthMode(Disable)
+                            .SetDepthMode(DepthMode.Disable)
                             .SetBlendMode(Premultiplied)
                             .SetCullMode(RenderFront),
                         InOrder(
-                            ClearColor(Color.Black),
+                            ClearColor(Color.Transparent),
                             renderDrawGroups(projectedFloatingDrawGroup)
                         )
                     ),
@@ -153,7 +158,7 @@ sealed class DeferredRenderer
             WithContext(
                 c => c.SetDebugName("Composite final image")
                     .BindRenderTarget(targets.Composition)
-                    .SetBlendMode(Premultiplied),
+                    .SetBlendMode(invertedPremultiplied),
                 InOrder(
                     WithContext(
                         c => c.SetDebugName("Composite light buffer and g-buffers"),

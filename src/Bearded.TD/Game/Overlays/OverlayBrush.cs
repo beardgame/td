@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Overlays;
 readonly record struct OverlayBrush(ShapeComponents Components)
 {
     private static readonly Color towerRangeColor = Color.Yellow * 0.5f;
-    private static readonly Color gridLineColor = Color.MediumPurple * 0.15f;
+    private static readonly Color gridLineColor = new Color(0xFF140c17) * 0.15f;
 
     public static OverlayBrush TowerRangeFull { get; } = new(
     [
@@ -28,14 +28,19 @@ readonly record struct OverlayBrush(ShapeComponents Components)
 
     public static OverlayBrush TowerRangeMinimal { get; } = new([Glow.Outer(0.2f, Color.Green * 0.25f)]);
 
-    public static OverlayBrush BlockedTile { get; } = new([Fill.With(Color.Red * 0.5f)]);
+    public static OverlayBrush BlockedTile { get; } = new([Fill.With(Color.Red * 0.3f)]);
 
     public static OverlayBrush TowerHighlight { get; } = new([Glow.Inner(0.2f, Color.LightCyan)]);
 
-    public static OverlayBrush GridLines => new(
+    public static OverlayBrush GridLines { get; } = new(
     [
-        new ShapeComponent(0, -0.09f, gridLineColor),
-        new ShapeComponent(-0.09f, -0.098f, SimpleGlow(gridLineColor)),
-        new ShapeComponent(0, 0.5f, SimpleGlow(gridLineColor)),
+        new ShapeComponent(-0.098f, 0.5f, ShapeColor.From(
+            [
+                (0, Color.Transparent),
+                (0.01, gridLineColor),
+                (0.1, gridLineColor),
+                (1, Color.Transparent),
+            ], AlongEdgeNormal()
+        )),
     ]);
 }
