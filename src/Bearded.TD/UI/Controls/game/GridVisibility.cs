@@ -1,7 +1,9 @@
 using System;
 using Bearded.TD.Game.Overlays;
 using Bearded.TD.Game.Simulation;
+using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.Utilities;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using static Bearded.TD.UI.Controls.GridVisibility;
 
 namespace Bearded.TD.UI.Controls;
@@ -17,6 +19,15 @@ sealed class GridVisibility
 
     private bool isBuilding;
     public Binding<VisibilityMode> Visibility { get; } = new(VisibilityMode.None);
+
+    public ShortcutLayer Shortcuts { get; }
+
+    public GridVisibility()
+    {
+        Shortcuts = ShortcutLayer.CreateBuilder()
+            .AddShortcut(Keys.G, () => Visibility.SetFromControl(Visibility.Value.Next()))
+            .Build();
+    }
 
     // ReSharper disable once ParameterHidesMember
     public void Initialize(ActiveOverlays activeOverlays, GameState gameState)
