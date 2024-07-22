@@ -98,3 +98,30 @@ jobs:
           files: "publish/*.zip"
         env:
           GITHUB_REPOSITORY: beardgame/td
+
+  itch:
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: binaries-*
+          path: publish/
+          merge-multiple: true
+
+      # The version number can be extracted from the currently checked out tag,
+      # which has the format 'refs/tags/v*'.
+      - name: Extract version number
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Install butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+
+      - name: Push Windows build
+        run: ./butler push publish/Bearded.TD-${{ env.RELEASE_VERSION }}-win-x64.zip tomrijnbeek/bearded-td:win --userversion ${{ env.RELEASE_VERSION }}
