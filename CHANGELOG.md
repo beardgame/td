@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.28
+
+* Added visual overlays to the game, projected to the game geometry
+  * The game now shows the grid & buildable tiles while building towers
+  * Added a button & shortcut (G) to permanently enable the grid or building overlay
+  * Updated rendering of the tower ranges
+  * Added highlight for towers when hovering over their card in the statistics screen
+* Added the current tower statistics to their status overlay
+* Added some small jitter to enemy spawn times
+* Started enforcing tier requirements for technology unlocks
+* Balance: Steam Hammer can now receive the fire explosion upgrade
+
 ## v0.27
 
 * Added new screen to show damage statistics at the end of each wave
