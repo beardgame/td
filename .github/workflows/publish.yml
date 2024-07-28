@@ -124,4 +124,6 @@ jobs:
           ./butler -V
 
       - name: Push Windows build
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: ./butler push publish/Bearded.TD-${{ env.RELEASE_VERSION }}-win-x64.zip tomrijnbeek/bearded-td:win --userversion ${{ env.RELEASE_VERSION }}
