@@ -52,6 +52,7 @@ static class ModLoader
             var shaders = new ShaderBlueprintLoader(loadingContext).LoadBlueprints();
             var materials = new MaterialBlueprintLoader(loadingContext).LoadBlueprints();
             var sprites = new SpriteBlueprintLoader(loadingContext).LoadBlueprints();
+            var models = new ModelBlueprintLoader(loadingContext).LoadBlueprints();
             var fontDefinitions = new FontDefinitionBlueprintLoader(loadingContext).LoadBlueprints();
             var fonts = new FontBlueprintLoader(loadingContext).LoadBlueprints();
             var soundEffects = new SoundBlueprintLoader(loadingContext).LoadBlueprints();
@@ -72,6 +73,7 @@ static class ModLoader
                 shaders,
                 materials,
                 sprites,
+                models,
                 fontDefinitions,
                 fonts,
                 soundEffects,
