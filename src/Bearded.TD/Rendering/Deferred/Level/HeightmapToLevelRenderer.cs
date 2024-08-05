@@ -1,22 +1,35 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Bearded.Graphics;
-using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
+using Bearded.Graphics.Vertices;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game;
 using Bearded.TD.Meta;
 using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using static System.Math;
+using static Bearded.Graphics.Vertices.VertexData;
 using static Bearded.TD.Constants.Game.World;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
+
+[StructLayout(LayoutKind.Sequential)]
+readonly struct HeightmapInstanceVertex(Vector2 offset) : IVertexData
+{
+    private readonly Vector2 offset = offset;
+
+    public static ImmutableArray<VertexAttribute> VertexAttributes { get; }
+        = MakeAttributeArray(
+            MakeAttributeTemplate<Vector2>("instanceOffset", instanced: true)
+        );
+}
 
 sealed class HeightmapToLevelRenderer
 {
@@ -27,7 +40,6 @@ sealed class HeightmapToLevelRenderer
 
     private readonly FloatUniform heightScaleUniform = new("heightScale");
     private readonly FloatUniform heightOffsetUniform = new("heightOffset");
-    private readonly Vector2Uniform gridOffsetUniform = new("gridOffset");
     private readonly Vector2Uniform gridScaleUniform = new("gridScale");
 
     private readonly RhombusGridMesh gridMeshBuilder;
@@ -117,10 +129,12 @@ sealed class HeightmapToLevelRenderer
                 if (offset.X > visibleArea.Right || offset.X + cellVisibleWidth < visibleArea.Left)
                     continue;
 
-                gridOffsetUniform.Value = offset;
-                renderSingleGridCell();
+                gridMeshBuilder.AddInstance(offset);
             }
         }
+
+        drawInstances();
+        gridMeshBuilder.Clear();
     }
 
     private GridDimensions getGridDimensionsFor()
@@ -210,7 +224,7 @@ sealed class HeightmapToLevelRenderer
         return new Rectangle(minX, minY, width, height);
     }
 
-    private void renderSingleGridCell()
+    private void drawInstances()
     {
         //GL.Enable(EnableCap.CullFace);
         //GL.CullFace(CullFaceMode.Back);
@@ -249,8 +263,7 @@ sealed class HeightmapToLevelRenderer
                 context.Settings.CameraPosition,
                 heightScaleUniform,
                 heightOffsetUniform,
-                gridOffsetUniform,
-                gridScaleUniform
+                gridScaleUniform,
             }.Concat(
                 biomeMaterials.Samplers
                     .Select((s, i) => s.GetUniform(TextureUnit.Texture0 + i + 2))
@@ -266,31 +279,64 @@ sealed class HeightmapToLevelRenderer
 
 sealed class RhombusGridMesh : IDisposable
 {
-    private readonly IndexedMeshBuilder<LevelVertex> meshBuilder;
+    private readonly Buffer<LevelVertex> vertices;
+    private readonly Buffer<ushort> indices;
+    private readonly BufferStream<HeightmapInstanceVertex> instances;
 
     public Vector2 TilingX { get; }
     public Vector2 TilingY { get; }
 
     public static RhombusGridMesh CreateDefault()
     {
-        var (meshBuilder, tilingX, tilingY) = buildRhombusMesh();
+        var (vertices, indices, tilingX, tilingY) = buildRhombusMesh();
 
-        return new RhombusGridMesh(meshBuilder, tilingX, tilingY);
+        var instances = new BufferStream<HeightmapInstanceVertex>(new Buffer<HeightmapInstanceVertex>());
+
+        return new RhombusGridMesh(vertices, indices, instances, tilingX, tilingY);
     }
 
     private RhombusGridMesh(
-        IndexedMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
+        Buffer<LevelVertex> vertices, Buffer<ushort> indices,
+        BufferStream<HeightmapInstanceVertex> instances,
+        Vector2 tilingX, Vector2 tilingY)
     {
-        this.meshBuilder = meshBuilder;
+        this.vertices = vertices;
+        this.indices = indices;
+        this.instances = instances;
         TilingX = tilingX;
         TilingY = tilingY;
     }
 
-    public IRenderable ToRenderable() => meshBuilder.ToRenderable();
+    public void Clear()
+    {
+        instances.Clear();
+    }
 
-    public void Dispose() => meshBuilder.Dispose();
+    public void AddInstance(Vector2 offset)
+    {
+        instances.Add(new HeightmapInstanceVertex(offset));
+    }
 
-    private static (IndexedMeshBuilder<LevelVertex> meshBuilder, Vector2 tilingX, Vector2 tilingY)
+    public IRenderable ToRenderable()
+    {
+        return Renderable.Build(
+            PrimitiveType.Patches,
+            b => b
+                .With(vertices.AsVertexBuffer())
+                .With(instances.AsVertexBuffer())
+                .With(indices.AsIndexBuffer())
+                .InstancedWith(() => instances.Count)
+        );
+    }
+
+    public void Dispose()
+    {
+        vertices.Dispose();
+        indices.Dispose();
+        instances.Buffer.Dispose();
+    }
+
+    private static (Buffer<LevelVertex> vertices, Buffer<ushort> indices, Vector2 tilingX, Vector2 tilingY)
         buildRhombusMesh()
     {
         /* Rhombus section (2x2 example)
@@ -316,10 +362,8 @@ sealed class RhombusGridMesh : IDisposable
         var triangleCount = rhombusSideLength * rhombusSideLength * 2;
         var indexCount = triangleCount * 3;
 
-        var meshBuilder = new IndexedMeshBuilder<LevelVertex>(PrimitiveType.Patches);
-        meshBuilder.Add(vertexCount, indexCount, out var vertices, out var indices, out var indexOffset);
-
-        DebugAssert.State.Satisfies(indexOffset == 0);
+        var vertices = new LevelVertex[vertexCount];
+        var indices = new ushort[indexCount];
 
         var stepX = Direction.Right.Vector();
         var stepY = Direction.UpRight.Vector();
@@ -363,7 +407,18 @@ sealed class RhombusGridMesh : IDisposable
             }
         }
 
-        return (meshBuilder, tilingX, tilingY);
+        var vertexBuffer = new Buffer<LevelVertex>();
+        using (var t = vertexBuffer.Bind())
+        {
+            t.Upload(vertices);
+        }
+        var indexBuffer = new Buffer<ushort>();
+        using (var t = indexBuffer.Bind())
+        {
+            t.Upload(indices);
+        }
+
+        return (vertexBuffer, indexBuffer, tilingX, tilingY);
 
         ushort vertexIndex(int x, int y)
         {
