@@ -11,6 +11,7 @@ static class GraphicsUnloader
     {
         cleanUp(blueprints.Materials);
         cleanUp(blueprints.Sprites);
+        cleanUp(blueprints.Models);
     }
 
     private static void cleanUp(ReadonlyBlueprintCollection<Material> materials)
@@ -21,5 +22,10 @@ static class GraphicsUnloader
     private static void cleanUp(ReadonlyBlueprintCollection<SpriteSet> spriteSets)
     {
         spriteSets.All.ForEach(spriteSet => spriteSet.Dispose());
+    }
+
+    private static void cleanUp(ReadonlyBlueprintCollection<Model> models)
+    {
+        models.All.ForEach(model => model.Dispose());
     }
 }
