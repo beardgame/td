@@ -69,6 +69,7 @@ sealed class TheGame : Window
     private AnimationUpdater uiAnimationUpdater = new ();
     private EventManager eventManager = null!;
     private NavigationController navigationController = null!;
+    private GltfPrototype gltfPrototype = null!;
 
     private ViewportSize viewportSize;
 
@@ -198,6 +199,8 @@ sealed class TheGame : Window
 
         if (UserSettings.Instance.Debug.PerformanceOverlay)
             instance!.navigationController.Push<PerformanceOverlay>();
+
+        gltfPrototype = GltfPrototype.Create(renderDoc);
     }
 
     protected override void OnResize(ResizeEventArgs e)
@@ -269,6 +272,7 @@ sealed class TheGame : Window
         renderContext.Settings.UITime.Value = (float)gameTime.Time.NumericValue;
         renderContext.Compositor.PrepareForFrame();
         rootControl.Render(uiRenderers);
+        gltfPrototype.Render();
         renderContext.Compositor.FinalizeFrame();
 
         using (activityTimer.Start(Activity.SwapBuffer))
