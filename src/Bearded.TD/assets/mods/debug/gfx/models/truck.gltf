@@ -25,16 +25,27 @@
 		},
 		{
 			"mesh":2,
-			"name":"Police Chassis",
-			"scale":[
-				0.31634771823883057,
-				0.10573622584342957,
-				0.16602171957492828
+			"name":"Police Chassis"
+		}
+	],
+	"animations":[
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":0,
+						"path":"translation"
+					}
+				}
 			],
-			"translation":[
-				0,
-				0.186262309551239,
-				0
+			"name":"Truck ChassisAction",
+			"samplers":[
+				{
+					"input":12,
+					"interpolation":"LINEAR",
+					"output":13
+				}
 			]
 		}
 	],
@@ -180,29 +191,29 @@
 		{
 			"bufferView":8,
 			"componentType":5126,
-			"count":396,
+			"count":398,
 			"max":[
-				1,
-				1.4190912246704102,
-				1
+				0.31634771823883057,
+				0.3363116383552551,
+				0.16602171957492828
 			],
 			"min":[
-				-1,
-				-1,
-				-1
+				-0.31634771823883057,
+				0.08052608370780945,
+				-0.16602171957492828
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":9,
 			"componentType":5126,
-			"count":396,
+			"count":398,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":10,
 			"componentType":5126,
-			"count":396,
+			"count":398,
 			"type":"VEC2"
 		},
 		{
@@ -210,6 +221,24 @@
 			"componentType":5123,
 			"count":1044,
 			"type":"SCALAR"
+		},
+		{
+			"bufferView":12,
+			"componentType":5126,
+			"count":21,
+			"max":[
+				0.8333333333333334
+			],
+			"min":[
+				0
+			],
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":13,
+			"componentType":5126,
+			"count":21,
+			"type":"VEC3"
 		}
 	],
 	"bufferViews":[
@@ -263,27 +292,37 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":4752,
+			"byteLength":4776,
 			"byteOffset":30280,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":4752,
-			"byteOffset":35032,
+			"byteLength":4776,
+			"byteOffset":35056,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":3168,
-			"byteOffset":39784,
+			"byteLength":3184,
+			"byteOffset":39832,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":2088,
-			"byteOffset":42952,
+			"byteOffset":43016,
 			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":84,
+			"byteOffset":45104
+		},
+		{
+			"buffer":0,
+			"byteLength":252,
+			"byteOffset":45188
 		}
 	],
 	"samplers":[
@@ -294,7 +333,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":45040,
+			"byteLength":45440,
 			"uri":"truck.bin"
 		}
 	]
