@@ -8,7 +8,7 @@ using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Content.Models;
 
-internal interface ISpriteSetImplementation : IDisposable
+interface ISpriteSetImplementation : IDisposable
 {
     SpriteParameters GetSpriteParameters(string name);
 

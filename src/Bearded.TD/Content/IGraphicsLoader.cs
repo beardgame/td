@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content.Models;
 using OpenTK.Graphics.OpenGL;
+using SharpGLTF.Schema2;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -28,6 +29,8 @@ interface IGraphicsLoader
         IEnumerable<Sampler> samplers,
         IEnumerable<SpriteBitmaps> sprites,
         SpriteSetConfiguration config);
+
+    IModelImplementation CreateModel(ModelRoot modelRoot);
 
     IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName);
 }
