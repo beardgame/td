@@ -15,6 +15,7 @@ using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.Utilities.IO;
 using FluentAssertions;
+using SharpGLTF.Schema2;
 using Xunit;
 
 namespace Bearded.TD.Tests.Content
@@ -62,6 +63,8 @@ namespace Bearded.TD.Tests.Content
                 IEnumerable<SpriteBitmaps> sprites,
                 SpriteSetConfiguration config) => new MockSpriteSetImplementation();
 
+            public IModelImplementation CreateModel(ModelRoot modelRoot) => new MockModel();
+
             public IRendererShader CreateRendererShader(
                 IList<ModShaderFile> shaders,
                 string shaderProgramName) => new MockRendererShader();
@@ -87,6 +90,10 @@ namespace Bearded.TD.Tests.Content
                 CreateVertex<TVertex, TVertexData> createVertex,
                 Shader shader,
                 params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
+        }
+
+        private sealed class MockModel : IModelImplementation
+        {
         }
 
         private sealed class MockRendererShader : IRendererShader

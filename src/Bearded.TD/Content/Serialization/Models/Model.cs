@@ -13,6 +13,6 @@ sealed record Model(
     {
         var (file, loader) = resolvers;
 
-        return loader.TryLoad(file, this);
+        return loader.Load(file, this);
     }
 }

@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using Bearded.Graphics;
 using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content;
+using Bearded.TD.Content.Models;
+using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
+using SharpGLTF.Schema2;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using LogicalMesh = SharpGLTF.Schema2.Mesh;
+using Mesh = Bearded.TD.Content.Models.Mesh;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -60,5 +68,70 @@ sealed partial class GraphicsLoader : IGraphicsLoader
         {
             return new ShaderFile(data.Type, data.Filepath, data.FriendlyName);
         }
+    }
+
+    public IModelImplementation CreateModel(ModelRoot modelRoot)
+    {
+        var meshes = modelRoot.LogicalMeshes.Select(loadMesh).ToImmutableArray();
+        return new Model(meshes);
+    }
+
+    private Mesh loadMesh(LogicalMesh mesh)
+    {
+        if (mesh.Primitives.Count != 1)
+        {
+            throw new InvalidDataException("Only meshes with a single primitive are supported");
+        }
+
+        var primitive = mesh.Primitives[0];
+
+        var positions = primitive.GetVertexAccessor("POSITION").AsVector3Array();
+        var normals = primitive.GetVertexAccessor("NORMAL").AsVector3Array();
+        var uvs = primitive.GetVertexAccessor("TEXCOORD_0").AsVector2Array();
+        var vertices = interleaveVertices(positions, normals, uvs);
+        var vertexBufferTask = glActions.Run(() => createVertexBuffer(vertices));
+
+        var indicesAsUInt = primitive.IndexAccessor.AsIndicesArray();
+        // Instead of converting to unsigned shorts, we can always do CopyTo(uint[]) and upload that to avoid any
+        // copying, but it doubles the amount of data we upload to the GPU. Choices, choices...
+        var indicesAsUShort = indicesAsUInt.Select(i => (ushort) i).ToArray();
+        var indexBufferTask = glActions.Run(() => createIndexBuffer(indicesAsUShort));
+
+        var vertexBuffer = vertexBufferTask.Result;
+        var indexBuffer = indexBufferTask.Result;
+
+        return new Mesh(vertexBuffer, indexBuffer);
+    }
+
+    private static NormalUVVertex[] interleaveVertices(
+        IList<Vector3> positions, IList<Vector3> normals, IList<Vector2> uvs)
+    {
+        var array = new NormalUVVertex[positions.Count];
+        for (var i = 0; i < positions.Count; i++)
+        {
+            array[i] = new NormalUVVertex(vec3(positions[i]), vec3(normals[i]), vec2(uvs[i]));
+        }
+        return array;
+    }
+
+    private static OpenTK.Mathematics.Vector2 vec2(Vector2 v) => new(v.X, v.Y);
+    private static OpenTK.Mathematics.Vector3 vec3(Vector3 v) => new(v.X, v.Y, v.Z);
+
+    private static Buffer<NormalUVVertex> createVertexBuffer(NormalUVVertex[] vertexArray)
+    {
+        var buffer = new Buffer<NormalUVVertex>();
+        using var target = buffer.Bind();
+        target.Upload(vertexArray);
+        // TODO: return AsVertices
+        return buffer;
+    }
+
+    private static Buffer<ushort> createIndexBuffer(ushort[] indexArray)
+    {
+        var buffer = new Buffer<ushort>();
+        using var target = buffer.Bind();
+        target.Upload(indexArray);
+        // TODO: return AsIndices
+        return buffer;
     }
 }
