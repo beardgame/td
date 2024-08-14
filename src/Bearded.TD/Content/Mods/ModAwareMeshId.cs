@@ -16,8 +16,7 @@ readonly record struct ModAwareMeshId(ModAwareId Model, string Id)
         {
             1 => throw new InvalidDataException($"Mesh id must contain at least one '.' ({name})"),
             2 => new ModAwareMeshId(new ModAwareId(mod.Id, components[0]), components[1]),
-            3 => new ModAwareMeshId(new ModAwareId(components[0], components[1]), components[2]),
-            _ => throw new InvalidDataException($"Mesh id may not contain more than two '.' ({name})")
+            _ => new ModAwareMeshId(new ModAwareId(components[0], components[1]), string.Join('.', components[2..]))
         };
     }
 

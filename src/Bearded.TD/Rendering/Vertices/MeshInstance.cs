@@ -15,6 +15,9 @@ readonly struct MeshInstance(Matrix4 worldMatrix) : IVertexData
 
     static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; } =
         MakeAttributeArray(
-            MakeAttributeTemplate<Matrix4>("instanceMatrix", instanced: true)
+            MakeAttributeTemplate<Vector4>("instanceMatrixRow1", instanced: true),
+            MakeAttributeTemplate<Vector4>("instanceMatrixRow2", instanced: true),
+            MakeAttributeTemplate<Vector4>("instanceMatrixRow3", instanced: true),
+            MakeAttributeTemplate<Vector4>("instanceMatrixRow4", instanced: true)
         );
 }
