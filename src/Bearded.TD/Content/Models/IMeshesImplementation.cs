@@ -1,6 +1,8 @@
+using System;
+
 namespace Bearded.TD.Content.Models;
 
-interface IModelImplementation
+interface IMeshesImplementation : IDisposable
 {
     // TODO: get mesh by name
 }

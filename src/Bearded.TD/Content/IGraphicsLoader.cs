@@ -30,7 +30,7 @@ interface IGraphicsLoader
         IEnumerable<SpriteBitmaps> sprites,
         SpriteSetConfiguration config);
 
-    IModelImplementation CreateModel(ModelRoot modelRoot);
+    IMeshesImplementation CreateMeshes(ModelRoot modelRoot);
 
     IRendererShader CreateRendererShader(IList<ModShaderFile> shaders, string shaderProgramName);
 }

@@ -1,30 +1,23 @@
 using System;
-using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation;
-using Bearded.TD.Rendering.Vertices;
 
 namespace Bearded.TD.Content.Models;
 
 sealed class Model : IBlueprint, IDisposable
 {
+    private readonly IMeshesImplementation meshes;
+
     public ModAwareId Id { get; }
 
-    public Model(ModAwareId id)
+    public Model(ModAwareId id, IMeshesImplementation meshes)
     {
         Id = id;
+        this.meshes = meshes;
     }
 
     public void Dispose()
     {
-    }
-}
-
-sealed class Mesh(Buffer<NormalUVVertex> vertices, Buffer<ushort> indices) : IDisposable
-{
-    public void Dispose()
-    {
-        vertices.Dispose();
-        indices.Dispose();
+        meshes.Dispose();
     }
 }

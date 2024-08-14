@@ -63,7 +63,7 @@ namespace Bearded.TD.Tests.Content
                 IEnumerable<SpriteBitmaps> sprites,
                 SpriteSetConfiguration config) => new MockSpriteSetImplementation();
 
-            public IModelImplementation CreateModel(ModelRoot modelRoot) => new MockModel();
+            public IMeshesImplementation CreateMeshes(ModelRoot modelRoot) => new MockMeshes();
 
             public IRendererShader CreateRendererShader(
                 IList<ModShaderFile> shaders,
@@ -92,8 +92,9 @@ namespace Bearded.TD.Tests.Content
                 params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
         }
 
-        private sealed class MockModel : IModelImplementation
+        private sealed class MockMeshes : IMeshesImplementation
         {
+            public void Dispose() { }
         }
 
         private sealed class MockRendererShader : IRendererShader

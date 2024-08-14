@@ -15,7 +15,6 @@ using SharpGLTF.Schema2;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using LogicalMesh = SharpGLTF.Schema2.Mesh;
-using Mesh = Bearded.TD.Content.Models.Mesh;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -70,10 +69,10 @@ sealed partial class GraphicsLoader : IGraphicsLoader
         }
     }
 
-    public IModelImplementation CreateModel(ModelRoot modelRoot)
+    public IMeshesImplementation CreateMeshes(ModelRoot modelRoot)
     {
         var meshes = modelRoot.LogicalMeshes.Select(loadMesh).ToImmutableArray();
-        return new Model(meshes);
+        return new UploadedMeshes(meshes);
     }
 
     private Mesh loadMesh(LogicalMesh mesh)
@@ -122,7 +121,6 @@ sealed partial class GraphicsLoader : IGraphicsLoader
         var buffer = new Buffer<NormalUVVertex>();
         using var target = buffer.Bind();
         target.Upload(vertexArray);
-        // TODO: return AsVertices
         return buffer;
     }
 
@@ -131,7 +129,6 @@ sealed partial class GraphicsLoader : IGraphicsLoader
         var buffer = new Buffer<ushort>();
         using var target = buffer.Bind();
         target.Upload(indexArray);
-        // TODO: return AsIndices
         return buffer;
     }
 }

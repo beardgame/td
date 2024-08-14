@@ -21,9 +21,8 @@ sealed class ModelLoader
 
         var gltfFilePath = Path.ChangeExtension(file.FullName, "gltf");
         var modelRoot = ModelRoot.Load(gltfFilePath);
+        var meshes = context.GraphicsLoader.CreateMeshes(modelRoot);
 
-        context.Logger.Trace?.Log($"Loaded {gltfFilePath} with {modelRoot.LogicalMeshes.Count} meshes");
-
-        return new Model(ModAwareId.FromNameInMod(jsonModel.Id, meta));
+        return new Model(ModAwareId.FromNameInMod(jsonModel.Id, meta), meshes);
     }
 }
