@@ -1,4 +1,5 @@
 using System.IO;
+using Bearded.TD.Game;
 using Model = Bearded.TD.Content.Models.Model;
 using ModelJson = Bearded.TD.Content.Serialization.Models.Model;
 
@@ -15,5 +16,12 @@ sealed class ModelBlueprintLoader(BlueprintLoadingContext context)
     protected override (FileInfo, ModelLoader) GetDependencyResolvers(FileInfo file)
     {
         return (file, loader);
+    }
+
+    protected override void SetupDependencyResolver(ReadonlyBlueprintCollection<Model> blueprintCollection)
+    {
+        base.SetupDependencyResolver(blueprintCollection);
+
+        Context.AddDependencyResolver(new MeshResolver(Context.Meta, blueprintCollection, Context.LoadedDependencies));
     }
 }
