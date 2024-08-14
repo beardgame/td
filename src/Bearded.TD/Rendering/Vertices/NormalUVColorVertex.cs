@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Runtime.InteropServices;
-using Bearded.Graphics;
 using Bearded.Graphics.Vertices;
 using OpenTK.Mathematics;
 using static Bearded.Graphics.Vertices.VertexData;
@@ -14,9 +13,8 @@ readonly struct NormalUVVertex(Vector3 position, Vector3 normal, Vector2 uv) : I
 
     static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; }
         = MakeAttributeArray(
-            MakeAttributeTemplate<Vector3>("v_position"),
-            MakeAttributeTemplate<Vector3>("v_normal"),
-            MakeAttributeTemplate<Vector2>("v_texcoord"),
-            MakeAttributeTemplate<Color>("v_color")
+            MakeAttributeTemplate<Vector3>("vertexPosition"),
+            MakeAttributeTemplate<Vector3>("vertexNormal"),
+            MakeAttributeTemplate<Vector2>("vertexUV")
         );
 }
