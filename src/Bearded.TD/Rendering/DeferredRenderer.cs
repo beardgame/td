@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
@@ -59,7 +60,8 @@ sealed class DeferredRenderer
     public IRenderSetting GetDepthBufferUniform(string name, TextureUnit unit)
         => new TextureUniform(name, unit, depthBufferTexture);
 
-    public ExpandingIndexedTrianglesMeshBuilder<PointLightVertex> PointLights { get; } = new();
+    public readonly PointLightMesh PointLights = PointLightMesh.Create();
+
     public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; } = new();
 
     public DeferredRenderer(
@@ -224,7 +226,7 @@ sealed class DeferredRenderer
             GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1), gBufferResolution
         };
 
-        var pointLight = BatchedRenderer.From(PointLights.ToRenderable(), neededSettings);
+        var pointLight = Renderer.From(PointLights.ToRenderable(), neededSettings);
         shaders.GetShaderProgram("deferred/pointlight").UseOnRenderer(pointLight);
 
         var spotLight = BatchedRenderer.From(Spotlights.ToRenderable(), neededSettings);
