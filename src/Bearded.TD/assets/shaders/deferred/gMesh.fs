@@ -13,6 +13,6 @@ void main()
     vec4 rgba = vec4(1, 0, 0, 1);
 
     outRGBA = rgba;
-    outNormal = vec4(fragmentNormal, rgba.a);
-    outDepth = vec4(fragmentDepth, 0, 0, rgba.a);
+    outNormal = vec4(normalize(fragmentNormal), 1);
+    outDepth = vec4(fragmentDepth, 0, 0, 1);
 }
