@@ -1,0 +1,5 @@
+{
+    id: "deferred-mesh",
+    vertexShader: "deferred-mesh.vs",
+    fragmentShader: "deferred-mesh.fs"
+}
