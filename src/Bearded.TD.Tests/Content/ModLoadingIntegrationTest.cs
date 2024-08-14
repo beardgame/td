@@ -94,6 +94,8 @@ namespace Bearded.TD.Tests.Content
 
         private sealed class MockMeshes : IMeshesImplementation
         {
+            public IMesh GetMesh(string key) => default!;
+
             public void Dispose() { }
         }
 

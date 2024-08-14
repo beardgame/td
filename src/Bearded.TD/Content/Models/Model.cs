@@ -16,6 +16,8 @@ sealed class Model : IBlueprint, IDisposable
         this.meshes = meshes;
     }
 
+    public IMesh GetMesh(string key) => meshes.GetMesh(key);
+
     public void Dispose()
     {
         meshes.Dispose();

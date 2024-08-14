@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
-using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.Geometry;
@@ -23,7 +22,7 @@ sealed class DrawableMesh : IDrawable
         this.instances = instances;
     }
 
-    public void Add(Vector3 offset, Angle rotationY, float scale)
+    public void Add(Vector3 offset, Angle rotationY, float scale = 1.0f)
     {
         var worldMatrix = RotateY(rotationY).Then(Scale(scale)).Then(Translate(offset)).Matrix;
         Add(worldMatrix);

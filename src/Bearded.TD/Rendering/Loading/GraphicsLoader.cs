@@ -71,7 +71,7 @@ sealed partial class GraphicsLoader : IGraphicsLoader
 
     public IMeshesImplementation CreateMeshes(ModelRoot modelRoot)
     {
-        var meshes = modelRoot.LogicalMeshes.Select(loadMesh).ToImmutableArray();
+        var meshes = modelRoot.LogicalMeshes.ToImmutableDictionary(m => m.Name, loadMesh);
         return new UploadedMeshes(meshes);
     }
 
