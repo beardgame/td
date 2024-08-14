@@ -25,6 +25,12 @@ void main()
         instanceMatrixRow2,
         instanceMatrixRow3,
         instanceMatrixRow4);
+    // mat4 instanceMatrix = mat4(
+    //     1.0, 0.0, 0.0, 0.0,
+    //     0.0, 1.0, 0.0, 0.0,
+    //     0.0, 0.0, 1.0, 0.0,
+    //     0.0, 0.0, 0.0, 1.0
+    // );
 
     vec4 viewPosition = view * instanceMatrix * vec4(vertexPosition, 1.0);
 
