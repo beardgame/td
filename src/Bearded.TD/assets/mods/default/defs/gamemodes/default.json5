@@ -148,7 +148,7 @@
                     purpose: "blocker"
                 },
                 solution: {
-                    blueprints: [ "rock0" ],
+                    blueprints: [ "rock" ],
                     rotation: "randomDirection",
                     z: 0.01
                 }

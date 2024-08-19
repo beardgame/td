@@ -123,6 +123,7 @@ static class ModLoader
                 BehaviorConverterFactory.ForFactionBehaviors(),
                 BehaviorConverterFactory.ForGameRules(),
                 BehaviorConverterFactory.ForNodeBehaviors(),
+                new ComponentFactoryConverter(),
                 new FlattenedBlueprintConverter<IFactionBlueprint, FactionBlueprint>(meta),
                 ModAwareIdConverter.WithinMod(meta),
                 ModAwareSpriteIdConverter.WithinMod(meta),

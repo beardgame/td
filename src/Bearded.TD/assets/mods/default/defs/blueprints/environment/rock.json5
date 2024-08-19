@@ -1,0 +1,96 @@
+{
+    id: "rock",
+    components: [
+        { id: "currentTileNotifier" },
+        { id: "tileBasedVisibility" },
+        { id: "tileBlocker" },
+        {
+            id: "chooseOneOf",
+            parameters: {
+                components: [
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock2.cave.light",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock2.cave.medium",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock2.cave.dark",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock3.cave.light",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock3.cave.medium",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock3.cave.dark",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock4.cave.light",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock4.cave.medium",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    },
+                    {
+                        id: "simpleMesh",
+                        parameters: {
+                            mesh: "default.rocks.rock4.cave.dark",
+                            drawGroup: "building",
+                            size: 0.25,
+                            offset: [0, 0, 0.15],
+                        }
+                    }
+                ]
+            }
+        },
+    ]
+}
