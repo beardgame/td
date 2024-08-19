@@ -46,6 +46,7 @@ public sealed class ComponentLifeCycleTests
         typeof(MuzzleFlash), // Attempts to instantiate a sprite on activate.
         typeof(ParticleSystem), // Attempts to instantiate a sprite on activate.
         typeof(PlaySoundOnActivate), // Attempts to play a sound on activate.
+        typeof(SimpleMesh), // Attempts to instantiate a mesh on active.
         typeof(SpawnOnCreate), // Attempts to access particles on activate.
         typeof(Sprite), // Attempts to instantiate a sprite on activate.
         typeof(TargetEnemiesInRange), // Attempts to access the weapon state on activate.

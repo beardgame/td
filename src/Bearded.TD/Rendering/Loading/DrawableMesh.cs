@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
@@ -55,8 +56,10 @@ sealed class DrawableMesh : IDrawable
             .With(mesh.IndexBuffer)
             .With(instances.AsVertexBuffer())
             .InstancedWith(() => instances.Count));
-        // TODO: upload material
-        return Renderer.From(renderable, settings);
+
+        var allSettings = mesh.Material.ToRenderSettings().Concat(settings);
+
+        return Renderer.From(renderable, allSettings);
     }
 
     public static DrawableMesh ForMesh(Mesh mesh)

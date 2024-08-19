@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.Graphics.Rendering;
+using Bearded.Graphics.RenderSettings;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Rendering.Vertices;
 
@@ -20,10 +22,14 @@ sealed class UploadedMeshes(ImmutableDictionary<string, Mesh> meshes) : IMeshesI
     }
 }
 
-sealed class Mesh(Buffer<NormalUVVertex> vertices, Buffer<ushort> indices) : IDisposable, IDrawableTemplate, IMesh
+sealed class Mesh(
+    Buffer<NormalUVVertex> vertices,
+    Buffer<ushort> indices,
+    MeshMaterial material) : IDisposable, IDrawableTemplate, IMesh
 {
     public IVertexBuffer VertexBuffer { get; } = vertices.AsVertexBuffer();
     public IIndexBuffer IndexBuffer { get; } = indices.AsIndexBuffer();
+    public MeshMaterial Material { get; } = material;
 
     public DrawableMesh AsDrawable(
         IDrawableRenderers drawableRenderers,
@@ -40,5 +46,16 @@ sealed class Mesh(Buffer<NormalUVVertex> vertices, Buffer<ushort> indices) : IDi
     {
         vertices.Dispose();
         indices.Dispose();
+        Material.Dispose();
+    }
+}
+
+sealed class MeshMaterial(TextureUniform diffuseTexture) : IDisposable
+{
+    public IEnumerable<IRenderSetting> ToRenderSettings() => [diffuseTexture];
+
+    public void Dispose()
+    {
+        diffuseTexture.Value.Dispose();
     }
 }

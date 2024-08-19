@@ -51,6 +51,7 @@ sealed class SimpleMesh : Component<SimpleMesh.IParameters>, IListener<DrawCompo
             throw new Exception("Received draw event before activation.");
         }
 
+        // TODO: use IComponentDrawer interface for this
         var drawableMesh = Parameters.Mesh.AsDrawable(
             Owner.Game.Meta.DrawableRenderers, drawGroup,Parameters.DrawGroupOrderKey, shader);
 
