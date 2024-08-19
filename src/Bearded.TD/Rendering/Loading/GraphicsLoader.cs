@@ -94,7 +94,11 @@ sealed partial class GraphicsLoader : IGraphicsLoader
 
     private static TextureUniform createTextureUniform(string name, MemoryImage memoryImage)
     {
-        var texture = Texture.From(ImageTextureData.From(memoryImage.Open()));
+        var texture = Texture.From(ImageTextureData.From(memoryImage.Open()), t =>
+        {
+            t.GenerateMipmap();
+            t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
+        });
         return new TextureUniform(name, TextureUnit.Texture0, texture);
     }
 
