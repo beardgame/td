@@ -23,9 +23,9 @@ sealed class DrawableMesh : IDrawable
         this.instances = instances;
     }
 
-    public void Add(Vector3 offset, Angle rotationY, float scale = 1.0f)
+    public void Add(Vector3 offset, Angle rotationZ, float scale = 1.0f)
     {
-        var worldMatrix = RotateY(rotationY).Then(Scale(scale)).Then(Translate(offset)).Matrix;
+        var worldMatrix = RotateZ(rotationZ).Then(Scale(scale)).Then(Translate(offset)).Matrix;
         Add(worldMatrix);
     }
 

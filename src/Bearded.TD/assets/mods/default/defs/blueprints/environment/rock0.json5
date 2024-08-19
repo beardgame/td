@@ -1,0 +1,17 @@
+{
+    id: "rock0",
+    components: [
+        { id: "currentTileNotifier" },
+        { id: "tileBasedVisibility" },
+        { id: "tileBlocker" },
+        {
+            id: "simpleMesh",
+            parameters: {
+                mesh: "default.rocks.rock3.cave.light",
+                drawGroup: "building",
+                size: 0.18,
+                offset: [0, 0, 0.2],
+            }
+        },
+    ]
+}

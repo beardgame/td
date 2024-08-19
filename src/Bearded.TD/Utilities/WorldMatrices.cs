@@ -10,9 +10,9 @@ static class WorldMatrices
         return new AffineTransformation(Matrix4.CreateTranslation(offset));
     }
 
-    public static LinearTransformation RotateY(Angle angle)
+    public static LinearTransformation RotateZ(Angle angle)
     {
-        return new LinearTransformation(Matrix4.CreateRotationY(angle.Degrees));
+        return new LinearTransformation(Matrix4.CreateRotationZ(angle.Degrees));
     }
 
     public static LinearTransformation Scale(float scale)

@@ -21,6 +21,8 @@ sealed class SimpleMesh : Component<SimpleMesh.IParameters>, IListener<DrawCompo
         int DrawGroupOrderKey { get; }
         Difference3 Offset { get; }
         Direction2? Direction { get; }
+        [Modifiable(1)]
+        Unit Size { get; }
     }
 
     private Shader? shader;
@@ -57,6 +59,6 @@ sealed class SimpleMesh : Component<SimpleMesh.IParameters>, IListener<DrawCompo
 
         var pos = Owner.Position + Parameters.Offset;
         var dir = Parameters.Direction ?? Owner.Direction;
-        drawableMesh.Add(pos.NumericValue, dir - Direction2.Zero);
+        drawableMesh.Add(pos.NumericValue, dir - Direction2.Zero, Parameters.Size.NumericValue);
     }
 }

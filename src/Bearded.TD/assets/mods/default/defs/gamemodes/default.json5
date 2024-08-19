@@ -148,7 +148,7 @@
                     purpose: "blocker"
                 },
                 solution: {
-                    blueprints: [ "fungus0", "fungus1", "fungus2" ],
+                    blueprints: [ "rock0" ],
                     rotation: "randomDirection",
                     z: 0.01
                 }
