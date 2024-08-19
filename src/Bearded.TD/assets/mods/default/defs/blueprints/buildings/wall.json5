@@ -23,7 +23,7 @@
         {
             id: "simpleMesh",
             parameters: {
-                mesh: "truck.Cube",
+                mesh: "truck.PoliceChassis",
             }
         },
 //        {
