@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using Bearded.Graphics;
+using Bearded.Graphics.ImageSharp;
+using Bearded.Graphics.RenderSettings;
 using Bearded.Graphics.ShaderManagement;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Models;
@@ -11,10 +13,14 @@ using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
 using Bearded.Utilities.Threading;
+using OpenTK.Graphics.OpenGL;
+using SharpGLTF.Memory;
 using SharpGLTF.Schema2;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using LogicalMaterial = SharpGLTF.Schema2.Material;
 using LogicalMesh = SharpGLTF.Schema2.Mesh;
+using Texture = Bearded.Graphics.Textures.Texture;
 
 namespace Bearded.TD.Rendering.Loading;
 
@@ -71,11 +77,28 @@ sealed partial class GraphicsLoader : IGraphicsLoader
 
     public IMeshesImplementation CreateMeshes(ModelRoot modelRoot)
     {
-        var meshes = modelRoot.LogicalMeshes.ToImmutableDictionary(m => m.Name, loadMesh);
+        var materials = modelRoot.LogicalMaterials.ToImmutableDictionary(m => m, loadMaterial);
+        var meshes = modelRoot.LogicalMeshes.ToImmutableDictionary(m => m.Name, m => loadMesh(m, materials));
         return new UploadedMeshes(meshes);
     }
 
-    private Mesh loadMesh(LogicalMesh mesh)
+    private MeshMaterial loadMaterial(LogicalMaterial material)
+    {
+        var diffuseChannel = material.FindChannel("BaseColor") ??
+            material.FindChannel("Diffuse") ??
+            throw new InvalidDataException("Material does not have a diffuse channel.");
+        var textureContent = diffuseChannel.Texture.PrimaryImage.Content;
+        var diffuseTextureUniform = glActions.Run(() => createTextureUniform("diffuse", textureContent)).Result;
+        return new MeshMaterial(diffuseTextureUniform);
+    }
+
+    private static TextureUniform createTextureUniform(string name, MemoryImage memoryImage)
+    {
+        var texture = Texture.From(ImageTextureData.From(memoryImage.Open()));
+        return new TextureUniform(name, TextureUnit.Texture0, texture);
+    }
+
+    private Mesh loadMesh(LogicalMesh mesh, ImmutableDictionary<LogicalMaterial, MeshMaterial> materials)
     {
         if (mesh.Primitives.Count != 1)
         {
@@ -83,6 +106,7 @@ sealed partial class GraphicsLoader : IGraphicsLoader
         }
 
         var primitive = mesh.Primitives[0];
+        var material = materials[primitive.Material];
 
         var positions = primitive.GetVertexAccessor("POSITION").AsVector3Array();
         var normals = primitive.GetVertexAccessor("NORMAL").AsVector3Array();
@@ -99,7 +123,7 @@ sealed partial class GraphicsLoader : IGraphicsLoader
         var vertexBuffer = vertexBufferTask.Result;
         var indexBuffer = indexBufferTask.Result;
 
-        return new Mesh(vertexBuffer, indexBuffer);
+        return new Mesh(vertexBuffer, indexBuffer, material);
     }
 
     private static NormalUVVertex[] interleaveVertices(
