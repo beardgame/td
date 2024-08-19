@@ -42,7 +42,7 @@ sealed class MeshResolver : IDependencyResolver<IMesh>
         }
         catch (Exception e)
         {
-            throw new InvalidDataException($"Failed to find sprite with id \"{id}\".", e);
+            throw new InvalidDataException($"Failed to find mesh with id \"{id}\".", e);
         }
 
         throw new InvalidDataException($"Unknown mod in identifier {id}");

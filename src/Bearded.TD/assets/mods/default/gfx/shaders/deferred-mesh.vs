@@ -28,7 +28,7 @@ void main()
 
     vec4 viewPosition = view * instanceMatrix * vec4(vertexPosition, 1.0);
 
-    gl_Position = projection * vec4(vertexPosition, 1.0);
+    gl_Position = projection * viewPosition;
 
     vec4 normalTransformed = instanceMatrix * vec4(vertexNormal, 0.0);
     fragmentNormal = normalTransformed.xyz;
