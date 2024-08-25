@@ -8,14 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Get Branch
         run: |
           branch=$(git branch -r --contains ${{ github.ref }} --format "%(refname:lstrip=3)")
           echo "BRANCH=$branch" >> "$GITHUB_ENV"
-
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH }}
 
       - name: Increment version number
         id: increment-version
@@ -29,3 +27,4 @@ jobs:
         with:
           add: 'src/Bearded.TD/Config.cs'
           message: '⬆️ Increment version to ${{ steps.increment-version.outputs.new_version }}'
+          push: ${{ env.BRANCH }}
