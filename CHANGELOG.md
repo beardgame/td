@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.29
+
+* Replaced mushroom textures with 3D rock models
+* Performance: replaced level and light rendering with instanced rendering
+
 ## v0.28
 
 * Added visual overlays to the game, projected to the game geometry
