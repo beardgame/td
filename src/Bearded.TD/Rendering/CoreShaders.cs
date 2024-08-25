@@ -29,6 +29,7 @@ sealed class CoreShaders
             "deferred/copyDepth",
             "deferred/pointlight",
             "deferred/spotlight",
+            "gi/cascade",
             "terrain-base",
             "biome-base",
             "intermediateLayerBlur",

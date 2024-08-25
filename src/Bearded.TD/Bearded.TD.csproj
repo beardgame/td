@@ -54,6 +54,12 @@
 
   <ItemGroup>
     <None Include="*.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="assets\shaders\gi\cascade.fs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\shaders\gi\cascade.vs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">

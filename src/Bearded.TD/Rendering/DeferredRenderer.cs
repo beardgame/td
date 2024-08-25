@@ -49,7 +49,7 @@ sealed class DeferredRenderer
     private readonly FloatUniform hexagonalFallOffDistance = new("hexagonalFallOffDistance");
     private readonly IPipeline<RenderState> pipeline;
 
-    private readonly TextureUniform heightmapTexture = new("heightmap", TextureUnit.Texture3, null!);
+    private readonly TextureUniform heightmapTexture = new("heightmap", TextureUnit.Texture5, null!);
     private readonly FloatUniform heightmapRadius = new("heightmapRadius");
     private readonly FloatUniform heightmapPixelSizeUV = new("heightmapPixelSizeUV");
 
@@ -80,6 +80,8 @@ sealed class DeferredRenderer
 
             LightAccum = Texture(PixelInternalFormat.Rgb, label: "LightAccum"),
             Composition = Texture(PixelInternalFormat.Rgba, label: "Composition"),
+
+            RadianceCascades = Texture(PixelInternalFormat.Rgb, label: "RadianceCascades", width: 1024, height: 512),
         };
 
         var targets = new
@@ -90,6 +92,7 @@ sealed class DeferredRenderer
                 textures.DepthMask, textures.Diffuse),
 
             LightAccum = RenderTargetWithDepthAndColors("LightAccum", textures.DepthMask, textures.LightAccum),
+            RadianceCascades = RenderTargetWithColors("RadianceCascades", textures.RadianceCascades),
             Composition = RenderTargetWithDepthAndColors("Composition", textures.DepthMask, textures.Composition),
 
             UpscaleDiffuse = RenderTargetWithColors("UpscaleDiffuse", textures.Diffuse),
@@ -158,6 +161,20 @@ sealed class DeferredRenderer
                     Render(pointLightRenderer, spotLightRenderer)
                 )),
             WithContext(
+                c => c.SetDebugName("Cascade Radiance")
+                    .BindRenderTarget(targets.RadianceCascades)
+                    .SetViewport(_ => new Rectangle(0, 0, 512, 512)),
+                PostProcess(shaders.GetShaderProgram("gi/cascade"), out _,
+                    TextureUniforms(
+                        (textures.Diffuse, "albedoTexture"),
+                        (textures.LightAccum, "lightTexture"),
+                        (textures.Normal, "normalBuffer"),
+                        (textures.Depth, "depthBuffer")
+                    ),
+                    settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
+                    settings.CameraPosition, gBufferResolution
+                )),
+            WithContext(
                 c => c.SetDebugName("Composite final image")
                     .BindRenderTarget(targets.Composition)
                     .SetBlendMode(Premultiplied),
@@ -169,7 +186,9 @@ sealed class DeferredRenderer
                             TextureUniforms(
                                 (textures.Diffuse, "albedoTexture"),
                                 (textures.LightAccum, "lightTexture"),
-                                (textures.Depth, "depthBuffer")
+                                (textures.Normal, "normalBuffer"),
+                                (textures.Depth, "depthBuffer"),
+                                (textures.RadianceCascades, "radianceCascadeBuffer")
                                 ),
                             heightmapTexture, heightmapRadius, heightmapPixelSizeUV,
                             settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY,
