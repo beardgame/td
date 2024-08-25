@@ -2,6 +2,7 @@ using System;
 using Bearded.Graphics.Vertices;
 using Bearded.TD.Rendering.Loading;
 using Bearded.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
@@ -31,4 +32,6 @@ interface IComponentDrawer
         SpriteDrawInfo<TVertex, TVertexData> sprite, int vertexCount, int indexCount,
         out Span<TVertex> vertices, out Span<ushort> indices, out ushort indexOffset, out UVRectangle uvs)
         where TVertex : struct, IVertexData;
+
+    void DrawMesh(MeshDrawInfo mesh, Position3 position, Direction2 direction, Unit scale);
 }

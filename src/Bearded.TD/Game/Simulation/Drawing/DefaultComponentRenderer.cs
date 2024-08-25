@@ -1,11 +1,13 @@
 using System;
 using Bearded.Graphics.Vertices;
+using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Rendering;
 using Bearded.TD.Rendering.Loading;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.Geometry;
+using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -67,6 +69,21 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         out Span<ushort> indices, out ushort indexOffset, out UVRectangle uvs) where TVertex : struct, IVertexData
     {
         Drawable(sprite).DrawIndexedVertices(vertexCount, indexCount, out vertices, out indices, out indexOffset, out uvs);
+    }
+
+    public void DrawMesh(MeshDrawInfo mesh, Position3 position, Direction2 direction, Unit scale)
+    {
+        Drawable(mesh).Add(position.NumericValue, direction - Direction2.Zero, scale.NumericValue);
+    }
+
+    protected virtual DrawableMesh Drawable(MeshDrawInfo mesh)
+    {
+        return mesh.Mesh.AsDrawable(
+            Owner.Game.Meta.DrawableRenderers,
+            mesh.DrawGroup,
+            mesh.DrawGroupOrderKey,
+            mesh.Shader
+            );
     }
 
     protected virtual IDrawableSprite<TVertex, TVertexData> Drawable<TVertex, TVertexData>(

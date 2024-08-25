@@ -1,4 +1,3 @@
-using System;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -10,8 +9,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
+readonly record struct MeshDrawInfo(IMesh Mesh, Shader Shader, DrawOrderGroup DrawGroup, int DrawGroupOrderKey);
+
 [Component("simpleMesh")]
-sealed class SimpleMesh : Component<SimpleMesh.IParameters>, IListener<DrawComponents>
+sealed class SimpleMesh(SimpleMesh.IParameters parameters)
+    : Component<SimpleMesh.IParameters>(parameters), IListener<DrawComponents>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -25,18 +27,20 @@ sealed class SimpleMesh : Component<SimpleMesh.IParameters>, IListener<DrawCompo
         Unit Size { get; }
     }
 
-    private Shader? shader;
-    private DrawOrderGroup drawGroup;
-
-    public SimpleMesh(IParameters parameters) : base(parameters) { }
+    private MeshDrawInfo mesh;
 
     protected override void OnAdded() { }
 
     public override void Activate()
     {
         Events.Subscribe(this);
-        shader = Parameters.Shader ?? Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-mesh")];
-        drawGroup = Parameters.DrawGroup ?? DrawOrderGroup.Building;
+
+        mesh = new MeshDrawInfo(
+            Parameters.Mesh,
+            Parameters.Shader ?? Owner.Game.Meta.Blueprints.Shaders[ModAwareId.ForDefaultMod("deferred-mesh")],
+            Parameters.DrawGroup ?? DrawOrderGroup.Building,
+            Parameters.DrawGroupOrderKey
+            );
     }
 
     public override void OnRemoved()
@@ -48,17 +52,9 @@ sealed class SimpleMesh : Component<SimpleMesh.IParameters>, IListener<DrawCompo
 
     public void HandleEvent(DrawComponents e)
     {
-        if (shader is null)
-        {
-            throw new Exception("Received draw event before activation.");
-        }
-
-        // TODO: use IComponentDrawer interface for this
-        var drawableMesh = Parameters.Mesh.AsDrawable(
-            Owner.Game.Meta.DrawableRenderers, drawGroup,Parameters.DrawGroupOrderKey, shader);
-
         var pos = Owner.Position + Parameters.Offset;
         var dir = Parameters.Direction ?? Owner.Direction;
-        drawableMesh.Add(pos.NumericValue, dir - Direction2.Zero, Parameters.Size.NumericValue);
+
+        e.Drawer.DrawMesh(mesh, pos, dir, Parameters.Size);
     }
 }
