@@ -15,15 +15,10 @@ jobs:
         with:
           submodules: true
 
-      # The version number can be extracted from the currently checked out tag,
-      # which has the format 'refs/tags/v*'.
-      - name: Extract version number
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
       - uses: robinraju/release-downloader@v1.11
         with:
-          tag: ${{ RELEASE_VERSION }}
-          fileName: "Bearded.TD.MasterServer-${{ RELEASE_VERSION }}-linux-x64.zip"
+          tag: ${{ GITHUB_REF_NAME }}
+          fileName: "Bearded.TD.MasterServer-${{ GITHUB_REF_NAME }}-linux-x64.zip"
 
       - name: Copy binaries to server
         uses: appleboy/scp-action@v0.1.7
@@ -31,7 +26,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "Bearded.TD.MasterServer-${{ RELEASE_VERSION }}-linux-x64.zip"
+          source: "Bearded.TD.MasterServer-${{ GITHUB_REF_NAME }}-linux-x64.zip"
           target: td/deploy.zip
 
       - name: Deploy new binary on server

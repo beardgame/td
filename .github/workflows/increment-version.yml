@@ -1,0 +1,30 @@
+name: Increment version
+
+on: [workflow_dispatch, workflow_call]
+
+jobs:
+
+  update_project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Branch
+        run: |
+          branch=$(git branch -r --contains ${{ github.ref }} --format "%(refname:lstrip=3)")
+          echo "BRANCH=$branch" >> "$GITHUB_ENV"
+
+      - name: Increment version number
+        id: increment-version
+        run: |
+          MINOR=$(grep 'BaseVersionString =' src/Bearded.TD/Config.cs | sed -nr 's/.*[0-9]+\.([0-9]+).*/\1/p')
+          NEW_MINOR=$(($MINOR + 1))
+          sed -i -r "s/(.*)(BaseVersionString = \"[0-9]+.)([0-9]+)(.*)/\1\2$NEW_MINOR\4/" src/Bearded.TD/Config.cs
+          echo "new_version=0.$NEW_MINOR" >> "$GITHUB_OUTPUT"
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'src/Bearded.TD/Config.cs'
+          message: '⬆️ Increment version to ${{ steps.increment-version.outputs.new_version }}'
+          push: origin ${{ env.BRANCH }}

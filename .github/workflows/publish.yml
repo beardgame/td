@@ -48,11 +48,6 @@ jobs:
       - name: Build
         run: dotnet build src/${{matrix.binary}} -c Release -r ${{matrix.runtime}} --no-restore --self-contained -p:PublishSingleFile=true
 
-      # The version number can be extracted from the currently checked out tag,
-      # which has the format 'refs/tags/v*'.
-      - name: Extract version number
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
       - name: Create self-contained package
         run: dotnet publish src/${{matrix.binary}} -c Release --no-build -r ${{matrix.runtime}} --self-contained -o publish/${{matrix.runtime}} -p:PublishSingleFile=true
 
@@ -60,7 +55,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: zip
-          filename: ${{matrix.binary}}-${{ env.RELEASE_VERSION }}-${{matrix.runtime}}.zip
+          filename: ${{matrix.binary}}-${{ env.GITHUB_REF_NAME }}-${{matrix.runtime}}.zip
           path: ${{matrix.runtime}}
           directory: publish
       - name: Upload artifact
@@ -82,18 +77,13 @@ jobs:
           path: publish/
           merge-multiple: true
 
-      # The version number can be extracted from the currently checked out tag,
-      # which has the format 'refs/tags/v*'.
-      - name: Extract version number
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.RELEASE_VERSION }}
-          name: ${{ env.RELEASE_VERSION }}
+          tag_name: ${{ env.GITHUB_REF_NAME }}
+          name: ${{ env.GITHUB_REF_NAME }}
           draft: false
-          prerelease: ${{ contains(env.RELEASE_VERSION, '-') }}
+          prerelease: ${{ contains(env.GITHUB_REF_NAME, '-') }}
           token: ${{ secrets.GITHUB_TOKEN }}
           files: "publish/*.zip"
         env:
@@ -111,10 +101,8 @@ jobs:
           path: publish/
           merge-multiple: true
 
-      # The version number can be extracted from the currently checked out tag,
-      # which has the format 'refs/tags/v*'.
       - name: Extract version number
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo "SEMANTIC_RELEASE_VERSION=${GITHUB_REF_NAME:1}" >> $GITHUB_ENV
 
       - name: Install butler
         run: |
@@ -126,4 +114,4 @@ jobs:
       - name: Push Windows build
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-        run: ./butler push publish/Bearded.TD-${{ env.RELEASE_VERSION }}-win-x64.zip tomrijnbeek/bearded-td:win --userversion ${{ env.RELEASE_VERSION }}
+        run: ./butler push publish/Bearded.TD-${{ env.GITHUB_REF_NAME }}-win-x64.zip tomrijnbeek/bearded-td:win --userversion ${{ env.SEMANTIC_RELEASE_VERSION }}
