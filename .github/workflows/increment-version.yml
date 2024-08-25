@@ -27,4 +27,4 @@ jobs:
         with:
           add: 'src/Bearded.TD/Config.cs'
           message: '⬆️ Increment version to ${{ steps.increment-version.outputs.new_version }}'
-          push: ${{ env.BRANCH }}
+          push: origin ${{ env.BRANCH }}
