@@ -14,6 +14,7 @@ in vec4 instanceMatrixRow2;
 in vec4 instanceMatrixRow3;
 in vec4 instanceMatrixRow4;
 
+out vec3 fragmentPosition;
 out vec3 fragmentNormal;
 out vec2 fragmentUV;
 out float fragmentDepth;
@@ -25,8 +26,10 @@ void main()
         instanceMatrixRow2,
         instanceMatrixRow3,
         instanceMatrixRow4);
+    
+    vec4 instancePosition = instanceMatrix * vec4(vertexPosition, 1.0);
 
-    vec4 viewPosition = view * instanceMatrix * vec4(vertexPosition, 1.0);
+    vec4 viewPosition = view * instancePosition;
 
     gl_Position = projection * viewPosition;
 
@@ -35,4 +38,5 @@ void main()
 
     fragmentUV = vertexUV;
     fragmentDepth = -viewPosition.z / farPlaneDistance;
+    fragmentPosition = instancePosition.xyz;
 }

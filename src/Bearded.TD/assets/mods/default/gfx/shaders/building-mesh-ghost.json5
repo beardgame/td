@@ -1,0 +1,5 @@
+{
+    id: "building-mesh-ghost",
+    vertexShader: "deferred-mesh.vs",
+    fragmentShader: "building-ghost.fs"
+}

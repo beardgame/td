@@ -1,8 +1,6 @@
 ﻿#version 150
 
 uniform sampler2D diffuse;
-uniform sampler2D normal;
-uniform float time;
 
 in vec3 fragmentPosition;
 in vec2 fragmentUV;
@@ -30,8 +28,6 @@ void main()
             - (texture(diffuse, fragmentUV - uvY).xyz * 2 - 1);
 
     float n = dot(nX, nX) + dot(nY, nY);
-
-    bool isOutline = n > 0.01 || a > 0.01;
     
     float insideAlpha = 0.75;
     vec4 edgeColor = mix(vec4(0.5), vec4(fragmentColor.rgb, 0), 0.25);

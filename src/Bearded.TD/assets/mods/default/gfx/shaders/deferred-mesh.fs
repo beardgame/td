@@ -2,6 +2,7 @@
 
 uniform sampler2D diffuse;
 
+in vec3 fragmentPosition; // ignored here, but used in ghost shader
 in vec3 fragmentNormal;
 in vec2 fragmentUV;
 in float fragmentDepth;
