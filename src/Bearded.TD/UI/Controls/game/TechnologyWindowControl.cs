@@ -4,14 +4,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Technologies;
+using Bearded.TD.UI.Dragging;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
-using Bearded.UI.EventArgs;
 using Bearded.UI.Rendering;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using static Bearded.TD.Constants.UI;
 
 namespace Bearded.TD.UI.Controls;
@@ -29,60 +27,23 @@ sealed class TechnologyWindowControl : CompositeControl
 
     private readonly TechnologyWindow model;
     private readonly UIContext uiContext;
-    private readonly Control window;
-
-    private bool dragging;
-    private Vector2d lastDragMousePosition;
 
     public TechnologyWindowControl(TechnologyWindow model, UIContext uiContext)
     {
         this.model = model;
         this.uiContext = uiContext;
         IsClickThrough = true;
-        window = uiContext.Factories.Window(b => b
+        var window = uiContext.Factories.Window(b => b
             .WithTitle("Technology")
             .WithOnClose(model.CloseWindow)
             .WithContent(buildContent())
             .WithShadow()
         ).AnchorAsWindow(contentWidth, contentHeight);
         Add(window);
-    }
 
-    public override void MouseButtonHit(MouseButtonEventArgs eventArgs)
-    {
-        if (eventArgs.MouseButton == MouseButton.Left)
-        {
-            dragging = true;
-            lastDragMousePosition = eventArgs.MousePosition;
-            eventArgs.Handled = true;
-        }
-    }
+        model.IsVisible.SourceUpdated += _ => window.AnchorAsWindow(contentWidth, contentHeight);
 
-    public override void PreviewMouseMoved(MouseEventArgs eventArgs)
-    {
-        if (dragging == false)
-        {
-            return;
-        }
-
-        if (!eventArgs.MouseButtons.Left)
-        {
-            dragging = false;
-            return;
-        }
-
-        var move = eventArgs.MousePosition - lastDragMousePosition;
-
-        var currentPosition = window.Frame.TopLeft;
-        var newPosition = currentPosition + move;
-
-        window.Anchor(a => a
-            .Top(margin: newPosition.Y, height: contentHeight)
-            .Left(margin: newPosition.X, width: contentWidth)
-        );
-
-        lastDragMousePosition = eventArgs.MousePosition;
-        eventArgs.Handled = true;
+        window.AddDragging(DragScope.Anywhere, DragActions.DefaultMove);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
@@ -121,7 +82,8 @@ sealed class TechnologyWindowControl : CompositeControl
             new ComplexBox
             {
                 CornerRadius = 2,
-                Components = [
+                Components =
+                [
                     Edge.Outer(1, Colors.Get(BackgroundColor.WindowInsetLine)),
                     Glow.Outer(4, Shadows.Default.Color * 0.5f),
                 ],

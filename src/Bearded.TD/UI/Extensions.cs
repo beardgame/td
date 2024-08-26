@@ -66,4 +66,16 @@ static class Extensions
             parent.Add(child);
         }
     }
+
+    public static IControlParent? FindRoot(this Control source)
+    {
+        var ancestor = source.Parent;
+
+        while (ancestor is Control c)
+        {
+            ancestor = c.Parent;
+        }
+
+        return ancestor;
+    }
 }

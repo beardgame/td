@@ -25,6 +25,7 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
     private ContentManager content = null!;
     public TechTree TechTree { get; private set; } = null!;
     public Binding<bool> CanUnlockTechnologyNowBinding { get; private set; } = null!;
+    public IReadonlyBinding<bool> IsVisible => windowVisibility;
 
     public TechnologyWindow()
     {
