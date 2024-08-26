@@ -51,6 +51,7 @@ static class ButtonExtensions
             var color = (isEnabled, mouseState) switch
             {
                 ({ Value: false }, _) when !alwaysRenderAsEnabled => colors.Disabled,
+                ({ Value: true }, { MouseIsOver: false }) => colors.Neutral,
                 ({ Value: true }, { MouseIsDown: true }) => colors.Active,
                 ({ Value: true }, { MouseIsOver: true }) => colors.Hover,
                 _ when isActive.Value => colors.Active,

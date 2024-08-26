@@ -142,7 +142,7 @@ sealed partial class ButtonFactory
             Validate();
 
             // ReSharper disable once UseObjectOrCollectionInitializer
-            var button = new Button();
+            var button = new TDButton();
             var contentColor = Binding.Combine(isEnabled, isError, (enabled, error) =>
             {
                 if (error)

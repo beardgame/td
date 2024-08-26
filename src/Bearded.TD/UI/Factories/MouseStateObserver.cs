@@ -22,24 +22,19 @@ sealed class MouseStateObserver
 
     private void onMouseMove(MouseEventArgs args)
     {
-        if (MouseIsOver) return;
-        MouseIsOver = true;
-        StateChanged?.Invoke();
+        set(down: args.MouseButtons.Left, over: true);
     }
 
     private void onMouseExit(MouseEventArgs args)
     {
-        if (!MouseIsOver) return;
-        MouseIsOver = false;
-        StateChanged?.Invoke();
+        set(over: false);
     }
 
     private void onMouseButtonDown(MouseButtonEventArgs t)
     {
         if (t.MouseButton == MouseButton.Left)
         {
-            MouseIsDown = true;
-            StateChanged?.Invoke();
+            set(down: true);
         }
     }
 
@@ -47,8 +42,20 @@ sealed class MouseStateObserver
     {
         if (t.MouseButton == MouseButton.Left)
         {
-            MouseIsDown = false;
-            StateChanged?.Invoke();
+            set(down: false);
         }
+    }
+
+    private void set(bool? down = null, bool? over = null)
+    {
+        var newState = (down ?? MouseIsDown, over ?? MouseIsOver);
+
+        if (newState == (MouseIsDown, MouseIsOver))
+        {
+            return;
+        }
+
+        (MouseIsDown, MouseIsOver) = newState;
+        StateChanged?.Invoke();
     }
 }
