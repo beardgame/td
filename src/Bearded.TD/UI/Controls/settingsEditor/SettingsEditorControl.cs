@@ -60,7 +60,7 @@ sealed class SettingsEditorControl : CompositeControl
                         case UserSettingsSchema.SelectSetting selectSetting:
                             var selectBinding = Binding.Create(
                                 selectSetting.SelectedOption, option => selectSetting.SelectedOption = option);
-                            form.AddButtonSelectRow(selectSetting.DisplayName,
+                            form.AddSliderSelectRow(selectSetting.DisplayName,
                                 selectSetting.Options,
                                 option => option.DisplayName,
                                 selectBinding);

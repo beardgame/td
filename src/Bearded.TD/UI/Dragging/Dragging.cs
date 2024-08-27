@@ -10,22 +10,22 @@ namespace Bearded.TD.UI.Dragging;
 static class Dragging
 {
     public static IDragController AddDragging<TControl>(
-        this TControl control, DragScope scope, DragAction<TControl> drag)
+        this TControl control, DragScope scope, DragAction<TControl> drag, Action? dragEnd = null)
         where TControl : Control
     {
-        return AddDragging(control, scope, move => drag(control, move));
+        return AddDragging(control, scope, move => drag(control, move), dragEnd);
     }
 
     public static IDragController AddDragging<TControl>(
-        this TControl control, DragScope scope, DragAction drag)
+        this TControl control, DragScope scope, DragAction drag, Action? dragEnd = null)
         where TControl : Control
     {
-        var controller = new Controller(control, scope, drag);
+        var controller = new Controller(control, scope, drag, dragEnd);
         controller.Enable();
         return controller;
     }
 
-    private sealed class Controller(Control source, DragScope scope, DragAction drag)
+    private sealed class Controller(Control source, DragScope scope, DragAction drag, Action? dragEnd)
         : Control, IDragController
     {
         private Vector2d lastDragMousePosition;
@@ -67,6 +67,12 @@ static class Dragging
 
         private void startDrag(MouseButtonEventArgs eventArgs)
         {
+            if (Parent != null)
+            {
+                // This can happen in rare cases, though I'm unsure why exactly - the mouse-up must not be detected.
+                RemoveFromParent();
+            }
+
             var parent = scope switch
             {
                 DragScope.WithinParent => source.Parent,
@@ -81,9 +87,9 @@ static class Dragging
 
         private void continueDrag(MouseEventArgs eventArgs)
         {
-            var move = eventArgs.MousePosition - lastDragMousePosition;
+            var delta = eventArgs.MousePosition - lastDragMousePosition;
 
-            drag(move);
+            drag(new DragEvent(eventArgs.MousePosition, delta));
 
             lastDragMousePosition = eventArgs.MousePosition;
         }
@@ -92,6 +98,7 @@ static class Dragging
         {
             if (Parent != null)
             {
+                dragEnd?.Invoke();
                 RemoveFromParent();
             }
         }

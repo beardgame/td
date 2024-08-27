@@ -5,14 +5,18 @@ namespace Bearded.TD.UI.Factories;
 
 sealed record UIFactories(
     ButtonFactory ButtonFactory,
-    ReportFactory ReportFactory
+    ReportFactory ReportFactory,
+    SliderFactory SliderFactory
 )
 {
     public static UIFactories Create(Animations animations, TooltipFactory tooltips)
     {
+        var buttons = new ButtonFactory(animations, tooltips);
+
         return new UIFactories(
-            new ButtonFactory(animations, tooltips),
-            new ReportFactory(animations, tooltips)
+            buttons,
+            new ReportFactory(animations, tooltips),
+            new SliderFactory(buttons, animations)
         );
     }
 }

@@ -2,6 +2,6 @@
 
 enum DragScope
 {
-    WithinParent = 0,
-    Anywhere = 1,
+    Anywhere = 0,
+    WithinParent = 1,
 }

@@ -70,7 +70,7 @@ static class TooltipFactories
             new ComplexBox
             {
                 CornerRadius = 2,
-                Components = Background,
+                Components = Constants.UI.Tooltip.Background,
             }.WithDropShadow(Shadow, ShadowFade),
             content.Anchor(a => a.MarginAllSides(Margin)),
         };

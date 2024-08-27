@@ -23,7 +23,7 @@ static class TextFactories
             builder.WithColor(color.Value);
 
         if (backgroundColor != null)
-            builder.WithBackground(backgroundColor.Value);
+            builder.WithBackground(Background.From(backgroundColor.Value));
 
         return builder.Build();
     }
@@ -40,7 +40,7 @@ static class TextFactories
             builder.WithColor(color.Value);
 
         if (backgroundColor != null)
-            builder.WithBackground(backgroundColor.Value);
+            builder.WithBackground(Background.From(backgroundColor.Value));
 
         return builder.Build();
     }
@@ -50,7 +50,7 @@ static class TextFactories
         private object? text;
         private Vector2d? textAnchor;
         private object? color;
-        private object? background;
+        private Background background;
 
         public HeaderBuilder WithText(string text)
         {
@@ -82,27 +82,9 @@ static class TextFactories
             return this;
         }
 
-        public HeaderBuilder WithBackground(Control control)
+        public HeaderBuilder WithBackground(Background background)
         {
-            background = control;
-            return this;
-        }
-
-        public HeaderBuilder WithBackground(ShapeColor fill)
-        {
-            background = fill;
-            return this;
-        }
-
-        public HeaderBuilder WithBackground(ShapeComponents components)
-        {
-            background = components;
-            return this;
-        }
-
-        public HeaderBuilder WithBackground(IReadonlyBinding<ShapeComponents> components)
-        {
-            background = components;
+            this.background = background;
             return this;
         }
 
@@ -127,22 +109,10 @@ static class TextFactories
                 _ => TextColor,
             };
 
-            var backgroundControl = background switch
-            {
-                Control c => c,
-                ShapeColor fill => new ComplexBox { Components = [ Fill.With(fill) ] },
-                ShapeComponents components => new ComplexBox { Components = components },
-                IReadonlyBinding<ShapeComponents> componentBinding => new ComplexBox { Components = componentBinding.Value },
-                _ => null,
-            };
+            var backgroundControl = background.ToControl();
 
             if (backgroundControl == null)
                 return label;
-
-            if (background is IReadonlyBinding<ShapeComponents> backgroundBinding)
-            {
-                backgroundBinding.SourceUpdated += newComponents => ((ComplexBox)backgroundControl).Components = newComponents;
-            }
 
             return new CompositeControl
             {

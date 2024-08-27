@@ -85,6 +85,16 @@ static class Binding
         return transformed;
     }
 
+    public static Binding<TOut> Transform<TIn, TOut>(this Binding<TIn> binding, Func<TIn, TOut> transform, Func<TOut, TIn> reverse)
+    {
+        var transformed = new Binding<TOut>(transform(binding.Value));
+        binding.ControlUpdated += v => transformed.SetFromControl(transform(v));
+        binding.SourceUpdated += v => transformed.SetFromSource(transform(v));
+        transformed.ControlUpdated += v => binding.SetFromControl(reverse(v));
+        transformed.SourceUpdated += v => binding.SetFromSource(reverse(v));
+        return transformed;
+    }
+
     public static IReadonlyBinding<TOut> Combine<TLeft, TRight, TOut>(
         IReadonlyBinding<TLeft> left, IReadonlyBinding<TRight> right, Func<TLeft, TRight, TOut> combine)
     {
@@ -93,6 +103,30 @@ static class Binding
         right.ControlUpdated += v => combined.SetFromControl(combine(left.Value, v));
         left.SourceUpdated += v => combined.SetFromSource(combine(v, right.Value));
         right.SourceUpdated += v => combined.SetFromSource(combine(left.Value, v));
+        return combined;
+    }
+
+    public static Binding<TOut> Combine<TLeft, TRight, TOut>(
+        Binding<TLeft> left, Binding<TRight> right, Func<TLeft, TRight, TOut> combine,
+        Func<TOut, TLeft> splitLeft, Func<TOut, TRight> splitRight)
+    {
+        var combined = new Binding<TOut>(combine(left.Value, right.Value));
+        left.ControlUpdated += v => combined.SetFromControl(combine(v, right.Value));
+        right.ControlUpdated += v => combined.SetFromControl(combine(left.Value, v));
+        left.SourceUpdated += v => combined.SetFromSource(combine(v, right.Value));
+        right.SourceUpdated += v => combined.SetFromSource(combine(left.Value, v));
+
+        combined.ControlUpdated += v =>
+        {
+            left.SetFromControl(splitLeft(v));
+            right.SetFromControl(splitRight(v));
+        };
+        combined.SourceUpdated += v =>
+        {
+            left.SetFromSource(splitLeft(v));
+            right.SetFromSource(splitRight(v));
+        };
+
         return combined;
     }
 

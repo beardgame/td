@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.Graphics;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
+using Bearded.UI;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
+using OpenTK.Mathematics;
+using static Bearded.TD.Constants.UI.Text;
 using TextInput = Bearded.TD.UI.Controls.TextInput;
 
 namespace Bearded.TD.UI.Factories;
@@ -50,6 +55,42 @@ static class FormControlFactories
                 .WithOnClick(() => valueBinding.SetFromControl(o)));
             row.AddLeft(button, Constants.UI.Form.InputWidth);
         }
+        width = row.Width;
+        return control;
+    }
+
+    public static Control SliderSelect<T>(
+        this UIFactories factories,
+        IEnumerable<T> options,
+        Func<T, string> renderer,
+        Binding<T> valueBinding,
+        out double width)
+    {
+        var control = new CompositeControl();
+        var row = control.BuildFixedRow();
+        var optionsList = options.ToList();
+        foreach (var o in optionsList)
+        {
+            var label = TextFactories.Label(
+                text: Binding.Constant(renderer(o)),
+                color: valueBinding.Transform(t => t?.Equals(o) ?? false ? TextColor : DisabledTextColor)
+            );
+            row.AddLeft(label, Constants.UI.Form.InputWidth);
+        }
+
+        control.Add(
+            factories.SliderFactory.Create(b => b
+                .WithHandle(
+                    new ComplexBox
+                        { Components = Edge.Outer(2, Color.White), CornerRadius = Constants.UI.Form.InputHeight },
+                    new Vector2d(Constants.UI.Form.InputWidth, Constants.UI.Form.InputHeight)
+                )
+                .WithHorizontalValue(
+                    valueBinding.Transform(t => (double)optionsList.IndexOf(t), d => optionsList[(int)d]),
+                    Interval.FromStartAndSize(0, optionsList.Count - 1), 1)
+                .WithCommitMode(DragCommitMode.OnRelease)
+            ));
+
         width = row.Width;
         return control;
     }
@@ -121,7 +162,7 @@ static class FormControlFactories
     {
         var textInput = new TextInput
         {
-            FontSize = Constants.UI.Text.FontSize,
+            FontSize = FontSize,
             Text = valueBinding.Value
         };
         textInput.MoveCursorToEnd();
@@ -172,6 +213,20 @@ static class FormControlFactories
             label,
             layout => layout.DockFixedSizeToRight(
                 ButtonSelect(builder.Factories, options, renderer, valueBinding, out var width)
+                    .WrapVerticallyCentered(Constants.UI.Form.InputHeight),
+                width));
+    }
+    
+    public static FormFactories.Builder AddSliderSelectRow<T>(
+        this FormFactories.Builder builder,
+        string label, IEnumerable<T> options,
+        Func<T, string> renderer,
+        Binding<T> valueBinding)
+    {
+        return builder.AddFormRow(
+            label,
+            layout => layout.DockFixedSizeToRight(
+                SliderSelect(builder.Factories, options, renderer, valueBinding, out var width)
                     .WrapVerticallyCentered(Constants.UI.Form.InputHeight),
                 width));
     }

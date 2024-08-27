@@ -3,9 +3,11 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.UI.Dragging;
 
-delegate void DragAction(Vector2d move);
+readonly record struct DragEvent(Vector2d MousePosition, Vector2d MouseDelta);
 
-delegate void DragAction<in TControl>(TControl control, Vector2d move)
+delegate void DragAction(DragEvent move);
+
+delegate void DragAction<in TControl>(TControl control, DragEvent move)
     where TControl : Control;
 
 static class DragActions
@@ -15,8 +17,8 @@ static class DragActions
         var frame = control.Frame;
 
         control.Anchor(a => a
-            .Left(margin: frame.TopLeft.X + move.X, width: frame.Size.X)
-            .Top(margin: frame.TopLeft.Y + move.Y, height: frame.Size.Y)
+            .Left(margin: frame.TopLeft.X + move.MouseDelta.X, width: frame.Size.X)
+            .Top(margin: frame.TopLeft.Y + move.MouseDelta.Y, height: frame.Size.Y)
         );
     };
 }

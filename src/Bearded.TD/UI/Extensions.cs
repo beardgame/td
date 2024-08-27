@@ -2,6 +2,7 @@ using System;
 using Bearded.TD.Utilities;
 using Bearded.UI;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
 
 namespace Bearded.TD.UI;
 
@@ -77,5 +78,10 @@ static class Extensions
         }
 
         return ancestor;
+    }
+
+    public static double Clamped(this double value, Interval range)
+    {
+        return value.Clamped(range.Start, range.End);
     }
 }
