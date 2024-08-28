@@ -42,8 +42,9 @@ sealed class SliderFactory(ButtonFactory buttons, Animations animations)
         private double? stepX;
         private double? stepY;
         private Background background;
-        private (Control handle, Vector2d handleSize)? handleOverride;
+        private (Control? handle, Vector2d handleSize)? handleOverride;
         private DragCommitMode commitMode;
+        private Binding<Vector2d>? animatedPercentage;
 
         public Builder WithHorizontalValue(Binding<double> binding, Interval? range = null, double? step = null)
         {
@@ -79,29 +80,27 @@ sealed class SliderFactory(ButtonFactory buttons, Animations animations)
             return this;
         }
 
+        public Builder ReadAnimatedPercentage(out IReadonlyBinding<Vector2d> binding)
+        {
+            animatedPercentage = new Binding<Vector2d>();
+            binding = animatedPercentage;
+            return this;
+        }
+
         public Builder WithHandle(Control handle, Vector2d size)
         {
             handleOverride = (handle, size);
             return this;
         }
 
+        public Builder WithoutHandle()
+        {
+            handleOverride = (null, Vector2d.Zero);
+            return this;
+        }
+
         public Control Build()
         {
-            var (handle, handleSize) = handleOverride ?? (
-                buttons.TextButton(b => b
-                    .WithLabel("")
-                    .MakeHexagon()
-                ),
-                (16, 16)
-            );
-
-            var container = new CompositeControl();
-
-            if (background.ToControl() is { } backgroundControl)
-                container.Add(backgroundControl);
-
-            container.Add(handle);
-
             var (direction, valueBinding, valueRange) = (value, horizontalValue, verticalValue) switch
             {
                 (var (b, r), null, null) => (Both, b, r),
@@ -127,14 +126,34 @@ sealed class SliderFactory(ButtonFactory buttons, Animations animations)
                     "Slider must have at least one valid, distinct, value binding."),
             };
 
+            var container = new CompositeControl();
+
+            var (handle, handleSize) = handleOverride ?? (
+                buttons.TextButton(b => b
+                    .WithLabel("")
+                    .MakeHexagon()
+                ),
+                (16, 16)
+            );
+
+
             var interaction = new DragInteraction(
                 direction, container, handle, handleSize,
                 valueBinding, valueRange, (stepX, stepY),
-                commitMode, animations
+                commitMode, animations, animatedPercentage
             );
             interaction.Initialise();
-            handle.AddDragging(DragScope.Anywhere, interaction.HandleDrag, interaction.HandleDragEnd);
             container.AddDragging(DragScope.Anywhere, interaction.HandleDrag, interaction.HandleDragEnd);
+
+            if (background.ToControl() is { } backgroundControl)
+                container.Add(backgroundControl);
+
+            if (handle != null)
+            {
+                handle.AddDragging(DragScope.Anywhere, interaction.HandleDrag, interaction.HandleDragEnd);
+                container.Add(handle);
+            }
+
 
             return container;
         }
@@ -143,13 +162,14 @@ sealed class SliderFactory(ButtonFactory buttons, Animations animations)
     private sealed class DragInteraction(
         SliderDirection direction,
         Control container,
-        Control handle,
+        Control? handle,
         Vector2d handleSize,
         Binding<Vector2d> position,
         Frame range,
         (double? X, double? Y) step,
         DragCommitMode commitMode,
-        Animations animations)
+        Animations animations,
+        Binding<Vector2d>? animatedPercentage)
     {
         private Vector2d currentValue;
         private Vector2d currentPercentage;
@@ -255,7 +275,8 @@ sealed class SliderFactory(ButtonFactory buttons, Animations animations)
 
         private void setHandlePositionFromPercentage(Vector2d p)
         {
-            handle.Anchor(a => a
+            animatedPercentage?.SetFromControl(p);
+            handle?.Anchor(a => a
                 .Left(relativePercentage: p.X, margin: -handleSize.X * p.X, width: handleSize.X)
                 .Top(relativePercentage: p.Y, margin: -handleSize.Y * p.Y, height: handleSize.Y)
             );

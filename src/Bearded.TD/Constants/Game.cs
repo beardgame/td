@@ -48,7 +48,7 @@ static partial class Constants
             public static readonly Color LightningColor = Color.Plum;
             public static readonly Color AlchemyColor = Color.LimeGreen;
             public static readonly Color WaterColor = Color.LightBlue;
-            public static readonly Color EnergyColor = Color.Yellow;
+            public static readonly Color EnergyColor = Color.MediumPurple;
 
             public static readonly Color HealthColor = Color.Red;
             public static readonly Color ArmorColor = Color.SpringGreen;
