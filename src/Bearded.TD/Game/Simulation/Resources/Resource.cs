@@ -2,12 +2,10 @@
 
 namespace Bearded.TD.Game.Simulation.Resources;
 
-readonly struct Resource<T>(double value)
+readonly record struct Resource<T>(double Value)
     where T : IResourceType
 {
     public static Resource<T> Zero => default;
-
-    public double Value { get; } = value;
 
     public static Resource<T> operator +(Resource<T> left, Resource<T> right) => new(left.Value + right.Value);
     public static Resource<T> operator -(Resource<T> left, Resource<T> right) => new(left.Value - right.Value);
