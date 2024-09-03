@@ -23,9 +23,9 @@ sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParamete
     {
         private readonly Logger logger;
         private readonly Faction faction;
-        private readonly ResourceAmount amount;
+        private readonly Resource<Scrap> amount;
 
-        public Listener(Logger logger, Faction faction, ResourceAmount amount)
+        public Listener(Logger logger, Faction faction, Resource<Scrap> amount)
         {
             this.logger = logger;
             this.faction = faction;
@@ -48,5 +48,5 @@ sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParamete
     }
 
     [UsedImplicitly]
-    public sealed record RuleParameters(ExternalId<Faction> Faction, ResourceAmount Amount);
+    public sealed record RuleParameters(ExternalId<Faction> Faction, Resource<Scrap> Amount);
 }

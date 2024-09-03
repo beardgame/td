@@ -85,7 +85,7 @@ sealed class BuildingGhostDrawing : Component, IListener<DrawComponents>, IListe
             e.Core.InGameFont.DrawLine(
                 Constants.Game.GameUI.ResourcesColor,
                 Owner.Position.NumericValue + 0.1f * Vector3.UnitZ,
-                result.Cost.NumericValue.ToString(),
+                result.Cost.Value.ToString(),
                 0.18f,
                 0.5f, 0.5f);
         }

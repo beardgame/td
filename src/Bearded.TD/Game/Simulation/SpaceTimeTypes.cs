@@ -56,8 +56,19 @@ static class SpaceTimeTypes
         new(d => new HitPoints((int) d), h => h.NumericValue);
 
     [ConvertsAttribute]
-    public static AttributeConverter<ResourceAmount> ResourceAmountConverter =
-        new(d => new ResourceAmount((int) d), r => r.NumericValue);
+    public static AttributeConverter<Resource<Scrap>> ScrapConverter =
+        new(d => new Resource<Scrap>(d), r => r.Value);
+
+    [ConvertsAttribute]
+    public static AttributeConverter<ResourcePerSecond<Scrap>> ScrapPerSecondConverter =
+        new(d => new ResourcePerSecond<Scrap>(d), r => r.Value);
+
+    [ConvertsAttribute]
+    public static AttributeConverter<Resource<CoreEnergy>> CoreEnergyConverter =
+        new(d => new Resource<CoreEnergy>(d), r => r.Value);
+
+    public static AttributeConverter<ResourcePerSecond<CoreEnergy>> CoreEnergyPerSecondConverter =
+        new(d => new ResourcePerSecond<CoreEnergy>(d), r => r.Value);
 
     [ConvertsAttribute]
     public static AttributeConverter<Speed> SpeedConverter =

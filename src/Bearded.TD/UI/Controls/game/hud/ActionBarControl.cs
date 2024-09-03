@@ -38,7 +38,7 @@ sealed class ActionBarControl : CompositeControl
         layout
             .AddLabel("Resources", Label.TextAnchorLeft)
             .AddLabel(
-                model.CurrentResources.Transform(r => r.NumericValue.ToString()),
+                model.CurrentResources.Transform(r => r.Value.ToString()),
                 Label.TextAnchorRight,
                 Binding.Constant(ResourcesColor));
         control.Add(content

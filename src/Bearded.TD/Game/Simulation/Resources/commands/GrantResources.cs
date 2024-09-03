@@ -11,19 +11,33 @@ namespace Bearded.TD.Game.Simulation.Resources;
 
 static class GrantResources
 {
-    public static IRequest<Player, GameInstance> Request(Faction faction, ResourceAmount amount)
-        => new Implementation(faction, amount);
+    public static IRequest<Player, GameInstance> Request<T>(Faction faction, Resource<T> amount)
+        where T : IResourceType
+        => new Implementation(faction, getResourceTypeId<T>(), amount.Value);
 
-    private sealed class Implementation : UnifiedDebugRequestCommand
+    private static byte getResourceTypeId<T>() where T : IResourceType
     {
-        private readonly Faction faction;
-        private readonly ResourceAmount amount;
-
-        public Implementation(Faction faction, ResourceAmount amount)
+        return default(T) switch
         {
-            this.faction = faction;
-            this.amount = amount;
-        }
+            Scrap => 1,
+            CoreEnergy => 2,
+            _ => throw new ArgumentOutOfRangeException(nameof(T), typeof(T), null),
+        };
+    }
+
+    private static Action<FactionResources, double> providerFunction(byte resourceTypeId)
+    {
+        return resourceTypeId switch
+        {
+            1 => (r, v) => r.ProvideResources(new Resource<Scrap>(v)),
+            2 => (r, v) => r.ProvideResources(new Resource<CoreEnergy>(v)),
+            _ => throw new ArgumentOutOfRangeException(nameof(resourceTypeId), resourceTypeId, null),
+        };
+    }
+
+    private sealed class Implementation(Faction faction, byte id, double value)
+        : UnifiedDebugRequestCommand
+    {
 
         protected override bool CheckPreconditionsDebug(Player player) =>
             faction.TryGetBehavior<FactionResources>(out _);
@@ -36,32 +50,35 @@ static class GrantResources
                     "Cannot add resources without resources for the faction. Precondition should have failed.");
             }
 
-            resources.ProvideResources(amount);
+            providerFunction(id)(resources, value);
         }
 
-        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, amount);
+        protected override UnifiedRequestCommandSerializer GetSerializer() => new Serializer(faction, id, value);
     }
 
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
         private Id<Faction> faction;
-        private int amount;
+        private byte id;
+        private double amount;
 
         [UsedImplicitly]
         public Serializer() { }
 
-        public Serializer(Faction faction, ResourceAmount amount)
+        public Serializer(Faction faction, byte id, double amount)
         {
             this.faction = faction.Id;
-            this.amount = amount.NumericValue;
+            this.id = id;
+            this.amount = amount;
         }
 
         protected override UnifiedRequestCommand GetSerialized(GameInstance game)
-            => new Implementation(game.State.Factions.Resolve(faction), amount.Resources());
+            => new Implementation(game.State.Factions.Resolve(faction), id, amount);
 
         public override void Serialize(INetBufferStream stream)
         {
             stream.Serialize(ref faction);
+            stream.Serialize(ref id);
             stream.Serialize(ref amount);
         }
     }

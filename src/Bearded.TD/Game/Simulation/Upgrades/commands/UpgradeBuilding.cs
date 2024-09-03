@@ -47,7 +47,7 @@ static class UpgradeBuilding
                 return false;
             }
             return technology.IsUpgradeUnlocked(upgrade)
-                && resources.CurrentResources >= upgrade.Cost
+                && resources.GetCurrent<Scrap>() >= upgrade.Cost
                 && upgradeSlots.HasAvailableSlot
                 && upgradeManager.CanApplyUpgrade(upgrade)
                 && upgradeManager.CanBeUpgradedBy(actor.Faction);

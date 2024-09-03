@@ -8,7 +8,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 interface ICost
 {
-    ResourceAmount Resources { get; }
+    Resource<Scrap> Resources { get; }
 }
 
 [Component("cost")]
@@ -16,10 +16,10 @@ sealed class Cost : Component<Cost.IParameters>, ICost, IBuildBuildingPreconditi
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
-        public ResourceAmount Resources { get; }
+        public Resource<Scrap> Resources { get; }
     }
 
-    public ResourceAmount Resources => Parameters.Resources;
+    public Resource<Scrap> Resources => Parameters.Resources;
 
     public Cost(IParameters parameters) : base(parameters) { }
 

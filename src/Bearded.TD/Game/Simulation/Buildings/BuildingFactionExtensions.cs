@@ -43,13 +43,13 @@ static class BuildingFactionExtensions
         resources.ProvideResources(resourcesToRefund.Value);
     }
 
-    public static ResourceAmount? TotalResourcesInvested(this GameObject gameObj)
+    public static Resource<Scrap>? TotalResourcesInvested(this GameObject gameObj)
     {
         var state = gameObj.GetComponents<IBuildingStateProvider>().Single().State;
         if (!state.IsMaterialized)
             return null;
 
-        var resourcesToRefund = ResourceAmount.Zero;
+        var resourcesToRefund = Resource<Scrap>.Zero;
 
         if(gameObj.GetComponents<ICost>().SingleOrDefault() is { } cost)
         {

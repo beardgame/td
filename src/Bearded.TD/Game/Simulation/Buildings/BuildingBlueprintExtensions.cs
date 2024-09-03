@@ -13,8 +13,8 @@ static class BuildingBlueprintExtensions
     public static IFootprint GetFootprint(this IGameObjectBlueprint blueprint) =>
         blueprint.GetComponents().OfType<IObjectFootprint>().SingleOrDefault()?.Footprint ?? Footprint.Single;
 
-    public static ResourceAmount GetResourceCost(this IGameObjectBlueprint blueprint) =>
-        blueprint.GetComponents().OfType<ICost>().SingleOrDefault()?.Resources ?? ResourceAmount.Zero;
+    public static Resource<Scrap> GetResourceCost(this IGameObjectBlueprint blueprint) =>
+        blueprint.GetComponents().OfType<ICost>().SingleOrDefault()?.Resources ?? Resource<Scrap>.Zero;
 
     public static IEnumerable<IBuildBuildingPrecondition> GetBuildBuildingPreconditions(
         this IGameObjectBlueprint blueprint) =>

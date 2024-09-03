@@ -24,7 +24,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     private static readonly ImmutableArray<Keys> numberKeys =
         ImmutableArray.Create(Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0);
 
-    public Binding<ResourceAmount> CurrentResources { get; } = new();
+    public Binding<Resource<Scrap>> CurrentResources { get; } = new();
     public Binding<ImmutableArray<ActionBarEntry?>> Entries { get; } = new();
 
     private readonly ShortcutLayer shortcuts;
@@ -84,7 +84,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     {
         if (resources is not null)
         {
-            CurrentResources.SetFromSource(resources.CurrentResources);
+            CurrentResources.SetFromSource(resources.GetCurrent<Scrap>());
         }
     }
 
@@ -132,4 +132,4 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     }
 }
 
-sealed record ActionBarEntry(string Label, ResourceAmount Cost, ModAwareSpriteId Icon, VoidEventHandler OnClick);
+sealed record ActionBarEntry(string Label, Resource<Scrap> Cost, ModAwareSpriteId Icon, VoidEventHandler OnClick);

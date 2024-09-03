@@ -244,15 +244,15 @@ sealed partial class ButtonFactory
             return this;
         }
 
-        public TextButtonBuilder WithResourceCost(ResourceAmount amount)
+        public TextButtonBuilder WithResourceCost(Resource<Scrap> amount)
         {
-            cost = Binding.Constant(amount.NumericValue.ToString());
+            cost = Binding.Constant(amount.Value.ToString());
             return this;
         }
 
-        public TextButtonBuilder WithResourceCost(IReadonlyBinding<ResourceAmount> amount)
+        public TextButtonBuilder WithResourceCost(IReadonlyBinding<Resource<Scrap>> amount)
         {
-            cost = amount.Transform(r => r.NumericValue.ToString());
+            cost = amount.Transform(r => r.Value.ToString());
             return this;
         }
 

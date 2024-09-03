@@ -6,8 +6,8 @@ interface IIncompleteWork
 {
     bool IsCompleted { get; }
     bool IsCancelled { get; }
-    ResourceAmount ResourcesInvestedSoFar { get; }
+    Resource<Scrap> ResourcesInvestedSoFar { get; }
     void StartWork();
-    void SetWorkProgress(double percentage, ResourceAmount resourcesInvestedSoFar);
+    void SetWorkProgress(double percentage, Resource<Scrap> resourcesInvestedSoFar);
     void CompleteWork();
 }

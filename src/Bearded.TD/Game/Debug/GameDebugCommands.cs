@@ -176,7 +176,7 @@ static class GameDebugCommands
             return;
         }
 
-        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount.Resources()));
+        gameInstance.RequestDispatcher.Dispatch(gameInstance.Me, GrantResources.Request(faction, amount.Scrap()));
     });
 
     [DebugCommand("game.techtoken")]

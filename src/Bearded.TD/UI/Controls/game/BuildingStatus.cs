@@ -26,8 +26,8 @@ namespace Bearded.TD.UI.Controls;
 sealed class BuildingStatus
     : IDisposable,
         IListener<UpgradeTechnologyUnlocked>,
-        IListener<ResourcesProvided>,
-        IListener<ResourcesConsumed>
+        IListener<ResourcesProvided<Scrap>>,
+        IListener<ResourcesConsumed<Scrap>>
 {
     private readonly GameRequestDispatcher requestDispatcher;
     private readonly ContentManager contentManager;
@@ -50,7 +50,7 @@ sealed class BuildingStatus
     private readonly Binding<AccumulatedDamage> damageThisWave = new(AccumulatedDamage.Zero);
     private readonly Binding<int?> activeUpgradeSlot = new();
     private readonly Binding<bool> showUpgradeSelect = new();
-    private readonly Binding<ResourceAmount> currentResources = new();
+    private readonly Binding<Resource<Scrap>> currentResources = new();
 
     public bool ShowVeterancy => veterancy is not null;
     public bool ShowUpgrades => upgradeSlots is not null;
@@ -66,7 +66,7 @@ sealed class BuildingStatus
     public IReadonlyBinding<AccumulatedDamage> DamageThisWave => damageThisWave;
     public IReadonlyBinding<int?> ActiveUpgradeSlot => activeUpgradeSlot;
     public IReadonlyBinding<bool> ShowUpgradeSelect => showUpgradeSelect;
-    public IReadonlyBinding<ResourceAmount> CurrentResources => currentResources;
+    public IReadonlyBinding<Resource<Scrap>> CurrentResources => currentResources;
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
@@ -105,7 +105,7 @@ sealed class BuildingStatus
 
         veterancyStatus.SetFromSource(veterancy?.GetVeterancyStatus() ?? VeterancyStatus.Initial);
         activeUpgradeSlot.SetFromSource(findActiveUpgradeSlot());
-        currentResources.SetFromSource(resources?.CurrentResources ?? ResourceAmount.Zero);
+        currentResources.SetFromSource(resources?.GetCurrent<Scrap>() ?? Resource<Scrap>.Zero);
         onTowerStatisticsUpdated();
 
         statusTracker.StatusAdded += statusAdded;
@@ -121,8 +121,8 @@ sealed class BuildingStatus
         }
 
         events.Subscribe<UpgradeTechnologyUnlocked>(this);
-        events.Subscribe<ResourcesProvided>(this);
-        events.Subscribe<ResourcesConsumed>(this);
+        events.Subscribe<ResourcesProvided<Scrap>>(this);
+        events.Subscribe<ResourcesConsumed<Scrap>>(this);
     }
 
     private int? findActiveUpgradeSlot()
@@ -172,8 +172,8 @@ sealed class BuildingStatus
         towerStatisticObserver.StopObserving();
 
         events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
-        events.Unsubscribe<ResourcesProvided>(this);
-        events.Unsubscribe<ResourcesConsumed>(this);
+        events.Unsubscribe<ResourcesProvided<Scrap>>(this);
+        events.Unsubscribe<ResourcesConsumed<Scrap>>(this);
     }
 
     private void statusAdded(Status status)
@@ -243,19 +243,19 @@ sealed class BuildingStatus
         updateAvailableUpgrades();
     }
 
-    public void HandleEvent(ResourcesProvided @event)
+    public void HandleEvent(ResourcesProvided<Scrap> @event)
     {
         if (@event.Resources == resources)
         {
-            currentResources.SetFromSource(resources.CurrentResources);
+            currentResources.SetFromSource(resources.GetCurrent<Scrap>());
         }
     }
 
-    public void HandleEvent(ResourcesConsumed @event)
+    public void HandleEvent(ResourcesConsumed<Scrap> @event)
     {
         if (@event.Resources == resources)
         {
-            currentResources.SetFromSource(resources.CurrentResources);
+            currentResources.SetFromSource(resources.GetCurrent<Scrap>());
         }
     }
 

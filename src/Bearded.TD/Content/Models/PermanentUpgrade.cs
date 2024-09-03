@@ -9,6 +9,6 @@ namespace Bearded.TD.Content.Models;
 sealed record PermanentUpgrade(
     ModAwareId Id,
     string Name,
-    ResourceAmount Cost,
+    Resource<Scrap> Cost,
     ImmutableArray<IUpgradeEffect> Effects,
     Element Element) : IPermanentUpgrade;

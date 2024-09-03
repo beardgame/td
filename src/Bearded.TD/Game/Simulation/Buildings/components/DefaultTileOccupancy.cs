@@ -113,13 +113,13 @@ sealed class DefaultTileOccupancy : Component,
             BuildableTileChecker.TileIsBuildable(game, tile);
     }
 
-    private static ResourceAmount totalRefundsForReplacing(GameState game, IEnumerable<Tile> tiles)
+    private static Resource<Scrap> totalRefundsForReplacing(GameState game, IEnumerable<Tile> tiles)
     {
         var buildingsToReplace = tiles
             .SelectMany(t => game.BuildingLayer.GetObjectsOnTile(t))
             .Distinct();
         return buildingsToReplace
-            .Select(obj => obj.TotalResourcesInvested().GetValueOrDefault(ResourceAmount.Zero))
-            .Aggregate(ResourceAmount.Zero, (l, r) => l + r);
+            .Select(obj => obj.TotalResourcesInvested().GetValueOrDefault(Resource<Scrap>.Zero))
+            .Aggregate(Resource<Scrap>.Zero, (l, r) => l + r);
     }
 }

@@ -8,7 +8,7 @@ abstract class IncompleteWork : IIncompleteWork, ProgressTracker.IProgressSubjec
 
     public bool IsCompleted => progressTracker.IsCompleted;
     public bool IsCancelled => progressTracker.IsCancelled;
-    public ResourceAmount ResourcesInvestedSoFar { get; private set; }
+    public Resource<Scrap> ResourcesInvestedSoFar { get; private set; }
 
     protected IncompleteWork()
     {
@@ -28,7 +28,7 @@ abstract class IncompleteWork : IIncompleteWork, ProgressTracker.IProgressSubjec
         progressTracker.Start();
     }
 
-    public void SetWorkProgress(double percentage, ResourceAmount resourcesInvestedSoFar)
+    public void SetWorkProgress(double percentage, Resource<Scrap> resourcesInvestedSoFar)
     {
         progressTracker.SetProgress(percentage);
         ResourcesInvestedSoFar = resourcesInvestedSoFar;

@@ -13,7 +13,7 @@ sealed partial class BuildingStatusControl
     private sealed class UpgradeSelectRow : CompositeControl
     {
         private readonly IReadonlyBinding<int?> activeUpgradeSlot;
-        private readonly IReadonlyBinding<ResourceAmount> currentResources;
+        private readonly IReadonlyBinding<Resource<Scrap>> currentResources;
         private readonly Action<IPermanentUpgrade> doUpgrade;
         private readonly Binding<bool> upgradeChoicesEnabled = new(true);
         private readonly UIContext uiContext;
@@ -22,7 +22,7 @@ sealed partial class BuildingStatusControl
         public UpgradeSelectRow(
             ReadOnlyObservableCollection<IPermanentUpgrade> availableUpgrades,
             IReadonlyBinding<int?> activeUpgradeSlot,
-            IReadonlyBinding<ResourceAmount> currentResources,
+            IReadonlyBinding<Resource<Scrap>> currentResources,
             Action<IPermanentUpgrade> doUpgrade,
             UIContext uiContext)
         {

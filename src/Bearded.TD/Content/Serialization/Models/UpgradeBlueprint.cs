@@ -16,7 +16,7 @@ sealed class UpgradeBlueprint
 {
     public string? Id { get; set; }
     public string? Name { get; set; }
-    public ResourceAmount Cost { get; set; }
+    public Resource<Scrap> Cost { get; set; }
     public List<IUpgradeEffect>? Effects { get; set; }
     public Element Element { get; set; }
 
