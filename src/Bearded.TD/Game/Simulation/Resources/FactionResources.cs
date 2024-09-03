@@ -20,13 +20,19 @@ sealed class FactionResources : FactionBehavior
     public void ProvideResources<T>(Resource<T> resource)
         where T : IResourceType
     {
-        getStore<T>().Provide(resource);
+        var store = getStore<T>();
+        store.Provide(resource);
+        Events.Send(new ResourcesProvided<T>(this, resource));
+        Events.Send(new ResourcesChanged<T>(this, store.Current));
     }
 
     public void ConsumeResources<T>(Resource<T> resource)
         where T : IResourceType
     {
-        getStore<T>().Consume(resource);
+        var store = getStore<T>();
+        store.Consume(resource);
+        Events.Send(new ResourcesConsumed<T>(this, resource));
+        Events.Send(new ResourcesChanged<T>(this, store.Current));
     }
 
     private Store<T> getStore<T>()
