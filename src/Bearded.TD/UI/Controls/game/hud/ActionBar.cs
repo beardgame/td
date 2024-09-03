@@ -24,7 +24,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     private static readonly ImmutableArray<Keys> numberKeys =
         ImmutableArray.Create(Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0);
 
-    public Binding<Resource<Scrap>> CurrentResources { get; } = new();
     public Binding<ImmutableArray<ActionBarEntry?>> Entries { get; } = new();
 
     private readonly ShortcutLayer shortcuts;
@@ -33,7 +32,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     private ShortcutCapturer shortcutCapturer = null!;
     private ContentManager contentManager = null!;
     private GridVisibility gridVisibility = null!;
-    private FactionResources? resources;
 
     public ActionBar()
     {
@@ -64,9 +62,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         this.gridVisibility = gridVisibility;
         shortcutCapturer.AddLayer(shortcuts);
 
-        var faction = game.Me.Faction;
-        faction.TryGetBehaviorIncludingAncestors(out resources);
-
         var buildingEntries = game.Me.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
             ? technology.UnlockedBuildings.Select(makeEntryFromBlueprint).AsNullable().ToImmutableArray()
             : ImmutableArray<ActionBarEntry?>.Empty;
@@ -77,15 +72,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
         Entries.SetFromSource(actionBarEntries);
 
         game.Meta.Events.Subscribe(this);
-    }
-    // ReSharper enable ParameterHidesMember
-
-    public void Update()
-    {
-        if (resources is not null)
-        {
-            CurrentResources.SetFromSource(resources.GetCurrent<Scrap>());
-        }
     }
 
     public void Terminate()

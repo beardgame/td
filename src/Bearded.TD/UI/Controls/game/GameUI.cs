@@ -35,6 +35,7 @@ sealed class GameUI :
 
     public GameUIController GameUIController { get; } = new();
 
+    public ResourceDisplay ResourceDisplay { get; } = new();
     public ActionBar ActionBar { get; } = new();
     public CoreStatsUI CoreStats { get; } = new();
     public TechnologyWindow TechnologyUI { get; } = new();
@@ -66,6 +67,7 @@ sealed class GameUI :
         shortcutCapturer.AddLayer(GameUIController.Shortcuts);
         shortcutCapturer.AddLayer(GridVisibility.Shortcuts);
 
+        ResourceDisplay.Initialize(Game);
         ActionBar.Initialize(Game, shortcutCapturer, content, GridVisibility);
         CoreStats.Initialize(Game, shortcutCapturer);
         TechnologyUI.Initialize(Game, GameUIController.TechnologyModalVisibility, shortcutCapturer, content);
@@ -106,7 +108,6 @@ sealed class GameUI :
         TimeSource.Update(args);
         uiUpdater.Update(args);
 
-        ActionBar.Update();
         CoreStats.Update();
 
         updateGameDebugOverlayState();

@@ -24,32 +24,10 @@ sealed class ActionBarControl : CompositeControl
         model.Entries
             .CollectionSize<ImmutableArray<ActionBarEntry?>, ActionBarEntry?>().SourceUpdated += updateButtonCount;
 
-        addResourceBox();
         updateButtonCount(model.Entries.Value.Length);
     }
 
     protected override void RenderStronglyTyped(IRendererRouter r) => r.Render(this);
-
-    private void addResourceBox()
-    {
-        var control = new CompositeControl { new BackgroundBox() };
-        var content = new CompositeControl();
-        var layout = content.BuildFixedColumn();
-        layout
-            .AddLabel("Resources", Label.TextAnchorLeft)
-            .AddLabel(
-                model.CurrentResources.Transform(r => r.Value.ToString()),
-                Label.TextAnchorRight,
-                Binding.Constant(ResourcesColor));
-        control.Add(content
-            .WrapVerticallyCentered(layout.Height)
-            .Anchor(a => a.MarginAllSides(Constants.UI.LayoutMargin)));
-
-        control.Anchor(a => a
-            .Right(margin: -barLeftMargin + buttonBetweenMargin, width: resourceBoxWidth, relativePercentage: 0.5)
-            .Bottom(margin: buttonBottomMargin, height: buttonSize));
-        Add(control);
-    }
 
     private void updateButtonCount(int newCount)
     {
