@@ -38,6 +38,7 @@
             id: "grantResourcesOnStart",
             parameters: {
                 faction: "players",
+                type: "scrap",
                 amount: 245
             }
         },
@@ -45,7 +46,11 @@
             id: "grantResourcesOnWaveComplete",
             parameters: {
                 faction: "players",
-                amount: 150,
+                type: "coreEnergy",
+                amount: 200,
+                amountPerWaveInChapter: 20,
+                amountPerChapter: 50,
+                amountForLastWaveInChapter: 100,
             }
         },
         {

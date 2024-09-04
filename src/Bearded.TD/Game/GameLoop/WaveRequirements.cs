@@ -6,5 +6,6 @@ namespace Bearded.TD.Game.GameLoop;
 sealed record WaveRequirements(
     int ChapterNumber,
     int WaveNumber,
+    bool IsFinalWave,
     ScriptStructure Structure,
     TimeSpan? DowntimeDuration);

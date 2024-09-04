@@ -15,7 +15,7 @@ sealed class WaveExecutor : IListener<WaveEnded>
     private readonly IdManager idManager;
     private readonly ICommandDispatcher<GameInstance> commandDispatcher;
 
-    private readonly Dictionary<Id<Wave>, VoidEventHandler> activeWaves = new();
+    private readonly Dictionary<Wave, VoidEventHandler> activeWaves = new();
 
     private bool subscribed;
 
@@ -32,7 +32,7 @@ sealed class WaveExecutor : IListener<WaveEnded>
 
         var spawnedObjectIds = idManager.GetBatch<GameObject>(script.EnemyCount);
         var wave = new Wave(idManager.GetNext<Wave>(), script, spawnedObjectIds, game.Time);
-        activeWaves.Add(wave.Id, onComplete);
+        activeWaves.Add(wave, onComplete);
 
         commandDispatcher.Dispatch(ExecuteWave.Command(game, wave));
     }
@@ -50,12 +50,12 @@ sealed class WaveExecutor : IListener<WaveEnded>
 
     public void HandleEvent(WaveEnded @event)
     {
-        if (!activeWaves.TryGetValue(@event.WaveId, out var onComplete))
+        if (!activeWaves.TryGetValue(@event.Wave, out var onComplete))
         {
             return;
         }
 
         onComplete();
-        activeWaves.Remove(@event.WaveId);
+        activeWaves.Remove(@event.Wave);
     }
 }

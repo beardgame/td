@@ -176,7 +176,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
 
     public void HandleEvent(WaveEnded @event)
     {
-        assignedWaves.Remove(@event.WaveId);
+        assignedWaves.Remove(@event.Wave.Id);
 
         if (assignedWaves.Count > 0)
         {

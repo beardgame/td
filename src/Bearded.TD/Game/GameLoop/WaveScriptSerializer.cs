@@ -15,6 +15,9 @@ namespace Bearded.TD.Game.GameLoop;
 
 sealed class WaveScriptSerializer
 {
+    private int chapterNumber;
+    private int waveNumber;
+    private bool isFinalWave;
     private string displayName = "";
     private Id<Faction> targetFaction;
     private double spawnStart;
@@ -26,6 +29,9 @@ sealed class WaveScriptSerializer
 
     public WaveScriptSerializer(WaveScript waveScript)
     {
+        chapterNumber = waveScript.ChapterNumber;
+        waveNumber = waveScript.WaveNumber;
+        isFinalWave = waveScript.IsFinalWave;
         displayName = waveScript.DisplayName;
         targetFaction = waveScript.TargetFaction.Id;
         spawnStart = waveScript.DowntimeDuration?.NumericValue ?? -1;
@@ -36,6 +42,9 @@ sealed class WaveScriptSerializer
     public WaveScript ToWaveScript(GameInstance game)
     {
         return new WaveScript(
+            chapterNumber,
+            waveNumber,
+            isFinalWave,
             displayName,
             game.State.Factions.Resolve(targetFaction),
             spawnStart < 0 ? null : new TimeSpan(spawnStart),
@@ -45,6 +54,9 @@ sealed class WaveScriptSerializer
 
     public void Serialize(INetBufferStream stream)
     {
+        stream.Serialize(ref chapterNumber);
+        stream.Serialize(ref waveNumber);
+        stream.Serialize(ref isFinalWave);
         stream.Serialize(ref displayName);
         stream.Serialize(ref targetFaction);
         stream.Serialize(ref spawnStart);

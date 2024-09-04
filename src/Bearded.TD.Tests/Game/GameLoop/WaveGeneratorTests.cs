@@ -50,6 +50,7 @@ public sealed class WaveGeneratorTests
         var requirements = new WaveRequirements(
             1,
             1,
+            true,
             WaveStructure.FromTemplate(
                 WaveTemplates.PrimaryEliteMinionMixWithAccentEliteBatch,
                 new WaveEnemyComposition(1000, elementalTheme)),

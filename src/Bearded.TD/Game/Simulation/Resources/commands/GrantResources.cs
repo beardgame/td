@@ -17,22 +17,12 @@ static class GrantResources
 
     private static byte getResourceTypeId<T>() where T : IResourceType
     {
-        return default(T) switch
-        {
-            Scrap => 1,
-            CoreEnergy => 2,
-            _ => throw new ArgumentOutOfRangeException(nameof(T), typeof(T), null),
-        };
+        return (byte)T.Type;
     }
 
     private static Action<FactionResources, double> providerFunction(byte resourceTypeId)
     {
-        return resourceTypeId switch
-        {
-            1 => (r, v) => r.ProvideResources(new Resource<Scrap>(v)),
-            2 => (r, v) => r.ProvideResources(new Resource<CoreEnergy>(v)),
-            _ => throw new ArgumentOutOfRangeException(nameof(resourceTypeId), resourceTypeId, null),
-        };
+        return (r, a) => ((ResourceType)resourceTypeId).Switch(a, r.ProvideResources, r.ProvideResources);
     }
 
     private sealed class Implementation(Faction faction, byte id, double value)

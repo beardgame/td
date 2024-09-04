@@ -81,7 +81,7 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
     public void HandleEvent(WaveEnded @event)
     {
         CurrentPhase.SetFromSource(GamePhase.BetweenWaves);
-        if (waveInfo.HasValue && waveInfo.Value.WaveId == @event.WaveId)
+        if (waveInfo.HasValue && waveInfo.Value.WaveId == @event.Wave.Id)
         {
             waveInfo = null;
         }

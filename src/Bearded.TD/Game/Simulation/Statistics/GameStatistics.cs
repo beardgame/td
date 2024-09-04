@@ -64,7 +64,7 @@ sealed class GameStatistics
     public void HandleEvent(WaveEnded @event)
     {
         var waveReport = WaveReport.Create(statsByTower.Select(kvp => kvp.Value.ToStats(towerArchive.Find(kvp.Key))));
-        dispatcher.RunOnlyOnServer(OpenWaveReport.Command, gameState, @event.WaveId, waveReport);
+        dispatcher.RunOnlyOnServer(OpenWaveReport.Command, gameState, @event.Wave.Id, waveReport);
     }
 
     public void HandleEvent(BuildingConstructionFinished @event)

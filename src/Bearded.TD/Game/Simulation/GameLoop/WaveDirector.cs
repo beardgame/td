@@ -151,7 +151,7 @@ sealed class WaveDirector
 
         private void finishWave()
         {
-            game.Meta.Events.Send(new WaveEnded(wave.Id, wave.Script.TargetFaction));
+            game.Meta.Events.Send(new WaveEnded(wave, wave.Script.TargetFaction));
             game.Meta.Events.Unsubscribe<EnemyKilled>(this);
             game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
             phase = Phase.Completed;

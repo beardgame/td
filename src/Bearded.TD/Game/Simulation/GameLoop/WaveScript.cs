@@ -5,6 +5,9 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
 sealed record WaveScript(
+    int ChapterNumber,
+    int WaveNumber,
+    bool IsFinalWave,
     string DisplayName,
     Faction TargetFaction,
     TimeSpan? DowntimeDuration,

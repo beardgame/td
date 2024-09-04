@@ -82,6 +82,7 @@ sealed class ChapterExecutor
             return new WaveRequirements(
                 script.ChapterNumber,
                 waveNumber,
+                waveNumber == script.WaveCount,
                 structure,
                 waveDescription.DownTimeDuration);
         }

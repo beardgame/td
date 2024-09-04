@@ -56,7 +56,7 @@ sealed class ComponentTestBed
     public Queue<T> CollectEvents<T>() where T : struct, IComponentEvent
     {
         var q = new Queue<T>();
-        internals.Subscribe(Listener.ForEvent<T>(q.Enqueue));
+        internals.Subscribe(new LambdaListener<T>(q.Enqueue));
         return q;
     }
 
@@ -94,5 +94,11 @@ sealed class ComponentTestBed
         {
             Events.Subscribe(listener);
         }
+    }
+
+    private sealed class LambdaListener<T>(Action<T> onEvent) : IListener<T>
+        where T : IEvent
+    {
+        public void HandleEvent(T @event) => onEvent(@event);
     }
 }

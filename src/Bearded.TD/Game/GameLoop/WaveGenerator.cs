@@ -41,6 +41,9 @@ sealed partial class WaveGenerator
         var spawnLocations = enemyScript.SpawnEvents.Select(e => e.SpawnLocation).Distinct().ToImmutableArray();
 
         return new WaveScript(
+            requirements.ChapterNumber,
+            requirements.WaveNumber,
+            requirements.IsFinalWave,
             $"Ch {requirements.ChapterNumber}; Wave {requirements.WaveNumber}",
             targetFaction,
             requirements.DowntimeDuration,

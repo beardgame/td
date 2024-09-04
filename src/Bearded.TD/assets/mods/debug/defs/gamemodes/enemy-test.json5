@@ -38,6 +38,7 @@
             id: "grantResourcesOnStart",
             parameters: {
                 faction: "players",
+                type: "scrap",
                 amount: 245
             }
         },

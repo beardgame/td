@@ -1,52 +1,42 @@
 using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
-using Bearded.TD.Shared.Events;
-using Bearded.Utilities.IO;
 using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Rules.Resources;
 
 [GameRule("grantResourcesOnStart")]
-sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParameters>
+sealed class GrantResourcesOnStart(GrantResourcesOnStart.RuleParameters parameters)
+    : GameRule<GrantResourcesOnStart.RuleParameters>(parameters)
 {
-    public GrantResourcesOnStart(RuleParameters parameters) : base(parameters) { }
+    [UsedImplicitly]
+    public sealed record RuleParameters(
+        ExternalId<Faction> Faction,
+        ResourceType Type,
+        double Amount
+    );
 
     public override void Execute(GameRuleContext context)
     {
-        context.Events.Subscribe(
-            new Listener(context.Logger, context.Factions.Find(Parameters.Faction), Parameters.Amount));
-    }
+        _ = context.Events.Subscribe<GameStarted>(_ => parameters.Type.Switch(parameters.Amount, grant, grant));
 
-    private sealed class Listener : IListener<GameStarted>
-    {
-        private readonly Logger logger;
-        private readonly Faction faction;
-        private readonly Resource<Scrap> amount;
-
-        public Listener(Logger logger, Faction faction, Resource<Scrap> amount)
+        void grant<T>(Resource<T> amount)
+            where T : IResourceType
         {
-            this.logger = logger;
-            this.faction = faction;
-            this.amount = amount;
-        }
+            var faction = context.Factions.Find(Parameters.Faction);
 
-        public void HandleEvent(GameStarted @event)
-        {
             if (faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources))
             {
                 resources.ProvideResources(amount);
             }
             else
             {
-                logger.Debug?.Log(
+                context.Logger.Debug?.Log(
                     $"Tried providing resources at start of the game to {faction.ExternalId}, " +
                     "but it doesn't have resources.");
             }
         }
     }
-
-    [UsedImplicitly]
-    public sealed record RuleParameters(ExternalId<Faction> Faction, Resource<Scrap> Amount);
 }
