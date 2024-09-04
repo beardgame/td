@@ -38,8 +38,8 @@ sealed class GameUIControl : CompositeControl
         var nonDiegeticUIWrapper = CreateClickThrough();
         nonDiegeticUIWrapper.BindIsVisible(gameUI.GameUIController.NonDiegeticUIVisibility);
         nonDiegeticUIWrapper.Add(new ActionBarControl(gameUI.ActionBar, uiContext));
-        nonDiegeticUIWrapper.Add(new ResourceDisplayControl(gameUI.ResourceDisplay)
-            .Anchor(a => a.Right(CoreStatsUIControl.Width * 0.5, 200, 0.5).Top(0, 100)));
+        nonDiegeticUIWrapper.Add(new ResourceDisplayControl(gameUI.ResourceDisplay, uiContext)
+            .Anchor(a => a.Right(CoreStatsUIControl.Width * 0.5, 200, 0.5).Top(height: CoreStatsUIControl.Height)));
         nonDiegeticUIWrapper.Add(new CoreStatsUIControl(gameUI.CoreStats, uiContext)
             .Anchor(a => a
                 .Top(height: CoreStatsUIControl.Height)

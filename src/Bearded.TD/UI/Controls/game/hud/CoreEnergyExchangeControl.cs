@@ -41,10 +41,10 @@ sealed class CoreEnergyExchangeControl : CompositeControl
             CornerRadius = 2,
         };
 
-        var (range, stepSize) = model.ValidExchangeRates;
+        var (range, stepSize) = model.ValidExchangePercentages;
         IReadonlyBinding<Vector2d> animatedExchangeRate = null!;
         var slider = context.Factories.SliderFactory.Create(b => b
-            .WithHorizontalValue(model.ExchangeRate, range, stepSize)
+            .WithHorizontalValue(model.ExchangePercentage, range, stepSize)
             .WithoutHandle()
             .WithBackground(Background.From(sliderBackground))
             .ReadAnimatedPercentage(out animatedExchangeRate)
@@ -54,7 +54,7 @@ sealed class CoreEnergyExchangeControl : CompositeControl
         updateBackgroundGradient(animatedExchangeRate.Value);
 
         var rateLabel = TextFactories.Label(
-            text: model.ExchangeRate.Transform(r => $"{(int)(r * 100):0}%"),
+            text: model.ExchangePercentage.Transform(r => $"{(int)(r * 100):0}%"),
             color: Binding.Constant(Color.Black)
         );
         rateLabel.IsClickThrough = true;

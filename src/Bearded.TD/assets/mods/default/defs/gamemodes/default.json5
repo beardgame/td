@@ -9,6 +9,7 @@
                     id: "players",
                     behaviors: [
                         { id: "resources" },
+                        { id: "coreEnergyExchange" },
                         { id: "technology" },
                         { id: "shareDrones" }
                     ]
@@ -57,7 +58,6 @@
             id: "exchangeCoreEnergyToScrap",
             parameters: {
                 faction: "players",
-                percentage: 0.75,
                 exchangeRate: 0.5,
                 excludeOnGameStart: true,
             }

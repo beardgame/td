@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
@@ -13,6 +12,8 @@ sealed class ResourceDisplay
     public IReadonlyBinding<Resource<Scrap>> CurrentScrap { get; private set; } = null!;
     public IReadonlyBinding<Resource<CoreEnergy>> CurrentCoreEnergy { get; private set; } = null!;
 
+    public CoreEnergyExchange Exchange { get; } = new();
+
     public void Initialize(GameInstance game)
     {
         var faction = game.Me.Faction;
@@ -20,6 +21,8 @@ sealed class ResourceDisplay
 
         CurrentScrap = createBindingFor<Scrap>(game);
         CurrentCoreEnergy = createBindingFor<CoreEnergy>(game);
+
+        Exchange.Initialize(game);
     }
 
     private IReadonlyBinding<Resource<T>> createBindingFor<T>(GameInstance game)
