@@ -10,9 +10,13 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Simulation.Rules.Resources;
 
 [GameRule("grantResourcesOnWaveComplete")]
-sealed class GrantResourcesOnWaveComplete(GrantResourcesOnWaveComplete.RuleParameters parameters)
-    : GameRule<GrantResourcesOnWaveComplete.RuleParameters>(parameters)
+sealed class GrantResourcesOnWaveComplete : GameRule<GrantResourcesOnWaveComplete.RuleParameters>
 {
+    // ReSharper disable once ConvertToPrimaryConstructor
+    public GrantResourcesOnWaveComplete(RuleParameters parameters) : base(parameters)
+    {
+    }
+
     [UsedImplicitly]
     public sealed record RuleParameters(
         ExternalId<Faction> Faction,
@@ -26,7 +30,7 @@ sealed class GrantResourcesOnWaveComplete(GrantResourcesOnWaveComplete.RuleParam
     public override void Execute(GameRuleContext context)
     {
         _ = context.Events.Observe<WaveEnded>().Select(calculateResourceAmount)
-            .Subscribe(a => parameters.Type.Switch(a, grant, grant));
+            .Subscribe(a => Parameters.Type.Switch(a, grant, grant));
 
         double calculateResourceAmount(WaveEnded e)
         {
@@ -34,10 +38,10 @@ sealed class GrantResourcesOnWaveComplete(GrantResourcesOnWaveComplete.RuleParam
             var wave = e.Wave.Script.WaveNumber - 1;
             var isFinalWave = e.Wave.Script.IsFinalWave;
 
-            return parameters.Amount +
-                wave * parameters.AmountPerWaveInChapter +
-                chapter * parameters.AmountPerChapter +
-                (isFinalWave ? parameters.AmountForLastWaveInChapter : 0);
+            return Parameters.Amount +
+                wave * Parameters.AmountPerWaveInChapter +
+                chapter * Parameters.AmountPerChapter +
+                (isFinalWave ? Parameters.AmountForLastWaveInChapter : 0);
         }
 
         void grant<T>(Resource<T> amount)

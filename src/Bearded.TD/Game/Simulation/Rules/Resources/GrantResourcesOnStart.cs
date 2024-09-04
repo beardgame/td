@@ -8,9 +8,13 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Game.Simulation.Rules.Resources;
 
 [GameRule("grantResourcesOnStart")]
-sealed class GrantResourcesOnStart(GrantResourcesOnStart.RuleParameters parameters)
-    : GameRule<GrantResourcesOnStart.RuleParameters>(parameters)
+sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParameters>
 {
+    // ReSharper disable once ConvertToPrimaryConstructor
+    public GrantResourcesOnStart(RuleParameters parameters) : base(parameters)
+    {
+    }
+
     [UsedImplicitly]
     public sealed record RuleParameters(
         ExternalId<Faction> Faction,
@@ -20,7 +24,7 @@ sealed class GrantResourcesOnStart(GrantResourcesOnStart.RuleParameters paramete
 
     public override void Execute(GameRuleContext context)
     {
-        _ = context.Events.Subscribe<GameStarted>(_ => parameters.Type.Switch(parameters.Amount, grant, grant));
+        _ = context.Events.Subscribe<GameStarted>(_ => Parameters.Type.Switch(Parameters.Amount, grant, grant));
 
         void grant<T>(Resource<T> amount)
             where T : IResourceType
