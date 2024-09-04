@@ -158,6 +158,7 @@ sealed class GameInstance
             throw new InvalidOperationException("Can only start the game from the loading state.");
         }
 
+        Meta.Events.Send(new GameStarting());
         Status = GameStatus.Playing;
         setAllPlayerConnectionStates(PlayerConnectionState.Playing);
         Meta.Events.Send(new GameStarted());

@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System;
+using System.Reactive.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
@@ -17,14 +18,17 @@ sealed class ResourceDisplay
         var faction = game.Me.Faction;
         faction.TryGetBehaviorIncludingAncestors(out resources);
 
-        CurrentScrap = game.Meta.Events
-            .Observe<ResourcesChanged<Scrap>>()
-            .Where(e => e.Resources == resources)
-            .BindDisplayOnly(e => e.NewAmount, out _);
+        CurrentScrap = createBindingFor<Scrap>(game);
+        CurrentCoreEnergy = createBindingFor<CoreEnergy>(game);
+    }
 
-        CurrentCoreEnergy = game.Meta.Events
-            .Observe<ResourcesChanged<CoreEnergy>>()
+    private IReadonlyBinding<Resource<T>> createBindingFor<T>(GameInstance game)
+        where T : IResourceType
+    {
+        return game.Meta.Events
+            .Observe<ResourcesChanged<T>>()
             .Where(e => e.Resources == resources)
+            .StartWith(new ResourcesChanged<T>(null!, resources?.GetCurrent<T>() ?? Resource<T>.Zero))
             .BindDisplayOnly(e => e.NewAmount, out _);
     }
 }

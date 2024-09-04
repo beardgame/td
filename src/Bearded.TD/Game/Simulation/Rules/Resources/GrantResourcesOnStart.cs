@@ -24,7 +24,7 @@ sealed class GrantResourcesOnStart : GameRule<GrantResourcesOnStart.RuleParamete
 
     public override void Execute(GameRuleContext context)
     {
-        _ = context.Events.Subscribe<GameStarted>(_ => Parameters.Type.Switch(Parameters.Amount, grant, grant));
+        _ = context.Events.Subscribe<GameStarting>(_ => Parameters.Type.Switch(Parameters.Amount, grant, grant));
 
         void grant<T>(Resource<T> amount)
             where T : IResourceType

@@ -12,6 +12,8 @@ readonly record struct ExchangeRate<TFrom, TTo>(double Value)
     where TFrom : IResourceType
     where TTo : IResourceType
 {
+    public ExchangeRate<TTo, TFrom> Inverse => new(1 / Value);
+
     public static ExchangeRate<TFrom, TTo> operator +(ExchangeRate<TFrom, TTo> left, ExchangeRate<TFrom, TTo> right) => new(left.Value + right.Value);
     public static ExchangeRate<TFrom, TTo> operator -(ExchangeRate<TFrom, TTo> left, ExchangeRate<TFrom, TTo> right) => new(left.Value - right.Value);
     public static ExchangeRate<TFrom, TTo> operator -(ExchangeRate<TFrom, TTo> rate) => new(-rate.Value);

@@ -35,6 +35,19 @@ sealed class FactionResources : FactionBehavior
         Events.Send(new ResourcesChanged<T>(this, store.Current));
     }
 
+    public void Exchange<TFrom, TTo>(Resource<TFrom> from, Resource<TTo> to)
+        where TFrom : IResourceType
+        where TTo : IResourceType
+    {
+        var fromStore = getStore<TFrom>();
+        var toStore = getStore<TTo>();
+        fromStore.Consume(from);
+        toStore.Provide(to);
+        Events.Send(new ResourcesExchanged<TFrom, TTo>(this, from, to));
+        Events.Send(new ResourcesChanged<TFrom>(this, fromStore.Current));
+        Events.Send(new ResourcesChanged<TTo>(this, toStore.Current));
+    }
+
     private Store<T> getStore<T>()
         where T : IResourceType
     {
