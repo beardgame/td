@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Bearded.Graphics;
 using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Pipelines;
 using Bearded.Graphics.Pipelines.Context;
@@ -75,6 +74,7 @@ sealed class DeferredRenderer
         {
             Diffuse = Texture(PixelInternalFormat.Rgba, label: "Diffuse"), // rgba
             Normal = Texture(PixelInternalFormat.Rgba, label: "Normal"), // xyz
+            Material = Texture(PixelInternalFormat.Rg8, label: "Material"), // roughness, metallic, AO
             Depth = Texture(PixelInternalFormat.R16f, label: "Depth"), // z (0-1, camera space)
             DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f, label: "DepthMask"),
 
@@ -100,10 +100,11 @@ sealed class DeferredRenderer
 
         depthBufferTexture = textures.Depth.Texture;
 
-        var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(textures.Normal);
+        var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(
+            textures.Normal, textures.Material, textures.Diffuse);
 
         var resizedBuffers = Resize(s => s.Resolution,
-            textures.DepthMask, textures.Diffuse, textures.Normal,
+            textures.DepthMask, textures.Diffuse, textures.Normal, textures.Material,
             textures.Depth, textures.LightAccum, textures.Composition);
 
         var renderedGBuffers = resizedBuffers.Then(InOrder(
@@ -216,14 +217,16 @@ sealed class DeferredRenderer
     }
 
     private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
-        PipelineTexture normalBuffer)
+        PipelineTexture normalBuffer, PipelineTexture materialBuffer, PipelineTexture diffuse)
     {
         var neededSettings = new[]
         {
             settings.ViewMatrix, settings.ProjectionMatrix,
             settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
             new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer.Texture),
-            GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1), gBufferResolution
+            GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1), gBufferResolution,
+            new TextureUniform("materialBuffer", TextureUnit.Texture2, materialBuffer.Texture),
+            new TextureUniform("diffuseBuffer", TextureUnit.Texture3, diffuse.Texture),
         };
 
         var pointLight = Renderer.From(PointLights.ToRenderable(), neededSettings);

@@ -52,9 +52,7 @@ void main()
     float ambientFalloff = fragmentPosition.z > 0 ? 0 : 0.2;
     float floorAmbient = max(1 - abs(fragmentPosition.z) * ambientFalloff, 0);
 
-    vec3 light = lightTexture + vec3(0.33) * floorAmbient;
-
-    vec3 rgb = albedo.rgb * light;
+    vec3 rgb = lightTexture + albedo.rgb * floorAmbient * 0;
 
     float hexagonalDistanceToOrigin = hexDistanceToOrigin(fragmentPosition.xy);
     float falloff = clamp((hexagonalFallOffDistance - hexagonalDistanceToOrigin) * 0.3f, 0, 1);
