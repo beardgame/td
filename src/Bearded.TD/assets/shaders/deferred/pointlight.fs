@@ -66,6 +66,46 @@ float getShadowUmbraFactor(vec2 uv, vec3 fragmentPosition, vec3 vectorToLight)
     return shadowUmbraFactor;
 }
 
+float getSelfShadowFactor(vec2 uv, vec3 fragmentPosition, vec3 vectorToLight, float directLighting)
+{
+    const float shadowLength = 30;
+    const int samples = 15;
+    const float hardness = 5;
+    
+    float distanceToLight = length(vectorToLight);
+    float maxDistanceToLight = sqrt(lightRadiusSquared);
+    float normalisedDistanceToLight = distanceToLight / maxDistanceToLight;
+    
+    vec2 uvRay = normalize(lightCenterUV - uv) / resolution * shadowLength * normalisedDistanceToLight;
+    float step = 1.0 / samples;
+    float rayT = 0;
+
+    float slope = directLighting;
+    float maxSlope = 0;
+    float shadow = 0;
+
+    vec3 lightNormal = normalize(lightPosition - fragmentPosition);
+    
+    for (int i = 0; i < samples; i++)
+    {
+        vec2 sampleUV = uv + uvRay * rayT;
+        vec3 normal = texture(normalBuffer, sampleUV).xyz;
+        normal = normal * 2 - 1;
+        
+        float f = dot(lightNormal, normal);
+        
+        slope += f;
+        if (slope < maxSlope)
+        {
+            shadow += 1 - rayT;
+        }
+        maxSlope = max(maxSlope, slope);
+
+        rayT += step;
+    }
+    return clamp(1 - hardness * shadow / samples, 0, 1);
+}
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution;
@@ -91,12 +131,16 @@ void main()
         discard;
 
     vec3 rgb = lightColor.rgb * lightColor.a * (a * f);
-
-    float shadowUmbraFactor = lightShadow > 0
+    
+    bool enableShadow = lightShadow > 0;
+    
+    float shadowUmbraFactor = enableShadow
         ? getShadowUmbraFactor(uv, fragmentPosition, vectorToLight)
         : 1;
+    
+    float selfShadow = getSelfShadowFactor(uv, fragmentPosition, vectorToLight, f);
 
-    outRGB = vec4(rgb, 0) * shadowUmbraFactor;
+    outRGB = vec4(rgb, 0) * shadowUmbraFactor * selfShadow;
 
 
     //outRGB = vec4(lightCenterUV, 0, 1);
