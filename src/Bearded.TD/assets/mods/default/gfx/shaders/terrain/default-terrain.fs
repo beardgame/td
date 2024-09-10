@@ -150,13 +150,13 @@ void getWallAndFloor(int biomeId, vec3 position, float uvRotationAngle, vec3 nor
             float c = cos(uvRotationAngle);
             uvRotation = mat2(c, -s, s, c);
             uvw.xy = uvRotation * uvw.xy;
+            normal.xy = uvRotation * normal.xy;
         }
         
         getFloorColor(biomeId, uvw, normal, floorColor, floorNormal);
 
         if (BOMBING)
         {
-            // TODO: normals are not working correctly at wall-to-floor transition
             floorNormal.xy = transpose(uvRotation) * floorNormal.xy;
         }
     }
