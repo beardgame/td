@@ -1,6 +1,9 @@
-﻿using Bearded.Graphics.RenderSettings;
+﻿using System;
+using Bearded.Graphics.RenderSettings;
 using Bearded.TD.UI.Layers;
+using Bearded.Utilities.Geometry;
 using OpenTK.Mathematics;
+using static System.Math;
 
 namespace Bearded.TD.Rendering;
 
@@ -61,5 +64,28 @@ sealed class CoreRenderSettings
         FarPlaneUnitX.Value = xCorner.Xyz - baseCorner.Xyz;
         FarPlaneUnitY.Value = yCorner.Xyz - baseCorner.Xyz;
         CameraPosition.Value = cameraTranslation;
+    }
+
+    public Rectangle GetCameraFrustumBoundsAtFarPlane()
+    {
+        var cameraPosition = -CameraPosition.Value;
+        var farPlaneBaseCorner = FarPlaneBaseCorner.Value;
+        var farPlaneUnitX = FarPlaneUnitX.Value * 2;
+        var farPlaneUnitY = FarPlaneUnitY.Value * 2;
+
+        var corner00 = farPlaneBaseCorner.Xy + cameraPosition.Xy;
+        var corner10 = corner00 + farPlaneUnitX.Xy;
+        var corner01 = corner00 + farPlaneUnitY.Xy;
+        var corner11 = corner10 + farPlaneUnitY.Xy;
+
+        var minX = Min(Min(corner00.X, corner10.X), Min(corner01.X, corner11.X));
+        var minY = Min(Min(corner00.Y, corner10.Y), Min(corner01.Y, corner11.Y));
+        var maxX = Max(Max(corner00.X, corner10.X), Max(corner01.X, corner11.X));
+        var maxY = Max(Max(corner00.Y, corner10.Y), Max(corner01.Y, corner11.Y));
+
+        var width = maxX - minX;
+        var height = maxY - minY;
+
+        return new Rectangle(minX, minY, width, height);
     }
 }

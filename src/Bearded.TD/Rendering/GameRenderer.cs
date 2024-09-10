@@ -27,7 +27,7 @@ sealed class GameRenderer
         var renderers = game.Meta.DrawableRenderers;
 
         // TODO: this should not stay hardcoded forever
-        var levelShader = game.Blueprints.Shaders[ModAwareId.ForDefaultMod("gpu-terrain-tessellated")];
+        var levelShader = game.Blueprints.Shaders[ModAwareId.ForDefaultMod("default-terrain")];
         var waterMaterial = game.Blueprints.Materials[ModAwareId.ForDefaultMod("water")];
 
         level = new LevelRenderer(game, context, levelShader, time);

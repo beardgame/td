@@ -18,7 +18,7 @@ sealed class LevelRenderer : IRenderer, IListener<TileDrawInfoChanged>, IListene
     private readonly HeightRenderer heightRenderer;
     private readonly VisibilityRenderer visibilityRenderer;
     private readonly BiomeRenderer biomeRenderer;
-    private readonly HeightmapToLevelRenderer heightmapToLevelRenderer;
+    private readonly IHeightmapToLevelRenderer heightmapToLevelRenderer;
 
     public LevelRenderer(GameInstance game, RenderContext context, Shader levelShader, ITimeSource time)
     {
@@ -28,7 +28,7 @@ sealed class LevelRenderer : IRenderer, IListener<TileDrawInfoChanged>, IListene
         biomeBuffer = new BiomeBuffer(game.State.Level.Radius);
         biomeMaterials = new BiomeMaterials(game);
         biomeRenderer = new BiomeRenderer(game, biomeBuffer, biomeMaterials, context);
-        heightmapToLevelRenderer = new HeightmapToLevelRenderer(
+        heightmapToLevelRenderer = new DualContouredHeightmapToLevelRenderer(
             game, context, Heightmap, biomeBuffer, biomeMaterials, levelShader);
 
         resizeIfNeeded();
@@ -79,6 +79,6 @@ sealed class LevelRenderer : IRenderer, IListener<TileDrawInfoChanged>, IListene
         biomeBuffer.Dispose();
         heightRenderer.CleanUp();
         visibilityRenderer.Dispose();
-        heightmapToLevelRenderer.CleanUp();
+        heightmapToLevelRenderer.Dispose();
     }
 }
