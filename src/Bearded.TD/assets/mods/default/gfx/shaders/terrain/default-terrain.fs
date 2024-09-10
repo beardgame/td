@@ -394,7 +394,7 @@ void main()
     vec3 wallColor, wallNormal;
     vec3 floorColor, floorNormal;
 
-    float flatness = smoothstep(0.3, 0.5, fNormal.z);
+    float flatness = smoothstep(0.1, 0.9, fNormal.z);
     
     float weightSum = biomeWeights[0] + biomeWeights[1] + biomeWeights[2];
     
@@ -430,14 +430,17 @@ void main()
     vec3 diffuse, normal;
     diffuse = mix(wallColor, floorColor, flatness);
     normal = mix(wallNormal, floorNormal, flatness);
+    normal = normalize(normal);
+
+    //diffuse = vec3(0.5);
     
     vec4 rgba = vec4(diffuse, 1) * fColor;
     
     outRGBA = rgba;
-    outNormal = vec4(normal * 0.5 + 0.5, rgba.a);
+    outNormal = vec4(normal * 0.5 + 0.5, 1);
 
     // check if this is actually in 0-1 space between camera and far plane
     // it probably is not because we don't take near distance into account properly
     float depth = -(view * vec4(fPosition, 1)).z / farPlaneDistance;
-    outDepth = vec4(depth, 0, 0, rgba.a);
+    outDepth = vec4(depth, 0, 0, 1);
 }
