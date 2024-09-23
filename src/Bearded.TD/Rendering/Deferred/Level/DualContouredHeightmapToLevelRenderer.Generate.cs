@@ -126,36 +126,66 @@ sealed partial class DualContouredHeightmapToLevelRenderer
 
         var tiles = distanceSquared1 < distanceSquared2 ? footprint1.OccupiedTiles : footprint2.OccupiedTiles;
 
-        var thisTile = Tiles.Level.GetTile(xy);
+        var z = worldPosition.Z.NumericValue;
 
-        foreach (var tile in thisTile.PossibleNeighbours().Append(thisTile))
+        foreach (var tile in tiles)
         {
             if (!level.IsValid(tile))
                 continue;
 
             var h = geometry[tile].DrawInfo.Height.NumericValue;
-            var hd = h - worldPosition.Z.NumericValue;
+            var heightD = z - h;
 
             var tileCenter = Tiles.Level.GetPosition(tile).NumericValue;
-            
-            var hexRadiusAtZ = Math.Abs(h) * 0.5f - Constants.Game.World.HexagonSide;
             var relativePosition = xy.NumericValue - tileCenter;
-            var cornerRadius = 0f;
-            var r = Math.Max(hexRadiusAtZ - cornerRadius, 0);
-            var d2 = new Vector2(Math.Abs(relativePosition.Y), Math.Abs(relativePosition.X));
-            d2 -= 2 * Math.Min(Vector2.Dot(d2, (-0.866025404f, 0.5f)), 0) * new Vector2(-0.866025404f, 0.5f);
-            d2 -= new Vector2(Math.Clamp(d2.X, -0.577350269f * r, 0.577350269f * r), r);
-            var hexDistance = d2.Length * Math.Sign(d2.Y) - cornerRadius;
 
-            var coneDistance = Math.Abs(hd) * -relativePosition.Length;
+            var hexRadiusAtZ = Constants.Game.World.HexagonSide;
 
-            var tileDistance = Math.Max(hd, coneDistance);
+            if (z > 0)
+            {
+                hexRadiusAtZ -= z * 0.1f;
+            }
+            else
+            {
+                hexRadiusAtZ -= z * 0.05f;
+            }
 
-            distance = Math.Min(distance, tileDistance);
+            var hexD = hexDistance(relativePosition, hexRadiusAtZ, 0, 0, 0);
+
+            var tileD = intersect(hexD, heightD);
+
+            distance = union(distance, tileD);
         }
 
 
         return distance;
+    }
+
+    static float union(float a, float b) => Math.Min(a, b);
+    static float intersect(float a, float b) => Math.Max(a, b);
+    
+    static float smoothUnion(float a, float b, float k)
+    {
+        var h = Math.Clamp(0.5f + 0.5f * (b - a) / k, 0, 1);
+        return Interpolate.Lerp(b, a, h) - k * h * (1 - h);
+    }
+
+    float hexDistance(Vector2 p, float radius, float cornerRadius, float innerGlowRoundness, float centerRoundness)
+    {
+        var k = new Vector3(-0.866025404f, 0.5f, 0.577350269f);
+        float d = p.Length;
+        float cornersToCenter = 1 - (d / radius * -k.X).Clamped(0, 1);
+        float roundness = Interpolate.Lerp(innerGlowRoundness, centerRoundness, cornersToCenter);
+        cornerRadius += radius * roundness * cornersToCenter;
+        cornerRadius = Math.Min(cornerRadius, radius);
+
+        float r = radius - cornerRadius;
+        var d2 = new Vector2(Math.Abs(p.Y), Math.Abs(p.X));
+        d2 -= 2.0f * Math.Min(Vector2.Dot(k.Xy, d2), 0) * k.Xy;
+        d2 -= new Vector2(d2.X.Clamped(-k.Z * r, k.Z * r), r);
+        float hexDistance = d2.Length * MathF.Sign(d2.Y);
+
+        return hexDistance - cornerRadius;
     }
 
     private static Dictionary<Vector3i, ushort> createVertices(
@@ -213,7 +243,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                     var insideAverage = insideSum / insideDistanceSum;
                     var outsideAverage = outsideSum / outsideDistanceSum;
 
-                    var gradient = (insideAverage - outsideAverage).Normalized();
+                    var gradient = (outsideAverage - insideAverage).Normalized();
 
                     var point = boundingBox.Min + (p0 + insideAverage) * subdivisionStep;
 
@@ -267,15 +297,15 @@ sealed partial class DualContouredHeightmapToLevelRenderer
             if (solid1)
             {
                 indices.Add([
-                    v0, v1, v2,
-                    v1, v3, v2,
+                    v0, v2, v1,
+                    v1, v2, v3,
                 ]);
             }
             else
             {
                 indices.Add([
-                    v0, v2, v1,
-                    v1, v2, v3,
+                    v0, v1, v2,
+                    v1, v3, v2,
                 ]);
             }
         }
