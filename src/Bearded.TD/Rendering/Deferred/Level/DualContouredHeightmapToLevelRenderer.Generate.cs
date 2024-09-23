@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Bearded.Graphics;
-using Bearded.TD.Content.Mods;
-using Bearded.TD.Game.Input;
-using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
-using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
-using SimplexNoise;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 
+
 sealed partial class DualContouredHeightmapToLevelRenderer
 {
+    private const int C000 = 0;
+    private const int C100 = 1;
+    private const int C010 = 2;
+    private const int C001 = 3;
+    private const int C110 = 4;
+    private const int C101 = 5;
+    private const int C011 = 6;
+    private const int C111 = 7;
+
     private static readonly Vector3i[] cube =
     [
         (0, 0, 0),
@@ -27,6 +30,24 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         (1, 0, 1),
         (0, 1, 1),
         (1, 1, 1),
+    ];
+
+    private static readonly (Vector3i V0, Vector3i V1)[] cubeEdges =
+    [
+        (cube[C000], cube[C100]),
+        (cube[C010], cube[C110]),
+        (cube[C001], cube[C101]),
+        (cube[C011], cube[C111]),
+
+        (cube[C000], cube[C010]),
+        (cube[C100], cube[C110]),
+        (cube[C001], cube[C011]),
+        (cube[C101], cube[C111]),
+
+        (cube[C000], cube[C001]),
+        (cube[C100], cube[C101]),
+        (cube[C010], cube[C011]),
+        (cube[C110], cube[C111]),
     ];
 
     private void fillCellBuffers(Cell cell)
@@ -45,8 +66,9 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         var subdivisionVertices = subdivision;
 
         var distanceField = fillDistanceField(subdivisionEdges, boundingBox, subdivisionStep);
+        var changingEdges = findChangingEdges(subdivisionEdges, distanceField);
 
-        var vertexIndices = createVertices(subdivisionVertices, distanceField, vertices, boundingBox, subdivisionStep);
+        var vertexIndices = createVertices(subdivisionVertices, distanceField, changingEdges, vertices, boundingBox, subdivisionStep);
 
         if (vertices.Count == 0)
         {
@@ -62,7 +84,6 @@ sealed partial class DualContouredHeightmapToLevelRenderer
     private float[,,] fillDistanceField(
         Vector3i subdivisionEdges, Box3 boundingBox, Vector3 subdivisionStep)
     {
-        var geometry = game.State.GeometryLayer;
         var level = game.State.Level;
 
         var distanceField = new float[subdivisionEdges.X, subdivisionEdges.Y, subdivisionEdges.Z];
@@ -81,22 +102,9 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                 for (var z = 0; z < subdivisionEdges.Z; z++)
                 {
                     var worldZ = boundingBox.Min.Z + subdivisionStep.Z * z;
-                    
                     var worldPosition = worldXY.WithZ(worldZ);
-                    
-                    var (wx, wy, wz) = (Vector3i)(worldPosition * 100);
 
-                    var noise =
-                        + (Noise.CalcPixel3D(wx, wy, wz, 0.0005f) / 256 - 0.5f) * 0f
-                        + (Noise.CalcPixel3D(wx, wy, wz, 0.005f) / 256 - 0.5f) * 0.5f
-                        + (Noise.CalcPixel3D(wx, wy, wz, 0.05f) / 256 - 0.5f) * 0.1f
-                        ;
-
-                    var d = getLevelGeometryDistanceAt(new Position3(worldPosition));
-
-                    var n = (-worldZ / 3).Clamped(0, 1);
-
-                    distanceField[x, y, z] = d;//noise * n + d * (1 - n);
+                    distanceField[x, y, z] = getDistanceAt(worldPosition);
                 }
             }
         }
@@ -104,98 +112,69 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         return distanceField;
     }
 
-    private TileSelection triangleTileSelection1 = TileSelection.FromFootprint(
-        new Footprint(ModAwareId.Invalid, [new Step(0, 0), new Step(1, 0), new Step(0, 1)])
-    );
-    private TileSelection triangleTileSelection2 = TileSelection.FromFootprint(
-        new Footprint(ModAwareId.Invalid, [new Step(0, 0), new Step(1, 0), new Step(1, -1)])
-    );
-
-    private float getLevelGeometryDistanceAt(Position3 worldPosition)
+    private static Dictionary<(Vector3i, Vector3i), float> findChangingEdges(
+        Vector3i subdivisionEdges,
+        float[,,] distanceField)
     {
-        var geometry = game.State.GeometryLayer;
-        var level = game.State.Level;
+        var edges = new Dictionary<(Vector3i, Vector3i), float>();
 
-        var distance = float.MaxValue;
+        var subdivisionVertices = subdivisionEdges - new Vector3i(1, 1, 1);
 
-        var xy = worldPosition.XY();
-        var footprint1 = triangleTileSelection1.GetPositionedFootprint(xy);
-        var footprint2 = triangleTileSelection2.GetPositionedFootprint(xy);
-        var distanceSquared1 = (footprint1.CenterPosition - xy).LengthSquared;
-        var distanceSquared2 = (footprint2.CenterPosition - xy).LengthSquared;
-
-        var tiles = distanceSquared1 < distanceSquared2 ? footprint1.OccupiedTiles : footprint2.OccupiedTiles;
-
-        var z = worldPosition.Z.NumericValue;
-
-        foreach (var tile in tiles)
+        for (var x = 0; x < subdivisionEdges.X; x++)
         {
-            if (!level.IsValid(tile))
-                continue;
-
-            var h = geometry[tile].DrawInfo.Height.NumericValue;
-            var heightD = z - h;
-
-            var tileCenter = Tiles.Level.GetPosition(tile).NumericValue;
-            var relativePosition = xy.NumericValue - tileCenter;
-
-            var hexRadiusAtZ = Constants.Game.World.HexagonSide;
-
-            if (z > 0)
+            for (var y = 0; y < subdivisionEdges.Y; y++)
             {
-                hexRadiusAtZ -= z * 0.1f;
+                for (var z = 0; z < subdivisionEdges.Z; z++)
+                {
+                    if (x < subdivisionVertices.X)
+                    {
+                        considerEdge(x, y, z, 1, 0, 0);
+                    }
+                    if (y < subdivisionVertices.Y)
+                    {
+                        considerEdge(x, y, z, 0, 1, 0);
+                    }
+                    if (z < subdivisionVertices.Z)
+                    {
+                        considerEdge(x, y, z, 0, 0, 1);
+                    }
+                }
             }
-            else
-            {
-                hexRadiusAtZ -= z * 0.05f;
-            }
-
-            var hexD = hexDistance(relativePosition, hexRadiusAtZ, 0, 0, 0);
-
-            var tileD = intersect(hexD, heightD);
-
-            distance = union(distance, tileD);
         }
 
+        return edges;
 
-        return distance;
+        void considerEdge(int x, int y, int z, int dx, int dy, int dz)
+        {
+            var d0 = distanceField[x, y, z];
+            var d1 = distanceField[x + dx, y + dy, z + dz];
+            if (d0 > 0 != d1 > 0)
+            {
+                addEdge((x, y, z), (dx, dy, dz), findIntersectionWith0(d0, d1));
+            }
+        }
+
+        void addEdge(Vector3i v0, Vector3i dv, float f)
+        {
+            edges.Add((v0, v0 + dv), f);
+        }
     }
 
-    static float union(float a, float b) => Math.Min(a, b);
-    static float intersect(float a, float b) => Math.Max(a, b);
-    
-    static float smoothUnion(float a, float b, float k)
+    private static float findIntersectionWith0(float d0, float d1)
     {
-        var h = Math.Clamp(0.5f + 0.5f * (b - a) / k, 0, 1);
-        return Interpolate.Lerp(b, a, h) - k * h * (1 - h);
+        return d0 / (d0 - d1);
     }
 
-    float hexDistance(Vector2 p, float radius, float cornerRadius, float innerGlowRoundness, float centerRoundness)
-    {
-        var k = new Vector3(-0.866025404f, 0.5f, 0.577350269f);
-        float d = p.Length;
-        float cornersToCenter = 1 - (d / radius * -k.X).Clamped(0, 1);
-        float roundness = Interpolate.Lerp(innerGlowRoundness, centerRoundness, cornersToCenter);
-        cornerRadius += radius * roundness * cornersToCenter;
-        cornerRadius = Math.Min(cornerRadius, radius);
-
-        float r = radius - cornerRadius;
-        var d2 = new Vector2(Math.Abs(p.Y), Math.Abs(p.X));
-        d2 -= 2.0f * Math.Min(Vector2.Dot(k.Xy, d2), 0) * k.Xy;
-        d2 -= new Vector2(d2.X.Clamped(-k.Z * r, k.Z * r), r);
-        float hexDistance = d2.Length * MathF.Sign(d2.Y);
-
-        return hexDistance - cornerRadius;
-    }
-
-    private static Dictionary<Vector3i, ushort> createVertices(
-        Vector3i subdivisionVertices,
+    private Dictionary<Vector3i, ushort> createVertices(Vector3i subdivisionVertices,
         float[,,] distanceField,
+        Dictionary<(Vector3i, Vector3i), float> changingEdges,
         BufferStream<LevelVertex> vertices,
         Box3 boundingBox,
         Vector3 subdivisionStep)
     {
         var vertexIndices = new Dictionary<Vector3i, ushort>();
+
+        var vertexEdgeChanges = new List<(Vector3 P, Vector3 N)>(12);
 
         for (var x = 0; x < subdivisionVertices.X; x++)
         {
@@ -203,51 +182,41 @@ sealed partial class DualContouredHeightmapToLevelRenderer
             {
                 for (var z = 0; z < subdivisionVertices.Z; z++)
                 {
-                    var insideCount = 0;
-                    var outsideCount = 0;
-
-                    var insideSum = Vector3.Zero;
-                    var outsideSum = Vector3.Zero;
-
-                    var insideDistanceSum = 0f;
-                    var outsideDistanceSum = 0f;
-
                     var p0 = new Vector3i(x, y, z);
 
-                    for (var j = 0; j < 8; j++)
+                    vertexEdgeChanges.Clear();
+
+                    foreach (var edge in cubeEdges)
                     {
-                        var p = p0 + cube[j];
-                        var d = distanceField[p.X, p.Y, p.Z];
-                        var isInside = d <= 0;
-                        if (isInside)
-                        {
-                            insideCount++;
-                            insideSum += new Vector3(cube[j]) * -d;
-                            insideDistanceSum += -d;
-                        }
-                        else
-                        {
-                            outsideCount++;
-                            outsideSum += new Vector3(cube[j]) * d;
-                            outsideDistanceSum += d;
-                        }
+                        var v0 = p0 + edge.V0;
+                        var v1 = p0 + edge.V1;
+
+                        if (!changingEdges.TryGetValue((v0, v1), out var f))
+                            continue;
+
+                        var p = new Vector3(edge.V0) * (1 - f) + new Vector3(edge.V1) * f;
+                        var n = getNormalAt(p0 + p);
+
+                        vertexEdgeChanges.Add((p, n));
                     }
 
-                    if (insideCount == 0 || outsideCount == 0)
+                    if (vertexEdgeChanges.Count <= 1)
                     {
                         continue;
                     }
 
+                    var averagePoint = Vector3.Zero;
+                    foreach (var (p, n) in vertexEdgeChanges)
+                    {
+                        averagePoint += p;
+                    }
+                    averagePoint /= vertexEdgeChanges.Count;
+
+                    var point = boundingBox.Min + (p0 + averagePoint) * subdivisionStep;
+                    var normal = getNormalAt(point);
+
                     vertexIndices[p0] = (ushort)vertices.Count;
-
-                    var insideAverage = insideSum / insideDistanceSum;
-                    var outsideAverage = outsideSum / outsideDistanceSum;
-
-                    var gradient = (outsideAverage - insideAverage).Normalized();
-
-                    var point = boundingBox.Min + (p0 + insideAverage) * subdivisionStep;
-
-                    vertices.Add(new LevelVertex(point, gradient, Vector2.Zero, Color.White));
+                    vertices.Add(new LevelVertex(point, normal, Vector2.Zero, Color.White));
                 }
             }
         }
