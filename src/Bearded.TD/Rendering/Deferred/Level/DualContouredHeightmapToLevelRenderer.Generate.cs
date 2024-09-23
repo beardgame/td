@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bearded.Graphics;
+using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.Input;
 using Bearded.TD.Game.Simulation.World;
+using Bearded.TD.Tiles;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -73,13 +78,13 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                 if (!level.IsValid(tile))
                     continue;
 
-                var levelHeight = geometry[tile].DrawInfo.Height.NumericValue;
-
                 for (var z = 0; z < subdivisionEdges.Z; z++)
                 {
                     var worldZ = boundingBox.Min.Z + subdivisionStep.Z * z;
-
-                    var (wx, wy, wz) = (Vector3i)(worldXY.WithZ(worldZ) * 100);
+                    
+                    var worldPosition = worldXY.WithZ(worldZ);
+                    
+                    var (wx, wy, wz) = (Vector3i)(worldPosition * 100);
 
                     var noise =
                         + (Noise.CalcPixel3D(wx, wy, wz, 0.0005f) / 256 - 0.5f) * 0f
@@ -87,16 +92,70 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                         + (Noise.CalcPixel3D(wx, wy, wz, 0.05f) / 256 - 0.5f) * 0.1f
                         ;
 
-                    var d = worldZ < levelHeight ? 1 : -1;
+                    var d = getLevelGeometryDistanceAt(new Position3(worldPosition));
 
                     var n = (-worldZ / 3).Clamped(0, 1);
 
-                    distanceField[x, y, z] = d;//noise * n;// + d * (1 - n);
+                    distanceField[x, y, z] = d;//noise * n + d * (1 - n);
                 }
             }
         }
 
         return distanceField;
+    }
+
+    private TileSelection triangleTileSelection1 = TileSelection.FromFootprint(
+        new Footprint(ModAwareId.Invalid, [new Step(0, 0), new Step(1, 0), new Step(0, 1)])
+    );
+    private TileSelection triangleTileSelection2 = TileSelection.FromFootprint(
+        new Footprint(ModAwareId.Invalid, [new Step(0, 0), new Step(1, 0), new Step(1, -1)])
+    );
+
+    private float getLevelGeometryDistanceAt(Position3 worldPosition)
+    {
+        var geometry = game.State.GeometryLayer;
+        var level = game.State.Level;
+
+        var distance = float.MaxValue;
+
+        var xy = worldPosition.XY();
+        var footprint1 = triangleTileSelection1.GetPositionedFootprint(xy);
+        var footprint2 = triangleTileSelection2.GetPositionedFootprint(xy);
+        var distanceSquared1 = (footprint1.CenterPosition - xy).LengthSquared;
+        var distanceSquared2 = (footprint2.CenterPosition - xy).LengthSquared;
+
+        var tiles = distanceSquared1 < distanceSquared2 ? footprint1.OccupiedTiles : footprint2.OccupiedTiles;
+
+        var thisTile = Tiles.Level.GetTile(xy);
+
+        foreach (var tile in thisTile.PossibleNeighbours().Append(thisTile))
+        {
+            if (!level.IsValid(tile))
+                continue;
+
+            var h = geometry[tile].DrawInfo.Height.NumericValue;
+            var hd = h - worldPosition.Z.NumericValue;
+
+            var tileCenter = Tiles.Level.GetPosition(tile).NumericValue;
+            
+            var hexRadiusAtZ = Math.Abs(h) * 0.5f - Constants.Game.World.HexagonSide;
+            var relativePosition = xy.NumericValue - tileCenter;
+            var cornerRadius = 0f;
+            var r = Math.Max(hexRadiusAtZ - cornerRadius, 0);
+            var d2 = new Vector2(Math.Abs(relativePosition.Y), Math.Abs(relativePosition.X));
+            d2 -= 2 * Math.Min(Vector2.Dot(d2, (-0.866025404f, 0.5f)), 0) * new Vector2(-0.866025404f, 0.5f);
+            d2 -= new Vector2(Math.Clamp(d2.X, -0.577350269f * r, 0.577350269f * r), r);
+            var hexDistance = d2.Length * Math.Sign(d2.Y) - cornerRadius;
+
+            var coneDistance = Math.Abs(hd) * -relativePosition.Length;
+
+            var tileDistance = Math.Max(hd, coneDistance);
+
+            distance = Math.Min(distance, tileDistance);
+        }
+
+
+        return distance;
     }
 
     private static Dictionary<Vector3i, ushort> createVertices(
