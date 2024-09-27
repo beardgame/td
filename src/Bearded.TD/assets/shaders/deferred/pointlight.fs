@@ -130,7 +130,7 @@ void main()
     if (f < 0)
         discard;
 
-    vec3 rgb = lightColor.rgb * lightColor.a * (a * f);
+    vec3 rgb = lightColor.rgb * lightColor.a * (a * f) * 5;
     
     bool enableShadow = lightShadow > 0;
     

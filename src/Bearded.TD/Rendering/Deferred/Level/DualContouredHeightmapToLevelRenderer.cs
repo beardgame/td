@@ -170,6 +170,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
             getCell(offset).Render();
         });
 
+        /*
         GL.FrontFace(FrontFaceDirection.Cw);
         heightScaleUniform.Value = -1;
         heightOffsetUniform.Value = 1.5f;
@@ -179,7 +180,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
             getCell(offset).Render();
         });
         GL.FrontFace(FrontFaceDirection.Ccw);
-
+*/
         updateCellGeneration();
     }
 
@@ -209,7 +210,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
             return remove;
         });
 
-        while (cellsToGenerate.Count > 0 && cellGenerationTasks.Count < 2)
+        while (cellsToGenerate.Count > 0 && cellGenerationTasks.Count < 8)
         {
             var cell = cellsToGenerate.Dequeue();
             var task = Task.Run(() =>
@@ -234,13 +235,18 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
             cell = Cell.From(boundingBox, defaultSubdivision, levelShader, renderSettings);
 
             cells[offset] = cell;
+
+            cellsToGenerate.Enqueue(cell);
+            cellsBeingGenerated.Add(cell);
         }
 
+        /*
         if (!cellsBeingGenerated.Contains(cell))
         {
             cellsToGenerate.Enqueue(cell);
             cellsBeingGenerated.Add(cell);
         }
+        */
 
         return cell;
     }

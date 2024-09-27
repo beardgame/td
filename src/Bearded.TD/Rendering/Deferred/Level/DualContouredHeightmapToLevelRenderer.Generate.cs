@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.Footprints;
+using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.Optimization;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
-
 
 sealed partial class DualContouredHeightmapToLevelRenderer
 {
@@ -66,17 +72,22 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         var subdivisionVertices = subdivision;
 
         var distanceField = fillDistanceField(subdivisionEdges, boundingBox, subdivisionStep);
-        var changingEdges = findChangingEdges(subdivisionEdges, distanceField);
+        var changingEdges = findChangingEdges(subdivisionEdges, distanceField, boundingBox, subdivisionStep);
 
-        var vertexIndices = createVertices(subdivisionVertices, distanceField, changingEdges, vertices, boundingBox, subdivisionStep);
+        var vertexList = new List<LevelVertex>();
 
-        if (vertices.Count == 0)
+        var vertexIndices = createVertices(subdivisionVertices, distanceField, changingEdges, vertexList, boundingBox,
+            subdivisionStep);
+
+        if (vertexList.Count == 0)
         {
             cell.QueueFlushOnNextRender();
             return;
         }
 
-        fillIndexBuffer(indices, vertexIndices, subdivisionVertices, distanceField);
+        vertices.Add(CollectionsMarshal.AsSpan(vertexList));
+
+        fillIndexBuffer(indices, vertexIndices, vertexList, subdivisionVertices, distanceField);
 
         cell.QueueFlushOnNextRender();
     }
@@ -112,9 +123,11 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         return distanceField;
     }
 
-    private static Dictionary<(Vector3i, Vector3i), float> findChangingEdges(
+    private Dictionary<(Vector3i, Vector3i), float> findChangingEdges(
         Vector3i subdivisionEdges,
-        float[,,] distanceField)
+        float[,,] distanceField,
+        Box3 boundingBox, 
+        Vector3 subdivisionStep)
     {
         var edges = new Dictionary<(Vector3i, Vector3i), float>();
 
@@ -130,10 +143,12 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                     {
                         considerEdge(x, y, z, 1, 0, 0);
                     }
+
                     if (y < subdivisionVertices.Y)
                     {
                         considerEdge(x, y, z, 0, 1, 0);
                     }
+
                     if (z < subdivisionVertices.Z)
                     {
                         considerEdge(x, y, z, 0, 0, 1);
@@ -150,7 +165,28 @@ sealed partial class DualContouredHeightmapToLevelRenderer
             var d1 = distanceField[x + dx, y + dy, z + dz];
             if (d0 > 0 != d1 > 0)
             {
-                addEdge((x, y, z), (dx, dy, dz), findIntersectionWith0(d0, d1));
+                var v0 = boundingBox.Min + (x, y, z) * subdivisionStep;
+                var vd = new Vector3(dx, dy, dz) * subdivisionStep;
+
+                var intersection = findIntersectionWith0(d0, d1);
+                var currentDistance = Math.Abs(getDistanceAt(v0 + vd * intersection));
+
+                var steps = 20;
+
+                for (var i = 0; i <= 20; i++)
+                {
+                    var candidate = i / (float)steps;
+
+                    var d = Math.Abs(getDistanceAt(v0 + vd * candidate));
+
+                    if (d < currentDistance)
+                    {
+                        currentDistance = d;
+                        intersection = candidate;
+                    }
+                }
+
+                addEdge((x, y, z), (dx, dy, dz), intersection);
             }
         }
 
@@ -162,13 +198,14 @@ sealed partial class DualContouredHeightmapToLevelRenderer
 
     private static float findIntersectionWith0(float d0, float d1)
     {
+        DebugAssert.State.Satisfies(d0 > 0 != d1 > 0);
         return d0 / (d0 - d1);
     }
 
     private Dictionary<Vector3i, ushort> createVertices(Vector3i subdivisionVertices,
         float[,,] distanceField,
         Dictionary<(Vector3i, Vector3i), float> changingEdges,
-        BufferStream<LevelVertex> vertices,
+        List<LevelVertex> vertices,
         Box3 boundingBox,
         Vector3 subdivisionStep)
     {
@@ -183,6 +220,8 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                 for (var z = 0; z < subdivisionVertices.Z; z++)
                 {
                     var p0 = new Vector3i(x, y, z);
+                    var min = boundingBox.Min + p0 * subdivisionStep;
+                    var max = min + subdivisionStep;
 
                     vertexEdgeChanges.Clear();
 
@@ -194,29 +233,54 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                         if (!changingEdges.TryGetValue((v0, v1), out var f))
                             continue;
 
-                        var p = new Vector3(edge.V0) * (1 - f) + new Vector3(edge.V1) * f;
-                        var n = getNormalAt(p0 + p);
+                        var pLocal = new Vector3(edge.V0) * (1 - f) + new Vector3(edge.V1) * f;
+                        var p = min + pLocal * subdivisionStep;
+                        var n = tryGetNormalAt(p);
 
-                        vertexEdgeChanges.Add((p, n));
+                        if (n is { } nn)
+                        {
+                            vertexEdgeChanges.Add((p, nn));
+                        }
                     }
 
-                    if (vertexEdgeChanges.Count <= 1)
+                    if (vertexEdgeChanges.Count <= 2)
                     {
                         continue;
                     }
 
-                    var averagePoint = Vector3.Zero;
-                    foreach (var (p, n) in vertexEdgeChanges)
+                    var meanPoint =
+                        vertexEdgeChanges.Aggregate(Vector3.Zero, (v, t) => v + t.P) / vertexEdgeChanges.Count;
+
+                    meanPoint = new Vector3(
+                        meanPoint.X.Clamped(min.X, max.X),
+                        meanPoint.Y.Clamped(min.Y, max.Y),
+                        meanPoint.Z.Clamped(min.Z, max.Z)
+                    );
+
+                    var bias = 0.01f;
+                    vertexEdgeChanges.Add((meanPoint, (bias, 0, 0)));
+                    vertexEdgeChanges.Add((meanPoint, (0, bias, 0)));
+                    vertexEdgeChanges.Add((meanPoint, (0, 0, bias)));
+
+                    var solution = meanPoint;
+
+                    try
                     {
-                        averagePoint += p;
+                        solution = PlaneIntersectionSolver.FindIntersectionGradientDescent(vertexEdgeChanges, meanPoint, boundingBox.Min + p0 * subdivisionStep, subdivisionStep);
                     }
-                    averagePoint /= vertexEdgeChanges.Count;
+                    catch
+                    {
+                        solution = PlaneIntersectionSolver.FindIntersectionBruteForce(vertexEdgeChanges, meanPoint, boundingBox.Min + p0 * subdivisionStep, subdivisionStep);
+                    }
 
-                    var point = boundingBox.Min + (p0 + averagePoint) * subdivisionStep;
-                    var normal = getNormalAt(point);
+                    var point = solution;
+                    var maybeNormal = tryGetNormalAt(point);
 
-                    vertexIndices[p0] = (ushort)vertices.Count;
-                    vertices.Add(new LevelVertex(point, normal, Vector2.Zero, Color.White));
+                    if (maybeNormal is { } normal)
+                    {
+                        vertexIndices[p0] = (ushort)vertices.Count;
+                        vertices.Add(new LevelVertex(point, normal, Vector2.Zero, Color.White));
+                    }
                 }
             }
         }
@@ -224,28 +288,29 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         return vertexIndices;
     }
 
-    private static void fillIndexBuffer(
-        BufferStream<ushort> bufferStream,
+    private static void fillIndexBuffer(BufferStream<ushort> bufferStream,
         Dictionary<Vector3i, ushort> vertexIndices,
+        List<LevelVertex> vertices,
         Vector3i subdivisionVertices,
         float[,,] distanceField)
     {
-        for (var x = 0; x < subdivisionVertices.X-1; x++)
+        for (var x = 0; x < subdivisionVertices.X - 1; x++)
         {
-            for (var y = 0; y < subdivisionVertices.Y-1; y++)
+            for (var y = 0; y < subdivisionVertices.Y - 1; y++)
             {
-                for (var z = 0; z < subdivisionVertices.Z-1; z++)
+                for (var z = 0; z < subdivisionVertices.Z - 1; z++)
                 {
                     var p0 = new Vector3i(x, y, z);
-                    tryAddQuad(p0, (1, 0, 0), (0, 1, 0), vertexIndices, bufferStream, distanceField);
-                    tryAddQuad(p0, (0, 0, 1), (1, 0, 0), vertexIndices, bufferStream, distanceField);
-                    tryAddQuad(p0, (0, 1, 0), (0, 0, 1), vertexIndices, bufferStream, distanceField);
+                    tryAddQuad(p0, (1, 0, 0), (0, 1, 0), vertices, vertexIndices, bufferStream, distanceField);
+                    tryAddQuad(p0, (0, 0, 1), (1, 0, 0), vertices, vertexIndices, bufferStream, distanceField);
+                    tryAddQuad(p0, (0, 1, 0), (0, 0, 1), vertices, vertexIndices, bufferStream, distanceField);
                 }
             }
         }
+
         return;
 
-        static void tryAddQuad(Vector3i p0, Vector3i tangent1, Vector3i tangent2,
+        static void tryAddQuad(Vector3i p0, Vector3i tangent1, Vector3i tangent2, List<LevelVertex> vertices,
             Dictionary<Vector3i, ushort> vertexIndices, BufferStream<ushort> indices, float[,,] distanceField)
         {
             var d1 = p0 + tangent1 + tangent2;
@@ -258,26 +323,129 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                 return;
             }
 
-            var v0 = vertexIndices[p0];
-            var v1 = vertexIndices[p0 + tangent1];
-            var v2 = vertexIndices[p0 + tangent2];
-            var v3 = vertexIndices[p0 + tangent1 + tangent2];
+            if (!(
+                    vertexIndices.TryGetValue(p0, out var v0) &&
+                    vertexIndices.TryGetValue(p0 + tangent1, out var v1) &&
+                    vertexIndices.TryGetValue(p0 + tangent2, out var v2) &&
+                    vertexIndices.TryGetValue(p0 + tangent1 + tangent2, out var v3)
+                ))
+            {
+                return;
+            }
 
+            // ensure front face is facing out
             if (solid1)
             {
-                indices.Add([
-                    v0, v2, v1,
-                    v1, v2, v3,
-                ]);
+                (v1, v2) = (v2, v1);
             }
-            else
+
+            var d03 = vertices[v0].Position - vertices[v3].Position;
+            var d12 = vertices[v1].Position - vertices[v2].Position;
+
+            // connect shorter diagonal, which tends to lead to smoother mesh
+            if (d12.LengthSquared < d03.LengthSquared)
             {
-                indices.Add([
-                    v0, v1, v2,
-                    v1, v3, v2,
-                ]);
+                (v0, v1, v3, v2) = (v1, v3, v2, v0);
             }
+
+            // diagonal from v0 to v3
+            indices.Add([
+                v0, v1, v3,
+                v0, v3, v2,
+            ]);
         }
     }
+}
 
+public class PlaneIntersectionSolver
+{
+    public static Vector3 FindIntersectionBruteForce(
+        List<(Vector3 P, Vector3 N)> planes,
+        Vector3 guess,
+        Vector3 boundingBoxMin,
+        Vector3 subdivisionStep)
+    {
+        var constant = (Span<float>)stackalloc float[planes.Count];
+
+        var guessError = 0f;
+        for (var i = 0; i < planes.Count; i++)
+        {
+            constant[i] = Vector3.Dot(planes[i].N, planes[i].P);
+            guessError += Math.Abs(Vector3.Dot(planes[i].N, guess) - constant[i]);
+        }
+
+        var best = guess;
+        var bestError = guessError;
+        for (var x = 0.0f; x < 1; x += 0.1f)
+        {
+            for (var y = 0.0f; y < 1; y += 0.1f)
+            {
+                for (var z = 0.0f; z < 1; z += 0.1f)
+                {
+                    var error = 0.0f;
+                    var candidate = boundingBoxMin + new Vector3(x, y, z) * subdivisionStep;
+
+                    for (var i = 0; i < planes.Count; i++)
+                    {
+                        var n = planes[i].N;
+                        error += Math.Abs(Vector3.Dot(n, candidate) - constant[i]);
+                    }
+
+                    if (error < bestError)
+                    {
+                        bestError = error;
+                        best = candidate;
+                    }
+                }
+            }
+        }
+
+        return best;
+    }
+
+    public static Vector3 FindIntersectionGradientDescent(
+        List<(Vector3 P, Vector3 N)> planes,
+        Vector3 guess,
+        Vector3 min,
+        Vector3 size)
+    {
+        var m = planes.Count;
+
+        var A = Matrix<double>.Build.Dense(m, 3);
+        var b = Vector<double>.Build.Dense(m);
+
+        for (var i = 0; i < m; i++)
+        {
+            var n = planes[i].N;
+            var p = planes[i].P;
+            A.SetRow(i, (double[])[n.X, n.Y, n.Z]);
+            b[i] = Vector3.Dot(n, p);
+        }
+
+        Func<Vector<double>, double> objectiveFunction = x =>
+        {
+            var diff = A * x - b;
+            return diff.DotProduct(diff);
+        };
+
+        Func<Vector<double>, Vector<double>> gradientFunction = x => 2 * A.TransposeThisAndMultiply(A * x - b);
+
+        var objective = ObjectiveFunction.Gradient(objectiveFunction, gradientFunction);
+
+        var initialGuess = Vector<double>.Build.Dense([guess.X, guess.Y, guess.Z]);
+
+        var lowerBound = Vector<double>.Build.Dense([min.X, min.Y, min.Z]);
+        var upperBound = Vector<double>.Build.Dense([min.X + size.X, min.Y + size.Y, min.Z + size.Z]);
+
+        var minimizer = new BfgsBMinimizer(
+            gradientTolerance: 1e-2,
+            parameterTolerance: 1e-5,
+            functionProgressTolerance: 1,
+            maximumIterations: 100);
+
+        var result = minimizer.FindMinimum(objective, lowerBound, upperBound, initialGuess);
+
+        var v = result.MinimizingPoint;
+        return new Vector3((float)v[0], (float)v[1], (float)v[2]);
+    }
 }
