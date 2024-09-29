@@ -162,8 +162,10 @@ void main()
 
     if (attenuation < 0)
         discard;
+
+    attenuation = pow(attenuation, 2);
     
-    vec3 radiance = lightColor.rgb * lightColor.a * attenuation * 50;
+    vec3 radiance = lightColor.rgb * lightColor.a * attenuation * 20;
     
     vec3 albedo = texture(diffuseBuffer, uv).xyz;
 
