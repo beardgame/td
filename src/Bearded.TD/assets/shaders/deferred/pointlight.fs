@@ -109,6 +109,46 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
+float getSelfShadowFactor(vec2 uv, vec3 fragmentPosition, vec3 vectorToLight, float directLighting)
+{
+    const float shadowLength = 30;
+    const int samples = 15;
+    const float hardness = 5;
+    
+    float distanceToLight = length(vectorToLight);
+    float maxDistanceToLight = sqrt(lightRadiusSquared);
+    float normalisedDistanceToLight = distanceToLight / maxDistanceToLight;
+    
+    vec2 uvRay = normalize(lightCenterUV - uv) / resolution * shadowLength * normalisedDistanceToLight;
+    float step = 1.0 / samples;
+    float rayT = 0;
+
+    float slope = directLighting;
+    float maxSlope = 0;
+    float shadow = 0;
+
+    vec3 lightNormal = normalize(lightPosition - fragmentPosition);
+    
+    for (int i = 0; i < samples; i++)
+    {
+        vec2 sampleUV = uv + uvRay * rayT;
+        vec3 normal = texture(normalBuffer, sampleUV).xyz;
+        normal = normal * 2 - 1;
+        
+        float f = dot(lightNormal, normal);
+        
+        slope += f;
+        if (slope < maxSlope)
+        {
+            shadow += 1 - rayT;
+        }
+        maxSlope = max(maxSlope, slope);
+
+        rayT += step;
+    }
+    return clamp(1 - hardness * shadow / samples, 0, 1);
+}
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution;
@@ -123,18 +163,18 @@ void main()
     if (attenuation < 0)
         discard;
     
-    vec3 radiance = lightColor.rgb * lightColor.a * attenuation * 10;
+    vec3 radiance = lightColor.rgb * lightColor.a * attenuation * 50;
     
     vec3 albedo = texture(diffuseBuffer, uv).xyz;
 
     vec4 material = texture(materialBuffer, uv);
-    float roughness = 0.1;//material.x;
-    float metallic = 0;//material.y;
+    float roughness = 0.8;//material.x;
+    float metallic = 0.2;//material.y;
 
     vec3 surfaceNormal = texture(normalBuffer, uv).xyz;
     surfaceNormal = surfaceNormal * 2 - 1;
 
-    vec3 V = fragmentPosition;
+    vec3 V = normalize(-fragmentPosition - cameraPosition);
     vec3 L = normalize(vectorToLight);
     vec3 N = normalize(surfaceNormal);
     vec3 H = normalize(V + L);
@@ -156,10 +196,9 @@ void main()
     float NdotL = max(dot(N, L), 0.0);
     outRGB = vec4((kD * albedo / PI + specular) * radiance * NdotL, 0);
 
-/*
-    float shadowUmbraFactor = lightShadow > 0
-        ? getShadowUmbraFactor(uv, fragmentPosition, vectorToLight)
-        : 1;
-    outRGB = outRGB * shadowUmbraFactor;
-*/
+    if (true)
+    {
+        float selfShadow = getSelfShadowFactor(uv, fragmentPosition, vectorToLight, NdotL);
+        outRGB.rgb = outRGB.rgb * selfShadow;
+    }
 }

@@ -78,7 +78,7 @@ sealed class DeferredRenderer
             Depth = Texture(PixelInternalFormat.R16f, label: "Depth"), // z (0-1, camera space)
             DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f, label: "DepthMask"),
 
-            LightAccum = Texture(PixelInternalFormat.Rgb, label: "LightAccum"),
+            LightAccum = Texture(PixelInternalFormat.Rgb16f, label: "LightAccum"),
             Composition = Texture(PixelInternalFormat.Rgba, label: "Composition"),
         };
 

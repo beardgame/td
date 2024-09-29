@@ -31,12 +31,12 @@ readonly struct HeightmapInstanceVertex(Vector2 offset) : IVertexData
         );
 }
 
-sealed class HeightmapToLevelRenderer
+sealed class TessellatedHeightmapToLevelRenderer : IHeightmapToLevelRenderer
 {
     private readonly Shader shader;
 
+    private readonly Tiles.Level level;
     private readonly CoreRenderSettings renderSettings;
-    private readonly int tileMapWidth;
 
     private readonly FloatUniform heightScaleUniform = new("heightScale");
     private readonly FloatUniform heightOffsetUniform = new("heightOffset");
@@ -47,18 +47,17 @@ sealed class HeightmapToLevelRenderer
 
     private float gridScaleSetting;
 
-    public HeightmapToLevelRenderer(GameInstance game, RenderContext context,
+    public TessellatedHeightmapToLevelRenderer(GameInstance game, RenderContext context,
         Heightmap heightmap, BiomeBuffer biomeBuffer, BiomeMaterials biomeMaterials, Shader shader)
     {
         this.shader = shader;
         renderSettings = context.Settings;
-        var level = game.State.Level;
-        tileMapWidth = level.Radius * 2 + 1;
+        level = game.State.Level;
 
         (gridMeshBuilder, gridRenderer) = setupGridRenderer(context, heightmap, biomeBuffer, biomeMaterials);
     }
 
-    public void CleanUp()
+    public void Dispose()
     {
         gridMeshBuilder.Dispose();
         gridRenderer.Dispose();
@@ -87,141 +86,22 @@ sealed class HeightmapToLevelRenderer
 
     private void render()
     {
-        var visibleArea = getCameraFrustumBounds();
+        var visibleArea = renderSettings.GetCameraFrustumBoundsAtFarPlane();
 
-        var gridDimensions = getGridDimensionsFor();
+        var gridDimensions = HeightmapToLevelRendererHelpers.Grid.For(
+            level, gridScaleSetting, gridMeshBuilder.TilingX, gridMeshBuilder.TilingY);
 
         renderLevelGrid(visibleArea, gridDimensions);
     }
 
-    private readonly struct GridDimensions
+    private void renderLevelGrid(Rectangle visibleArea, HeightmapToLevelRendererHelpers.Grid grid)
     {
-        public float Scale { get; init; }
-        public float CellColumnsHalf { get; init; }
-        public float CellRowsHalf { get; init; }
-    }
+        gridScaleUniform.Value = new Vector2(grid.Scale);
 
-    private void renderLevelGrid(Rectangle visibleArea, GridDimensions gridDimensions)
-    {
-        var (cellColumnsHalf, cellRowsHalf) = (gridDimensions.CellColumnsHalf, gridDimensions.CellRowsHalf);
-
-        gridScaleUniform.Value = new Vector2(gridDimensions.Scale);
-
-        var tilingX = gridMeshBuilder.TilingX * gridDimensions.Scale;
-        var tilingY = gridMeshBuilder.TilingY * gridDimensions.Scale;
-        var cellVisibleWidth = tilingX.X + tilingY.X;
-
-        for (var y = -cellRowsHalf; y < cellRowsHalf; y++)
-        {
-            var rowMin = y * tilingY.Y;
-            var rowMax = rowMin + tilingY.Y;
-
-            if (rowMin > visibleArea.Bottom || rowMax < visibleArea.Top)
-                continue;
-
-            var xMin = Max(-cellColumnsHalf, -cellColumnsHalf - y - 1);
-            var xMax = Min(cellColumnsHalf, cellColumnsHalf - y);
-
-            for (var x = xMin; x < xMax; x++)
-            {
-                var offset = x * tilingX + y * tilingY;
-
-                if (offset.X > visibleArea.Right || offset.X + cellVisibleWidth < visibleArea.Left)
-                    continue;
-
-                gridMeshBuilder.AddInstance(offset);
-            }
-        }
+        HeightmapToLevelRendererHelpers.IterateLevelCells(visibleArea, grid, gridMeshBuilder.AddInstance);
 
         drawInstances();
         gridMeshBuilder.Clear();
-    }
-
-    private GridDimensions getGridDimensionsFor()
-    {
-        // ensure minimum level of detail based on graphics settings
-        var (cellColumnsHalf, cellRowsHalf) = getMinimumGridDimensions();
-
-        var scale = (tileMapWidth * 0.5f * HexagonDistanceX) / cellColumnsHalf / gridMeshBuilder.TilingX.X;
-
-        /*
-        var gridSubdivision = getGridSubdivision(cameraFrustumBounds, scale);
-
-        scale /= gridSubdivision;
-        cellColumnsHalf *= gridSubdivision;
-        cellRowsHalf *= gridSubdivision;
-        */
-
-        return new GridDimensions
-        {
-            CellColumnsHalf = cellColumnsHalf,
-            CellRowsHalf = cellRowsHalf,
-            Scale = scale,
-        };
-    }
-
-    /*
-    private int getGridSubdivision(Rectangle cameraFrustumBounds, float baseScale)
-    {
-        var gridCellArea = gridMeshBuilder.TilingX.X * gridMeshBuilder.TilingY.Y * baseScale.Squared();
-
-        var baseGridCellsInCameraFrustum = cameraFrustumBounds.Area / gridCellArea;
-
-        // TODO: this should depend on resolution and on a setting
-        var desiredNumberOfGridCellsOnScreen = 160;
-
-        var idealSubCellsPerCell = desiredNumberOfGridCellsOnScreen / baseGridCellsInCameraFrustum;
-        var idealSubdivisionsPerCell = idealSubCellsPerCell.Sqrted();
-
-        var gridSubdivisionAsPowerOf2 = (int)Pow(2, (int) Log2(idealSubdivisionsPerCell));
-        gridSubdivisionAsPowerOf2 = Max(1, gridSubdivisionAsPowerOf2);
-
-        return gridSubdivisionAsPowerOf2;
-    }
-    */
-
-    private (int CellColumnsHalf, int CellRowsHalf) getMinimumGridDimensions()
-    {
-        var widthToCover = tileMapWidth * 0.5f * HexagonDistanceX;
-        var heightToCover = tileMapWidth * 0.5f * HexagonDistanceY;
-
-        var gridMeshWidth = gridMeshBuilder.TilingX.X;
-        var gridMeshHeight = gridMeshBuilder.TilingY.Y;
-
-        // TODO: base scale should be revisited once/if we add tesselation
-        const float baseScale = 1f;
-        var scale = baseScale / gridScaleSetting;
-
-        var cellWidth = scale * gridMeshWidth;
-        var cellHeight = scale * gridMeshHeight;
-
-        var cellColumnsHalf = MoreMath.CeilToInt(widthToCover / cellWidth);
-        var cellRowsHalf = MoreMath.CeilToInt(heightToCover / cellHeight);
-
-        return (cellColumnsHalf, cellRowsHalf);
-    }
-
-    private Rectangle getCameraFrustumBounds()
-    {
-        var cameraPosition = -renderSettings.CameraPosition.Value;
-        var farPlaneBaseCorner = renderSettings.FarPlaneBaseCorner.Value;
-        var farPlaneUnitX = renderSettings.FarPlaneUnitX.Value * 2;
-        var farPlaneUnitY = renderSettings.FarPlaneUnitY.Value * 2;
-
-        var corner00 = farPlaneBaseCorner.Xy + cameraPosition.Xy;
-        var corner10 = corner00 + farPlaneUnitX.Xy;
-        var corner01 = corner00 + farPlaneUnitY.Xy;
-        var corner11 = corner10 + farPlaneUnitY.Xy;
-
-        var minX = Min(Min(corner00.X, corner10.X), Min(corner01.X, corner11.X));
-        var minY = Min(Min(corner00.Y, corner10.Y), Min(corner01.Y, corner11.Y));
-        var maxX = Max(Max(corner00.X, corner10.X), Max(corner01.X, corner11.X));
-        var maxY = Max(Max(corner00.Y, corner10.Y), Max(corner01.Y, corner11.Y));
-
-        var width = maxX - minX;
-        var height = maxY - minY;
-
-        return new Rectangle(minX, minY, width, height);
     }
 
     private void drawInstances()

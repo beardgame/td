@@ -150,13 +150,13 @@ void getWallAndFloor(int biomeId, vec3 position, float uvRotationAngle, vec3 nor
             float c = cos(uvRotationAngle);
             uvRotation = mat2(c, -s, s, c);
             uvw.xy = uvRotation * uvw.xy;
+            normal.xy = uvRotation * normal.xy;
         }
         
         getFloorColor(biomeId, uvw, normal, floorColor, floorNormal);
 
         if (BOMBING)
         {
-            // TODO: normals are not working correctly at wall-to-floor transition
             floorNormal.xy = transpose(uvRotation) * floorNormal.xy;
         }
     }
@@ -330,7 +330,7 @@ void main()
 
     if (heightScale > 0)
     {
-        if (fragmentPosition.z > limit)
+        if (false && fragmentPosition.z > limit)
         {
             // discard top of regular terrain
             discard;
@@ -338,7 +338,7 @@ void main()
     }
     else
     {
-        if (distanceToCutoutCenter < cutoutRadius)
+        if (false && distanceToCutoutCenter < cutoutRadius)
         {
 
             // uncomment for much more dithered fading
@@ -354,7 +354,21 @@ void main()
     vec3 fNormal = fragmentNormal;
     vec4 fColor = fragmentColor;
 
-    if(!gl_FrontFacing)
+
+    if (false)
+    {
+        vec3 dx = dFdx(fPosition);
+        vec3 dy = dFdy(fPosition);
+        vec3 n = normalize(cross(dx, dy));
+
+        float normalSimilarity = clamp(dot(n, fNormal) + 0.5, 0, 1);
+        
+        normalSimilarity = pow(normalSimilarity, 2);
+
+        fNormal = mix(n, fNormal, normalSimilarity);
+    }
+
+    if(false && !gl_FrontFacing)
     {
         vec3 cutoutCenterToFragmentNormalised =
             cutoutCenterToFragment / distanceToCutoutCenter;
@@ -394,7 +408,7 @@ void main()
     vec3 wallColor, wallNormal;
     vec3 floorColor, floorNormal;
 
-    float flatness = smoothstep(0.3, 0.5, fNormal.z);
+    float flatness = smoothstep(0.1, 0.9, fNormal.z);
     
     float weightSum = biomeWeights[0] + biomeWeights[1] + biomeWeights[2];
     
@@ -430,14 +444,23 @@ void main()
     vec3 diffuse, normal;
     diffuse = mix(wallColor, floorColor, flatness);
     normal = mix(wallNormal, floorNormal, flatness);
+    normal = normalize(normal);
+
+    //diffuse = vec3(0.5);
     
     vec4 rgba = vec4(diffuse, 1) * fColor;
     
     outRGBA = rgba;
-    outNormal = vec4(normal * 0.5 + 0.5, rgba.a);
+    outNormal = vec4(normal * 0.5 + 0.5, 1);
+    
 
     // check if this is actually in 0-1 space between camera and far plane
     // it probably is not because we don't take near distance into account properly
     float depth = -(view * vec4(fPosition, 1)).z / farPlaneDistance;
-    outDepth = vec4(depth, 0, 0, rgba.a);
+    outDepth = vec4(depth, 0, 0, 1);
+    
+    if (!gl_FrontFacing)
+    {
+        outRGBA.rgb *= 0.25  + vec3(0.75, 0, 0.75);
+    }
 }
