@@ -3,27 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Bearded.Graphics;
-using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using MathNet.Numerics.Optimization;
 using OpenTK.Mathematics;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 
 sealed partial class DualContouredHeightmapToLevelRenderer
 {
-    private const int C000 = 0;
-    private const int C100 = 1;
-    private const int C010 = 2;
-    private const int C001 = 3;
-    private const int C110 = 4;
-    private const int C101 = 5;
-    private const int C011 = 6;
-    private const int C111 = 7;
+    private const int c000 = 0;
+    private const int c100 = 1;
+    private const int c010 = 2;
+    private const int c001 = 3;
+    private const int c110 = 4;
+    private const int c101 = 5;
+    private const int c011 = 6;
+    private const int c111 = 7;
 
     private static readonly Vector3i[] cube =
     [
@@ -40,20 +36,20 @@ sealed partial class DualContouredHeightmapToLevelRenderer
 
     private static readonly (Vector3i V0, Vector3i V1)[] cubeEdges =
     [
-        (cube[C000], cube[C100]),
-        (cube[C010], cube[C110]),
-        (cube[C001], cube[C101]),
-        (cube[C011], cube[C111]),
+        (cube[c000], cube[c100]),
+        (cube[c010], cube[c110]),
+        (cube[c001], cube[c101]),
+        (cube[c011], cube[c111]),
 
-        (cube[C000], cube[C010]),
-        (cube[C100], cube[C110]),
-        (cube[C001], cube[C011]),
-        (cube[C101], cube[C111]),
+        (cube[c000], cube[c010]),
+        (cube[c100], cube[c110]),
+        (cube[c001], cube[c011]),
+        (cube[c101], cube[c111]),
 
-        (cube[C000], cube[C001]),
-        (cube[C100], cube[C101]),
-        (cube[C010], cube[C011]),
-        (cube[C110], cube[C111]),
+        (cube[c000], cube[c001]),
+        (cube[c100], cube[c101]),
+        (cube[c010], cube[c011]),
+        (cube[c110], cube[c111]),
     ];
 
     private void fillCellBuffers(Cell cell)
@@ -76,7 +72,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer
 
         var vertexList = new List<LevelVertex>();
 
-        var vertexIndices = createVertices(subdivisionVertices, distanceField, changingEdges, vertexList, boundingBox,
+        var vertexIndices = createVertices(subdivisionVertices, changingEdges, vertexList, boundingBox,
             subdivisionStep);
 
         if (vertexList.Count == 0)
@@ -203,7 +199,6 @@ sealed partial class DualContouredHeightmapToLevelRenderer
     }
 
     private Dictionary<Vector3i, ushort> createVertices(Vector3i subdivisionVertices,
-        float[,,] distanceField,
         Dictionary<(Vector3i, Vector3i), float> changingEdges,
         List<LevelVertex> vertices,
         Box3 boundingBox,
@@ -262,7 +257,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                     vertexEdgeChanges.Add((meanPoint, (0, bias, 0)));
                     vertexEdgeChanges.Add((meanPoint, (0, 0, bias)));
 
-                    var solution = meanPoint;
+                    Vector3 solution;
 
                     try
                     {
@@ -354,98 +349,5 @@ sealed partial class DualContouredHeightmapToLevelRenderer
                 v0, v3, v2,
             ]);
         }
-    }
-}
-
-public class PlaneIntersectionSolver
-{
-    public static Vector3 FindIntersectionBruteForce(
-        List<(Vector3 P, Vector3 N)> planes,
-        Vector3 guess,
-        Vector3 boundingBoxMin,
-        Vector3 subdivisionStep)
-    {
-        var constant = (Span<float>)stackalloc float[planes.Count];
-
-        var guessError = 0f;
-        for (var i = 0; i < planes.Count; i++)
-        {
-            constant[i] = Vector3.Dot(planes[i].N, planes[i].P);
-            guessError += Math.Abs(Vector3.Dot(planes[i].N, guess) - constant[i]);
-        }
-
-        var best = guess;
-        var bestError = guessError;
-        for (var x = 0.0f; x < 1; x += 0.1f)
-        {
-            for (var y = 0.0f; y < 1; y += 0.1f)
-            {
-                for (var z = 0.0f; z < 1; z += 0.1f)
-                {
-                    var error = 0.0f;
-                    var candidate = boundingBoxMin + new Vector3(x, y, z) * subdivisionStep;
-
-                    for (var i = 0; i < planes.Count; i++)
-                    {
-                        var n = planes[i].N;
-                        error += Math.Abs(Vector3.Dot(n, candidate) - constant[i]);
-                    }
-
-                    if (error < bestError)
-                    {
-                        bestError = error;
-                        best = candidate;
-                    }
-                }
-            }
-        }
-
-        return best;
-    }
-
-    public static Vector3 FindIntersectionGradientDescent(
-        List<(Vector3 P, Vector3 N)> planes,
-        Vector3 guess,
-        Vector3 min,
-        Vector3 size)
-    {
-        var m = planes.Count;
-
-        var A = Matrix<double>.Build.Dense(m, 3);
-        var b = Vector<double>.Build.Dense(m);
-
-        for (var i = 0; i < m; i++)
-        {
-            var n = planes[i].N;
-            var p = planes[i].P;
-            A.SetRow(i, (double[])[n.X, n.Y, n.Z]);
-            b[i] = Vector3.Dot(n, p);
-        }
-
-        Func<Vector<double>, double> objectiveFunction = x =>
-        {
-            var diff = A * x - b;
-            return diff.DotProduct(diff);
-        };
-
-        Func<Vector<double>, Vector<double>> gradientFunction = x => 2 * A.TransposeThisAndMultiply(A * x - b);
-
-        var objective = ObjectiveFunction.Gradient(objectiveFunction, gradientFunction);
-
-        var initialGuess = Vector<double>.Build.Dense([guess.X, guess.Y, guess.Z]);
-
-        var lowerBound = Vector<double>.Build.Dense([min.X, min.Y, min.Z]);
-        var upperBound = Vector<double>.Build.Dense([min.X + size.X, min.Y + size.Y, min.Z + size.Z]);
-
-        var minimizer = new BfgsBMinimizer(
-            gradientTolerance: 1e-2,
-            parameterTolerance: 1e-5,
-            functionProgressTolerance: 1,
-            maximumIterations: 100);
-
-        var result = minimizer.FindMinimum(objective, lowerBound, upperBound, initialGuess);
-
-        var v = result.MinimizingPoint;
-        return new Vector3((float)v[0], (float)v[1], (float)v[2]);
     }
 }

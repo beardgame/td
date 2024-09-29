@@ -93,9 +93,11 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
 
     const int gridMinZ = -10;
     const int gridMaxZ = 2;
-    static readonly Vector3i defaultSubdivision = (32, 32, 32);
+    private const int cellRes = 64;
+    private const float cellSize = 6;
+    static readonly Vector3i defaultSubdivision = (cellRes, cellRes, cellRes);
 
-    private readonly Queue<Cell> cellsToGenerate = [];
+    private readonly List<Cell> cellsToGenerate = [];
     private readonly List<(Cell Cell, Task<TimeSpan> Task)> cellGenerationTasks = [];
     private readonly HashSet<Cell> cellsBeingGenerated = [];
 
@@ -128,7 +130,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
 
         var level = game.State.Level;
 
-        var cellWidthCandidate = 4 * Constants.Game.World.HexagonDistanceX;
+        var cellWidthCandidate = cellSize * Constants.Game.World.HexagonDistanceX;
 
         var tilingX = new Vector2(cellWidthCandidate, 0);
         var tilingY = new Vector2(0, cellWidthCandidate);
@@ -152,15 +154,6 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
 
     private void render()
     {
-        var level = game.State.Level;
-
-        var cellWidthCandidate = 2 * Constants.Game.World.HexagonDistanceX;
-
-        var tilingX = new Vector2(cellWidthCandidate, 0);
-        var tilingY = new Vector2(0, cellWidthCandidate);
-
-        grid = HeightmapToLevelRendererHelpers.Grid.For(level, 1, tilingX, tilingY);
-
         var bounds = settings.GetCameraFrustumBoundsAtFarPlane();
 
         heightScaleUniform.Value = 1;
@@ -210,9 +203,19 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
             return remove;
         });
 
+        var cameraPosition = settings.CameraPosition.Value.Xy;
+        cellsToGenerate.Sort(
+            (c1, c2) =>
+            {
+                var d1 = (-c1.BoundingBox.Center.Xy - cameraPosition).LengthSquared;
+                var d2 = (-c2.BoundingBox.Center.Xy - cameraPosition).LengthSquared;
+                return d2.CompareTo(d1);
+            });
+
         while (cellsToGenerate.Count > 0 && cellGenerationTasks.Count < 8)
         {
-            var cell = cellsToGenerate.Dequeue();
+            var cell = cellsToGenerate.Last();
+            cellsToGenerate.RemoveAt(cellsToGenerate.Count - 1);
             var task = Task.Run(() =>
             {
                 var stopWatch = System.Diagnostics.Stopwatch.StartNew();
@@ -236,17 +239,9 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
 
             cells[offset] = cell;
 
-            cellsToGenerate.Enqueue(cell);
+            cellsToGenerate.Add(cell);
             cellsBeingGenerated.Add(cell);
         }
-
-        /*
-        if (!cellsBeingGenerated.Contains(cell))
-        {
-            cellsToGenerate.Enqueue(cell);
-            cellsBeingGenerated.Add(cell);
-        }
-        */
 
         return cell;
     }

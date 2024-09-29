@@ -42,9 +42,9 @@ sealed partial class DualContouredHeightmapToLevelRenderer
 
     private float getDistanceAt(Vector3 p)
     {
-        var (wx, wy, wz) = (Vector3i)(p * 50);
+        var (wx, wy, wz) = (Vector3i)((p + new Vector3(1000)) * 50);
 
-        var noise =
+        var noise = 0
                 + (Noise.CalcPixel3D(wx, wy, wz, 0.01f) / 256 - 0.5f) * 0.5f
                 + (Noise.CalcPixel3D(wx, wy, wz, 0.003f) / 256 - 0.5f) * 0.5f
             ;
