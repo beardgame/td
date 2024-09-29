@@ -74,7 +74,7 @@ sealed class DeferredRenderer
         {
             Diffuse = Texture(PixelInternalFormat.Rgba, label: "Diffuse"), // rgba
             Normal = Texture(PixelInternalFormat.Rgba, label: "Normal"), // xyz
-            Material = Texture(PixelInternalFormat.Rg8, label: "Material"), // roughness, metallic, AO
+            Material = Texture(PixelInternalFormat.Rgba, label: "Material"), // AO, metallic, roughness
             Depth = Texture(PixelInternalFormat.R16f, label: "Depth"), // z (0-1, camera space)
             DepthMask = DepthTexture(PixelInternalFormat.DepthComponent32f, label: "DepthMask"),
 
@@ -85,7 +85,7 @@ sealed class DeferredRenderer
         var targets = new
         {
             Geometry = RenderTargetWithDepthAndColors("Geometry",
-                textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth),
+                textures.DepthMask, textures.Diffuse, textures.Normal, textures.Depth, textures.Material),
             GeometryDiffuseOnly = RenderTargetWithDepthAndColors("GeometryDiffuseOnly",
                 textures.DepthMask, textures.Diffuse),
 

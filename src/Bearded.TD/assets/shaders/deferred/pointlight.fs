@@ -170,8 +170,8 @@ void main()
     vec3 albedo = texture(diffuseBuffer, uv).xyz;
 
     vec4 material = texture(materialBuffer, uv);
-    float roughness = 0.8;//material.x;
-    float metallic = 0.2;//material.y;
+    float metallic = material.y;
+    float roughness = material.z;
 
     vec3 surfaceNormal = texture(normalBuffer, uv).xyz;
     surfaceNormal = surfaceNormal * 2 - 1;
