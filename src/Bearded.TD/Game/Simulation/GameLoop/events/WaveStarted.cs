@@ -4,14 +4,4 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.GameLoop;
 
-readonly struct WaveStarted : IGlobalEvent
-{
-    public Id<Wave> WaveId { get; }
-    public string WaveName { get; }
-
-    public WaveStarted(Id<Wave> waveId, string waveName)
-    {
-        WaveId = waveId;
-        WaveName = waveName;
-    }
-}
+readonly record struct WaveStarted(Id<Wave> WaveId, string WaveName, WaveProgress Progress) : IGlobalEvent;

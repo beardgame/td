@@ -173,7 +173,8 @@ sealed class WaveDirector
         private void startSpawningPhase()
         {
             phase = Phase.Spawning;
-            game.Meta.Events.Send(new WaveStarted(wave.Id, wave.Script.DisplayName));
+            var progress = WaveProgress.FromWave(game, wave);
+            game.Meta.Events.Send(new WaveStarted(wave.Id, wave.Script.DisplayName, progress));
             updateSpawnQueue();
         }
 
