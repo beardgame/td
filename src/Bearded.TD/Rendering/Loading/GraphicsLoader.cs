@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Bearded.Graphics;
 using Bearded.Graphics.ImageSharp;
 using Bearded.Graphics.RenderSettings;
@@ -84,22 +85,48 @@ sealed partial class GraphicsLoader : IGraphicsLoader
 
     private MeshMaterial loadMaterial(LogicalMaterial material)
     {
-        var diffuseChannel = material.FindChannel("BaseColor") ??
-            material.FindChannel("Diffuse") ??
-            throw new InvalidDataException("Material does not have a diffuse channel.");
-        var textureContent = diffuseChannel.Texture.PrimaryImage.Content;
-        var diffuseTextureUniform = glActions.Run(() => createTextureUniform("diffuse", textureContent)).Result;
-        return new MeshMaterial(diffuseTextureUniform);
+        var tasks = MeshTextureChannel.All
+            .Select(c => (c.FindChannel(material)?.Texture?.PrimaryImage?.Content, c.UniformName))
+            .Where(c => c.Content.HasValue)
+            .Select((c, i) =>
+                glActions.Run(() => createTextureUniform(c.UniformName, c.Content!.Value, TextureUnit.Texture0 + i)))
+            .ToList();
+
+        return new MeshMaterial(tasks.Select(t => t.Result));
     }
 
-    private static TextureUniform createTextureUniform(string name, MemoryImage memoryImage)
+    private readonly record struct MeshTextureChannel(
+        string Name, string? AlternativeName, string UniformName, bool Required)
+    {
+        public static MeshTextureChannel Diffuse { get; } = new("BaseColor", "Diffuse", "diffuse", true);
+        public static MeshTextureChannel Normal { get; } = new("Normal", null, "normal", false);
+        public static MeshTextureChannel OcclusionMetallicRoughness { get; } = new("MetallicRoughness", null, "occlusionMetallicRoughness", false);
+
+        public static IReadOnlyCollection<MeshTextureChannel> All => [Diffuse, Normal, OcclusionMetallicRoughness];
+
+        public MaterialChannel? FindChannel(LogicalMaterial material)
+        {
+            var channel = material.FindChannel(Name);
+            if (channel == null && AlternativeName != null)
+            {
+                channel = material.FindChannel(AlternativeName);
+            }
+            if (channel == null && Required)
+            {
+                throw new InvalidDataException($"Material does not have a {Name} channel.");
+            }
+            return channel;
+        }
+    }
+
+    private static TextureUniform createTextureUniform(string name, MemoryImage memoryImage, TextureUnit unit)
     {
         var texture = Texture.From(ImageTextureData.From(memoryImage.Open()), t =>
         {
             t.GenerateMipmap();
             t.SetFilterMode(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear);
         });
-        return new TextureUniform(name, TextureUnit.Texture0, texture);
+        return new TextureUniform(name, unit, texture);
     }
 
     private Mesh loadMesh(LogicalMesh mesh, ImmutableDictionary<LogicalMaterial, MeshMaterial> materials)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Bearded.Graphics;
 using Bearded.Graphics.Rendering;
 using Bearded.Graphics.RenderSettings;
@@ -50,12 +51,16 @@ sealed class Mesh(
     }
 }
 
-sealed class MeshMaterial(TextureUniform diffuseTexture) : IDisposable
+sealed class MeshMaterial(IEnumerable<TextureUniform> textures) : IDisposable
 {
-    public IEnumerable<IRenderSetting> ToRenderSettings() => [diffuseTexture];
+    private readonly IReadOnlyList<TextureUniform> textures = textures.ToList().AsReadOnly();
+    public IEnumerable<IRenderSetting> ToRenderSettings() => textures;
 
     public void Dispose()
     {
-        diffuseTexture.Value.Dispose();
+        foreach (var uniform in textures)
+        {
+            uniform.Value.Dispose();
+        }
     }
 }
