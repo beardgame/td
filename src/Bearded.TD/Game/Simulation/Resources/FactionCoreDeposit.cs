@@ -17,10 +17,10 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
 
     [UsedImplicitly]
     public sealed record BehaviorParameters(
-        double Amount,
-        double AmountPerWaveInChapter,
-        double AmountPerChapter,
-        double AmountForLastWaveInChapter,
+        Resource<CoreEnergy> Amount,
+        Resource<CoreEnergy> AmountPerWaveInChapter,
+        Resource<CoreEnergy> AmountPerChapter,
+        Resource<CoreEnergy> AmountForLastWaveInChapter,
         ImmutableArray<WithdrawEvent> WithdrawEvents);
 
     [UsedImplicitly]
@@ -44,7 +44,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
                 "A new wave was started while a core deposit still exists for a previous wave");
         }
 
-        var energy = calculateResourceAmount(waveStarted.Wave).CoreEnergy();
+        var energy = calculateResourceAmount(waveStarted.Wave);
         var deposit = new CurrentWaveDeposit(energy);
         currentWaveDeposit = deposit;
 
@@ -87,7 +87,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
         resources.ProvideResources(withdrawn);
     }
 
-    private double calculateResourceAmount(Wave wave)
+    private Resource<CoreEnergy> calculateResourceAmount(Wave wave)
     {
         var chapterNo = wave.Script.ChapterNumber - 1;
         var waveNo = wave.Script.WaveNumber - 1;
@@ -96,7 +96,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
         return Parameters.Amount +
             waveNo * Parameters.AmountPerWaveInChapter +
             chapterNo * Parameters.AmountPerChapter +
-            (isFinalWave ? Parameters.AmountForLastWaveInChapter : 0);
+            (isFinalWave ? Parameters.AmountForLastWaveInChapter : Resource<CoreEnergy>.Zero);
     }
 
     private sealed class CurrentWaveDeposit(Resource<CoreEnergy> initialAmount)
