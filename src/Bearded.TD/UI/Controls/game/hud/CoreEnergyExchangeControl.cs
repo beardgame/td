@@ -53,11 +53,15 @@ sealed class CoreEnergyExchangeControl : CompositeControl
         animatedExchangeRate.ControlUpdated += updateBackgroundGradient;
         updateBackgroundGradient(animatedExchangeRate.Value);
 
-        var rateLabel = TextFactories.Label(
+        var percentageLabel = TextFactories.Label(
             text: model.ExchangePercentage.Transform(r => $"{(int)(r * 100):0}%"),
             color: Binding.Constant(Color.Black)
         );
-        rateLabel.IsClickThrough = true;
+        percentageLabel.IsClickThrough = true;
+
+        var rateLabel = TextFactories.Label(
+            text: model.CoreEnergyToScrapRate.Transform(r => $"{r.Inverse.Value:0.0} > 1")
+        );
 
         var background = new ComplexBox
         {
@@ -68,8 +72,9 @@ sealed class CoreEnergyExchangeControl : CompositeControl
         this.Add(
             [
                 background,
-                slider.Anchor(a => a.MarginAllSides(8)),
-                rateLabel,
+                slider.Anchor(a => a.MarginAllSides(8).Top(relativePercentage: 0.5)),
+                percentageLabel.Anchor(a => a.Top(relativePercentage: 0.5)),
+                rateLabel.Anchor(a => a.Bottom(relativePercentage: 0.5)),
             ]
         );
 

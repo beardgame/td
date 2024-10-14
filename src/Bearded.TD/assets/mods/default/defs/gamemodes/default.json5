@@ -27,7 +27,19 @@
                         },
                         { id: "coreEnergyExchange" },
                         { id: "technology" },
-                        { id: "shareDrones" }
+                        { id: "shareDrones" },
+                        {
+                            id: "coreEnergyMarketRateSimulator",
+                            parameters: {
+                                baseRate: 0.5,
+                                minRate: 0.01,
+                                equilibriumMarketSupply: 10000,
+                                initialMarketSupply: 10000,
+                                consumptionPerWave : 200,
+                                supplyReturnToNormalRate : 0.25,
+                                rateSensitivityToSupply : 0.001,
+                            }
+                        }
                     ]
                 }
             }

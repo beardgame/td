@@ -31,4 +31,9 @@ readonly record struct ExchangeRate<TFrom, TTo>(double Value)
     public static Resource<TTo> operator *(Resource<TFrom> amount, ExchangeRate<TFrom, TTo> rate) => new(amount.Value * rate.Value);
     public static Resource<TTo> operator *(ExchangeRate<TFrom, TTo> rate, Resource<TFrom> amount) => new(amount.Value * rate.Value);
     public static Resource<TFrom> operator /(Resource<TTo> amount, ExchangeRate<TFrom, TTo> rate) => new(amount.Value / rate.Value);
+
+    public override string ToString()
+    {
+        return $"{Value} {nameof(TTo)} per {nameof(TFrom)}";
+    }
 }

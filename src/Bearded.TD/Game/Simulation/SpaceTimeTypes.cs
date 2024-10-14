@@ -67,8 +67,17 @@ static class SpaceTimeTypes
     public static AttributeConverter<Resource<CoreEnergy>> CoreEnergyConverter =
         new(d => new Resource<CoreEnergy>(d), r => r.Value);
 
+    [ConvertsAttribute]
     public static AttributeConverter<ResourcePerSecond<CoreEnergy>> CoreEnergyPerSecondConverter =
         new(d => new ResourcePerSecond<CoreEnergy>(d), r => r.Value);
+
+    [ConvertsAttribute]
+    public static AttributeConverter<ExchangeRate<CoreEnergy, Scrap>> CoreEnergyToScrapRateConverter =
+        new(d => new ExchangeRate<CoreEnergy, Scrap>(d), r => r.Value);
+
+    [ConvertsAttribute]
+    public static AttributeConverter<ExchangeRate<Scrap, CoreEnergy>> ScrapToCoreEnergyRateConverter =
+        new(d => new ExchangeRate<Scrap, CoreEnergy>(d), r => r.Value);
 
     [ConvertsAttribute]
     public static AttributeConverter<Speed> SpeedConverter =

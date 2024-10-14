@@ -113,6 +113,8 @@ static class ModLoader
                 new SpaceTime1Converter<ResourcePerSecond<Scrap>>(d => new ResourcePerSecond<Scrap>(d)),
                 new SpaceTime1Converter<Resource<CoreEnergy>>(d => new Resource<CoreEnergy>(d)),
                 new SpaceTime1Converter<ResourcePerSecond<CoreEnergy>>(d => new ResourcePerSecond<CoreEnergy>(d)),
+                new SpaceTime1Converter<ExchangeRate<CoreEnergy, Scrap>>(d => new ExchangeRate<CoreEnergy, Scrap>(d)),
+                new SpaceTime1Converter<ExchangeRate<Scrap, CoreEnergy>>(d => new ExchangeRate<Scrap, CoreEnergy>(d)),
                 new SpaceTime2Converter<Difference2>((x, y) => new Difference2(x, y)),
                 new SpaceTime3Converter<Difference3>((x, y, z) => new Difference3(x, y, z)),
                 new SpaceTime1Converter<Resistance>(f => new Resistance(f)),

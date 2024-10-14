@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.UI;
-using Bearded.TD.UI.Controls;
 using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Rules.Resources;
@@ -78,7 +77,7 @@ sealed class ExchangeCoreEnergyToScrap : GameRule<ExchangeCoreEnergyToScrap.Rule
 
     private double getPercentage()
     {
-        return exchange?.ExchangePercentage ?? 1;
+        return exchange?.Percentage ?? 1;
     }
 
     private ExchangeRate<CoreEnergy, Scrap> getExchangeRate()

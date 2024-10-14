@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
@@ -12,8 +13,9 @@ sealed class CoreEnergyExchange
 {
     public (Interval Range, double StepSize) ValidExchangePercentages { get; } = (Interval.FromStartAndEnd(0.25, 1.5), 0.05);
     public Binding<double> ExchangePercentage { get; } = new();
+    private Binding<ExchangeRate<CoreEnergy, Scrap>> exchangeRate { get; } = new();
 
-    public IReadonlyBinding<ExchangeRate<CoreEnergy, Scrap>> CoreEnergyToScrapRate { get; private set; } = null!;
+    public IReadonlyBinding<ExchangeRate<CoreEnergy, Scrap>> CoreEnergyToScrapRate => exchangeRate;
 
     public void Initialize(GameInstance game)
     {
@@ -24,16 +26,20 @@ sealed class CoreEnergyExchange
             game.Meta.Events.Observe<ExchangePercentageChanged>()
                 .Where(e => e.Exchange == exchange)
                 .Select(e => e.Percentage)
-                .StartWith(exchange.ExchangePercentage)
+                .StartWith(exchange.Percentage)
                 .Subscribe(ExchangePercentage.SetFromSource);
 
             ExchangePercentage.ControlUpdated += p =>
             {
                 game.Request(ChangeCoreEnergyExchangePercentage.Request(faction, p));
             };
-        }
 
-        CoreEnergyToScrapRate = Binding.Create(ExchangeRate.FromTo(2.CoreEnergy(), 1.Scrap()));
+            game.Meta.Events.Observe<ExchangeRateChanged>()
+                .Where(e => e.Exchange == exchange)
+                .Select(e => e.Rate)
+                .StartWith(exchange.Rate)
+                .Subscribe(exchangeRate.SetFromSource);
+        }
     }
 
 }
