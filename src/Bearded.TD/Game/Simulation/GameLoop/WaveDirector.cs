@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
-using Bearded.TD.Shared.Events;
+using Bearded.TD.UI;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
@@ -40,7 +41,7 @@ sealed class WaveDirector
         }
     }
 
-    private sealed class SingleWaveDirector : IListener<EnemyKilled>, IListener<WaveTimerSkipRequested>, IDeletable
+    private sealed class SingleWaveDirector : IDeletable
     {
         private enum Phase
         {
@@ -55,11 +56,13 @@ sealed class WaveDirector
         private readonly GameState game;
         private readonly Wave wave;
         private readonly Queue<EnemySpawn> spawnQueue = new();
-        private readonly HashSet<GameObject> spawnedUnits = new();
-        private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = new();
+        private readonly HashSet<GameObject> spawnedUnits = [];
+        private readonly List<ISpawnStartRequirement> outstandingSpawnStartRequirements = [];
+        private readonly CompositeDisposable waveEndDisposable = new();
 
         private Phase phase;
 
+        private WaveProgress? waveProgress;
         private Instant? actualSpawnStart;
 
         private bool canSummonNow => phase == Phase.Downtime && outstandingSpawnStartRequirements.Count == 0;
@@ -78,8 +81,8 @@ sealed class WaveDirector
         public void Start()
         {
             fillSpawnQueue();
-            game.Meta.Events.Subscribe<EnemyKilled>(this);
-            game.Meta.Events.Subscribe<WaveTimerSkipRequested>(this);
+            waveEndDisposable.Add(game.Meta.Events.Observe<EnemyKilled>().Subscribe(onEnemyKilled));
+            waveEndDisposable.Add(game.Meta.Events.Observe<WaveTimerSkipRequested>().Subscribe(onWaveTimerSkipRequested));
             game.Meta.Events.Send(
                 new WaveScheduled(
                     wave.Id,
@@ -152,8 +155,7 @@ sealed class WaveDirector
         private void finishWave()
         {
             game.Meta.Events.Send(new WaveEnded(wave, wave.Script.TargetFaction));
-            game.Meta.Events.Unsubscribe<EnemyKilled>(this);
-            game.Meta.Events.Unsubscribe<WaveTimerSkipRequested>(this);
+            waveEndDisposable.Dispose();
             phase = Phase.Completed;
         }
 
@@ -172,9 +174,13 @@ sealed class WaveDirector
 
         private void startSpawningPhase()
         {
+            waveProgress = WaveProgress.FromWave(game, wave, out var disposable);
+            waveEndDisposable.Add(disposable);
+
             phase = Phase.Spawning;
-            var progress = WaveProgress.FromWave(game, wave);
-            game.Meta.Events.Send(new WaveStarted(wave.Id, wave.Script.DisplayName, progress));
+            var progress = waveProgress ??
+                throw new InvalidOperationException("Wave progress was not initialized before spawning");
+            game.Meta.Events.Send(new WaveStarted(wave, progress));
             updateSpawnQueue();
         }
 
@@ -193,12 +199,12 @@ sealed class WaveDirector
             }
         }
 
-        public void HandleEvent(EnemyKilled @event)
+        private void onEnemyKilled(EnemyKilled @event)
         {
             spawnedUnits.Remove(@event.Unit);
         }
 
-        public void HandleEvent(WaveTimerSkipRequested @event)
+        private void onWaveTimerSkipRequested(WaveTimerSkipRequested @event)
         {
             if (phase != Phase.Downtime)
                 return;
