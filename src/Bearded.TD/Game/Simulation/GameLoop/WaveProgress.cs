@@ -70,11 +70,11 @@ sealed class WaveProgress
         {
             if (currentProgress < scriptedEventQueue[i].Progress)
             {
-                eventsProcessed = i;
                 break;
             }
 
             scriptedEventQueue[i].Execute();
+            eventsProcessed++;
         }
 
         scriptedEventQueue.RemoveRange(0, eventsProcessed);
