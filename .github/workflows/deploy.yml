@@ -30,7 +30,7 @@ jobs:
           target: td/deploy.zip
 
       - name: Deploy new binary on server
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
