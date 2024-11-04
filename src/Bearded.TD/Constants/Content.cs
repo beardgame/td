@@ -45,6 +45,8 @@ static partial class Constants
                 public static readonly ModAwareSpriteId GridNone = hud("grid-none");
                 public static readonly ModAwareSpriteId GridLines = hud("grid-lines");
                 public static readonly ModAwareSpriteId GridFill = hud("grid-fill");
+                public static readonly ModAwareSpriteId ScrapIcon = hud("clay-brick");
+                public static readonly ModAwareSpriteId CoreEnergyIcon = hud("core-three-hexes");
 
                 public static ModAwareSpriteId Targeting(string id) => new(new ModAwareId(ModId, "targeting"), id);
             }

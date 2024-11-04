@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bearded.TD.Game.GameLoop;
+using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.UI;
@@ -8,6 +9,9 @@ using Bearded.Utilities;
 using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Resources;
+
+readonly record struct AvailableResourcesChanged<T>(Resource<T> NewAmount) : IGlobalEvent
+    where T : IResourceType;
 
 [FactionBehavior("coreDeposit")]
 sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorParameters>
@@ -61,6 +65,8 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
         }
 
         progress.AddScriptedEvent(1, () => onWaveFinished(deposit));
+
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(AvailableCoreInCurrentWave));
     }
 
     private void onWaveFinished(CurrentWaveDeposit deposit)
@@ -73,6 +79,8 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
 
         withdraw(deposit, 1);
         currentWaveDeposit = null;
+
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(AvailableCoreInCurrentWave));
     }
 
     private void withdraw(CurrentWaveDeposit deposit, double percentage)
@@ -85,6 +93,8 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
                 "Cannot convert core deposit in resources for faction without resources");
         }
         resources.ProvideResources(withdrawn);
+
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(AvailableCoreInCurrentWave));
     }
 
     private Resource<CoreEnergy> calculateResourceAmount(Wave wave)
@@ -124,7 +134,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
             return liquidatedNow;
         }
 
-        // TODO: call this when EMP is triggered
+        // TODO: call this when EMP is triggered, make sure AvailableResourcesChanged event is sent
         public Resource<CoreEnergy> WithdrawImmediately(double effectiveness)
         {
             if (alreadyWithdrawn >= initialAmount)

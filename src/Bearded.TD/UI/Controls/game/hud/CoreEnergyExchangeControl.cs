@@ -59,9 +59,13 @@ sealed class CoreEnergyExchangeControl : CompositeControl
         );
         percentageLabel.IsClickThrough = true;
 
-        var rateLabel = TextFactories.Label(
-            text: model.CoreEnergyToScrapRate.Transform(r => $"{r.Inverse.Value:0.0} > 1")
-        );
+        var rateRow = makeRateRow(model);
+
+        var percentageRow = new CompositeControl
+        {
+            slider.Anchor(a => a.Left(4).Right(4)),
+            percentageLabel,
+        };
 
         var background = new ComplexBox
         {
@@ -72,16 +76,52 @@ sealed class CoreEnergyExchangeControl : CompositeControl
         this.Add(
             [
                 background,
-                slider.Anchor(a => a.MarginAllSides(8).Top(relativePercentage: 0.5)),
-                percentageLabel.Anchor(a => a.Top(relativePercentage: 0.5)),
-                rateLabel.Anchor(a => a.Bottom(relativePercentage: 0.5)),
+                rateRow.Anchor(a => a
+                    .Bottom(relativePercentage: 0.5, height: Text.LineHeight)
+                    .Left(8)
+                ),
+                percentageRow.Anchor(a => a.Top(relativePercentage: 0.5, height: Text.LineHeight)),
             ]
         );
+
+        return;
 
         void updateBackgroundGradient(Vector2d p)
         {
             sliderBackgroundGradientStops[1] = (p.X, EnergyColor);
             sliderBackgroundGradientStops[2] = (p.X, ResourcesColor);
         }
+    }
+
+    private static CompositeControl makeRateRow(CoreEnergyExchange model)
+    {
+        var margin = 6;
+        var labelWidth = 20;
+        var size = Text.FontSize;
+
+        return
+        [
+            new Sprite { SpriteId = Constants.Content.CoreUI.Sprites.CoreEnergyIcon, Color = EnergyColor }
+                .Anchor(a => a
+                    .Right(relativePercentage: 0.5, margin: labelWidth + margin * 2, width: size)
+                ),
+
+            TextFactories.Label(
+                text: model.CoreEnergyToScrapRate.Transform(r => $"{r.Inverse.Value:0.0}"),
+                color: Binding.Constant(EnergyColor),
+                textAnchor: Label.TextAnchorRight
+            ).Anchor(a => a.Right(relativePercentage: 0.5, margin: margin, width: labelWidth)),
+
+            TextFactories.Label(">"),
+            new Sprite { SpriteId = Constants.Content.CoreUI.Sprites.ScrapIcon, Color = ResourcesColor }
+                .Anchor(a => a.Left(relativePercentage: 0.5, margin: margin, width: size)),
+
+            TextFactories.Label(
+                text: "1",
+                color: ResourcesColor,
+                textAnchor: Label.TextAnchorLeft
+            ).Anchor(a => a.Left(relativePercentage: 0.5, margin: size + margin * 2, width: labelWidth)),
+
+        ];
     }
 }
