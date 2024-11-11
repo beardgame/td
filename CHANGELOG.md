@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.30
+
+* Introduced resource types: SCRAP and COR
+  * COR is rewarded during and after a wave
+  * COR can be exchanged for SCRAP based on a dynamic exchange rate
+    * By default 75% of your COR income is converted
+  * SCRAP is used to purchase towers and upgrades
+  * A new UI was added showing the resources and allowing you to choose how much COR to exchange
+* Reworked the terrain rendering
+* Bug fix: fixed button state handling
+
 ## v0.29
 
 * Replaced mushroom textures with 3D rock models
