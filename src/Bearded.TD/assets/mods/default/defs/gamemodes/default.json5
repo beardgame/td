@@ -72,14 +72,6 @@
             }
         },
         {
-            id: "exchangeCoreEnergyToScrap",
-            parameters: {
-                faction: "players",
-                exchangeRate: 0.5,
-                excludeOnGameStart: true,
-            }
-        },
-        {
             id: "unlockTiersAtThresholds",
             parameters: {
                 faction: "players",

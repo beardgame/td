@@ -12,12 +12,13 @@ namespace Bearded.TD.UI.Controls;
 sealed class CoreEnergyExchange
 {
     public (Interval Range, double StepSize) ValidExchangePercentages { get; } = (Interval.FromStartAndEnd(0.25, 1.5), 0.05);
+
     public Binding<double> ExchangePercentage { get; } = new();
-    private Binding<ExchangeRate<CoreEnergy, Scrap>> exchangeRate { get; } = new();
 
-    public IReadonlyBinding<ExchangeRate<CoreEnergy, Scrap>> CoreEnergyToScrapRate => exchangeRate;
+    public IReadonlyBinding<double> MaximumExchangePercentage { get; private set; } = null!;
+    public IReadonlyBinding<ExchangeRate<CoreEnergy, Scrap>> CoreEnergyToScrapRate { get; private set; } = null!;
 
-    public void Initialize(GameInstance game)
+    public void Initialize(GameInstance game, ResourceExchangeObserver resourceExchangeObserver)
     {
         var faction = game.Me.Faction;
 
@@ -34,12 +35,14 @@ sealed class CoreEnergyExchange
                 game.Request(ChangeCoreEnergyExchangePercentage.Request(faction, p));
             };
 
-            game.Meta.Events.Observe<ExchangeRateChanged>()
+            CoreEnergyToScrapRate = game.Meta.Events.Observe<ExchangeRateChanged>()
                 .Where(e => e.Exchange == exchange)
                 .Select(e => e.Rate)
                 .StartWith(exchange.Rate)
-                .Subscribe(exchangeRate.SetFromSource);
+                .BindDisplayOnly(out _);
         }
+
+        MaximumExchangePercentage = resourceExchangeObserver.MaxExchangePercentage;
     }
 
 }

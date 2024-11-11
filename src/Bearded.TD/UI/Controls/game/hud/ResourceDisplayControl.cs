@@ -17,19 +17,19 @@ sealed class ResourceDisplayControl : CompositeControl
             model.CurrentCoreEnergy,
             model.CoreEnergyLeftThisWave,
             Constants.Content.CoreUI.Sprites.CoreEnergyIcon,
-            Constants.Game.GameUI.EnergyColor
+            Constants.Game.GameUI.EnergyColor, Constants.Game.GameUI.EnergyColorNegative
         );
 
         var scrapDisplay = makeSingleResourceStack(
             model.CurrentScrap,
             model.ScrapLeftThisWave,
             Constants.Content.CoreUI.Sprites.ScrapIcon,
-            Constants.Game.GameUI.ResourcesColor
+            Constants.Game.GameUI.ResourcesColor, Constants.Game.GameUI.ResourcesColorNegative
         );
 
         var exchange = new CoreEnergyExchangeControl(model.Exchange, context);
 
-        var singleResourceStackWidth = 60;
+        var singleResourceStackWidth = 80;
 
         var content = new CompositeControl
         {
@@ -55,7 +55,7 @@ sealed class ResourceDisplayControl : CompositeControl
         IReadonlyBinding<Resource<T>> available,
         IReadonlyBinding<Resource<T>> leftThisWave,
         ModAwareSpriteId sprite,
-        Color color)
+        Color color, Color colorNegative)
         where T : IResourceType
     {
         var margin = 4;
@@ -65,7 +65,7 @@ sealed class ResourceDisplayControl : CompositeControl
         var resourceLabel = TextFactories.Label(
             available.Transform(r => $"{(int)r.Value}"),
             Label.TextAnchorRight,
-            Binding.Constant(color)
+            available.Transform(r => r.Value >= 0 ? color : colorNegative)
         );
 
         resourceLabel.FontSize = size;
@@ -80,7 +80,7 @@ sealed class ResourceDisplayControl : CompositeControl
             TextFactories.Label(
                 leftThisWave.Transform(r => $"{(int)r.Value:+0;-#}"),
                 Label.TextAnchorRight,
-                Binding.Constant(color)
+                leftThisWave.Transform(r => r.Value >= 0 ? color : colorNegative)
             ).Anchor(a => a.Right(margin).Top(relativePercentage: 0.5, height: height)),
         };
     }

@@ -7,9 +7,13 @@ namespace Bearded.TD.Game.Simulation.Resources;
 [FactionBehavior("resources")]
 sealed class FactionResources : FactionBehavior
 {
-    private readonly Dictionary<Type, object> stores = new();
+    private readonly Dictionary<Type, object> stores = [];
 
-    protected override void Execute() {}
+    protected override void Execute()
+    {
+        stores.Add(typeof(CoreEnergy), new Store<CoreEnergy>(allowNegative: true));
+        stores.Add(typeof(Scrap), new Store<Scrap>());
+    }
 
     public Resource<T> GetCurrent<T>()
         where T : IResourceType
@@ -20,9 +24,18 @@ sealed class FactionResources : FactionBehavior
     public void ProvideResources<T>(Resource<T> resource)
         where T : IResourceType
     {
+        var preview = new ResourcesProvidedPreview<T>(this, resource);
+        Events.Preview(ref preview);
+
+        if (preview.AmountProvided == Resource<T>.Zero)
+            return;
+
+        var actuallyProvided = preview.AmountProvided;
+
         var store = getStore<T>();
-        store.Provide(resource);
-        Events.Send(new ResourcesProvided<T>(this, resource));
+        store.Provide(actuallyProvided);
+
+        Events.Send(new ResourcesProvided<T>(this, actuallyProvided));
         Events.Send(new ResourcesChanged<T>(this, store.Current));
     }
 
@@ -33,19 +46,6 @@ sealed class FactionResources : FactionBehavior
         store.Consume(resource);
         Events.Send(new ResourcesConsumed<T>(this, resource));
         Events.Send(new ResourcesChanged<T>(this, store.Current));
-    }
-
-    public void Exchange<TFrom, TTo>(Resource<TFrom> from, Resource<TTo> to)
-        where TFrom : IResourceType
-        where TTo : IResourceType
-    {
-        var fromStore = getStore<TFrom>();
-        var toStore = getStore<TTo>();
-        fromStore.Consume(from);
-        toStore.Provide(to);
-        Events.Send(new ResourcesExchanged<TFrom, TTo>(this, from, to));
-        Events.Send(new ResourcesChanged<TFrom>(this, fromStore.Current));
-        Events.Send(new ResourcesChanged<TTo>(this, toStore.Current));
     }
 
     private Store<T> getStore<T>()
@@ -60,7 +60,7 @@ sealed class FactionResources : FactionBehavior
         return store;
     }
 
-    private sealed class Store<T>
+    private sealed class Store<T>(bool allowNegative = false)
         where T : IResourceType
     {
         public Resource<T> Current { get; private set; }
@@ -80,9 +80,9 @@ sealed class FactionResources : FactionBehavior
             {
                 throw new InvalidOperationException("Cannot consume negative resources.");
             }
-            if (Current < amount)
+            if (!allowNegative && amount > Current)
             {
-                throw new InvalidOperationException("Not enough resources available.");
+                throw new InvalidOperationException("Not enough resources to consume.");
             }
             Current -= amount;
         }

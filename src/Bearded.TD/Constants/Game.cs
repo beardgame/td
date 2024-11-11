@@ -50,6 +50,9 @@ static partial class Constants
             public static readonly Color WaterColor = Color.LightBlue;
             public static readonly Color EnergyColor = Color.MediumPurple;
 
+            public static readonly Color ResourcesColorNegative = Color.Lerp(ResourcesColor, Color.Red, 0.5f);
+            public static readonly Color EnergyColorNegative = Color.Lerp(EnergyColor, Color.Red, 0.5f);
+
             public static readonly Color HealthColor = Color.Red;
             public static readonly Color ArmorColor = Color.SpringGreen;
             public static readonly Color ShieldColor = Color.DeepSkyBlue;

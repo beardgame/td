@@ -14,13 +14,15 @@ sealed class CoreEnergyExchangeControl : CompositeControl
 {
     public CoreEnergyExchangeControl(CoreEnergyExchange model, UIContext context)
     {
-        var sliderBackgroundGradientStops = new GradientStop[]
-        {
+        GradientStop[] sliderBackgroundGradientStops =
+        [
             (0, EnergyColor),
             (0.75, EnergyColor),
+            (0.75, EnergyColorNegative),
+            (0.75, EnergyColorNegative),
             (0.75, ResourcesColor),
             (1, ResourcesColor),
-        };
+        ];
 
         ReadOnlySpan<ShapeComponent> sliderBackgroundComponents =
         [
@@ -50,8 +52,9 @@ sealed class CoreEnergyExchangeControl : CompositeControl
             .ReadAnimatedPercentage(out animatedExchangeRate)
         );
 
-        animatedExchangeRate.ControlUpdated += updateBackgroundGradient;
-        updateBackgroundGradient(animatedExchangeRate.Value);
+        animatedExchangeRate.ControlUpdated += onSliderAnimate;
+        onSliderAnimate(animatedExchangeRate.Value);
+        model.MaximumExchangePercentage.SourceUpdated += _ => updateBackgroundGradient();
 
         var percentageLabel = TextFactories.Label(
             text: model.ExchangePercentage.Transform(r => $"{(int)(r * 100):0}%"),
@@ -86,10 +89,25 @@ sealed class CoreEnergyExchangeControl : CompositeControl
 
         return;
 
-        void updateBackgroundGradient(Vector2d p)
+        var sliderSecondStop = 0.0;
+
+        void onSliderAnimate(Vector2d p)
         {
-            sliderBackgroundGradientStops[1] = (p.X, EnergyColor);
-            sliderBackgroundGradientStops[2] = (p.X, ResourcesColor);
+            sliderSecondStop = p.X;
+            updateBackgroundGradient();
+        }
+
+        void updateBackgroundGradient()
+        {
+            var maxValue = model.MaximumExchangePercentage.Value;
+            var maxPercentage = (maxValue - range.Start) / range.Size;
+
+            var firstStop = Math.Min(sliderSecondStop, maxPercentage);
+
+            sliderBackgroundGradientStops[1] = (firstStop, EnergyColor);
+            sliderBackgroundGradientStops[2] = (firstStop, EnergyColorNegative);
+            sliderBackgroundGradientStops[3] = (sliderSecondStop, EnergyColorNegative);
+            sliderBackgroundGradientStops[4] = (sliderSecondStop, ResourcesColor);
         }
     }
 
