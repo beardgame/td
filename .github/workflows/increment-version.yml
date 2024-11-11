@@ -9,6 +9,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.REPO_WRITE_KEY }}
 
       - name: Get Branch
         run: |
