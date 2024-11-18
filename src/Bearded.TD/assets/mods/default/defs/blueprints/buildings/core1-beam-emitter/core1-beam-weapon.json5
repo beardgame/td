@@ -1,0 +1,66 @@
+{
+    id: "core1-beam-weapon",
+    components: [
+        { id: "tags", parameters: { tags: [ "beam-emitter", "core" ] } },
+        {
+            id: "range",
+            parameters: {
+                range: 4,
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
+                coneOfFire: 5
+            }
+        },
+        {
+            id: "pidAim",
+            parameters: {
+                proportionalCorrection: 15,
+                derivativeCorrection: 20
+            }
+        },
+        {
+            id: "automaticFireCycle",
+            parameters: {
+                damagePerSecond: 30,
+                fireRate: 0.5,
+            }
+        },
+        {
+            id: "projectileEmitter",
+            parameters: {
+                projectile: "core1-beam-beam",
+                muzzleSpeed: 20,
+                muzzleOffset: [0.2, 0.1],
+                spread: 5,
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.cannon-bottom",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.2,
+                rotationOffset: -90,
+                offset: [-0.1, 0],
+            }
+        },
+        {
+            id: "sprite",
+            parameters: {
+                sprite: "buildings.flamethrower-propellant",
+                colorMode: "faction",
+                shader: "building",
+                drawGroup: "building",
+                size: 0.2,
+                heightOffset: 0.02,
+                rotationOffset: -90,
+                offset: [-0.1, 0]
+            }
+        },
+    ]
+}

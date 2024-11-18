@@ -17,11 +17,14 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
         float IntervalNoise { get; }
 
         string? Toggle { get; }
+
+        string? SpawnParent { get; }
     }
 
     private Instant nextSpawn;
     private IMoving? moving;
     private IToggle? toggle;
+    private IParticleParent? parent;
 
     public SpawnContinuously(IParameters parameters) : base(parameters)
     {
@@ -33,10 +36,15 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
 
         ComponentDependencies.Depend<IMoving>(Owner, Events, m => moving = m);
 
-        if (Parameters.Toggle is not { } name)
-            return;
+        if (Parameters.Toggle is { } toggleName)
+        {
+            ComponentDependencies.Depend<IToggle>(Owner, Events, t => toggle = t, t => t.Name == toggleName);
+        }
 
-        ComponentDependencies.Depend<IToggle>(Owner, Events, t => toggle = t, t => t.Name == name);
+        if (Parameters.SpawnParent is { } parentName)
+        {
+            ComponentDependencies.Depend<IParticleParent>(Owner, Events, p => parent = p, p => p.Name == parentName);
+        }
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -54,7 +62,7 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
     private void spawn()
     {
         var v = moving?.Velocity ?? Velocity3.Zero;
-        Particles.CreateParticles(Parameters, v, Owner.Direction, Owner.Game.Time, Owner.Position);
+        var p = parent?.Position ?? Owner.Position;
+        Particles.CreateParticles(Parameters, v, Owner.Direction, Owner.Game.Time, p);
     }
 }
-

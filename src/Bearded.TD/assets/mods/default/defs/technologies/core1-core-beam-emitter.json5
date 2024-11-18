@@ -1,0 +1,9 @@
+{
+    id: "core1-core-beam-emitter",
+    name: "Core Beam Thrower",
+    branch: "energy",
+    tier: "low",
+    unlocks: [
+        { type: "building", blueprint: "core1-beam-emitter" }
+    ]
+}

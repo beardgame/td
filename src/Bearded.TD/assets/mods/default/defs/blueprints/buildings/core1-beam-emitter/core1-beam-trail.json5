@@ -1,0 +1,60 @@
+{
+    id: "core1-beam-trail",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 10 } },
+
+        {
+            id: "spinningParticleParent",
+            parameters: {
+                name: "parent",
+                radius: 0.1,
+                axis: "alongVelocity",
+                
+                angularVelocity: 50000,
+                angularVelocityNoise: 0.1,
+                randomSign: true,
+            }
+        },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.trails.core-beam",
+            uvLength : 4,
+            attachLastToObject: true,
+        } },
+
+        { id: "toggleOnTriggers", parameters:  {
+            name: "toggleSpawning",
+            stopOnParent : [ "objectDeleting" ],
+        }},
+
+        { id: "particlesSpawnContinuously", parameters:  {
+            color: "White",
+            interval: 0.01,
+            lifeTime: 0.6,
+            lifeTimeNoise: 0,
+            randomVelocity: 0.25,
+            randomVelocityNoise: 1,
+            toggle: "toggleSpawning",
+            spawnParent: "parent",
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.0, color: "00000000" },
+                    { duration: 0.1, size: 0.1, color: "9370DB" },
+                    { duration: 0.75, size: 0.05, color: "9370DB" },
+                    { duration: 1, size: 0.0, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+        { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
+        { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+    ]
+}

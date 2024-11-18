@@ -1,0 +1,22 @@
+{
+    id: "core1-beam-beam",
+    components: [
+        { id: "tags", parameters: { tags: [ "beam" ] } },
+        {
+            id: "damageOnHit",
+            parameters: {}
+        },
+        { id: "deleteOnHit" },
+
+        {
+            id: "turnTowardsTarget",
+            parameters: {
+                turnSpeed: 500,
+            },
+        },
+        
+        { id: "child", parameters: { object: "core1-beam-trail", surviveParent: true } },
+        { id: "child", parameters: { object: "core1-beam-trail", surviveParent: true } },
+        { id: "child", parameters: { object: "core1-beam-trail", surviveParent: true } }
+    ]
+}
