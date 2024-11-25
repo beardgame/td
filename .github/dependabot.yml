@@ -28,3 +28,10 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "⬆"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/libs"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "⬆"
