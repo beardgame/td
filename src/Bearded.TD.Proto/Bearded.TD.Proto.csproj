@@ -8,10 +8,13 @@
     <LangVersion>12</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.27.3" />
+    <PackageReference Include="Google.Protobuf" Version="3.28.3" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="proto\" />
     <Folder Include="generated\" />
   </ItemGroup>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS8981</NoWarn>
+  </PropertyGroup>
 </Project>

@@ -10,16 +10,17 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
-        <PackageReference Include="Verify.SourceGenerators" Version="2.2.0" />
-        <PackageReference Include="Verify.Xunit" Version="23.5.0" />
-        <PackageReference Include="xunit" Version="2.7.0" />
-        <PackageReference Include="xunit.extensibility.core" Version="2.7.0" />
-        <PackageReference Include="xunit.runner.console" Version="2.7.0">
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="Verify.SourceGenerators" Version="2.5.0" />
+        <PackageReference Include="Verify.Xunit" Version="28.3.2" />
+        <PackageReference Include="xunit" Version="2.9.2" />
+        <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
+        <PackageReference Include="xunit.extensibility.execution" Version="2.9.2" />
+        <PackageReference Include="xunit.runner.console" Version="2.9.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
