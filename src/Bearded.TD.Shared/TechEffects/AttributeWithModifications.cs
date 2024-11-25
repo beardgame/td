@@ -12,7 +12,7 @@ public sealed class AttributeWithModifications<T> : IAttributeWithModifications
     private readonly List<ModificationWithId> exponentialModifications = new();
 
     private bool currentValueDirty;
-    private T currentValue;
+    private T currentValue = default!;
 
     public T Value
     {

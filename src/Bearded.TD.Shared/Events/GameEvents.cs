@@ -44,36 +44,34 @@ public abstract class GameEvents<TEventInterface, TPreviewEventInterface>
     public void Send<TEvent>(TEvent @event)
         where TEvent : struct, TEventInterface
     {
-        if (tryGetListeners<TEvent>(out var listeners))
+        if (!tryGetListeners<TEvent>(out var listeners)) return;
+
+        foreach (var listener in listeners)
         {
-            foreach (var listener in listeners)
-            {
-                listener.HandleEvent(@event);
-            }
+            listener.HandleEvent(@event);
         }
     }
 
     public void Preview<TEvent>(ref TEvent @event)
         where TEvent : struct, TPreviewEventInterface
     {
-        if (tryGetPreviewListeners<TEvent>(out var listeners))
+        if (!tryGetPreviewListeners<TEvent>(out var listeners)) return;
+
+        foreach (var listener in listeners)
         {
-            foreach (var listener in listeners)
-            {
-                listener.PreviewEvent(ref @event);
-            }
+            listener.PreviewEvent(ref @event);
         }
     }
 
     private List<IListener<TEvent>> getListeners<TEvent>()
         where TEvent : struct, TEventInterface
     {
-        if (tryGetListeners(out List<IListener<TEvent>> listeners))
+        if (tryGetListeners<TEvent>(out var listeners))
         {
             return listeners;
         }
 
-        listeners = new List<IListener<TEvent>>();
+        listeners = [];
         listenerLists.Add(typeof(TEvent), listeners);
 
         return listeners;
@@ -84,7 +82,7 @@ public abstract class GameEvents<TEventInterface, TPreviewEventInterface>
     {
         if (listenerLists.TryGetValue(typeof(TEvent), out var listAsObject))
         {
-            listeners = (List<IListener<TEvent>>)listAsObject;
+            listeners = (List<IListener<TEvent>>) listAsObject;
             return true;
         }
 
@@ -95,12 +93,12 @@ public abstract class GameEvents<TEventInterface, TPreviewEventInterface>
     private List<IPreviewListener<TEvent>> getPreviewListeners<TEvent>()
         where TEvent : struct, TPreviewEventInterface
     {
-        if (tryGetPreviewListeners(out List<IPreviewListener<TEvent>> listeners))
+        if (tryGetPreviewListeners<TEvent>(out var listeners))
         {
             return listeners;
         }
 
-        listeners = new List<IPreviewListener<TEvent>>();
+        listeners = [];
         previewListenerLists.Add(typeof(TEvent), listeners);
 
         return listeners;
@@ -112,7 +110,7 @@ public abstract class GameEvents<TEventInterface, TPreviewEventInterface>
     {
         if (previewListenerLists.TryGetValue(typeof(TEvent), out var listAsObject))
         {
-            listeners = (List<IPreviewListener<TEvent>>)listAsObject;
+            listeners = (List<IPreviewListener<TEvent>>) listAsObject;
             return true;
         }
 
