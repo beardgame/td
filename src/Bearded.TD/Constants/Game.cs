@@ -2,6 +2,7 @@
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Elements;
+using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -136,6 +137,13 @@ static partial class Constants
         {
             public static readonly Speed Speed = 2.UnitsPerSecond();
             public static readonly Unit FlyingHeight = 0.5.U();
+        }
+
+        public static class Overdrive
+        {
+            public static readonly TimeSpan UpgradeDuration = 6.S();
+            public static readonly TimeSpan BreakageDuration = 6.S();
+            public static readonly Resource<CoreEnergy> OverdriveCost = 40.CoreEnergy();
         }
     }
 }

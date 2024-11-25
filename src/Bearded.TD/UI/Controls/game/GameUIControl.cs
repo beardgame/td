@@ -31,6 +31,7 @@ sealed class GameUIControl : CompositeControl
             gameUI.Game.Overlays,
             uiContext,
             new GameRequestDispatcher(gameUI.Game),
+            gameUI.Game.Me,
             gameUI.Game.Meta.SoundScape);
 
         Add(gameWorldControl);

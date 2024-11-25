@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Controls;
 using Bearded.TD.Utilities;
@@ -28,11 +29,12 @@ static class StatusIconFactories
     public static Control StatusIcon(
         this UIFactories factories,
         ObservableStatus status,
-        GameRequestDispatcher requestDispatcher)
+        GameRequestDispatcher requestDispatcher,
+        Player player)
     {
         // TODO: replace entirely
         return factories.StandaloneIconButton(b => b
-            .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher))
+            .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher, player))
             .AlwaysRenderAsEnabled()
             .WithEnabled(Binding.Constant(status.Spec.IsInteractive))
             .WithIcon(status.Appearance.Transform(a => a.Icon))

@@ -3,6 +3,7 @@ using Bearded.TD.Audio;
 using Bearded.TD.Game.Camera;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Overlays;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
 using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
@@ -18,6 +19,7 @@ interface IGameWorldOverlay
     public ActiveOverlays ActiveOverlays { get; }
     public UIContext UIContext { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
+    public Player Me { get; }
     public ISoundScape SoundScape { get; }
 
     public void AddControl(Control control, Vector2d size, OverlayAnchor anchor);
@@ -43,6 +45,7 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
     public ActiveOverlays ActiveOverlays { get; }
     public UIContext UIContext { get; }
     public GameRequestDispatcher RequestDispatcher { get; }
+    public Player Me { get; }
     public ISoundScape SoundScape { get; }
 
     public GameWorldOverlay(
@@ -50,12 +53,14 @@ sealed class GameWorldOverlay : OnTopCompositeControl, IGameWorldOverlay
         ActiveOverlays activeOverlays,
         UIContext uiContext,
         GameRequestDispatcher requestDispatcher,
+        Player me,
         ISoundScape soundScape) : base("Game World Overlay")
     {
         this.camera = camera;
         ActiveOverlays = activeOverlays;
         UIContext = uiContext;
         RequestDispatcher = requestDispatcher;
+        Me = me;
         SoundScape = soundScape;
         IsClickThrough = true;
     }
