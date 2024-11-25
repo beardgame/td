@@ -22,6 +22,7 @@ readonly struct PointLightInstance(
     float radius,
     Color color,
     float intensity,
+    float fallOffPower,
     byte shadow)
     : IVertexData
 {
@@ -29,6 +30,7 @@ readonly struct PointLightInstance(
     private readonly float radius = radius;
     private readonly Color color = color;
     private readonly float intensity = intensity;
+    private readonly float fallOffPower = fallOffPower;
     private readonly byte shadow = shadow;
 
     static ImmutableArray<VertexAttribute> IVertexData.VertexAttributes { get; }
@@ -37,6 +39,7 @@ readonly struct PointLightInstance(
             MakeAttributeTemplate<float>("instanceLightRadius", instanced: true),
             MakeAttributeTemplate<Color>("instanceLightColor", instanced: true),
             MakeAttributeTemplate<float>("instanceIntensity", instanced: true),
+            MakeAttributeTemplate<float>("instanceFallOffPower", instanced: true),
             MakeAttributeTemplate<byte>("instanceShadow", instanced: true)
         );
 }

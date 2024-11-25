@@ -2,23 +2,24 @@
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.GameObjects.Child;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
 [Component("child")]
-sealed class Child : Component<Child.IParameters>, IListener<ObjectDeleting>
+sealed class Child(IParameters parameters) : Component<IParameters>(parameters), IListener<ObjectDeleting>
 {
     private GameObject? child;
 
     public interface IParameters : IParametersTemplate<IParameters>
     {
+        string? Name { get; }
         IGameObjectBlueprint Object { get; }
         bool SurviveParent { get; }
     }
 
-    public Child(IParameters parameters) : base(parameters)
-    {
-    }
+    public string? Name => Parameters.Name;
+    public GameObject? ChildObject => child;
 
     protected override void OnAdded()
     {

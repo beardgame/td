@@ -23,7 +23,10 @@ sealed partial class TargetEnemiesInRange
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         Angle? ConeOfFire { get; }
-        [Modifiable(0.2)] TimeSpan NoTargetIdleInterval { get; }
+        [Modifiable(0.2)]
+        TimeSpan NoTargetIdleInterval { get; }
+        [Modifiable(1)]
+        float AimLead { get; }
     }
 
     private IWeaponState weapon = null!;
@@ -114,7 +117,9 @@ sealed partial class TargetEnemiesInRange
 
     private void updateTargetPosition(GameObject target)
     {
-        if (emitter == null || target.GetComponents<IMoving>().FirstOrDefault() is not { } moving)
+        if (Parameters.AimLead == 0 ||
+            emitter == null ||
+            target.GetComponents<IMoving>().FirstOrDefault() is not { } moving)
         {
             targetPosition.Position = target.Position;
             return;
@@ -122,7 +127,7 @@ sealed partial class TargetEnemiesInRange
 
         var distanceToTarget = (target.Position - emitter.EmitPosition).Length;
         var projectileFlightTime = new TimeSpan(distanceToTarget.NumericValue / emitter.MuzzleSpeed.NumericValue);
-        var compensationOffset = moving.Velocity * projectileFlightTime;
+        var compensationOffset = moving.Velocity * projectileFlightTime * Parameters.AimLead;
 
         targetPosition.Position = target.Position + compensationOffset;
     }

@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
+using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
@@ -35,10 +36,23 @@ sealed class ParticlesKeyFrames : ParticleUpdater<ParticlesKeyFrames.IParameters
     {
         bool ScaleToParticleLifeTime { get; }
         IKeyFrameAnimation<KeyFrame> Animation { get; }
+        TimeSpan? LifeTimeOverrideSinceEffectCreation { get; }
     }
 
     public ParticlesKeyFrames(IParameters parameters) : base(parameters)
     {
+    }
+
+    private Instant? tZeroOverride;
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        if (Parameters.LifeTimeOverrideSinceEffectCreation != null)
+        {
+            tZeroOverride = Owner.Game.Time;
+        }
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -46,11 +60,18 @@ sealed class ParticlesKeyFrames : ParticleUpdater<ParticlesKeyFrames.IParameters
         var now = Owner.Game.Time;
         var duration = Parameters.ScaleToParticleLifeTime
             ? Parameters.Animation.TotalDuration
-            : TimeSpan.One;
+            : Parameters.LifeTimeOverrideSinceEffectCreation ?? TimeSpan.One;
 
         foreach (ref var p in Particles.MutableParticles)
         {
-            var t = duration * p.AgeFactorAtTime(now);
+            var tF = tZeroOverride switch
+            {
+                { } tZero => (now - tZero) / Parameters.LifeTimeOverrideSinceEffectCreation!.Value,
+                _ => p.AgeFactorAtTime(now),
+            };
+
+            var t = duration * tF;
+
             var keyFrame = Parameters.Animation.InterpolateFrameAt(t);
 
             p.Size = keyFrame.Size;

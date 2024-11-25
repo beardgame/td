@@ -99,7 +99,9 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
         var projectile = factory.Create(position, direction, muzzleVelocity, damage,
             new OptionalProjectileProperties
             {
+                Target = targeter?.Target as GameObject,
                 TargetPosition = targeter?.Target,
+                Source = Owner,
             });
 
         Owner.Game.Add(projectile);

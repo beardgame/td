@@ -64,6 +64,7 @@ void main()
     float floorAmbient = max(1 - abs(fragmentPosition.z) * ambientFalloff, 0);
 
     vec3 rgb = lightTexture + albedo.rgb * floorAmbient * 0.2;
+    
 
     float hexagonalDistanceToOrigin = hexDistanceToOrigin(fragmentPosition.xy);
     float falloff = clamp((hexagonalFallOffDistance - hexagonalDistanceToOrigin) * 0.3f, 0, 1);
@@ -79,7 +80,8 @@ void main()
     float visibility = heightMapValue.g;
 
     rgb *= visibility;
-    
+
+    rgb = max(rgb, vec3(0));
     rgb = aces_approx(rgb);
 
     outColor = vec4(rgb, albedo.a);

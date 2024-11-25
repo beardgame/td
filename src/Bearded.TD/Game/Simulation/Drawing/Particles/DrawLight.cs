@@ -36,6 +36,8 @@ sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawC
         ColorMode ColorMode { get; }
         AlphaMode AlphaMode { get; }
         float AddIntensityFromScale { get; }
+        [Modifiable(2)]
+        float FallOffPower { get; }
     }
 
     public DrawLight(IParameters parameters) : base(parameters)
@@ -87,7 +89,8 @@ sealed class DrawLight : ParticleUpdater<DrawLight.IParameters>, IListener<DrawC
                 Parameters.Radius.NumericValue,
                 c.WithAlpha(a),
                 intensity,
-                false
+                false,
+                Parameters.FallOffPower
                 );
         }
     }

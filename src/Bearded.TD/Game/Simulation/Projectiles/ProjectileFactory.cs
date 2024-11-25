@@ -6,17 +6,24 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
-readonly record struct OptionalProjectileProperties(IPositionable? TargetPosition, GameObject? Target);
+readonly record struct OptionalProjectileProperties(
+    IPositionable? TargetPosition,
+    GameObject? Target,
+    GameObject? Source
+    );
 
 readonly record struct Source(GameObject Object);
 readonly record struct Target(GameObject Object);
 readonly record struct TargetPosition(IPositionable Target);
+
+readonly record struct HitObject(GameObject Object);
 
 static class ProjectilePropertyExtensions
 {
     public static Source AsSource(this GameObject obj) => new(obj);
     public static Target AsTarget(this GameObject obj) => new(obj);
     public static TargetPosition AsTargetPosition(this IPositionable obj) => new(obj);
+    public static HitObject AsHitObject(this GameObject obj) => new(obj);
 }
 
 static class ProjectileFactory
@@ -35,6 +42,9 @@ static class ProjectileFactory
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
         obj.AddComponent(new PointCollider());
         obj.AddComponent(new Property<UntypedDamage>(damage));
+
+        if (properties.Source is { } source)
+            obj.AddComponent(Property.From(source.AsSource()));
 
         if (properties.Target is { } target)
             obj.AddComponent(Property.From(target.AsTarget()));

@@ -38,7 +38,7 @@
             onGhost: true,
             parameters: {
                 weapon: "core1-beam-weapon",
-                height: 0.3
+                height: 0.5
             }
         },
         {

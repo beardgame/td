@@ -1,22 +1,24 @@
 {
-    id: "core1-beam-beam",
-    components: [
-        { id: "tags", parameters: { tags: [ "beam" ] } },
-        {
-            id: "damageOnHit",
-            parameters: {}
-        },
-        { id: "deleteOnHit" },
+  id: "core1-beam-beam",
+  components: [
+    { id: "tags", parameters: { tags: [ "beam" ] } },
 
-        {
-            id: "turnTowardsTarget",
-            parameters: {
-                turnSpeed: 500,
-            },
-        },
-        
-        { id: "child", parameters: { object: "core1-beam-trail", surviveParent: true } },
-        { id: "child", parameters: { object: "core1-beam-trail", surviveParent: true } },
-        { id: "child", parameters: { object: "core1-beam-trail", surviveParent: true } }
-    ]
+    { id: "damageOnHit", parameters: {
+      damageType: "energy",
+      delay: 0.9,
+    } },
+    { id: "spawnObjectOnHit", parameters: {
+      object: "core1-beam-beam-attached",
+      onHitEnemy: true,
+    } },
+    { id: "deleteOnHit" },
+
+    { id: "turnTowardsTarget", parameters: {
+      turnSpeed: 500,
+    }},
+
+    { id: "child", parameters: { name: "beam-effect", object: "core1-beam-trail", surviveParent: true } },
+    { id: "child", parameters: { name: "beam-effect", object: "core1-beam-trail", surviveParent: true } },
+    { id: "child", parameters: { name: "beam-effect", object: "core1-beam-trail", surviveParent: true } }
+  ]
 }

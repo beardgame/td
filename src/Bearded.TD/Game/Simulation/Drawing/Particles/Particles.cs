@@ -84,6 +84,13 @@ sealed class Particles : Component<Particles.IParameters>
             extension.NotifyAdded(currentCount - 1, 1);
     }
 
+    public void AddParticles(ReadOnlySpan<Particle> newParticles)
+    {
+        var span = AddParticles(newParticles.Length, out var transaction);
+        newParticles.CopyTo(span);
+        transaction.Commit();
+    }
+
     public Span<Particle> AddParticles(int count, out AddTransaction transaction)
     {
         ensureCapacity(currentCount + count);

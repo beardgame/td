@@ -9,12 +9,14 @@ in vec3 instanceLightPosition;
 in float instanceLightRadius;
 in vec4 instanceLightColor;
 in float instanceIntensity;
+in float instanceFallOffPower;
 in float instanceShadow;
 
 out vec2 lightCenterUV;
 out vec3 lightPosition;
 out float lightRadiusSquared;
 out vec4 lightColor;
+out float fallOffPower;
 out float lightShadow;
 
 void main()
@@ -29,6 +31,14 @@ void main()
 
     lightPosition = instanceLightPosition;
     lightRadiusSquared = instanceLightRadius * instanceLightRadius;
-    lightColor = instanceLightColor * instanceIntensity;
+
+    vec3 rgb = instanceIntensity > 0
+        ? instanceLightColor.rgb
+        : vec3(1) - instanceLightColor.rgb;
+    
+    lightColor = vec4(rgb * instanceIntensity, instanceLightColor.a);
+
+    fallOffPower = instanceFallOffPower;
+
     lightShadow = instanceShadow;
 }

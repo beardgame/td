@@ -18,8 +18,10 @@ in vec2 lightCenterUV;
 in vec3 lightPosition;
 in float lightRadiusSquared;
 in vec4 lightColor;
-out vec4 outRGB;
+in float fallOffPower;
 in float lightShadow;
+
+out vec4 outRGB;
 
 vec3 getFragmentPositionFromDepth(vec2 uv)
 {
@@ -163,7 +165,7 @@ void main()
     if (attenuation < 0)
         discard;
 
-    attenuation = pow(attenuation, 2);
+    attenuation = pow(attenuation, fallOffPower);
     
     vec3 radiance = lightColor.rgb * lightColor.a * attenuation * 20;
     

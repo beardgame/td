@@ -13,9 +13,11 @@ sealed class PointLightDrawer(PointLightMesh mesh)
         float radius,
         Color color,
         float intensity = 1,
-        bool drawShadow = true)
+        bool drawShadow = true,
+        float fallOffPower = 2)
+
     {
-        mesh.Add(new PointLightInstance(center, radius, color, intensity, drawShadow ? (byte)1 : (byte)0));
+        mesh.Add(new PointLightInstance(center, radius, color, intensity, fallOffPower, drawShadow ? (byte)1 : (byte)0));
     }
 }
 

@@ -34,7 +34,7 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
     {
         base.Activate();
 
-        ComponentDependencies.Depend<IMoving>(Owner, Events, m => moving = m);
+        ComponentDependencies.Depend<IMoving>(Owner, Events, m => moving ??= m);
 
         if (Parameters.Toggle is { } toggleName)
         {
@@ -61,7 +61,7 @@ sealed class SpawnContinuously : ParticleUpdater<SpawnContinuously.IParameters>
 
     private void spawn()
     {
-        var v = moving?.Velocity ?? Velocity3.Zero;
+        var v = parent?.Velocity ?? moving?.Velocity ?? Velocity3.Zero;
         var p = parent?.Position ?? Owner.Position;
         Particles.CreateParticles(Parameters, v, Owner.Direction, Owner.Game.Time, p);
     }

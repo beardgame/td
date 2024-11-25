@@ -6,12 +6,14 @@
             id: "range",
             parameters: {
                 range: 4,
+                minimumRange: 1.5,
             }
         },
         {
             id: "targetEnemiesInRange",
             parameters: {
-                coneOfFire: 5
+                coneOfFire: 5,
+                aimLead: 0,
             }
         },
         {

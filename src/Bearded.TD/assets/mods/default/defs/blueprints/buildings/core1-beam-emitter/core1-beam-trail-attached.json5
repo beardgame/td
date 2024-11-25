@@ -1,0 +1,49 @@
+{
+    id: "core1-beam-trail-attached",
+    components: [
+        { id: "inheritSource" },
+
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 5 } },
+        { id: "particlesSpringBetweenNeighbours", parameters: {
+            stiffness: 75,
+        }},
+        { id: "particlesAttachFirstToSource" },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.trails.core-beam",
+            uvLength : 4,
+            attachLastToObject: true,
+        } },
+
+        { id: "particlesOverrideLifeTime", parameters: {
+            resetCreationTime: true,
+            lifeTime: 1,
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0, size: 0.1, color: "FFa37cf2" },
+                    { duration: 0.75, size: 0.1, color: "FFc9b1fc" },
+                    { duration: 0.1, size: 0.1, color: "FFFFFFFF" },
+                    { duration: 0.1, size: 0, color: "00000000" },
+                ],
+            }
+        } },
+        { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+        { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
+        { id: "particlesDrawLight", parameters: {
+            color: "9370DB",
+            radius: 1.2,
+            intensity: -0.04,
+            fallOffPower: 10,
+            alphaMode: "fromParticleRgbAverage",
+        } },
+
+        { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+    ]
+}

@@ -33,28 +33,18 @@ sealed class SpinningParticleParent : Component<SpinningParticleParent.IParamete
         bool RandomSign { get; }
     }
 
-    private bool initialised;
-
+    private readonly Speed orbitalSpeed;
     private IMoving? moving;
-    private Speed orbitalSpeed;
 
+    private bool initialised;
     private Difference3 currentOffset;
 
     public string Name => Parameters.Name;
     public Position3 Position { get; private set; }
-
+    public Velocity3 Velocity { get; private set; }
 
     public SpinningParticleParent(IParameters parameters) : base(parameters)
     {
-    }
-
-    public override void Activate()
-    {
-        base.Activate();
-
-        ComponentDependencies.Depend<IMoving>(Owner, Events, m => moving = m);
-
-
         var anglePerSecond = Parameters.AngularVelocity * 1.S();
 
         orbitalSpeed = anglePerSecond.Radians * Parameters.Radius / 1.S()
@@ -62,6 +52,13 @@ sealed class SpinningParticleParent : Component<SpinningParticleParent.IParamete
 
         if (Parameters.RandomSign)
             orbitalSpeed *= StaticRandom.Sign();
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
+
+        ComponentDependencies.Depend<IMoving>(Owner, Events, m => moving = m);
     }
 
     protected override void OnAdded()
@@ -82,9 +79,9 @@ sealed class SpinningParticleParent : Component<SpinningParticleParent.IParamete
         if (!initialised)
             initialiseWith(axis);
 
-        var dpdt = orbitalSpeed * Vector3.Cross(axis, currentOffset.NumericValue);
+        Velocity = orbitalSpeed * Vector3.Cross(axis, currentOffset.NumericValue);
 
-        currentOffset += dpdt * elapsedTime;
+        currentOffset += Velocity * elapsedTime;
         currentOffset = currentOffset.NumericValue.NormalizedSafe() * Parameters.Radius;
 
         Position = Owner.Position + currentOffset;
