@@ -6,6 +6,8 @@
         <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
         <OutputType>Library</OutputType>
+
+        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     </PropertyGroup>
 
     <ItemGroup>
