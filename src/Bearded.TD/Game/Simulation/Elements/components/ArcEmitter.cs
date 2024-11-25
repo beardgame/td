@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Elements.events;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
