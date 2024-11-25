@@ -1,5 +1,4 @@
 using Bearded.TD.Game.Simulation.Buildings.Ruins;
-using Bearded.TD.Game.Simulation.Elements.events;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;

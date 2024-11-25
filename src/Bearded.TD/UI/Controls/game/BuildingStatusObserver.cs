@@ -96,7 +96,7 @@ sealed class BuildingStatusObserver
             upgradeSlots,
             veterancy);
         var statusControl =
-            new BuildingStatusControl(status, overlay.UIContext, overlay.RequestDispatcher);
+            new BuildingStatusControl(status, overlay.UIContext, overlay.RequestDispatcher, overlay.Me);
         var towerRange = TowerRangeOverlayLayer.CreateAndActivateForGameObject(
             overlay.ActiveOverlays, t.Object, RangeDrawStyle.DrawFull);
         currentlyShown = new CurrentlyShownBuilding(t.Object, status, statusControl, towerRange);

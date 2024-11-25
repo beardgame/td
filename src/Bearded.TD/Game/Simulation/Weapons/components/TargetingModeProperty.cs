@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Shared.TechEffects;
@@ -62,7 +63,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
 
     private sealed class InteractionSpec(TargetingModeProperty subject) : IStatusInteractionSpec
     {
-        public void Interact(GameRequestDispatcher requestDispatcher)
+        public void Interact(GameRequestDispatcher requestDispatcher, Player player)
         {
             var currentIndex = subject.AllowedTargetingModes.IndexOf(subject.Value);
             var newIndex = (currentIndex + 1) % subject.AllowedTargetingModes.Length;

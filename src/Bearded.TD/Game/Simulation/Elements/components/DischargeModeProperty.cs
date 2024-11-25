@@ -1,6 +1,7 @@
 using System;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Enum = System.Enum;
@@ -50,7 +51,7 @@ sealed class DischargeModeProperty : Component, IProperty<CapacitorDischargeMode
 
     private sealed class InteractionSpec(DischargeModeProperty subject) : IStatusInteractionSpec
     {
-        public void Interact(GameRequestDispatcher requestDispatcher)
+        public void Interact(GameRequestDispatcher requestDispatcher, Player player)
         {
             var currentIndex = (int) subject.Value;
             var newIndex = (currentIndex + 1) % Enum.GetValues<CapacitorDischargeMode>().Length;

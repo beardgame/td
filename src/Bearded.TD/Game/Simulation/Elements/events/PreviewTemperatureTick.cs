@@ -1,7 +1,7 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.Utilities.SpaceTime;
 
-namespace Bearded.TD.Game.Simulation.Elements.events;
+namespace Bearded.TD.Game.Simulation.Elements;
 
 readonly record struct PreviewTemperatureTick(Instant Now, TemperatureRate Rate) : IComponentPreviewEvent
 {

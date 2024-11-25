@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using Bearded.Graphics;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Statistics.Data;
 using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
@@ -26,7 +27,8 @@ sealed partial class BuildingStatusControl : CompositeControl
     public BuildingStatusControl(
         BuildingStatus model,
         UIContext uiContext,
-        GameRequestDispatcher requestDispatcher)
+        GameRequestDispatcher requestDispatcher,
+        Player player)
     {
         // TODO: UI library doesn't allow for this to apply to all nested elements, which is really what we need...
         this.BindIsClickThrough(model.ShowExpanded.Negate());
@@ -46,7 +48,7 @@ sealed partial class BuildingStatusControl : CompositeControl
         column
             .Add(new IconRow<ObservableStatus>(
                     model.Statuses,
-                    status => uiContext.Factories.StatusIcon(status, requestDispatcher),
+                    status => uiContext.Factories.StatusIcon(status, requestDispatcher, player),
                     StatusRowBackground),
                 rowHeight);
 
