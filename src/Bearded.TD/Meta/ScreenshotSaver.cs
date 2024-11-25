@@ -1,3 +1,5 @@
+#pragma warning disable CA1416 // Known limitation for Windows
+
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;

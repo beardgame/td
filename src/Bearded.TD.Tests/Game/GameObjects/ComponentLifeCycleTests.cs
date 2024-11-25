@@ -130,7 +130,7 @@ public sealed class ComponentLifeCycleTests
         var parameters = constructor.GetParameters();
         if (parameters.Length == 0)
         {
-            return (IComponent) Activator.CreateInstance(type);
+            return (IComponent) Activator.CreateInstance(type)!;
         }
 
         if (parameters.Length != 1)

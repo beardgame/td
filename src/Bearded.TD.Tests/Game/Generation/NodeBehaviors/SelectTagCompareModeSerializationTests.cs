@@ -34,7 +34,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 'ge' : '>=',
 'l' : '<',
 'le' : '<='
-}");
+}")!;
 
             model.AssertCorrectValues();
         }
@@ -47,7 +47,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 'ge' : '{nameof(GreaterOrEqual)}',
 'l' : '{nameof(Less)}',
 'le' : '{nameof(LessOrEqual)}'
-}}");
+}}")!;
 
             model.AssertCorrectValues();
         }
@@ -65,7 +65,7 @@ namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
 
             var json = JsonConvert.SerializeObject(originalModel);
 
-            var model = JsonConvert.DeserializeObject<Model>(json);
+            var model = JsonConvert.DeserializeObject<Model>(json)!;
 
             model.AssertCorrectValues();
         }

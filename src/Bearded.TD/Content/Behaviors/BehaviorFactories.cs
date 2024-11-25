@@ -71,7 +71,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
         var knownBehaviors = Assembly.GetExecutingAssembly().GetTypes()
             .Select(t => (type: t, attribute: t.GetCustomAttribute<TBehaviorAttribute>(false)))
             .Where(t => t.attribute != null)
-            .Select(t => (t.attribute.Id, t.type))
+            .Select(t => (t.attribute!.Id, t.type))
             .ToList();
 
         foreach (var subject in knownBehaviors)
@@ -135,7 +135,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
         var compiledConstructor = constructor.Compile();
 
         // returns Func<TParameters, TBehaviorTemplate, object>
-        return typedMaker.Invoke(null, new object[] {compiledConstructor});
+        return typedMaker.Invoke(null, [compiledConstructor])!;
     }
 
     private ImmutableArray<MemberBinding> createMemberBindings(Expression modelParameter)
@@ -177,11 +177,11 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
     #region Fetching
 
     private readonly MethodInfo tryMakeBehaviorFactoryMethodInfo = thisType
-        .GetMethod(nameof(tryMakeBehaviorFactoryGeneric), BindingFlags.Instance | BindingFlags.NonPublic);
+        .GetMethod(nameof(tryMakeBehaviorFactoryGeneric), BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     private object tryMakeBehaviorFactory(TBehaviorTemplate template)
     {
-        var id = template.Id;
+        var id = template.Id!;
         var parameterData = template.Parameters;
         var parameterType = parametersById[id];
 
@@ -199,7 +199,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
 
         var tryMakeFactory = tryMakeBehaviorFactoryMethodInfo.MakeGenericMethod(parameterType);
 
-        return tryMakeFactory.Invoke(this, new[] { id, parameterData, template });
+        return tryMakeFactory.Invoke(this, [id, parameterData, template])!;
     }
 
     private object tryMakeBehaviorFactoryGeneric<TParameters>(
@@ -209,7 +209,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
 
         var typedFactoryFactory = (Func<TParameters, TBehaviorTemplate, object>) factoryFactory;
 
-        return typedFactoryFactory?.Invoke(parameters, template);
+        return typedFactoryFactory.Invoke(parameters, template);
     }
 
     #endregion
