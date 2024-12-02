@@ -87,4 +87,11 @@ static class BuildingFactionExtensions
         return true;
     }
 
+    public static bool TryFindFactionIncludingAncestors(this GameObject gameObj, [NotNullWhen(true)] out Faction? faction)
+    {
+        gameObj.TryGetSingleComponentInOwnerTree<IFactionProvider>(out var factionProvider);
+        faction = factionProvider?.Faction;
+        return faction != null;
+    }
+
 }

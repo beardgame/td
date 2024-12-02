@@ -40,6 +40,12 @@
             }
         },
         {
+            id: "payCoreEnergyForProjectile",
+            parameters: {
+                perDamagePotential: 0.02,
+            }
+        },
+        {
             id: "sprite",
             parameters: {
                 sprite: "buildings.cannon-bottom",

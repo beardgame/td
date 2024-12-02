@@ -106,7 +106,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
         Owner.Game.Add(projectile);
 
-        Events.Send(new ShotProjectile(position, direction, muzzleVelocity, projectile));
+        Events.Send(new ShotProjectile(position, direction, muzzleVelocity, projectile, damage));
     }
 
     private (Direction2, Velocity3) getMuzzleVelocity(Position3 emitLocation)
