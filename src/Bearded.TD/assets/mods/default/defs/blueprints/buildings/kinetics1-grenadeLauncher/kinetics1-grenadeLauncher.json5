@@ -15,6 +15,13 @@
         { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
         { id: "allowManualControl" },
         { id: "allowManualOverdrive" },
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "overdriveStarted",
+                sound: "overdrive-start",
+            }
+        },
         { id: "autoRepair", parameters: { } },
         { id: "gainXpOnDamage" },
         { id: "veterancy" },
