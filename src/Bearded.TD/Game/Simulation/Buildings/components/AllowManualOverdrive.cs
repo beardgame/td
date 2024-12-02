@@ -87,6 +87,7 @@ sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.Act
         Owner.AddComponent(control.Overdrive);
         overrideStart = Owner.Game.Time;
         statusReceipt?.UpdateAppearance(progressAppearance(0));
+        Events.Send(new OverdriveStarted());
     }
 
     protected override void OnOverrideEnd(ActiveOverdrive control)

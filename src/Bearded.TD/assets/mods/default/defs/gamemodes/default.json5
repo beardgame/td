@@ -126,6 +126,10 @@
             parameters: { sound: "wave-complete" },
         },
         {
+            id: "playSoundOnResourceGain",
+            parameters: { sound: "resource" },
+        },
+        {
             id: "loopGlobalSound",
             parameters: { sound: "ambience-loop" },
         },
