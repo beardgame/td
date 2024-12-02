@@ -20,11 +20,13 @@ sealed class Overdrive : Component
     private void applyUpgrade()
     {
         var ids = Owner.Game.GamePlayIds;
+        var damage = new ModifyParameterReversibly(
+            AttributeType.Damage, damageModification(ids), UpgradePrerequisites.Empty);
         var fireRate = new ModifyParameterReversibly(
             AttributeType.FireRate, damageModification(ids), UpgradePrerequisites.Empty);
         var damageOverTime = new ModifyParameterReversibly(
             AttributeType.DamageOverTime, damageModification(ids), UpgradePrerequisites.Empty);
-        var upgrade = Upgrade.FromEffects(fireRate, damageOverTime);
+        var upgrade = Upgrade.FromEffects(damage, fireRate, damageOverTime);
 
         upgradeReceipt = Owner.ApplyUpgrade(upgrade);
     }
