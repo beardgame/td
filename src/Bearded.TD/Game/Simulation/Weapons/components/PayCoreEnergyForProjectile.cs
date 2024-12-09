@@ -26,8 +26,13 @@ sealed class PayCoreEnergyForProjectile(IParameters parameters)
 
     public override void Activate()
     {
-        Owner.TryFindFactionIncludingAncestors(out var faction);
-        faction!.TryGetBehaviorIncludingAncestors(out resources!);
+        if (!Owner.TryFindFactionIncludingAncestors(out var faction))
+        {
+            Owner.Game.Meta.Logger.Warning?.Log("Could not find owner faction for projectile core energy payment.");
+            return;
+        }
+
+        faction.TryGetBehaviorIncludingAncestors(out resources!);
     }
 
     public override void Update(TimeSpan elapsedTime)
