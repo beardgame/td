@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 [Component("allowManualControl")]
 sealed partial class ManualControl : Component, Overrider.IOverrideImplementation, IManualControl
 {
-    public sealed record Override(Action Cancel, CrossHair CrossHair, Overdrive Overdrive) : Overrider.Override(Cancel);
+    public sealed record Override(Action Cancel, CrossHair CrossHair) : Overrider.Override(Cancel);
 
     private Overrider overrider = null!;
 
@@ -33,7 +33,7 @@ sealed partial class ManualControl : Component, Overrider.IOverrideImplementatio
 
     public void StartControl(IManualTarget2 target, Action cancelControl)
     {
-        var control = new Override(cancelControl, new CrossHair(target), new Overdrive());
+        var control = new Override(cancelControl, new CrossHair(target));
         overrider.StartOverride(control);
     }
 
@@ -44,7 +44,6 @@ sealed partial class ManualControl : Component, Overrider.IOverrideImplementatio
 
     public void OnOverrideStart(Override @override)
     {
-        Owner.AddComponent(@override.Overdrive);
         Owner.AddComponent(@override.CrossHair);
 
         SubjectRange = 3.U();
@@ -59,7 +58,6 @@ sealed partial class ManualControl : Component, Overrider.IOverrideImplementatio
 
     public void OnOverrideEnd(Override @override)
     {
-        Owner.RemoveComponent(@override.Overdrive);
         Owner.RemoveComponent(@override.CrossHair);
 
         foreach (var turret in Owner.GetComponents<ITurret>())

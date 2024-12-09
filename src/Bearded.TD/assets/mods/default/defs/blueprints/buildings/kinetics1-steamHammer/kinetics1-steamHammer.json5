@@ -13,7 +13,29 @@
         { id: "footprintTransformation" },
         { id: "defaultTileOccupancy" },
         { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
-        { id: "allowManualOverdrive" },
+        {
+            id: "allowManualOverdrive",
+            parameters: {
+                effects: [
+                    {
+                        type: "modification",
+                        parameters: {
+                            attributeType: "damage",
+                            mode: "multiply",
+                            value: 6,
+                        }
+                    },
+                    {
+                        type: "modification",
+                        parameters: {
+                            attributeType: "fireRate",
+                            mode: "multiply",
+                            value: 6,
+                        }
+                    }
+                ]
+            }
+        },
         {
             id: "playSoundOnTrigger",
             parameters: {

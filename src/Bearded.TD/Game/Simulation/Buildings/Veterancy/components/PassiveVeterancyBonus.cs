@@ -41,14 +41,14 @@ sealed class PassiveVeterancyBonus : Component<PassiveVeterancyBonus.IParameters
 
         var strength = Math.Pow(Parameters.Factor, levels);
         var modification = Modification.MultiplyWith(strength);
-        var id = Owner.Game.GamePlayIds.GetNext<Modification>();
         var attribute = Parameters.Attribute ?? AttributeType.Damage;
 
         var effect =
-            new ModifyParameterReversibly(
+            new ModifyParameter(
                 attribute,
-                new ModificationWithId(id, modification),
-                UpgradePrerequisites.Empty);
+                modification,
+                UpgradePrerequisites.Empty,
+                false);
 
         var upgrade = Upgrade.FromEffects(effect);
 

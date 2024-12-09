@@ -11,7 +11,6 @@ interface IUpgradeEffect
     bool ModifiesComponentCollection(GameObject subject);
     ComponentTransaction CreateComponentChanges(GameObject subject);
 
-    bool CanApplyTo(IParametersTemplate subject);
-    void ApplyTo(IParametersTemplate subject);
-    bool RemoveFrom(IParametersTemplate subject);
+    bool ModifiesParameters(IParametersTemplate subject);
+    ParameterTransaction CreateParameterChanges(GameObject subject, IParametersTemplate parameters);
 }

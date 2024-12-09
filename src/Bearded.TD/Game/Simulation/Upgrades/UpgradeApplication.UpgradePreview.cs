@@ -4,22 +4,15 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.Collections;
-using Void = Bearded.Utilities.Void;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
 static partial class UpgradeApplication
 {
-    private sealed class UpgradePreview : IUpgradePreview
+    private sealed class UpgradePreview(IUpgrade upgrade) : IUpgradePreview
     {
-        private readonly IUpgrade upgrade;
         private readonly MultiDictionary<GameObject, IUpgradeListener> listeners = new();
         private readonly MultiDictionary<UpgradeEffectCandidate, IUpgradeEffectOperation> upgradeCandidates = new();
-
-        public UpgradePreview(IUpgrade upgrade)
-        {
-            this.upgrade = upgrade;
-        }
 
         public void RegisterGameObject(GameObject gameObject)
         {
@@ -40,17 +33,18 @@ static partial class UpgradeApplication
 
         public void RegisterParameters(GameObject gameObject, IParametersTemplate parameters)
         {
-            foreach (var effect in upgrade.Effects.Where(e => e.CanApplyTo(parameters)))
+            foreach (var effect in upgrade.Effects.Where(e => e.ModifiesParameters(parameters)))
             {
                 upgradeCandidates.Add(
                     new UpgradeEffectCandidate(gameObject, effect),
-                    new UpgradeEffectOperation<Void>(
+                    new UpgradeEffectOperation<ParameterTransaction>(
                         () =>
                         {
-                            effect.ApplyTo(parameters);
-                            return default;
+                            var transaction = effect.CreateParameterChanges(gameObject, parameters);
+                            transaction.Commit();
+                            return transaction;
                         },
-                        _ => effect.RemoveFrom(parameters)));
+                        transaction => transaction.Rollback()));
             }
         }
 

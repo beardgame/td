@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Shared.TechEffects;
+﻿using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
@@ -15,8 +16,8 @@ sealed class ModifyParameter : UpgradeEffectBase
         this.modification = modification;
     }
 
-    public override bool CanApplyTo(IParametersTemplate subject) => subject.HasAttributeOfType(attributeType);
+    public override bool ModifiesParameters(IParametersTemplate subject) => subject.HasAttributeOfType(attributeType);
 
-    public override void ApplyTo(IParametersTemplate subject)
-        => subject.AddModification(attributeType, modification);
+    public override ParameterTransaction CreateParameterChanges(GameObject subject, IParametersTemplate parameters) =>
+        new(subject, parameters, attributeType, modification);
 }
