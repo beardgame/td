@@ -40,7 +40,7 @@ static partial class UpgradeApplication
                     new UpgradeEffectOperation<ParameterTransaction>(
                         () =>
                         {
-                            var transaction = effect.CreateParameterChanges(gameObject, parameters);
+                            var transaction = effect.CreateParameterChanges(parameters);
                             transaction.Commit();
                             return transaction;
                         },

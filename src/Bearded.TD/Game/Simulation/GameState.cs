@@ -46,9 +46,6 @@ sealed class GameState
     public Level Level { get; }
     public MultipleSinkNavigationSystem Navigator { get; }
 
-    // Should only be used to communicate between game objects internally.
-    public IdManager GamePlayIds { get; } = new();
-
     public GeometryLayer GeometryLayer { get; }
     public BiomeLayer BiomeLayer { get; }
     public FluidLayer FluidLayer { get; }

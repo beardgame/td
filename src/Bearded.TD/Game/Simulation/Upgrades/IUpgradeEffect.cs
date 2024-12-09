@@ -12,5 +12,5 @@ interface IUpgradeEffect
     ComponentTransaction CreateComponentChanges(GameObject subject);
 
     bool ModifiesParameters(IParametersTemplate subject);
-    ParameterTransaction CreateParameterChanges(GameObject subject, IParametersTemplate parameters);
+    ParameterTransaction CreateParameterChanges(IParametersTemplate parameters);
 }

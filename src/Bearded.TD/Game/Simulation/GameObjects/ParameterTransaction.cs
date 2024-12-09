@@ -4,11 +4,12 @@ using Bearded.Utilities;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class ParameterTransaction(
-    GameObject gameObject, IParametersTemplate parameters, AttributeType attribute, Modification modification)
+sealed class ParameterTransaction(IParametersTemplate parameters, AttributeType attribute, Modification modification)
 {
-    public static ParameterTransaction Empty(GameObject gameObject, IParametersTemplate parameters) =>
-        new(gameObject, parameters, AttributeType.None, Modification.Noop);
+    private static readonly IdManager idManager = new();
+
+    public static ParameterTransaction Empty(IParametersTemplate parameters) =>
+        new(parameters, AttributeType.None, Modification.Noop);
 
     private bool isCommitted;
     private Id<Modification> modificationId = Id<Modification>.Invalid;
@@ -20,7 +21,7 @@ sealed class ParameterTransaction(
             throw new InvalidOperationException("Cannot apply transaction more than once.");
         }
 
-        modificationId = gameObject.Game.GamePlayIds.GetNext<Modification>();
+        modificationId = idManager.GetNext<Modification>();
         var modificationWithId = new ModificationWithId(modificationId, modification);
         parameters.AddModificationWithId(attribute, modificationWithId);
 

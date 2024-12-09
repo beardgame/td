@@ -21,6 +21,6 @@ abstract class UpgradeEffectBase : IUpgradeEffect
 
     public virtual bool ModifiesParameters(IParametersTemplate subject) => false;
 
-    public virtual ParameterTransaction CreateParameterChanges(GameObject subject, IParametersTemplate parameters) =>
-        ParameterTransaction.Empty(subject, parameters);
+    public virtual ParameterTransaction CreateParameterChanges(IParametersTemplate parameters) =>
+        ParameterTransaction.Empty(parameters);
 }

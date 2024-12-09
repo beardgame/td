@@ -18,6 +18,6 @@ sealed class ModifyParameter : UpgradeEffectBase
 
     public override bool ModifiesParameters(IParametersTemplate subject) => subject.HasAttributeOfType(attributeType);
 
-    public override ParameterTransaction CreateParameterChanges(GameObject subject, IParametersTemplate parameters) =>
-        new(subject, parameters, attributeType, modification);
+    public override ParameterTransaction CreateParameterChanges(IParametersTemplate parameters) =>
+        new(parameters, attributeType, modification);
 }
