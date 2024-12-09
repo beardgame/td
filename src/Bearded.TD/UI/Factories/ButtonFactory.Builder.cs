@@ -39,6 +39,8 @@ sealed partial class ButtonFactory
         private Shadow? shadow;
         private bool blurBackground;
         private ButtonBackgroundColor backgroundColors = DefaultBackgroundColors;
+        private List<ShapeComponent>? additionalShapeComponents;
+        private List<ShapeComponentUpdater>? additionalShapeComponentUpdaters;
 
         protected abstract T This { get; }
 
@@ -113,6 +115,24 @@ sealed partial class ButtonFactory
             return This;
         }
 
+        public T WithAdditionalShapeComponents(Span<ShapeComponent> components)
+        {
+            additionalShapeComponents ??= [];
+            additionalShapeComponents.AddRange(components);
+            return This;
+        }
+
+        public T WithAdditionalMutableShapeComponent(out Action<ShapeComponent> update)
+        {
+            additionalShapeComponents ??= [];
+            additionalShapeComponentUpdaters ??= [];
+            var updater = new ShapeComponentUpdater(additionalShapeComponents.Count);
+            update = updater.Update;
+            additionalShapeComponentUpdaters.Add(updater);
+            additionalShapeComponents.Add(default);
+            return This;
+        }
+
         public T MakeDisabled()
         {
             isEnabled = Binding.Constant(false);
@@ -142,7 +162,7 @@ sealed partial class ButtonFactory
             Validate();
 
             // ReSharper disable once UseObjectOrCollectionInitializer
-            var button = new TDButton();
+            var button = new Button();
             var contentColor = Binding.Combine(isEnabled, isError, (enabled, error) =>
             {
                 if (error)
@@ -161,7 +181,20 @@ sealed partial class ButtonFactory
             var edgeIndex = i++;
             var blurIndex = blurBackground ? i++ : -1;
             var fillIndex = i++;
-            var components = new ShapeComponent[i];
+
+            var components = new ShapeComponent[i + (additionalShapeComponents?.Count ?? 0)];
+
+            if (additionalShapeComponents is { } additional)
+            {
+                additional.CopyTo(components, i);
+            }
+            if (additionalShapeComponentUpdaters is { } updaters)
+            {
+                foreach (var updater in updaters)
+                {
+                    updater.Initialize(components, i);
+                }
+            }
 
             if (blurBackground)
             {
@@ -322,6 +355,42 @@ sealed partial class ButtonFactory
             color.ControlUpdated += c => iconControl.Color = c;
 
             iconControl.BindIsVisible(icon.Transform(id => id.SpriteSet.IsValid && !string.IsNullOrWhiteSpace(id.Id)));
+        }
+    }
+
+    private sealed class ShapeComponentUpdater(int offset)
+    {
+        private ShapeComponent? component;
+        private ShapeComponent[]? components;
+        private int index = offset;
+
+        public void Initialize(ShapeComponent[] array, int firstAdditionalComponentIndex)
+        {
+            if (components != null)
+            {
+                throw new InvalidOperationException("Already initialized.");
+            }
+
+            components = array;
+            index += firstAdditionalComponentIndex;
+
+            if (component is { } c)
+            {
+                components[index] = c;
+                component = null;
+            }
+        }
+
+        public void Update(ShapeComponent component)
+        {
+            if (components == null)
+            {
+                this.component = component;
+            }
+            else
+            {
+                components[index] = component;
+            }
         }
     }
 }
