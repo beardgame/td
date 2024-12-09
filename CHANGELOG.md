@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.31
+
+* New tower: Core Beam Emitter
+* Reintroduced Overdrive for towers, costing COR to activate
+* Added sound for receiving resources
+* Added sound for activating Overdrive
+
 ## v0.30
 
 * Introduced resource types: SCRAP and COR
