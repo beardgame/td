@@ -1,8 +1,11 @@
+using Bearded.Graphics;
+using Bearded.TD.Game.Simulation.Core;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.Rendering;
 using Bearded.Utilities;
+using static Bearded.TD.Constants.Game.GameUI;
 using static Bearded.TD.Constants.UI;
 using static Bearded.TD.Constants.UI.Window;
 
@@ -24,7 +27,7 @@ sealed partial class CoreStatsUIControl : CompositeControl
 
         this.BuildLayout()
             .ForContentBox()
-            .DockFixedSizeToLeft(new StaticWaveInformation(model.Wave), waveStatsWidth)
+            .DockFixedSizeToLeft(new StaticWaveInformation(model.Wave, model.Corruption), waveStatsWidth)
             .DockFixedSizeToRight(
                 new UpcomingWaveInformation(model.Wave, model.CurrentPhase, model.SkipWaveTimer, uiContext),
                 waveStatsWidth)
@@ -40,13 +43,23 @@ sealed partial class CoreStatsUIControl : CompositeControl
 
     private sealed class StaticWaveInformation : CompositeControl
     {
-        public StaticWaveInformation(
-            IReadonlyBinding<CoreStatsUI.WaveState?> wave)
+        public StaticWaveInformation
+        (
+            IReadonlyBinding<CoreStatsUI.WaveState?> wave,
+            IReadonlyBinding<Corruption> corruption
+        )
         {
             this.Add(createWaveInfoBackground());
 
             var content = CreateClickThrough();
             var column = content.BuildFixedColumn();
+
+            column.AddLabel(
+                corruption.Transform(c => $"Corruption: {c.Value:0}"),
+                Label.TextAnchorCenter,
+                corruption.Transform(c => Color.Lerp(EnergyColor, EnergyColorNegative, (float)c.Value / 1000))
+            );
+
             column.AddLabel(wave.Transform(w => w?.Name ?? "<none>"), textAnchor: Label.TextAnchorCenter);
 
             Add(content.Anchor(a => a.VerticallyCentered(column.Height)));

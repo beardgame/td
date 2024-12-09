@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using System.Reactive.Linq;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Core;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Shared.Events;
@@ -31,6 +33,7 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
     public Binding<bool> EMPAvailable { get; } = new();
     public Binding<GamePhase> CurrentPhase { get; } = new(GamePhase.BetweenWaves);
     public Binding<WaveState?> Wave { get; } = new();
+    public IReadonlyBinding<Corruption> Corruption { get; private set; } = null!;
 
     public CoreStatsUI()
     {
@@ -54,6 +57,12 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
         game.Meta.Events.Subscribe<WaveScheduled>(this);
         game.Meta.Events.Subscribe<WaveStarted>(this);
         game.Meta.Events.Subscribe<WaveEnded>(this);
+
+        Corruption = game.Meta.Events
+            .Observe<WorldCorruptionIncreased>()
+            .Select(e => e.Value)
+            .StartWith(game.State.Corruption.Value)
+            .BindDisplayOnly(out _);
     }
 
     public void Terminate()

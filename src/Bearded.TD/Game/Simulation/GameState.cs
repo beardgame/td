@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.Buildings;
+using Bearded.TD.Game.Simulation.Core;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
@@ -59,6 +60,7 @@ sealed class GameState
     public PassabilityObserver PassabilityObserver { get; }
     public ZoneLayer ZoneLayer { get; }
     public VisibilityLayer VisibilityLayer { get; }
+    public WorldCorruption Corruption { get; }
 
     public IGameStatistics Statistics { get; }
     public WaveDirector WaveDirector { get; }
@@ -77,6 +79,7 @@ sealed class GameState
         GameSettings = gameSettings;
         Level = new Level(GameSettings.LevelSize);
 
+        Corruption = new WorldCorruption(Meta.Events);
         GeometryLayer = new GeometryLayer(Meta.Events, GameSettings.LevelSize);
         BiomeLayer = new BiomeLayer(GameSettings.LevelSize);
         FluidLayer = new FluidLayer(this, GeometryLayer, GameSettings.LevelSize);

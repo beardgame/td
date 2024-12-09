@@ -72,6 +72,14 @@
             }
         },
         {
+            id: "increaseCorruptionOnCoreConsumption",
+            parameters: {
+                faction: "players",
+                baseRate: 1,
+                perDebtRate: 0.01,
+            }
+        },
+        {
             id: "unlockTiersAtThresholds",
             parameters: {
                 faction: "players",
