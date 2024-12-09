@@ -1,10 +1,13 @@
+using Bearded.Graphics;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.UI.Controls;
+using Bearded.TD.UI.Shapes;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.Utilities;
+using Bearded.Utilities.Geometry;
 
 namespace Bearded.TD.UI.Factories;
 
@@ -32,6 +35,8 @@ static class StatusIconFactories
         GameRequestDispatcher requestDispatcher,
         Player player)
     {
+        var progressOrZero = status.Appearance.Transform(a => a.Progress ?? 0);
+
         // TODO: replace entirely
         return factories.StandaloneIconButton(b => b
             .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher, player))
@@ -39,7 +44,30 @@ static class StatusIconFactories
             .WithEnabled(Binding.Constant(status.Spec.IsInteractive))
             .WithIcon(status.Appearance.Transform(a => a.Icon))
             .WithIconScale(0.75f)
+            .WithProgressBar(progressOrZero, 6, progressBarComponent)
             .MakeHexagon());
+
+        static ShapeComponent progressBarComponent(double p, GradientStop[] stops)
+        {
+            if (p == 0)
+            {
+                return default;
+            }
+
+            var stop1 = 0.5f - p / 2;
+            var stop2 = 0.5f + p / 2;
+            stops[0] = (0, Color.Transparent);
+            stops[0] = (stop1, Color.Transparent);
+            stops[1] = (stop1, Color.White);
+            stops[2] = (stop2, Color.White);
+            stops[3] = (stop2, Color.Transparent);
+            stops[4] = (1, Color.Transparent);
+
+            return Edge.Inner(2, ShapeColor.FromMutable(
+                stops,
+                GradientDefinition.ArcAroundPoint(AnchorPoint.FrameCenter, Direction2.FromDegrees(90), 360.Degrees())
+            ));
+        }
     }
 
     /**
