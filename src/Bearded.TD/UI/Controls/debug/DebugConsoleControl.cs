@@ -145,10 +145,9 @@ sealed class DebugConsoleControl : ViewportClippingLayerControl
                 commandInput.Text = debug.GetNextCommandInHistory(commandInput.Text);
                 commandInput.MoveCursorToEnd();
                 break;
-            default:
-                return false;
         }
 
-        return true;
+        // Ensure we handle all alphanumeric key presses, but leave function keys alone.
+        return eventArgs.Key <= Keys.RightBracket;
     }
 }
