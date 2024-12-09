@@ -4,34 +4,46 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Utilities;
 using Bearded.Utilities.SpaceTime;
+using Overrider = Bearded.TD.Game.Simulation.Buildings.ExclusiveOverrider<Bearded.TD.Game.Simulation.Buildings.ManualControl.Override>;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("allowManualControl")]
-sealed partial class ManualControl : AllowManualOverride<ManualControl.Override>, IManualControl
+sealed partial class ManualControl : Component, Overrider.IOverrideImplementation, IManualControl
 {
-    public new sealed record Override(Action Cancel, CrossHair CrossHair, Overdrive Overdrive)
-        : AllowManualOverride<Override>.Override(Cancel);
+    public sealed record Override(Action Cancel, CrossHair CrossHair) : Overrider.Override(Cancel);
+
+    private Overrider overrider = null!;
 
     public Position2 SubjectPosition => Owner.Position.XY();
     public Unit SubjectRange { get; private set; }
 
-    public bool CanBeControlledBy(Faction faction) => CanBeOverriddenBy(faction);
+    protected override void OnAdded()
+    {
+        overrider = Overrider.CreateSubscribed(Owner, Events, this);
+    }
+
+    public override void Update(TimeSpan elapsedTime)
+    {
+        overrider.Update();
+    }
+
+    public bool CanBeControlledBy(Faction faction) => overrider.CanBeOverriddenBy(faction);
 
     public void StartControl(IManualTarget2 target, Action cancelControl)
     {
-        var control = new Override(cancelControl, new CrossHair(target), new Overdrive());
-        StartOverride(control);
+        var control = new Override(cancelControl, new CrossHair(target));
+        overrider.StartOverride(control);
     }
 
     public void EndControl()
     {
-        EndOverride();
+        overrider.EndOverride();
     }
 
-    protected override void OnOverrideStart(Override @override)
+    public void OnOverrideStart(Override @override)
     {
-        Owner.AddComponent(@override.Overdrive);
         Owner.AddComponent(@override.CrossHair);
 
         SubjectRange = 3.U();
@@ -44,9 +56,8 @@ sealed partial class ManualControl : AllowManualOverride<ManualControl.Override>
         }
     }
 
-    protected override void OnOverrideEnd(Override @override)
+    public void OnOverrideEnd(Override @override)
     {
-        Owner.RemoveComponent(@override.Overdrive);
         Owner.RemoveComponent(@override.CrossHair);
 
         foreach (var turret in Owner.GetComponents<ITurret>())

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Players;
@@ -6,22 +7,44 @@ using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using Overrider = Bearded.TD.Game.Simulation.Buildings.ExclusiveOverrider<Bearded.TD.Game.Simulation.Buildings.AllowManualOverdrive.ActiveOverdrive>;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
 [Component("allowManualOverdrive")]
-sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.ActiveOverdrive>, IManualOverdrive
+sealed class AllowManualOverdrive : Component<AllowManualOverdrive.IParameters>, Overrider.IOverrideImplementation, IManualOverdrive
 {
+    public interface IParameters : IParametersTemplate<IParameters>
+    {
+        [Modifiable(6.0)]
+        public TimeSpan ActiveDuration { get; }
+
+        [Modifiable(6.0)]
+        public TimeSpan BreakageDuration { get; }
+
+        ImmutableArray<IUpgradeEffect> Effects { get; }
+    }
+
+    private Overrider overrider = null!;
     private IStatusReceipt? statusReceipt;
     private Instant? overrideStart;
     private ActiveBreakage? breakage;
 
-    public sealed record ActiveOverdrive(Action Cancel, Overdrive Overdrive) : Override(Cancel);
+    public sealed record ActiveOverdrive(Action Cancel, Overdrive Overdrive) : Overrider.Override(Cancel);
 
     private sealed record ActiveBreakage(IBreakageReceipt Receipt, Instant Start);
+
+    public AllowManualOverdrive(IParameters parameters) : base(parameters) { }
+
+    protected override void OnAdded()
+    {
+        overrider = Overrider.CreateSubscribed(Owner, Events, this);
+    }
 
     public override void Activate()
     {
@@ -36,25 +59,25 @@ sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.Act
 
     public override void Update(TimeSpan elapsedTime)
     {
-        base.Update(elapsedTime);
+        overrider.Update();
 
         if (overrideStart is not null)
         {
             statusReceipt?.UpdateAppearance(
-                progressAppearance((Owner.Game.Time - overrideStart.Value) / Constants.Game.Overdrive.UpgradeDuration));
+                progressAppearance((Owner.Game.Time - overrideStart.Value) / Parameters.ActiveDuration));
 
-            if (Owner.Game.Time - overrideStart > Constants.Game.Overdrive.UpgradeDuration)
+            if (Owner.Game.Time - overrideStart > Parameters.ActiveDuration)
             {
-                EndOverride();
+                overrider.EndOverride();
             }
         }
 
         if (breakage is not null)
         {
             statusReceipt?.UpdateAppearance(
-                progressAppearance(1 - (Owner.Game.Time - breakage.Start) / Constants.Game.Overdrive.BreakageDuration));
+                progressAppearance(1 - (Owner.Game.Time - breakage.Start) / Parameters.BreakageDuration));
 
-            if (Owner.Game.Time - breakage.Start > Constants.Game.Overdrive.BreakageDuration)
+            if (Owner.Game.Time - breakage.Start > Parameters.BreakageDuration)
             {
                 breakage.Receipt.Repair();
                 breakage = null;
@@ -68,20 +91,20 @@ sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.Act
         statusReceipt?.DeleteImmediately();
     }
 
-    public bool CanBeEnabledBy(Faction faction) => CanBeOverriddenBy(faction);
+    public bool CanBeEnabledBy(Faction faction) => overrider.CanBeOverriddenBy(faction);
 
     public void StartOverdrive(Action cancelOverdrive)
     {
-        var control = new ActiveOverdrive(cancelOverdrive, new Overdrive());
-        StartOverride(control);
+        var control = new ActiveOverdrive(cancelOverdrive, new Overdrive(Upgrade.FromEffects(Parameters.Effects)));
+        overrider.StartOverride(control);
     }
 
     public void EndOverdrive()
     {
-        EndOverride();
+        overrider.EndOverride();
     }
 
-    protected override void OnOverrideStart(ActiveOverdrive control)
+    public void OnOverrideStart(ActiveOverdrive control)
     {
         State.Satisfies(breakage is null);
         Owner.AddComponent(control.Overdrive);
@@ -90,7 +113,7 @@ sealed class AllowManualOverdrive : AllowManualOverride<AllowManualOverdrive.Act
         Events.Send(new OverdriveStarted());
     }
 
-    protected override void OnOverrideEnd(ActiveOverdrive control)
+    public void OnOverrideEnd(ActiveOverdrive control)
     {
         Owner.RemoveComponent(control.Overdrive);
         overrideStart = null;

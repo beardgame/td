@@ -83,7 +83,7 @@ static partial class UpgradeApplication
                 throw new InvalidOperationException("Can only roll back a committed operation.");
             }
 
-            rollback(state);
+            rollback(state!);
             isCommitted = false;
         }
     }

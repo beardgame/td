@@ -141,8 +141,6 @@ static partial class Constants
 
         public static class Overdrive
         {
-            public static readonly TimeSpan UpgradeDuration = 6.S();
-            public static readonly TimeSpan BreakageDuration = 6.S();
             public static readonly Resource<CoreEnergy> OverdriveCost = 40.CoreEnergy();
         }
     }

@@ -9,7 +9,6 @@ public enum AttributeType : byte
     BulletDropCompensation,
     ChargeCapacity,
     Damage,
-    DamageOverTime,
     Drag,
     FireRate,
     FuelCapacity,

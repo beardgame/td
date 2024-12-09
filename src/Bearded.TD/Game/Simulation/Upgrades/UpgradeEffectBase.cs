@@ -19,9 +19,8 @@ abstract class UpgradeEffectBase : IUpgradeEffect
     public virtual ComponentTransaction CreateComponentChanges(GameObject subject) =>
         ComponentTransaction.Empty(subject);
 
-    public virtual bool CanApplyTo(IParametersTemplate subject) => false;
+    public virtual bool ModifiesParameters(IParametersTemplate subject) => false;
 
-    public virtual void ApplyTo(IParametersTemplate subject) {}
-
-    public virtual bool RemoveFrom(IParametersTemplate subject) => false;
+    public virtual ParameterTransaction CreateParameterChanges(GameObject subject, IParametersTemplate parameters) =>
+        ParameterTransaction.Empty(subject, parameters);
 }

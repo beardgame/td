@@ -43,7 +43,7 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
         switch (type)
         {
             case UpgradeEffectType.Modification:
-                var parameters = serializer.Deserialize<ModificationParameters>(def.CreateReader());
+                var parameters = serializer.Deserialize<ModificationParameters>(def.CreateReader())!;
                 return new ModifyParameter(
                     parameters.AttributeType, getModification(parameters), prerequisites, isSideEffect);
             case UpgradeEffectType.Component:
