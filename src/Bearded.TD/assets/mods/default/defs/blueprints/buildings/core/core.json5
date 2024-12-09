@@ -5,6 +5,7 @@
             id: "attributes",
             parameters: {
                 name: "Core",
+                icon: "building-icons.core-full"
             }
         },
         { id: "tags", parameters: { tags: [ "forbidDeletion" ] } },
