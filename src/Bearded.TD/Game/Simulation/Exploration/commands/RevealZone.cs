@@ -48,6 +48,6 @@ static class RevealZone
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game) =>
-            new Implementation(game.State, game.State.Find(zone));
+            new Implementation(game.State, game.State.ZoneLayer.FindZone(zone));
     }
 }
