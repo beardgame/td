@@ -40,8 +40,7 @@ static class StatusIconFactories
         // TODO: replace entirely
         return factories.StandaloneIconButton(b => b
             .WithOnClick(() => status.Spec.Interaction?.Interact(requestDispatcher, player))
-            .AlwaysRenderAsEnabled()
-            .WithEnabled(Binding.Constant(status.Spec.IsInteractive))
+            .WithEnabled(Binding.Constant(status.Spec.IsInteractive).And(status.Appearance.Transform(a => a.Enabled)))
             .WithIcon(status.Appearance.Transform(a => a.Icon))
             .WithIconScale(0.75f)
             .WithProgressBar(progressOrZero, 6, progressBarComponent)
@@ -94,7 +93,6 @@ static class StatusIconFactories
         return factories.Button(b => b
             .forUpgrade(upgrade)
             .WithOnClick(onClick)
-            .AlwaysRenderAsEnabled()
             .WithEnabled(isActiveSlot)
             .MakeHexagon());
     }

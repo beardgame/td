@@ -130,7 +130,7 @@ sealed class AllowManualOverdrive : Component<AllowManualOverdrive.IParameters>,
 
     private static StatusAppearance noProgressAppearance() => StatusAppearance.IconOnly(statusIcon);
     private static StatusAppearance progressAppearance(double progress) =>
-        StatusAppearance.IconAndProgress(statusIcon, progress);
+        StatusAppearance.IconAndProgress(statusIcon, progress).Disabled();
 
     private static ModAwareSpriteId statusIcon => "orb-direction".ToStatusIconSpriteId();
 
