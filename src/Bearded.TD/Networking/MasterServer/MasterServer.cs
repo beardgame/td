@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using Bearded.TD.Meta;
 using Google.Protobuf;
 using Lidgren.Network;
@@ -15,8 +17,10 @@ abstract class MasterServer
     protected MasterServer(NetPeer peer)
     {
         this.peer = peer;
-        masterServerEndPoint = NetUtility.Resolve(
-            UserSettings.Instance.Misc.MasterServerAddress, Constants.Network.MasterServerPort);
+        var v4ip = Dns
+            .GetHostAddresses(UserSettings.Instance.Misc.MasterServerAddress, AddressFamily.InterNetwork)
+            .FirstOrDefault();
+        masterServerEndPoint = new IPEndPoint(v4ip, Constants.Network.MasterServerPort);
     }
 
     protected Proto.MasterServerMessage CreateMessage()
