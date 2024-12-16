@@ -7,7 +7,7 @@ using Comparer = Bearded.TD.Utilities.Comparer;
 
 namespace Bearded.TD.UI.Shortcuts;
 
-sealed partial class ShortcutLayer
+sealed partial class ShortcutLayer : IShortcutLayer
 {
     public static Builder CreateBuilder() => new();
 

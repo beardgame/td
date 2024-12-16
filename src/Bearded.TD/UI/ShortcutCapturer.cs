@@ -7,14 +7,14 @@ namespace Bearded.TD.UI;
 
 sealed class ShortcutCapturer : IKeyboardEventsCapturer
 {
-    private readonly List<ShortcutLayer> layers = new();
+    private readonly List<IShortcutLayer> layers = [];
 
-    public void AddLayer(ShortcutLayer layer)
+    public void AddLayer(IShortcutLayer layer)
     {
         layers.Add(layer);
     }
 
-    public void RemoveLayer(ShortcutLayer layer)
+    public void RemoveLayer(IShortcutLayer layer)
     {
         var index = layers.IndexOf(layer);
         if (index < 0)

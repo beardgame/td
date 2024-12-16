@@ -89,8 +89,10 @@ sealed class BuildingStatusObserver
 
         var status = new BuildingStatus(
             overlay.RequestDispatcher,
+            overlay.Me,
             overlay.UIContext.Content,
             overlay.SoundScape,
+            overlay.UIContext.Shortcuts,
             t.Object,
             statusTracker,
             upgradeSlots,

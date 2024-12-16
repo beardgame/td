@@ -10,6 +10,7 @@ using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 using Overrider = Bearded.TD.Game.Simulation.Buildings.ExclusiveOverrider<Bearded.TD.Game.Simulation.Buildings.AllowManualOverdrive.ActiveOverdrive>;
@@ -136,6 +137,8 @@ sealed class AllowManualOverdrive : Component<AllowManualOverdrive.IParameters>,
 
     private sealed class InteractionSpec(AllowManualOverdrive subject) : IStatusInteractionSpec
     {
+        public Keys? ShortcutKey => OpenTK.Windowing.GraphicsLibraryFramework.Keys.O;
+
         public void Interact(GameRequestDispatcher requestDispatcher, Player player)
         {
             if (!subject.CanBeEnabledBy(player.Faction)) return;

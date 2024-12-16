@@ -66,7 +66,7 @@ sealed class TheGame : Window
     private UIRenderers uiRenderers = null!;
     private RootControl rootControl = null!;
     private UIUpdater uiUpdater = null!;
-    private AnimationUpdater uiAnimationUpdater = new ();
+    private readonly AnimationUpdater uiAnimationUpdater = new();
     private EventManager eventManager = null!;
     private NavigationController navigationController = null!;
 
@@ -169,7 +169,7 @@ sealed class TheGame : Window
         eventManager = new EventManager(rootControl, inputManager, shortcuts);
         var animations = new Animations(gameTime, uiAnimationUpdater);
         var uiFactories = UIFactories.Create(animations, tooltipFactory);
-        var uiContext = new UIContext(animations, uiFactories, contentManager);
+        var uiContext = new UIContext(animations, uiFactories, contentManager, shortcuts);
         var (models, views) = UILibrary.CreateFactories(renderContext, uiContext);
         navigationController =
             new NavigationController(navigationRoot, dependencyResolver, models, views);

@@ -5,6 +5,7 @@ using Bearded.TD.Audio;
 using Bearded.TD.Content;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Players;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Events;
@@ -17,13 +18,14 @@ using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.UI.Shortcuts;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Collections;
 using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class BuildingStatus
+sealed partial class BuildingStatus
     : IDisposable,
         IListener<UpgradeTechnologyUnlocked>,
         IListener<ResourcesProvided<Scrap>>,
@@ -32,6 +34,8 @@ sealed class BuildingStatus
     private readonly GameRequestDispatcher requestDispatcher;
     private readonly ContentManager contentManager;
     private readonly ISoundScape soundScape;
+    private readonly ShortcutCapturer shortcutCapturer;
+    private readonly IShortcutLayer shortcutLayer;
     private readonly GameObject building;
     private readonly IGameStatistics gameStatistics;
     private readonly IObjectAttributes attributes;
@@ -70,14 +74,19 @@ sealed class BuildingStatus
 
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
+        Player player,
         ContentManager contentManager,
         ISoundScape soundScape,
+        ShortcutCapturer shortcutCapturer,
         GameObject building,
         IStatusTracker statusTracker,
         IUpgradeSlots? upgradeSlots,
         IVeterancy? veterancy)
     {
         this.requestDispatcher = requestDispatcher;
+        this.contentManager = contentManager;
+        this.soundScape = soundScape;
+        this.shortcutCapturer = shortcutCapturer;
         this.building = building;
         gameStatistics = building.Game.Statistics;
         attributes = this.building.AttributesOrDefault();
@@ -87,8 +96,9 @@ sealed class BuildingStatus
         this.upgradeSlots = upgradeSlots;
         this.veterancy = veterancy;
         towerStatisticObserver = observeStatistics();
-        this.soundScape = soundScape;
-        this.contentManager = contentManager;
+
+        shortcutLayer = new StatusShortcutLayer(requestDispatcher, player, this);
+        shortcutCapturer.AddLayer(shortcutLayer);
 
         ShowDeletion = building.CanBeDeleted();
 
@@ -170,6 +180,8 @@ sealed class BuildingStatus
             veterancy.VeterancyStatusChanged -= veterancyStatusChanged;
         }
         towerStatisticObserver.StopObserving();
+
+        shortcutCapturer.RemoveLayer(shortcutLayer);
 
         events.Unsubscribe<UpgradeTechnologyUnlocked>(this);
         events.Unsubscribe<ResourcesProvided<Scrap>>(this);
