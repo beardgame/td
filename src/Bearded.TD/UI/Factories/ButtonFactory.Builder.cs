@@ -163,6 +163,13 @@ sealed partial class ButtonFactory
 
             // ReSharper disable once UseObjectOrCollectionInitializer
             var button = new Button();
+
+            button.MouseButtonDown += e =>
+            {
+                if (button.IsEnabled)
+                    e.Handled = true;
+            };
+
             var contentColor = Binding.Combine(isEnabled, isError, (enabled, error) =>
             {
                 if (error)
