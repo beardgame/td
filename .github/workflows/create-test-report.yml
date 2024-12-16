@@ -15,11 +15,11 @@ jobs:
     steps:
       - name: Create test report
         id: test-reporter
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@v1
         with:
           artifact: test-results
           name: xUnit tests
-          path: '**/test-results*.trx'
+          path: '**/test-results.trx'
           reporter: dotnet-trx
           fail-on-error: false
 
