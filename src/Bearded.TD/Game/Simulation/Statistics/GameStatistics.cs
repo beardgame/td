@@ -52,13 +52,16 @@ sealed class GameStatistics
 
     public void HandleEvent(WaveStarted @event)
     {
-        // Clear this dictionary first. That way, observers can immediately start observing again and already get a
-        // reference to the new tower statistics.
-        statsByTower.Clear();
+        // Hold on to the list of observers to dispose.
+        var observersToDispose = new List<TowerStatisticObserver>(observers);
 
-        observers.ForEach(o => o.Dispose());
+        // Clear all the actual data structures. That way, observers can immediately start observing again and already
+        // get a reference to the new tower statistics.
+        statsByTower.Clear();
         observers.Clear();
         observersByTower.Clear();
+
+        observersToDispose.ForEach(o => o.Dispose());
     }
 
     public void HandleEvent(WaveEnded @event)
