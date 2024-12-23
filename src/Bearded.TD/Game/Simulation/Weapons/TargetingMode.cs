@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,15 +7,39 @@ using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.Geometry;
-using JetBrains.Annotations;
 using static Bearded.TD.Constants.Content.CoreUI;
+using Generic = System.Collections.Generic;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 static class TargetingMode
 {
+    // ReSharper disable UnusedMember.Global, MemberCanBePrivate.Global
+    public static ITargetingMode Default => LeastRotation;
+    public static readonly ITargetingMode Random = new RandomTargetingMode();
     public static readonly ITargetingMode Arbitrary = new ArbitraryTargetingMode();
+
+    public static readonly ITargetingMode LeastRotation = new LeastRotationTargetingMode();
+    public static readonly ITargetingMode HighestHealth = new HighestHealthTargetingMode();
+    public static readonly ITargetingMode LowestHealth = new LowestHealthTargetingMode();
+    public static readonly ITargetingMode ClosestToBase = new ClosestToBaseTargetingMode();
+    // ReSharper restore UnusedMember.Global, MemberCanBePrivate.Global
+
+    public static readonly ImmutableArray<ITargetingMode> AllPlayerSelectable =
+        [LeastRotation, HighestHealth, LowestHealth, ClosestToBase];
+
+    private sealed class RandomTargetingMode : ITargetingMode
+    {
+        private static readonly Random random = new();
+
+        public string Name => "Random";
+        public ModAwareSpriteId Icon => Sprites.Targeting("perspective-dice-six-faces-random");
+
+        public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context) =>
+            candidates.RandomElementOrDefault(random);
+    }
 
     private sealed class ArbitraryTargetingMode : ITargetingMode
     {
@@ -24,9 +49,6 @@ static class TargetingMode
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context) =>
             candidates.FirstOrDefault();
     }
-
-    [UsedImplicitly]
-    public static readonly ITargetingMode LeastRotation = new LeastRotationTargetingMode();
 
     private sealed class LeastRotationTargetingMode : ITargetingMode
     {
@@ -50,9 +72,6 @@ static class TargetingMode
         }
     }
 
-    [UsedImplicitly]
-    public static readonly ITargetingMode HighestHealth = new HighestHealthTargetingMode();
-
     private sealed class HighestHealthTargetingMode : ITargetingMode
     {
         public string Name => "Highest health";
@@ -65,9 +84,6 @@ static class TargetingMode
         }
     }
 
-    [UsedImplicitly]
-    public static readonly ITargetingMode LowestHealth = new LowestHealthTargetingMode();
-
     private sealed class LowestHealthTargetingMode : ITargetingMode
     {
         public string Name => "Lowest health";
@@ -79,9 +95,6 @@ static class TargetingMode
                 c => c.GetComponents<IHealth>().FirstOrDefault()?.CurrentHealth.NumericValue, nullsLast<float?>());
         }
     }
-
-    [UsedImplicitly]
-    public static readonly ITargetingMode ClosestToBase = new ClosestToBaseTargetingMode();
 
     private sealed class ClosestToBaseTargetingMode : ITargetingMode
     {
@@ -99,32 +112,27 @@ static class TargetingMode
         }
     }
 
-    public static ITargetingMode Default => LeastRotation;
-
-    public static readonly ImmutableArray<ITargetingMode> All =
-        ImmutableArray.Create(LeastRotation, HighestHealth, LowestHealth, ClosestToBase);
-
-    private static IComparer<T> nullsFirst<T>(IComparer<T>? original = null)
+    private static Generic.Comparer<T> nullsFirst<T>(IComparer<T>? original = null)
     {
-        original ??= System.Collections.Generic.Comparer<T>.Default;
-        return System.Collections.Generic.Comparer<T>.Create((obj1, obj2) => (obj1, obj2) switch
+        original ??= Generic.Comparer<T>.Default;
+        return Generic.Comparer<T>.Create((obj1, obj2) => (obj1, obj2) switch
         {
             (null, null) => 0,
             (null, _) => 1,
             (_, null) => -1,
-            _ => original.Compare(obj1, obj2)
+            _ => original.Compare(obj1, obj2),
         });
     }
 
-    private static IComparer<T> nullsLast<T>(IComparer<T>? original = null)
+    private static Generic.Comparer<T> nullsLast<T>(IComparer<T>? original = null)
     {
-        original ??= System.Collections.Generic.Comparer<T>.Default;
-        return System.Collections.Generic.Comparer<T>.Create((obj1, obj2) => (obj1, obj2) switch
+        original ??= Generic.Comparer<T>.Default;
+        return Generic.Comparer<T>.Create((obj1, obj2) => (obj1, obj2) switch
         {
             (null, null) => 0,
             (null, _) => -1,
             (_, null) => 1,
-            _ => original.Compare(obj1, obj2)
+            _ => original.Compare(obj1, obj2),
         });
     }
 }

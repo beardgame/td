@@ -8,27 +8,32 @@ sealed partial class TargetEnemiesInRange
 {
     public void HandleEvent(TargetingModeChanged @event)
     {
-        target = null;
         tryFindTarget();
     }
 
     private void ensureTargetValid()
     {
-        if (target?.Deleted == true)
-        {
-            target = null;
-        }
+        if (hasValidTarget())
+            return;
 
-        // TODO: accumulating tiles each frame is expensive, can we somehow cache this?
-        if (target != null && !tilesInRange.OverlapsWithTiles(target.GetTilePresence().OccupiedTiles))
-        {
-            target = null;
-        }
+        tryFindTarget();
+    }
 
+    private bool hasValidTarget()
+    {
         if (target == null)
-        {
-            tryFindTarget();
-        }
+            return false;
+
+        if (target.Deleted)
+            return false;
+
+        if (Owner.Game.Time >= endOfKeepTargetTime)
+            return false;
+
+        if (!tilesInRange.OverlapsWithTiles(target.GetTilePresence().OccupiedTiles))
+            return false;
+
+        return true;
     }
 
     private void tryFindTarget()
@@ -36,5 +41,7 @@ sealed partial class TargetEnemiesInRange
         target = weapon.TargetingMode.SelectTarget(
             tilesInRange.SelectMany(Owner.Game.TargetLayer.GetObjectsOnTile),
             new TargetingContext(Owner.Position, weapon.Direction, Owner.Game.Navigator));
+
+        endOfKeepTargetTime = Owner.Game.Time + Parameters.RetargetInterval;
     }
 }

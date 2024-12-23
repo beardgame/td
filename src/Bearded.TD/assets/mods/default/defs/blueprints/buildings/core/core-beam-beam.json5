@@ -1,0 +1,28 @@
+{
+  id: "core-beam-beam",
+  components: [
+    { id: "tags", parameters: { tags: [ "beam" ] } },
+
+    { id: "damageOnHit", parameters: {
+      damageType: "energy",
+      delay: 0,
+      fractionOfBaseDamage: 0.25
+    } },
+    { id: "damageOnHit", parameters: {
+      damageType: "energy",
+      delay: 0.5,
+      fractionOfBaseDamage: 0.75
+    } },
+    { id: "spawnObjectOnHit", parameters: {
+      object: "core-beam-beam-attached",
+      onHitEnemy: true,
+    } },
+    { id: "deleteOnHit" },
+
+    { id: "turnTowardsTarget", parameters: {
+      turnSpeed: 700,
+    }},
+
+    { id: "child", parameters: { name: "beam-effect", object: "core-beam-trail", surviveParent: true } },
+  ]
+}
