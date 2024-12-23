@@ -84,7 +84,7 @@ public sealed class UpgradeTests
         weaponModifiable.AttributeValue.Should().BeApproximately(1, 0.1);
     }
 
-    [Fact(Skip = "Enable after fix")]
+    [Fact]
     public void UpgradeAppliesToBuildingComponentAddedLater()
     {
         var upgrade = createAttributeUpgrade();
@@ -96,7 +96,7 @@ public sealed class UpgradeTests
         newModifiable.AttributeValue.Should().BeApproximately(2, 0.1);
     }
 
-    [Fact(Skip = "Enable after fix")]
+    [Fact]
     public void UpgradeAppliesToWeaponComponentAddedLater()
     {
         var upgrade = createAttributeUpgrade();
@@ -179,6 +179,7 @@ public sealed class UpgradeTests
                 false));
     }
 
+    [ComponentForTesting]
     private sealed class ModifiableComponent : Component<ModifiableComponent.IParameters>
     {
         public interface IParameters : IParametersTemplate<IParameters>
