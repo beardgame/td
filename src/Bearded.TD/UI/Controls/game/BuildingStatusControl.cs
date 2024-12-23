@@ -88,8 +88,8 @@ sealed partial class BuildingStatusControl : CompositeControl
         var towerDamageDisplay = new TowerDamageDisplay(
             model.BuildingName,
             model.Icon ?? Constants.Content.CoreUI.Sprites.QuestionMark,
-            model.DamageThisWave.Transform(d => d.DamageDone),
-            model.DamageThisWave.Transform(d => d.Efficiency),
+            model.DamageThisWave.Transform(d => d?.DamageDone),
+            model.DamageThisWave.Transform(d => d?.Efficiency),
             Binding.Constant(ImmutableArray<TypedAccumulatedDamage>.Empty));
         var damageDisplayControl = uiContext.Factories.TowerDamageDisplay(towerDamageDisplay, displayControlHeight);
 

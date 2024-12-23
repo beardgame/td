@@ -66,7 +66,11 @@ sealed class GameStatistics
 
     public void HandleEvent(WaveEnded @event)
     {
-        var waveReport = WaveReport.Create(statsByTower.Select(kvp => kvp.Value.ToStats(towerArchive.Find(kvp.Key))));
+        var waveReport = WaveReport.Create(
+            statsByTower
+                .Where(kvp => kvp.Value.TotalDamage != null)
+                .Select(kvp => kvp.Value.ToStats(towerArchive.Find(kvp.Key)))
+        );
         dispatcher.RunOnlyOnServer(OpenWaveReport.Command, gameState, @event.Wave.Id, waveReport);
     }
 
@@ -120,7 +124,7 @@ sealed class GameStatistics
     {
         private readonly Dictionary<DamageType, AccumulatedDamage> accumulatedDamageByType = new();
 
-        public AccumulatedDamage TotalDamage => AccumulatedDamage.Aggregate(accumulatedDamageByType.Values);
+        public AccumulatedDamage? TotalDamage => accumulatedDamageByType.Count == 0 ? null : AccumulatedDamage.Aggregate(accumulatedDamageByType.Values);
 
         public void RegisterDamage(UntypedDamage damageDone, UntypedDamage damageAttempted, DamageType damageType)
         {
@@ -130,16 +134,23 @@ sealed class GameStatistics
             accumulatedDamageByType[damageType] = AccumulatedDamage.Combine(existingDamage, addedDamage);
         }
 
-        public Data.TowerStatistics ToStats(TowerMetadata metadata) => new()
+        public Data.TowerStatistics ToStats(TowerMetadata metadata)
         {
-            Metadata = metadata,
-            DamageByType = toTypedAccumulatedDamages()
-        };
+            DebugAssert.State.Satisfies(accumulatedDamageByType.Count > 0,
+                "Should not access statistics for a tower with no damage.");
+
+            return new Data.TowerStatistics
+            {
+                Metadata = metadata,
+                DamageByType = toTypedAccumulatedDamages(),
+            };
+        }
 
         private ImmutableArray<TypedAccumulatedDamage> toTypedAccumulatedDamages() =>
-            accumulatedDamageByType
-                .Select(kvp => new TypedAccumulatedDamage(kvp.Key, kvp.Value))
-                .ToImmutableArray();
+        [
+            ..accumulatedDamageByType
+                .Select(kvp => new TypedAccumulatedDamage(kvp.Key, kvp.Value)),
+        ];
     }
 
     private sealed class TowerStatisticObserver(
@@ -148,7 +159,7 @@ sealed class GameStatistics
         TowerStatistics towerStatistics) : ITowerStatisticObserver
     {
         public GameObject Object => obj;
-        public AccumulatedDamage TotalDamage => towerStatistics.TotalDamage;
+        public AccumulatedDamage? TotalDamage => towerStatistics.TotalDamage;
 
         public event VoidEventHandler? StatisticsUpdated;
         public event VoidEventHandler? Disposed;

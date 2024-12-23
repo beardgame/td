@@ -25,8 +25,8 @@ namespace Bearded.TD.UI.Factories;
 sealed record TowerDamageDisplay(
     string Name,
     ModAwareSpriteId Sprite,
-    IReadonlyBinding<UntypedDamage> TotalDamageDone,
-    IReadonlyBinding<double> TotalEfficiency,
+    IReadonlyBinding<UntypedDamage?> TotalDamageDone,
+    IReadonlyBinding<double?> TotalEfficiency,
     IReadonlyBinding<ImmutableArray<TypedAccumulatedDamage>> DamageByType,
     Action? OnClick = null,
     ButtonHoverAction.HoverStartEffect<BuildingHighlighter.IHighlightedBuilding>? HighlightBuilding = null
@@ -39,8 +39,8 @@ sealed record TowerDamageDisplay(
         return new TowerDamageDisplay(
             attributes.Name,
             attributes.Icon ?? Constants.Content.CoreUI.Sprites.QuestionMark,
-            Binding.Constant(data.TotalDamageDone),
-            Binding.Constant(data.TotalEfficiency),
+            Binding.Constant((UntypedDamage?)data.TotalDamageDone),
+            Binding.Constant((double?)data.TotalEfficiency),
             Binding.Constant(data.DamageByType),
             data.Metadata.LiveObject is { } o ? scrollTo(o) : null,
             data.Metadata.LiveObject is { } o1 ? highlight(o1) : null
@@ -281,11 +281,12 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
         };
     }
 
-    static string formatDamage(UntypedDamage damage)
+    static string formatDamage(UntypedDamage? damage)
     {
-        var amount = damage.Amount.NumericValue;
+        var amount = damage?.Amount.NumericValue;
         return amount switch
         {
+            null => "",
             < 10000 => $"{amount:N0}",
             < 100_000 => $"{amount / 1000:N1}K",
             < 1_000_000 => $"{amount / 1000:N0}K",
@@ -295,6 +296,17 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
         };
     }
 
-    static string formatEfficiency(double efficiency) => $"{efficiency * 100:N0}%";
-    static Color formatEfficiencyColor(double efficiency) => Colors.DamageEfficiency(efficiency);
+    static string formatEfficiency(double? efficiency)
+        => efficiency switch
+        {
+            { } e => $"{e * 100:N0}%",
+            _ => "",
+        };
+
+    static Color formatEfficiencyColor(double? efficiency)
+        => efficiency switch
+        {
+            { } e => Colors.DamageEfficiency(e),
+            _ => Color.Black,
+        };
 }
