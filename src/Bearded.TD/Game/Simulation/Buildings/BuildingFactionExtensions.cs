@@ -57,7 +57,7 @@ static class BuildingFactionExtensions
             resourcesToRefund += upgradeSlots.Slots
                 .Where(s => s.Filled)
                 .Select(s => s.Upgrade!.Cost)
-                .Aggregate((a, b) => a + b);
+                .Aggregate(Resource<Scrap>.Zero, (a, b) => a + b);
         }
 
         return resourcesToRefund;
