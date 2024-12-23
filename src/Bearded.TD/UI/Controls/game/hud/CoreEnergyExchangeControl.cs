@@ -113,9 +113,11 @@ sealed class CoreEnergyExchangeControl : CompositeControl
 
     private static CompositeControl makeRateRow(CoreEnergyExchange model)
     {
-        var margin = 6;
-        var labelWidth = 20;
-        var size = Text.FontSize;
+        const int energyConversionScale = 10;
+
+        const int margin = 6;
+        const int labelWidth = 20;
+        const float size = Text.FontSize;
 
         return
         [
@@ -125,8 +127,8 @@ sealed class CoreEnergyExchangeControl : CompositeControl
                 ),
 
             TextFactories.Label(
-                text: model.CoreEnergyToScrapRate.Transform(r => $"{r.Inverse.Value:0.0}"),
-                color: Binding.Constant(EnergyColor),
+                text: $"{energyConversionScale:0}",
+                color: EnergyColor,
                 textAnchor: Label.TextAnchorRight
             ).Anchor(a => a.Right(relativePercentage: 0.5, margin: margin, width: labelWidth)),
 
@@ -135,8 +137,8 @@ sealed class CoreEnergyExchangeControl : CompositeControl
                 .Anchor(a => a.Left(relativePercentage: 0.5, margin: margin, width: size)),
 
             TextFactories.Label(
-                text: "1",
-                color: ResourcesColor,
+                text: model.CoreEnergyToScrapRate.Transform(r => $"{r.Value * energyConversionScale:0.0}"),
+                color: Binding.Constant(ResourcesColor),
                 textAnchor: Label.TextAnchorLeft
             ).Anchor(a => a.Left(relativePercentage: 0.5, margin: size + margin * 2, width: labelWidth)),
 
