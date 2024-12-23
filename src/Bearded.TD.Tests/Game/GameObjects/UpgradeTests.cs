@@ -84,7 +84,7 @@ public sealed class UpgradeTests
         weaponModifiable.AttributeValue.Should().BeApproximately(1, 0.1);
     }
 
-    [Fact(Skip = "Remove when fixed")]
+    [Fact]
     public void UpgradeAppliesToBuildingComponentAddedLater()
     {
         var upgrade = createAttributeUpgrade();
@@ -96,7 +96,7 @@ public sealed class UpgradeTests
         newModifiable.AttributeValue.Should().BeApproximately(2, 0.1);
     }
 
-    [Fact(Skip = "Remove when fixed")]
+    [Fact]
     public void UpgradeAppliesToWeaponComponentAddedLater()
     {
         var upgrade = createAttributeUpgrade();
@@ -162,6 +162,18 @@ public sealed class UpgradeTests
         weapon.AddComponent(newModifiable);
 
         newModifiable.AttributeValue.Should().BeApproximately(1, 0.1);
+    }
+
+    [Fact]
+    public void ComponentThatIsRemovedAndAddedDoesNotReceiveSameUpgradeTwice()
+    {
+        var upgrade = createAttributeUpgrade();
+        building.ApplyUpgrade(upgrade);
+
+        building.RemoveComponent(buildingModifiable);
+        building.AddComponent(buildingModifiable);
+
+        buildingModifiable.AttributeValue.Should().BeApproximately(2, 0.1);
     }
 
     private static ModifiableComponent createModifiableComponent()

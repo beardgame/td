@@ -11,16 +11,19 @@ static partial class UpgradeApplication
 {
     private sealed class UpgradePreview(IUpgrade upgrade) : IUpgradePreview
     {
+        private readonly List<GameObject> gameObjects = [];
         private readonly MultiDictionary<GameObject, IUpgradeListener> listeners = new();
         private readonly MultiDictionary<UpgradeEffectCandidate, IUpgradeEffectOperation> upgradeCandidates = new();
 
         public void RegisterGameObject(GameObject gameObject)
         {
+            gameObjects.Add(gameObject);
             foreach (var effect in upgrade.Effects.Where(e => e.ModifiesComponentCollection(gameObject)))
             {
                 upgradeCandidates.Add(
                     new UpgradeEffectCandidate(gameObject, effect),
                     new UpgradeEffectOperation<ComponentTransaction>(
+                        (effect, gameObject),
                         () =>
                         {
                             var transaction = effect.CreateComponentChanges(gameObject);
@@ -38,6 +41,7 @@ static partial class UpgradeApplication
                 upgradeCandidates.Add(
                     new UpgradeEffectCandidate(gameObject, effect),
                     new UpgradeEffectOperation<ParameterTransaction>(
+                        (effect, parameters),
                         () =>
                         {
                             var transaction = effect.CreateParameterChanges(parameters);
@@ -80,10 +84,10 @@ static partial class UpgradeApplication
                 .SelectMany(obj => listeners[obj])
                 .ToImmutableArray();
 
-            return new UpgradeOperation(upgrade, affectedListeners, effectOperations.ToImmutableArray());
+            return new UpgradeOperation(upgrade, [..gameObjects], affectedListeners, [..effectOperations]);
         }
 
-        private IEnumerable<GameObject> gameObjectWithParents(GameObject start)
+        private static IEnumerable<GameObject> gameObjectWithParents(GameObject start)
         {
             var current = start;
             while (current != null)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Upgrades;
+using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
 using Bearded.Utilities.Geometry;
@@ -9,7 +10,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class GameObject : IDeletable, IPositionable, IDirected
+sealed class GameObject : IDeletable, IPositionable, IDirected, IListener<ComponentAdded>, IListener<ComponentRemoved>
 {
     private GameState? game;
     // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter
@@ -22,6 +23,7 @@ sealed class GameObject : IDeletable, IPositionable, IDirected
 
     private readonly ComponentCollection components;
     private readonly ComponentEvents events = new();
+    private readonly List<ICommittedUpgrade> committedUpgrades = [];
 
     public bool Deleted { get; private set; }
     [Obsolete("Use ObjectDeleting component event instead")]
@@ -33,6 +35,10 @@ sealed class GameObject : IDeletable, IPositionable, IDirected
         Parent = parent;
         Position = position;
         components = new ComponentCollection(this, events);
+        // We use events to listen to component additions to ensure we also receive notifications when using component
+        // transactions.
+        events.Subscribe<ComponentAdded>(this);
+        events.Subscribe<ComponentRemoved>(this);
     }
 
     public void Add(GameState gameState)
@@ -65,6 +71,28 @@ sealed class GameObject : IDeletable, IPositionable, IDirected
         {
             component.PreviewUpgrade(upgradePreview);
         }
+    }
+
+    public void OnUpgradeCommitted(ICommittedUpgrade upgrade)
+    {
+        committedUpgrades.Add(upgrade);
+    }
+
+    public void OnUpgradeRolledBack(IUpgrade upgrade)
+    {
+        committedUpgrades.RemoveAll(u => u.Upgrade == upgrade);
+    }
+
+    public void HandleEvent(ComponentAdded @event)
+    {
+        foreach (var upgrade in committedUpgrades)
+        {
+            upgrade.Amend(@event.Component);
+        }
+    }
+
+    public void HandleEvent(ComponentRemoved @event)
+    {
     }
 
     public void AddComponent(IComponent component)
