@@ -13,7 +13,7 @@ namespace Bearded.TD.Content.Models;
 
 sealed class GameObjectBlueprintProxy : IGameObjectBlueprint
 {
-    private GameObjectBlueprint? blueprint;
+    private IGameObjectBlueprint? blueprint;
     public ModAwareId Id { get; }
 
     public GameObjectBlueprintProxy(ModAwareId id)
@@ -21,7 +21,7 @@ sealed class GameObjectBlueprintProxy : IGameObjectBlueprint
         Id = id;
     }
 
-    public void InjectActualBlueprint(GameObjectBlueprint actualBlueprint)
+    public void InjectActualBlueprint(IGameObjectBlueprint actualBlueprint)
     {
         if (blueprint != null)
             throw new InvalidOperationException("Cannot inject blueprint more than once.");
@@ -32,7 +32,6 @@ sealed class GameObjectBlueprintProxy : IGameObjectBlueprint
     }
 
     IEnumerable<IComponent> IGameObjectBlueprint.GetComponents() => blueprint!.GetComponents();
-    IEnumerable<IComponentFactory> IGameObjectBlueprint.GetFactories() => blueprint!.GetFactories();
 }
 
 sealed class GameObjectBlueprint : IGameObjectBlueprint
@@ -44,12 +43,8 @@ sealed class GameObjectBlueprint : IGameObjectBlueprint
 
     public IEnumerable<IComponent> GetComponents()
     {
-        return GetFactories().Select(f => f.Create());
-    }
-
-    public IEnumerable<IComponentFactory> GetFactories()
-    {
-        return factories ??= createFactories();
+        factories ??= createFactories();
+        return factories.Select(f => f.Create());
     }
 
     private IReadOnlyCollection<IComponentFactory> createFactories()

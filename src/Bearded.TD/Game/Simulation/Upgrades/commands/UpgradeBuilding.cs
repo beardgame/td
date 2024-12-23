@@ -41,16 +41,15 @@ static class UpgradeBuilding
             {
                 return false;
             }
-            if (building.GetComponents<IUpgradeSlots>().SingleOrDefault() is not { } upgradeSlots ||
-                building.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is not { } upgradeManager)
+            if (building.GetComponents<IUpgradeSlots>().SingleOrDefault() is not { } upgradeSlots)
             {
                 return false;
             }
             return technology.IsUpgradeUnlocked(upgrade)
                 && resources.GetCurrent<Scrap>() >= upgrade.Cost
                 && upgradeSlots.HasAvailableSlot
-                && upgradeManager.CanApplyUpgrade(upgrade)
-                && upgradeManager.CanBeUpgradedBy(actor.Faction);
+                && upgradeSlots.CanApplyUpgrade(upgrade)
+                && building.CanBeUpgradedBy(actor.Faction);
         }
 
         public override void Execute()

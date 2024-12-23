@@ -9,9 +9,6 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 
 static class BuildingFactionExtensions
 {
-    public static bool CanBeManuallyControlledBy(this GameObject gameObj, Faction faction) =>
-        gameObj.FindFaction().OwnedBuildingsCanBeManuallyControlledBy(faction);
-
     public static bool OwnedBuildingsCanBeManuallyControlledBy(this Faction ownerFaction, Faction faction) =>
         ownerFaction.SharesBehaviorWith<FactionResources>(faction);
 
@@ -55,10 +52,12 @@ static class BuildingFactionExtensions
         {
             resourcesToRefund += cost.Resources;
         }
-        if (gameObj.GetComponents<IBuildingUpgradeManager>().SingleOrDefault() is { } upgradeManager)
+        if (gameObj.GetComponents<IUpgradeSlots>().SingleOrDefault() is { } upgradeSlots)
         {
-            foreach (var upgrade in upgradeManager.AppliedUpgrades)
-                resourcesToRefund += upgrade.Cost;
+            resourcesToRefund += upgradeSlots.Slots
+                .Where(s => s.Filled)
+                .Select(s => s.Upgrade!.Cost)
+                .Aggregate((a, b) => a + b);
         }
 
         return resourcesToRefund;

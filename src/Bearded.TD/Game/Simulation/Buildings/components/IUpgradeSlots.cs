@@ -4,7 +4,7 @@ using Bearded.TD.Game.Simulation.Upgrades;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-interface IUpgradeSlots
+interface IUpgradeSlots : IUpgradable
 {
     IReadOnlyList<IUpgradeSlot> Slots { get; }
     int TotalSlotsCount => Slots.Count;

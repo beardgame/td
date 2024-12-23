@@ -62,8 +62,10 @@ public sealed class ComponentLifeCycleTests
     public static IEnumerable<object[]> GetAllComponents()
     {
         return AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes().Where(t => t.IsAssignableTo(typeof(IComponent))))
-            .Where(type => type.IsClass && !type.IsAbstract)
+            .SelectMany(assembly => assembly.GetTypes()
+                .Where(t => t.IsAssignableTo(typeof(IComponent)) &&
+                    !t.GetCustomAttributes(typeof(ComponentForTestingAttribute)).Any()))
+            .Where(type => type is { IsClass: true, IsAbstract: false })
             .Select(type => new []{ type });
     }
 
