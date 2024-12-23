@@ -8,7 +8,7 @@ interface ITowerStatisticObserver
     event VoidEventHandler StatisticsUpdated;
     event VoidEventHandler Disposed;
 
-    AccumulatedDamage TotalDamage { get; }
+    AccumulatedDamage? TotalDamage { get; }
 
     void StopObserving();
 }

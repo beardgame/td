@@ -51,12 +51,12 @@ static class SetTargetingMode
         public Serializer(GameObject gameObject, ITargetingMode targetingMode)
         {
             this.gameObject = gameObject.FindId();
-            targetingModeIndex = TargetingMode.All.IndexOf(targetingMode);
+            targetingModeIndex = TargetingMode.AllPlayerSelectable.IndexOf(targetingMode);
         }
 
         protected override UnifiedRequestCommand GetSerialized(GameInstance game)
         {
-            return new Implementation(game.State.Find(gameObject), TargetingMode.All[targetingModeIndex]);
+            return new Implementation(game.State.Find(gameObject), TargetingMode.AllPlayerSelectable[targetingModeIndex]);
         }
 
         public override void Serialize(INetBufferStream stream)

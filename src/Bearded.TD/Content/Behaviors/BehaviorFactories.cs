@@ -187,7 +187,6 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
 
         if (parameterType == emptyConstructorParameterType)
         {
-            State.Satisfies(parameterData == null, $"[{id}] Expected null, but parameter data was {parameterData}");
             parameterData = default(TEmptyConstructorParameters);
         }
         else

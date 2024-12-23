@@ -70,31 +70,17 @@
             id: "turret",
             onGhost: true,
             parameters: {
-                weapon: "core-gatling-weapon",
-                height: 0.3,
-                neutralDirection: 0,
-                offset: [1, 0]
+                weapon: "core-beam-weapon",
+                height: 0.2,
             }
         },
+
         {
-            id: "turret",
-            onGhost: true,
+            id: "targetingModes",
             parameters: {
-                weapon: "core-gatling-weapon",
-                height: 0.3,
-                neutralDirection: 120,
-                offset: [-0.5, 0.866]
+                allowedTargetingModes: [ "random" ],
+                defaultTargetingMode: "random",
             }
-        },
-        {
-            id: "turret",
-            onGhost: true,
-            parameters: {
-                weapon: "core-gatling-weapon",
-                height: 0.3,
-                neutralDirection: 240,
-                offset: [-0.5, -0.866]
-            }
-        },
+        }
     ]
 }

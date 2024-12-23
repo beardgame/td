@@ -22,7 +22,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
     public ITargetingMode Value { get; private set; } = TargetingMode.Default;
 
     public ImmutableArray<ITargetingMode> AllowedTargetingModes =>
-        Parameters.AllowedTargetingModes ?? TargetingMode.All;
+        Parameters.AllowedTargetingModes ?? TargetingMode.AllPlayerSelectable;
 
     public TargetingModeProperty(IParameters parameters) : base(parameters) { }
 
@@ -43,7 +43,7 @@ sealed class TargetingModeProperty : Component<TargetingModeProperty.IParameters
             }
         }
 
-        if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
+        if (AllowedTargetingModes.Length > 1 && Owner.TryGetSingleComponent<IStatusTracker>(out var statusTracker))
         {
             statusReceipt = statusTracker.AddStatus(
                 new StatusSpec(StatusType.Neutral, new InteractionSpec(this)),

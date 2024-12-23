@@ -1,0 +1,59 @@
+{
+    id: "core-beam-weapon",
+    components: [
+        { id: "tags", parameters: { tags: [ "beam-emitter", "core", "dynamicFireRate" ] } },
+        {
+            id: "range",
+            parameters: {
+                range: 3,
+            }
+        },
+        {
+            id: "targetEnemiesInRange",
+            parameters: {
+                retargetInterval: 0.1,
+            }
+        },
+        {
+            id: "instantAim",
+            parameters: {
+            }
+        },
+        {
+            id: "spinUp",
+            parameters: {
+                minimumSpeedFactor: 0.25,
+                speedUpTime: 3,
+                slowDownTime: 1
+            }
+        },
+        {
+            id: "randomShotDelay",
+            parameters: {
+                minimumFactor: 0.75,
+                maximumFactor: 1.25,
+            }
+        },
+        {
+            id: "automaticFireCycle",
+            parameters: {
+                damagePerSecond: 140,
+                fireRate: 8,
+            }
+        },
+        {
+            id: "projectileEmitter",
+            parameters: {
+                projectile: "core-beam-beam",
+                muzzleSpeed: 15,
+                spread: 15
+            }
+        },
+        {
+            id: "payCoreEnergyForProjectile",
+            parameters: {
+                perDamagePotential: 0.01,
+            }
+        }
+    ]
+}

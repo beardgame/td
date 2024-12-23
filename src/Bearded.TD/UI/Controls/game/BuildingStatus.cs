@@ -51,7 +51,7 @@ sealed partial class BuildingStatus
     private readonly ObservableCollection<IReadonlyBinding<UpgradeSlot>> upgrades;
     private readonly ObservableCollection<IPermanentUpgrade> availableUpgrades;
     private readonly Binding<VeterancyStatus> veterancyStatus = new();
-    private readonly Binding<AccumulatedDamage> damageThisWave = new(AccumulatedDamage.Zero);
+    private readonly Binding<AccumulatedDamage?> damageThisWave = new(null);
     private readonly Binding<int?> activeUpgradeSlot = new();
     private readonly Binding<bool> showUpgradeSelect = new();
     private readonly Binding<Resource<Scrap>> currentResources = new();
@@ -67,7 +67,7 @@ sealed partial class BuildingStatus
     public ReadOnlyObservableCollection<IReadonlyBinding<UpgradeSlot>> Upgrades { get; }
     public ReadOnlyObservableCollection<IPermanentUpgrade> AvailableUpgrades { get; }
     public IReadonlyBinding<VeterancyStatus> Veterancy => veterancyStatus;
-    public IReadonlyBinding<AccumulatedDamage> DamageThisWave => damageThisWave;
+    public IReadonlyBinding<AccumulatedDamage?> DamageThisWave => damageThisWave;
     public IReadonlyBinding<int?> ActiveUpgradeSlot => activeUpgradeSlot;
     public IReadonlyBinding<bool> ShowUpgradeSelect => showUpgradeSelect;
     public IReadonlyBinding<Resource<Scrap>> CurrentResources => currentResources;

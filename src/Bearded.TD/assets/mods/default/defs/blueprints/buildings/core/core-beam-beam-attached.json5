@@ -1,0 +1,15 @@
+﻿{
+  id: "core-beam-beam-attached",
+  components: 
+  [
+    { id: "deleteAfter", parameters: { timeSpan: 0.5 } },
+    { id: "inheritDamage" },
+    { id: "attachToHitObject", parameters: { } },
+    
+    { id: "inheritParticleEffects", parameters: {
+      sourceEffectChild: "beam-effect",
+      newEffect: "core-beam-trail-attached",
+      deleteSourceChild: true,
+    } },
+  ]
+}

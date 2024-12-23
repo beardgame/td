@@ -27,6 +27,8 @@ sealed partial class TargetEnemiesInRange
         TimeSpan NoTargetIdleInterval { get; }
         [Modifiable(1)]
         float AimLead { get; }
+        [Modifiable(1)]
+        TimeSpan RetargetInterval { get; }
     }
 
     private IWeaponState weapon = null!;
@@ -35,6 +37,7 @@ sealed partial class TargetEnemiesInRange
 
     // mutable state
     private Instant endOfIdleTime;
+    private Instant endOfKeepTargetTime;
 
     private ImmutableArray<Tile> tilesInRange = ImmutableArray<Tile>.Empty;
     private readonly Positionable targetPosition = new();
