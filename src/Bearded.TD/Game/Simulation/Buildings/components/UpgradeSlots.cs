@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Upgrades;
 using Bearded.TD.Shared.TechEffects;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -18,15 +20,23 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
         ImmutableArray<ITrigger> AdditionalSlotTriggers { get; }
     }
 
+    private IFactionProvider? factionProvider;
+
     private readonly List<ITriggerSubscription> triggerSubscriptions = [];
     private readonly List<Slot> slots = [];
 
-    private IBuildingUpgradeManager? upgradeManager;
-
     public IReadOnlyList<IUpgradeSlot> Slots { get; }
 
-    public IReadOnlyList<IPermanentUpgrade> AvailableUpgrades =>
-        upgradeManager?.ApplicableUpgrades.ToImmutableArray() ?? ImmutableArray<IPermanentUpgrade>.Empty;
+    public IReadOnlyList<IPermanentUpgrade> AvailableUpgrades
+    {
+        get
+        {
+            if (factionProvider == null) return [];
+            return factionProvider.Faction.TryGetBehaviorIncludingAncestors<FactionTechnology>(out var technology)
+                ? [..technology.GetApplicableUpgradesFor(this)]
+                : [];
+        }
+    }
 
     public event SlotEventHandler? SlotUnlocked;
     public event SlotFilledEventHandler? SlotFilled;
@@ -38,7 +48,7 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IBuildingUpgradeManager>(Owner, Events, um => upgradeManager = um);
+        ComponentDependencies.Depend<IFactionProvider>(Owner, Events, p => factionProvider = p);
     }
 
     public override void Activate()
@@ -80,6 +90,11 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
         SlotFilled?.Invoke(slot.Index, upgrade);
     }
 
+    public bool CanApplyUpgrade(IPermanentUpgrade upgrade)
+    {
+        return slots.Select(s => s.Upgrade).All(u => u != upgrade) && Owner.CanApplyUpgrade(upgrade);
+    }
+
     public override void Update(TimeSpan elapsedTime) { }
 
     private sealed class Slot(UpgradeSlots slots, int index) : IUpgradeSlot
@@ -94,14 +109,7 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
                 throw new InvalidOperationException("Cannot override an existing upgrade in a slot");
             }
 
-            if (slots.upgradeManager is null)
-            {
-                slots.Owner.Game.Meta.Logger.Warning?.Log(
-                    $"Attempted to apply {upgrade.Name} to {slots.Owner} but no upgrade manager was present, making " +
-                    $"this a no-op. Slot was still filled.");
-            }
-            slots.upgradeManager?.Upgrade(upgrade);
-
+            slots.Owner.ApplyUpgrade(upgrade);
             Upgrade = upgrade;
         }
     }
