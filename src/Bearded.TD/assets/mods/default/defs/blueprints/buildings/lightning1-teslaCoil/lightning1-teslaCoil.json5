@@ -43,6 +43,13 @@
                 sound: "overdrive-start",
             }
         },
+        {
+            id: "playSoundOnTrigger",
+            parameters: {
+                trigger: "overdriveEnded",
+                sound: "overdrive-end",
+            }
+        },
         { id: "autoRepair", parameters: { } },
         { id: "gainXpOnDamage" },
         { id: "veterancy" },

@@ -127,6 +127,7 @@ sealed class AllowManualOverdrive : Component<AllowManualOverdrive.IParameters>,
         {
             statusReceipt?.UpdateAppearance(noProgressAppearance());
         }
+        Events.Send(new OverdriveEnded());
     }
 
     private static StatusAppearance noProgressAppearance() => StatusAppearance.IconOnly(statusIcon);
