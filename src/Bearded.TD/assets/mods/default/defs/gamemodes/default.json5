@@ -146,6 +146,9 @@
             parameters: { sound: "cor-spend" },
         },
         {
+            id: "playSoundOnTechnologyUnlocked",
+        },
+        {
             id: "loopGlobalSound",
             parameters: { sound: "ambience-loop" },
         },

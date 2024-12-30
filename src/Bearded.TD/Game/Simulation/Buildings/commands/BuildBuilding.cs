@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Bearded.TD.Audio;
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Commands;
@@ -86,6 +87,11 @@ static class BuildBuilding
             var constructionSyncer = building.GetComponents<IBuildingConstructionSyncer>().Single();
             constructionSyncer.SyncStartBuild();
             constructionSyncer.SyncCompleteBuild();
+
+            // It's a bit hacky that we're playing the sound here, but this is the only place where we can distinguish
+            // between a player-built building and a plopped building (like the Core)
+            var sound = game.State.Meta.Blueprints.SoundEffects[Constants.Content.CoreUI.Sounds.UpgradeGeneric];
+            game.State.Meta.SoundScape.PlaySoundAt(sound, building.Position);
 
             faction.TryGetBehaviorIncludingAncestors<FactionResources>(out var resources);
             resources!.ConsumeResources(result.Cost);

@@ -10,7 +10,6 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Events;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Statistics;
 using Bearded.TD.Game.Simulation.Statistics.Data;
@@ -32,8 +31,6 @@ sealed partial class BuildingStatus
         IListener<ResourcesConsumed<Scrap>>
 {
     private readonly GameRequestDispatcher requestDispatcher;
-    private readonly ContentManager contentManager;
-    private readonly ISoundScape soundScape;
     private readonly ShortcutCapturer shortcutCapturer;
     private readonly IShortcutLayer shortcutLayer;
     private readonly GameObject building;
@@ -75,8 +72,6 @@ sealed partial class BuildingStatus
     public BuildingStatus(
         GameRequestDispatcher requestDispatcher,
         Player player,
-        ContentManager contentManager,
-        ISoundScape soundScape,
         ShortcutCapturer shortcutCapturer,
         GameObject building,
         IStatusTracker statusTracker,
@@ -84,8 +79,6 @@ sealed partial class BuildingStatus
         IVeterancy? veterancy)
     {
         this.requestDispatcher = requestDispatcher;
-        this.contentManager = contentManager;
-        this.soundScape = soundScape;
         this.shortcutCapturer = shortcutCapturer;
         this.building = building;
         gameStatistics = building.Game.Statistics;
@@ -285,9 +278,6 @@ sealed partial class BuildingStatus
     public void ApplyUpgrade(IPermanentUpgrade upgrade)
     {
         requestDispatcher.Request(UpgradeBuilding.Request, building, upgrade);
-
-        var sound = upgrade.Element.GetUpgradeSound(contentManager);
-        soundScape.PlayGlobalSound(sound);
     }
 
     public void DeleteBuilding()

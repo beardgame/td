@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Audio;
-using Bearded.TD.Content;
 using Bearded.TD.Content.Mods;
 using static Bearded.TD.Constants.Content.CoreUI.Sounds;
 using static Bearded.TD.Constants.Game.GameUI;
@@ -32,6 +31,6 @@ static class ElementExtensions
         _ => UpgradeGeneric
     };
 
-    public static ISoundEffect GetUpgradeSound(this Element element, ContentManager contentManager) =>
-        contentManager.ResolveSoundEffect(GetUpgradeSoundId(element));
+    public static ISoundEffect GetUpgradeSound(this Element element, Blueprints blueprints) =>
+        blueprints.SoundEffects[GetUpgradeSoundId(element)];
 }
