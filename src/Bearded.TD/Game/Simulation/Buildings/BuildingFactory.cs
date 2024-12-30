@@ -32,6 +32,7 @@ static class BuildingFactory
         var statuses = new StatusTracker();
 
         building.AddComponent(new GhostBuildingRenderer());
+        building.AddComponent(new BuildingSounds());
         building.AddComponent(new BuildingStateManager());
         building.AddComponent(new DamageSource());
         building.AddComponent(new DebugInvulnerable());

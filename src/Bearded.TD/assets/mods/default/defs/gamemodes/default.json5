@@ -138,6 +138,17 @@
             parameters: { sound: "resource" },
         },
         {
+            id: "playSoundOnScrapConsumed",
+            parameters: { sound: "scrap-spend" },
+        },
+        {
+            id: "playSoundOnCoreEnergyConsumed",
+            parameters: { sound: "cor-spend" },
+        },
+        {
+            id: "playSoundOnTechnologyUnlocked",
+        },
+        {
             id: "loopGlobalSound",
             parameters: { sound: "ambience-loop" },
         },

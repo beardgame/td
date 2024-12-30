@@ -24,13 +24,4 @@ static class ContentManagerExtensions
         }
         return contentManager.GetModUnsafe(id.ModId).Blueprints.Materials[id];
     }
-
-    public static ISoundEffect ResolveSoundEffect(this ContentManager contentManager, ModAwareId id)
-    {
-        if (!id.IsValid)
-        {
-            throw new ArgumentException("Invalid ID for sound effect", nameof(id));
-        }
-        return contentManager.GetModUnsafe(id.ModId).Blueprints.SoundEffects[id];
-    }
 }

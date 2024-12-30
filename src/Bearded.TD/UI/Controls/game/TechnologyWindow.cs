@@ -1,10 +1,8 @@
 using System;
 using System.Diagnostics;
-using Bearded.TD.Audio;
-using Bearded.TD.Content;
+using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game;
 using Bearded.TD.Game.Commands;
-using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.UI.Shortcuts;
@@ -22,7 +20,6 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
     private ShortcutCapturer shortcutCapturer = null!;
     private FactionTechnology factionTechnology = null!;
     private Binding<bool> windowVisibility = null!;
-    private ContentManager content = null!;
     public TechTree TechTree { get; private set; } = null!;
     public Binding<bool> CanUnlockTechnologyNowBinding { get; private set; } = null!;
     public IReadonlyBinding<bool> IsVisible => windowVisibility;
@@ -37,16 +34,15 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
             .Build();
     }
 
+    [SuppressMessage("ReSharper", "ParameterHidesMember")]
     public void Initialize(
         GameInstance game,
         Binding<bool> windowVisibility,
-        ShortcutCapturer shortcutCapturer,
-        ContentManager content)
+        ShortcutCapturer shortcutCapturer)
     {
         this.game = game;
         this.shortcutCapturer = shortcutCapturer;
         this.windowVisibility = windowVisibility;
-        this.content = content;
 
         if (!this.game.Me.Faction.TryGetBehaviorIncludingAncestors(out factionTechnology))
         {
@@ -73,9 +69,6 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
     public void RequestTechnologyUnlock(ITechnologyBlueprint technology)
     {
         game.Request(UnlockTechnology.Request(game.Me.Faction, technology));
-
-        var sound = technology.Branch.ToElement().GetUpgradeSound(content);
-        game.State.Meta.SoundScape.PlayGlobalSound(sound);
     }
 
     [Conditional("DEBUG")]

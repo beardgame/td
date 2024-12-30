@@ -30,7 +30,6 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
     private GameInstance game = null!;
     private ShortcutCapturer shortcutCapturer = null!;
-    private ContentManager contentManager = null!;
     private GridVisibility gridVisibility = null!;
 
     public ActionBar()
@@ -53,12 +52,10 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
     public void Initialize(
         GameInstance game,
         ShortcutCapturer shortcutCapturer,
-        ContentManager contentManager,
         GridVisibility gridVisibility)
     {
         this.game = game;
         this.shortcutCapturer = shortcutCapturer;
-        this.contentManager = contentManager;
         this.gridVisibility = gridVisibility;
         shortcutCapturer.AddLayer(shortcuts);
 
@@ -106,7 +103,7 @@ sealed class ActionBar : IListener<BuildingTechnologyUnlocked>
 
     private ActionBarEntry makeEntryFromBlueprint(IGameObjectBlueprint blueprint)
     {
-        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint, contentManager, gridVisibility);
+        var handler = new BuildingInteractionHandler(game, game.Me.Faction, blueprint, gridVisibility);
         var attributes = blueprint.AttributesOrDefault();
         return new ActionBarEntry(
             attributes.Name,
