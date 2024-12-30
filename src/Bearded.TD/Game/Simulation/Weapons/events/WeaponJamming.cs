@@ -23,6 +23,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     }
 
     private ActiveJam? activeJam;
+    private IStatusReceipt? activeStatus;
     private IStatusTracker? statusDisplay;
     private ISpriteBlueprint? sprite;
 
@@ -50,14 +51,18 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
             return;
         }
 
-        if (activeJam is null &&
+        if (activeStatus is null &&
             (statusDisplay is not null || Owner.TryGetSingleComponentInOwnerTree(out statusDisplay)))
         {
             sprite ??= Owner.Game.Meta.Blueprints.LoadStatusIconSprite("spanner");
-            statusDisplay.AddStatus(
+            activeStatus = statusDisplay.AddStatus(
                 new StatusSpec(StatusType.Negative, null),
                 StatusAppearance.IconOnly("spanner".ToStatusIconSpriteId()),
                 newJam.End);
+        }
+        else
+        {
+            activeStatus?.SetExpiryTime(newJam.End);
         }
 
         activeJam = newJam;
@@ -85,6 +90,8 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
         if (activeJam is { } jam && jam.End <= Owner.Game.Time)
         {
             activeJam = null;
+            activeStatus?.DeleteImmediately();
+            activeStatus = null;
         }
     }
 
