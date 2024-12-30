@@ -1,6 +1,7 @@
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Commands;
+using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Shared.Events;
@@ -22,6 +23,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
         public TimeSpan Duration { get; }
     }
 
+    private IManualOverrideObserver manualOverrideObserver = null!;
     private ActiveJam? activeJam;
     private IStatusReceipt? activeStatus;
     private IStatusTracker? statusDisplay;
@@ -29,7 +31,10 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
 
     public WeaponJamming(IParameters parameters) : base(parameters) { }
 
-    protected override void OnAdded() { }
+    protected override void OnAdded()
+    {
+        manualOverrideObserver = ManualOverrideObserver.CreateSubscribed(Events);
+    }
 
     public override void Activate()
     {
@@ -80,7 +85,10 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
 
     private void maybeJamWeapon(ICommandDispatcher<GameInstance> dispatcher)
     {
-        var shouldJam = activeJam is null && StaticRandom.Bool(Parameters.ProbabilityPerShot);
+        var shouldJam =
+            !manualOverrideObserver.ManualOverrideOngoing &&
+            activeJam is null &&
+            StaticRandom.Bool(Parameters.ProbabilityPerShot);
         if (!shouldJam) return;
         dispatcher.Dispatch(JamWeapon.Command(Owner, Parameters.Duration));
     }
