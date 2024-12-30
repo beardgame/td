@@ -1,9 +1,13 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Game.Simulation.Resources;
+using Bearded.TD.Rendering.UI;
+using Bearded.TD.UI.Animation;
 using Bearded.TD.UI.Factories;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
+using Bearded.Utilities;
 using static Bearded.TD.Constants.UI;
 using static Bearded.TD.Constants.UI.Window;
 
@@ -14,6 +18,7 @@ sealed class ResourceDisplayControl : CompositeControl
     public ResourceDisplayControl(ResourceDisplay model, UIContext context)
     {
         var coreEnergyDisplay = makeSingleResourceStack(
+            context.Animations,
             model.CurrentCoreEnergy,
             model.CoreEnergyLeftThisWave,
             Constants.Content.CoreUI.Sprites.CoreEnergyIcon,
@@ -21,6 +26,7 @@ sealed class ResourceDisplayControl : CompositeControl
         );
 
         var scrapDisplay = makeSingleResourceStack(
+            context.Animations,
             model.CurrentScrap,
             model.ScrapLeftThisWave,
             Constants.Content.CoreUI.Sprites.ScrapIcon,
@@ -52,6 +58,7 @@ sealed class ResourceDisplayControl : CompositeControl
     }
 
     private static Control makeSingleResourceStack<T>(
+        Animations animations,
         IReadonlyBinding<Resource<T>> available,
         IReadonlyBinding<Resource<T>> leftThisWave,
         ModAwareSpriteId sprite,
@@ -62,26 +69,52 @@ sealed class ResourceDisplayControl : CompositeControl
         var size = Text.FontSize * 1.2;
         var height = Text.LineHeight;
 
-        var resourceLabel = TextFactories.Label(
-            available.Transform(r => $"{(int)r.Value}"),
-            Label.TextAnchorRight,
-            available.Transform(r => r.Value >= 0 ? color : colorNegative)
+        var resourceLabelConfig = new AnimatedNumberLabel.Configuration
+        {
+            MinChangeToAnimate = 0,
+            MinAnimationTime = 0.2.S(),
+            MaxAnimationTime = 1.S(),
+            RenderZero = true,
+            FlipScrollDirection = false,
+            ShowPlusSign = false,
+        };
+        var leftThisWaveLabelConfig = new AnimatedNumberLabel.Configuration
+        {
+            MinChangeToAnimate = 0,
+            MinAnimationTime = 0.2.S(),
+            MaxAnimationTime = 1.S(),
+            RenderZero = false,
+            FlipScrollDirection = true,
+            ShowPlusSign = true,
+        };
+
+        var resourceLabel = new AnimatedNumberLabel(
+            resourceLabelConfig, animations, available.Transform(r => r.Value));
+        TextFactories.SetDefaultLabelStyle(
+            resourceLabel,
+            fontSize: size,
+            textAnchor: Label.TextAnchorRight,
+            color: available.Transform(r => r.Value >= 0 ? color : colorNegative)
+            );
+
+        var leftThisWaveLabel = new AnimatedNumberLabel(
+                leftThisWaveLabelConfig, animations, leftThisWave.Transform(r => r.Value));
+        TextFactories.SetDefaultLabelStyle(
+            leftThisWaveLabel,
+            textAnchor: Label.TextAnchorRight,
+            color: leftThisWave.Transform(r => r.Value >= 0 ? color : colorNegative)
         );
 
-        resourceLabel.FontSize = size;
-
-        return new CompositeControl
+        var control = new CompositeControl
         {
             new Sprite { SpriteId = sprite, Color = color }
                 .Anchor(a => a.Left(margin, size).Bottom(relativePercentage: 0.5, height: height)),
 
             resourceLabel.Anchor(a => a.Right(margin).Bottom(relativePercentage: 0.5, height: height)),
 
-            TextFactories.Label(
-                leftThisWave.Transform(r => $"{(int)r.Value:+0;-#}"),
-                Label.TextAnchorRight,
-                leftThisWave.Transform(r => r.Value >= 0 ? color : colorNegative)
-            ).Anchor(a => a.Right(margin).Top(relativePercentage: 0.5, height: height)),
+            leftThisWaveLabel.Anchor(a => a.Right(margin).Top(relativePercentage: 0.5, height: height)),
         };
+
+        return control;
     }
 }

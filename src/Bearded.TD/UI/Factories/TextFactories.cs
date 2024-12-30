@@ -166,6 +166,20 @@ static class TextFactories
             Header(text, Controls.Label.TextAnchorCenter, color).WrapVerticallyCentered(HeaderLineHeight), columnWidth);
     }
 
+    public static void SetDefaultLabelStyle(
+        Label label, double? fontSize = null, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
+    {
+        label.FontSize = fontSize ?? FontSize;
+        label.Color = color?.Value ?? TextColor;
+        label.TextAnchor = textAnchor ?? Controls.Label.TextAnchorCenter;
+
+        if (color != null)
+        {
+            color.SourceUpdated += newColor => label.Color = newColor;
+            color.ControlUpdated += newColor => label.Color = newColor;
+        }
+    }
+
     public static Label Label(
         IReadonlyBinding<string> text, Vector2d? textAnchor = null, IReadonlyBinding<Color>? color = null)
     {

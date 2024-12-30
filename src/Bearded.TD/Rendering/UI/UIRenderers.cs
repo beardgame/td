@@ -49,6 +49,7 @@ sealed class UIRenderers(RenderContext context, ContentManager content, Blueprin
             validate(new RenderLayerCompositeControlRenderer(context.Compositor)),
             validate(new AutoCompletingTextInputRenderer(shapeDrawer, shapeComponents, uiFonts)),
             validate(new TextInputRenderer(shapeDrawer, shapeComponents, uiFonts)),
+            validate(new AnimatedNumberLabelRenderer(uiFonts)),
             validate(new LabelRenderer(uiFonts)),
             validate(new SpriteRenderer(content, renderers, spriteShader)),
             validate(new BorderRenderer(shapeDrawer, shapeComponents)),
