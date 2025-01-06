@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Drawing;
@@ -13,8 +14,8 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("muzzleFlash")]
-sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
-    IListener<DrawComponents>, IListener<ShotProjectile>
+sealed class MuzzleFlash(MuzzleFlash.IParameters parameters)
+    : Component<MuzzleFlash.IParameters>(parameters), IListener<DrawComponents>, IListener<ShotProjectile>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -28,29 +29,11 @@ sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
         TimeSpan MinDuration { get; }
     }
 
-    private readonly struct Flash
-    {
-        public Position3 Position { get; }
-        public Direction2 Direction { get; }
-        public float Size { get; }
-        public Instant DeathTime { get; }
-
-        public Flash(Position3 position, Direction2 direction, float size, Instant deathTime)
-        {
-            Position = position;
-            Direction = direction;
-            Size = size;
-            DeathTime = deathTime;
-        }
-    }
+    private readonly record struct Flash(Position3 Position, Direction2 Direction, float Size, Instant DeathTime);
 
     private SpriteDrawInfo<UVColorVertex, Color> sprite;
 
-    private Flash? currentFlash;
-
-    public MuzzleFlash(IParameters parameters) : base(parameters)
-    {
-    }
+    private readonly List<Flash> currentFlashes = [];
 
     protected override void OnAdded()
     {
@@ -77,32 +60,31 @@ sealed class MuzzleFlash : Component<MuzzleFlash.IParameters>,
 
     public void HandleEvent(ShotProjectile e)
     {
-        currentFlash = new Flash(
+        currentFlashes.Add(new Flash(
             e.Position + (e.MuzzleDirection * Parameters.Offset).WithZ(),
             e.MuzzleDirection,
             Parameters.Size * StaticRandom.Float(0.75f, 1f),
             Owner.Game.Time + Parameters.MinDuration
-        );
+        ));
     }
 
     public void HandleEvent(DrawComponents e)
     {
-        if (currentFlash is not { } flash)
-            return;
+        foreach (var flash in currentFlashes)
+        {
+            e.Drawer.DrawSprite(
+                sprite,
+                flash.Position.NumericValue,
+                flash.Size,
+                flash.Direction,
+                Parameters.Color);
 
-        e.Drawer.DrawSprite(
-            sprite,
-            flash.Position.NumericValue,
-            flash.Size,
-            flash.Direction,
-            Parameters.Color);
+            e.Core.PointLight.Draw(
+                flash.Position.NumericValue,
+                2 * flash.Size,
+                Parameters.Color.WithAlpha(255) * 0.5f);
+        }
 
-        e.Core.PointLight.Draw(
-            flash.Position.NumericValue,
-            2 * flash.Size,
-            Parameters.Color.WithAlpha(255) * 0.5f);
-
-        if (Owner.Game.Time > flash.DeathTime)
-            currentFlash = null;
+        currentFlashes.RemoveAll(f => Owner.Game.Time > f.DeathTime);
     }
 }

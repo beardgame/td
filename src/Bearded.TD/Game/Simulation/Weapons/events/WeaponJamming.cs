@@ -34,6 +34,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     protected override void OnAdded()
     {
         manualOverrideObserver = ManualOverrideObserver.CreateSubscribed(Events);
+        manualOverrideObserver.OverrideStarted += tryEndJam;
     }
 
     public override void Activate()
@@ -97,10 +98,15 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
     {
         if (activeJam is { } jam && jam.End <= Owner.Game.Time)
         {
-            activeJam = null;
-            activeStatus?.DeleteImmediately();
-            activeStatus = null;
+            tryEndJam();
         }
+    }
+
+    private void tryEndJam()
+    {
+        activeJam = null;
+        activeStatus?.DeleteImmediately();
+        activeStatus = null;
     }
 
     private readonly record struct ActiveJam(Instant Start, TimeSpan Duration)

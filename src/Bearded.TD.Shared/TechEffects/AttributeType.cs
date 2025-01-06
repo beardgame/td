@@ -17,6 +17,7 @@ public enum AttributeType : byte
     MuzzleSpeed,
     Range,
     RechargeRate,
+    ShotIntervalCount,
     SplashRange,
     SpreadAngle,
     TurnSpeed,

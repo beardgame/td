@@ -19,7 +19,8 @@ interface IProjectileEmitter
 }
 
 [Component("projectileEmitter")]
-sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IListener<FireWeapon>, IProjectileEmitter
+sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
+    : Component<ProjectileEmitter.IParameters>(parameters), IListener<FireWeapon>, IProjectileEmitter
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -36,6 +37,7 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
         Difference2 MuzzleOffset { get; }
 
+        [Modifiable(1, Type = AttributeType.ShotIntervalCount)]
         int ShootEvery { get; }
         int ShootEveryOffset { get; }
     }
@@ -59,9 +61,6 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
 
     public Speed MuzzleSpeed => Parameters.MuzzleSpeed;
 
-    public ProjectileEmitter(IParameters parameters)
-        : base(parameters) {}
-
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IWeaponState>(Owner, Events, c => weapon = c);
@@ -83,11 +82,8 @@ sealed class ProjectileEmitter : Component<ProjectileEmitter.IParameters>, IList
     public void HandleEvent(FireWeapon @event)
     {
         shotCounter++;
-        if (shotCounter < Parameters.ShootEvery)
-            return;
-
-        emitProjectile(@event.Damage);
-        shotCounter = 0;
+        if (Parameters.ShootEvery <= 1 || shotCounter % Parameters.ShootEvery == 0)
+            emitProjectile(@event.Damage);
     }
 
     private void emitProjectile(UntypedDamage damage)

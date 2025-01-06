@@ -21,9 +21,17 @@
                     {
                         type: "modification",
                         parameters: {
+                            attributeType: "shotIntervalCount",
+                            mode: "constant",
+                            value: -1,
+                        },
+                    },
+                    {
+                        type: "modification",
+                        parameters: {
                             attributeType: "damage",
                             mode: "multiply",
-                            value: 6,
+                            value: 1.5,
                         }
                     },
                     {
@@ -31,9 +39,21 @@
                         parameters: {
                             attributeType: "fireRate",
                             mode: "multiply",
-                            value: 6,
+                            value: 3,
                         }
-                    }
+                    },
+                    {
+                        type: "component",
+                        parameters: {
+                            id: "child",
+                            parameters: {
+                                object: "kinetics0-cannon-overdrive-muzzleflash",
+                            }
+                        },
+                        prerequisites: {
+                            requiredTags: [ "gun" ],
+                        }
+                    },
                 ]
             }
         },

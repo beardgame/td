@@ -20,7 +20,9 @@
             }
         },
         {
-            id: "hitLevelAtTower"
+            id: "hitLevelAtTower",
+            parameters: {
+            }
         },
         {
             id: "tags",

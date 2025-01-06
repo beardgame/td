@@ -23,24 +23,24 @@ sealed class ParticlesDrag : ParticleUpdater<ParticlesDrag.IParameters>
     public override void Update(TimeSpan elapsedTime)
     {
         if (Parameters.Linear is { } linear)
+        {
+            var f = MathF.Exp(-linear * (float)elapsedTime.NumericValue);
+
             foreach (ref var p in Particles.MutableParticles)
             {
-                var dragForce = p.Velocity.LengthSquared.NumericValue * linear;
-                var direction = p.Velocity.NumericValue.NormalizedSafe();
-
-                var dragAcceleration = new Acceleration3(direction * -dragForce);
-                p.Velocity += dragAcceleration * elapsedTime;
+                p.Velocity *= f;
             }
+        }
 
         if (Parameters.Angular is { } angular)
+        {
+            var f = MathF.Exp(-angular * (float)elapsedTime.NumericValue);
+
             foreach (ref var p in Particles.MutableParticles)
             {
-                var dragForce = p.AngularVelocity.NumericValue * angular;
-                var direction = Math.Abs(p.AngularVelocity.NumericValue);
-
-                var dragAcceleration = AngularAcceleration.FromRadians(direction * -dragForce);
-                p.AngularVelocity += dragAcceleration * elapsedTime;
+                p.AngularVelocity *= f;
             }
+        }
     }
 }
 

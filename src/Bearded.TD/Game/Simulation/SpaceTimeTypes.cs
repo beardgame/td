@@ -56,6 +56,10 @@ static class SpaceTimeTypes
         new(d => new HitPoints((int) d), h => h.NumericValue);
 
     [ConvertsAttribute]
+    public static AttributeConverter<int> IntConverter =
+        new(d => (int) d, i => i);
+
+    [ConvertsAttribute]
     public static AttributeConverter<Resource<Scrap>> ScrapConverter =
         new(d => new Resource<Scrap>(d), r => r.Value);
 

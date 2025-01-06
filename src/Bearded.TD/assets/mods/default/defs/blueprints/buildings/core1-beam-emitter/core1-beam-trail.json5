@@ -26,7 +26,8 @@
 
         { id: "particlesDrawConnected", parameters: {
             sprite: "default.trails.core-beam",
-            uvLength : 4,
+            shader: "dissolve-sprite",
+            uvLength : 1,
             attachLastToObject: true,
         } },
 

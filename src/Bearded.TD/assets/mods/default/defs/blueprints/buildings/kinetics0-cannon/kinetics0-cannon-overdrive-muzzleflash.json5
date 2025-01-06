@@ -1,0 +1,99 @@
+﻿{
+    id: "kinetics0-cannon-overdrive-muzzleflash",
+    components: [
+        { id: "inheritFireWeaponEvent" },
+        { id: "hitLevelAtTower", parameters: {
+            offset: [1, 0, 0]
+        } },
+        { id: "splashDamageOnHit", parameters: {
+            range: 1.75,
+            damageDivisionFactor: 1,
+            damageType: "energy",
+        } },
+
+
+        { id: "particles", parameters: { } },
+        { id: "particlesCollideWithLevel", parameters : {
+            collisionNormalFactor: 0.3,
+            collisionTangentFactor: 0.9,
+            collisionAngularFactor : 1,
+        }},
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 20, angular: 1 } },
+
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            count: 8,
+            color: "white",
+            delay: 0,
+            lifeTime: 0.3,
+            lifeTimeNoise: 0.2,
+            offset: [0.4, 0, 0],
+            velocity: [20, 0, 0],
+            velocityNoise: 0.9,
+            randomVelocity: 1,
+            randomVelocityNoise: 0.5,
+            relativeToDirection: true,
+            angularVelocity: 500,
+            angularVelocityNoise: 0.2,
+            randomAngularVelocitySign: true,
+            parentTriggers: ["shotProjectile"],
+        }},
+
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            count: 4,
+            color: "white",
+            delay: 0,
+            lifeTime: 0.3,
+            lifeTimeNoise: 0.2,
+            offset: [0.5, 0.1, 0],
+            velocity: [2, 2, 0],
+            velocityNoise: 0.3,
+            randomVelocity: 2,
+            randomVelocityNoise: 1,
+            relativeToDirection: true,
+            angularVelocity: 500,
+            angularVelocityNoise: 0.2,
+            randomAngularVelocitySign: true,
+            parentTriggers: ["shotProjectile"],
+        }},
+
+        { id: "particlesSpawnOnTrigger", parameters:  {
+            count: 4,
+            color: "white",
+            delay: 0,
+            lifeTime: 0.3,
+            lifeTimeNoise: 0.2,
+            offset: [0.5, -0.1, 0],
+            velocity: [2, -2, 0],
+            velocityNoise: 0.3,
+            randomVelocity: 2,
+            randomVelocityNoise: 1,
+            relativeToDirection: true,
+            angularVelocity: 500,
+            angularVelocityNoise: 0.2,
+            randomAngularVelocitySign: true,
+            parentTriggers: ["shotProjectile"],
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.1, color: "00000000" },
+                    { duration: 0.05, size: 0.2, color: "00FFFFFF" },
+                    { duration: 0.4, size: 0.3, color: "00FFFFFF" },
+                    { duration: 0.2, size: 0.3, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesDrawLight", parameters: {
+            color: "9370DB",
+            shader: "dissolve-sprite",
+            radius: 1.5,
+            intensity: -0.03,
+            fallOffPower: 10,
+            alphaMode: "fromParticleRgbAverage",
+        } }
+    ]
+}
