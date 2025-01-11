@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.32
+
+* Added custom overdrive effect for Cannon
+* Added display for overdrive progress
+* Added shortcut for activating overdrive: pressing 'O' when hovering over/having selected a tower activates it
+* Kinetics towers now never jam during overdrive
+* Added current corruption to the UI
+* Replaced the gatling guns on the Core with Core beams
+* Added a building icon for the Core so it shows correctly in all UI
+* Added animations to the resource displays
+* Clarified the exhange rate display so it's easier to understand how much SCRAP you get for trading in COR
+* Added new sound effects for the following events:
+  * Spent SCRAP
+  * Spent COR
+  * Overdrive start
+  * Overdrive end
+* Replaced the global tower construction sounds with spatial ones
+* All sounds are now correctly synchronised and played on all multiplayer clients in a multiplier game
+* Bug fix: the technology window now works correctly and no longer captures all events as drag events
+* Bug fix: typing in the debug console no longer activates in-game shortcuts
+* Bug fix: fixed lobby in situations where a client would attempt to resolve the master server as IPv6
+* Bug fix: fixed areas being revealed in multiplayer not working for clients
+* Bug fix: fixed a crash when a wave started while having a tower selected
+* Bug fix: fixed inconsistency in upgrade logic that depended on the order upgrades and veterancy was applied; this should now work in all cases
+* Bug fix: the jammed status icon is now correctly removed when a tower repairs itself
+* Bug fix: sounds no longer have a popping sound at the end
+
 ## v0.31
 
 * New tower: Core Beam Emitter
