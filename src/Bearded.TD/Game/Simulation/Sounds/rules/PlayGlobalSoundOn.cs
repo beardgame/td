@@ -15,13 +15,18 @@ abstract class PlayGlobalSoundOn<TParameters, TEvent> : GameRule<TParameters>
 
     public override void Execute(GameRuleContext context)
     {
-        context.Events.Subscribe(new Listener(context.GameState.Meta.SoundScape, () => SoundEffect));
+        context.Events.Subscribe(
+            new Listener(context.GameState.Meta.SoundScape, ShouldPlaySoundEffect, () => SoundEffect));
     }
 
-    private sealed class Listener(ISoundScape soundScape, Func<ISoundEffect> getSoundEffect) : IListener<TEvent>
+    protected virtual bool ShouldPlaySoundEffect(TEvent @event) => true;
+
+    private sealed class Listener(
+        ISoundScape soundScape, Func<TEvent, bool> shouldPlay, Func<ISoundEffect> getSoundEffect) : IListener<TEvent>
     {
         public void HandleEvent(TEvent @event)
         {
+            if (!shouldPlay(@event)) return;
             var soundEffect = getSoundEffect();
             soundScape.PlayGlobalSound(soundEffect);
         }
