@@ -85,8 +85,7 @@ sealed class WaveDirector
             waveEndDisposable.Add(game.Meta.Events.Observe<WaveTimerSkipRequested>().Subscribe(onWaveTimerSkipRequested));
             game.Meta.Events.Send(
                 new WaveScheduled(
-                    wave.Id,
-                    wave.Script.DisplayName,
+                    wave,
                     actualSpawnStart,
                     outstandingSpawnStartRequirements.Add,
                     () => canSummonNow));

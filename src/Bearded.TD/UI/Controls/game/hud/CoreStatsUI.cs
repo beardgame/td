@@ -75,7 +75,7 @@ sealed class CoreStatsUI : IListener<WaveScheduled>, IListener<WaveStarted>, ILi
 
     public void HandleEvent(WaveScheduled @event)
     {
-        waveInfo = new WaveInfo(@event.WaveId, @event.WaveName, @event.SpawnStart, @event.CanSummonNow);
+        waveInfo = new WaveInfo(@event.Wave.Id, @event.Wave.Script.DisplayName, @event.SpawnStart, @event.CanSummonNow);
     }
 
     public void HandleEvent(WaveStarted @event)

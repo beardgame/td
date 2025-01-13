@@ -13,10 +13,15 @@ namespace Bearded.TD.Game.Simulation.GameLoop;
 
 sealed class WaveProgress
 {
+    public delegate void OnWaveProgressed(double progress);
+    public delegate void OnWaveFinished();
+    private readonly record struct ProgressObserver(OnWaveProgressed OnWaveProgressed, OnWaveFinished OnWaveFinished);
+
     private readonly int enemiesToKillCount;
     private readonly HashSet<Id<GameObject>> enemiesLeftToKill;
     private bool scriptedEventQueueDirty;
     private readonly List<ScriptedEvent> scriptedEventQueue = [];
+    private readonly List<ProgressObserver> progressObservers = [];
 
     private int enemiesKilledCount => enemiesToKillCount - enemiesLeftToKill.Count;
 
@@ -44,16 +49,23 @@ sealed class WaveProgress
         scriptedEventQueueDirty = true;
     }
 
+    public void AddProgressObserver(OnWaveProgressed onProgressed, OnWaveFinished onFinished)
+    {
+        progressObservers.Add(new ProgressObserver(onProgressed, onFinished));
+    }
+
     private void onEnemyKilled(EnemyKilled @event)
     {
         enemiesLeftToKill.Remove(@event.Unit.FindId());
         processScriptedEventQueue();
+        notifyObserversOfProgress();
     }
 
     private void onWaveEnded(WaveEnded @event)
     {
         DebugAssert.State.Satisfies(enemiesLeftToKill.Count == 0);
         flushScriptedEventQueue();
+        notifyObserversOfCompletion();
     }
 
     private void processScriptedEventQueue()
@@ -80,6 +92,15 @@ sealed class WaveProgress
         scriptedEventQueue.RemoveRange(0, eventsProcessed);
     }
 
+    private void notifyObserversOfProgress()
+    {
+        var progress = (double) enemiesKilledCount / enemiesToKillCount;
+        foreach (var observer in progressObservers)
+        {
+            observer.OnWaveProgressed(progress);
+        }
+    }
+
     private void flushScriptedEventQueue()
     {
         foreach (var e in scriptedEventQueue)
@@ -87,6 +108,14 @@ sealed class WaveProgress
             e.Execute();
         }
         scriptedEventQueue.Clear();
+    }
+
+    private void notifyObserversOfCompletion()
+    {
+        foreach (var observer in progressObservers)
+        {
+            observer.OnWaveFinished();
+        }
     }
 
     private readonly record struct ScriptedEvent(double Progress, Action Execute);

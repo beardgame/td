@@ -9,8 +9,7 @@ namespace Bearded.TD.Game.Simulation.GameLoop;
 delegate void SpawnStartRequirementConsumer(ISpawnStartRequirement requirement);
 
 readonly record struct WaveScheduled(
-    Id<Wave> WaveId,
-    string WaveName,
+    Wave Wave,
     Instant? SpawnStart,
     SpawnStartRequirementConsumer SpawnStartRequirementConsumer,
     Func<bool> CanSummonNow) : IGlobalEvent;

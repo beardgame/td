@@ -9,31 +9,16 @@ using static Bearded.TD.Constants.Game.WaveGeneration;
 
 namespace Bearded.TD.Game.GameLoop;
 
-sealed class GameScheduler
+sealed class GameScheduler(
+    GameState game,
+    ICommandDispatcher<GameInstance> commandDispatcher,
+    ChapterGenerator chapterGenerator,
+    ChapterExecutor chapterExecutor,
+    GameScheduler.GameRequirements gameRequirements)
 {
-    private readonly GameState game;
-    private readonly ICommandDispatcher<GameInstance> commandDispatcher;
-    private readonly ChapterGenerator chapterGenerator;
-    private readonly ChapterExecutor chapterExecutor;
-    private readonly GameRequirements gameRequirements;
-
     private bool gameStarted;
     private int chaptersStarted;
     private ChapterScript? previousChapter;
-
-    public GameScheduler(
-        GameState game,
-        ICommandDispatcher<GameInstance> commandDispatcher,
-        ChapterGenerator chapterGenerator,
-        ChapterExecutor chapterExecutor,
-        GameRequirements gameRequirements)
-    {
-        this.game = game;
-        this.commandDispatcher = commandDispatcher;
-        this.chapterGenerator = chapterGenerator;
-        this.chapterExecutor = chapterExecutor;
-        this.gameRequirements = gameRequirements;
-    }
 
     private void onChapterEnded()
     {
@@ -52,6 +37,8 @@ sealed class GameScheduler
         State.Satisfies(!gameStarted);
         gameStarted = true;
 
+        commandDispatcher.Dispatch(
+            SetGameDuration.Command(game, gameRequirements.ChaptersPerGame, gameRequirements.WavesPerChapter));
         requestChapter();
     }
 

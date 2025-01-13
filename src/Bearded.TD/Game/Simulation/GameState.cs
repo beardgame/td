@@ -63,6 +63,7 @@ sealed class GameState
     public WorldCorruption Corruption { get; }
 
     public IGameStatistics Statistics { get; }
+    public GameProgression Progression { get; }
     public WaveDirector WaveDirector { get; }
 
     // TODO: this should be something managed per faction
@@ -98,6 +99,7 @@ sealed class GameState
         Factions = factions.AsReadOnly();
 
         Statistics = GameStatistics.CreateSubscribed(this);
+        Progression = new GameProgression(Meta.Events);
         WaveDirector = new WaveDirector(this);
         ExplorationManager = new ExplorationManager(this);
     }
