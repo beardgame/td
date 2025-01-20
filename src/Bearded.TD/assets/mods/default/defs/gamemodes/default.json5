@@ -125,6 +125,7 @@
                 ],
             }
         },
+        { id : "destroyBuildingsAtChapterEnd", parameters: {} },
         {
             id: "playSoundOnWaveStart",
             parameters: { sound: "wave-start" },
