@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
@@ -5,12 +6,14 @@ using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Projectiles.DamageOnHit;
 using static Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("damageOnHit")]
-sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<TouchObject>
+sealed class DamageOnHit(IParameters parameters)
+    : Component<IParameters>(parameters), IListener<TouchObject>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -24,8 +27,6 @@ sealed class DamageOnHit : Component<DamageOnHit.IParameters>, IListener<TouchOb
         TimeSpan Delay { get; }
         TimeSpan DelayPerDistanceFromSource { get; }
     }
-
-    public DamageOnHit(IParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {

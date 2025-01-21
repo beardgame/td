@@ -90,7 +90,7 @@
                 removeKey: "flamePhysics",
                 replaceMode: "replace",
                 addComponents: [
-                    { id: "deleteOnHit" }
+                    { id: "deleteOnHit", parameters: { } }
                 ]
             }
         }

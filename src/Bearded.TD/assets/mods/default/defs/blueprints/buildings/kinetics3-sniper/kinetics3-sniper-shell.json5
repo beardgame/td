@@ -4,9 +4,10 @@
         { id: "tags", parameters: { tags: [ "bullet", "projectile" ] } },
         {
             id: "damageOnHit",
-            parameters: {}
+            parameters: {
+            }
         },
-        { id: "deleteOnHit" },
+        { id: "deleteOnHit", keys: [ "remove-on-overdrive" ], parameters: { } },
         {
             id: "sprite",
             parameters: {
@@ -19,6 +20,7 @@
         },
         {
             id: "spawnObjectOnHit",
+            keys: [ "remove-on-overdrive" ],
             parameters: {
                 object: "sparkExplosion",
                 onHitLevel: true,

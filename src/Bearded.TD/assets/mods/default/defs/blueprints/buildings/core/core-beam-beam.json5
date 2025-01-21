@@ -17,7 +17,7 @@
       object: "core-beam-beam-attached",
       onHitEnemy: true,
     } },
-    { id: "deleteOnHit" },
+    { id: "deleteOnHit", parameters: { } },
 
     { id: "turnTowardsTarget", parameters: {
       turnSpeed: 700,

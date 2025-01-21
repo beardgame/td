@@ -1,0 +1,75 @@
+{
+    id: "kinetics3-overdrive-core-trail",
+    components: [
+        { id: "inheritSource" },
+
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 10 } },
+        { id: "particlesSpringBetweenNeighbours", parameters: {
+            stiffness: 40,
+        }},
+
+        {
+            id: "spinningParticleParent",
+            parameters: {
+                name: "parent",
+                radius: 0.1,
+                axis: "alongVelocity",
+                
+                angularVelocity: 50000,
+                angularVelocityNoise: 0.2,
+                randomSign: true,
+            }
+        },
+
+        { id: "particlesDrawConnected", parameters: {
+            sprite: "default.trails.core-beam",
+            shader: "dissolve-sprite",
+            uvLength : 1,
+            attachLastToObject: true,
+        } },
+
+        { id: "toggleOnTriggers", parameters:  {
+            name: "toggleSpawning",
+            stopOnParent : [ "objectDeleting" ],
+        }},
+
+        { id: "particlesSpawnContinuously", parameters:  {
+            color: "White",
+            lifeTime: 0.3,
+            interval: 0.003,
+            inheritVelocity: 0.25,
+            randomVelocity: 0.5,
+            randomVelocityNoise: 0.5,
+            toggle: "toggleSpawning",
+            spawnParent: "parent",
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            lifeTimeOverrideSinceEffectCreation: 1,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0.0, color: "00000000" },
+                    { duration: 0.1, size: 0.1, color: "FFa37cf2" },
+                    { duration: 0.4, size: 0.1, color: "FFa37cf2" },
+                    { duration: 0.25, size: 0.0, color: "00000000" },
+                ],
+            }
+        } },
+
+        { id: "particlesOverrideColorOfLast", parameters: { color: "00000000" } },
+        { id: "particlesOverrideColorOfFirst", parameters: { color: "00000000" } },
+
+        { id: "particlesDrawLight", parameters: {
+            color: "9370DB",
+            radius: 1.2,
+            intensity: -0.04,
+            fallOffPower: 10,
+            alphaMode: "fromParticleRgbAverage",
+        } },
+
+        { id: "particlesDeleteIf", parameters: { parentIsDeleted: true, noParticles: true } },
+    ]
+}

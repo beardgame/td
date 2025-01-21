@@ -9,7 +9,7 @@
             },
             keys: [ "splashDamage" ]
         },
-        { id: "deleteOnHit" },
+        { id: "deleteOnHit", parameters: { } },
         {
             id: "tags",
             parameters: {

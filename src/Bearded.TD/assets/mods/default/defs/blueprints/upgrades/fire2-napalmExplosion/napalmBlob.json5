@@ -10,7 +10,7 @@
         size: 0.25,
       }
     },
-    { id: "deleteOnHit" },
+    { id: "deleteOnHit", parameters: { } },
     {
       id: "applyOnFireOnImpact",
       parameters: {

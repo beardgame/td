@@ -1,104 +1,198 @@
 {
-    id: "kinetics3-sniper",
-    components: [
-        {
-            id: "attributes",
+  id: "kinetics3-sniper",
+  components: [
+    {
+      id: "attributes",
+      parameters: {
+        name: "Sniper",
+        icon: "building-icons.reticule",
+      }
+    },
+    {
+      id: "cost",
+      parameters: {
+        resources: 75
+      }
+    },
+    {
+      id: "footprint",
+      parameters: {
+        footprint: "single"
+      }
+    },
+    {
+      id: "footprintTransformation"
+    },
+    {
+      id: "defaultTileOccupancy"
+    },
+    {
+      id: "health",
+      parameters: {
+        initialHealth: 1,
+        maxHealth: 100
+      }
+    },
+    {
+      id: "allowManualControl"
+    },
+    {
+      id: "allowManualOverdrive",
+      parameters: {
+        effects: [
+          {
+            type: "modification",
             parameters: {
-                name: "Sniper",
-                icon: "building-icons.reticule",
+              attributeType: "damage",
+              mode: "multiply",
+              value: 3,
             }
-        },
-        { id: "cost", parameters: { resources: 75 } },
-        { id: "footprint", parameters: { footprint: "single" } },
-        { id: "footprintTransformation" },
-        { id: "defaultTileOccupancy" },
-        { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
-        { id: "allowManualControl" },
-        {
-            id: "allowManualOverdrive",
+          },
+          {
+            type: "modification",
             parameters: {
-                effects: [
-                    {
-                        type: "modification",
-                        parameters: {
-                            attributeType: "damage",
-                            mode: "multiply",
-                            value: 6,
-                        }
-                    },
-                    {
-                        type: "modification",
-                        parameters: {
-                            attributeType: "fireRate",
-                            mode: "multiply",
-                            value: 6,
-                        }
-                    }
-                ]
+              attributeType: "fireRate",
+              mode: "multiply",
+              value: 2,
             }
-        },
-        {
-            id: "playSoundOnTrigger",
+          },
+          {
+            type: "replacement",
             parameters: {
-                trigger: "overdriveStarted",
-                sound: "overdrive-start",
-            }
-        },
-        {
-            id: "playSoundOnTrigger",
-            parameters: {
-                trigger: "overdriveEnded",
-                sound: "overdrive-end",
-            }
-        },
-        { id: "autoRepair", parameters: { } },
-        { id: "gainXpOnDamage" },
-        { id: "veterancy" },
-        { id: "upgradeSlots", parameters : { initialSlots: 1, additionalSlotTriggers : [ "levelGained" ] } },
-        { id: "passiveVeterancyBonus", parameters : { } },
-        { id: "upgradePips" },
-        { id: "damageNumbers" },
-        {
-            id: "spawnObjectOnLevelGain",
-            parameters: { object: "building-gained-level-effect" },
-        },
-
-        {
-            id: "playSoundOnTrigger",
-            parameters: {
-                trigger: "levelGained",
-                sound: "veterancy",
+              addComponents: [
+                {
+                  id: "deleteAfter",
+                  parameters: {
+                    timespan: 0.3,
+                  }
+                },
+                {
+                  id: "deleteOnHit",
+                  parameters: {
+                    objectCount: 10,
+                    tilesCount: 3,
+                  }
+                },
+                { id: "child", parameters: { name: "beam-effect", object: "kinetics3-overdrive-core-trail", surviveParent: true } },
+                { id: "child", parameters: { name: "beam-effect", object: "kinetics3-overdrive-core-trail", surviveParent: true } },
+                { id: "child", parameters: { name: "beam-effect", object: "kinetics3-overdrive-core-trail", surviveParent: true } },
+              ],
+              removeKey: "remove-on-overdrive",
             },
-        },
-        {
-            id: "turret",
-            onGhost: true,
-            parameters: {
-                weapon: "kinetics3-sniper-weapon",
-                height: 0.3
+            prerequisites: {
+              requiredTags: [
+                "bullet"
+              ],
             }
-        },
-        {
-            id: "targetingModes",
-            parameters: {
-                defaultTargetingMode: "highestHealth"
-            }
-        },
-        {
-            id: "sprite",
-            parameters: {
-                sprite: "buildings2.sniper-base",
-                colorMode: "faction",
-                shader: "building-no-normal",
-                drawGroup: "building",
-                heightOffset: 0.1,
-                size: 0.9,
-            }
-        },
-        { id: "spawnObjectOnBuildingPlaced", parameters: { object: "building-placed-effect"} },
-        { id: "spawnObjectOnMaterialized", parameters: { object: "sniper-materialized-effect"} },
-        { id: "spawnObjectOnTakeHit", parameters: { object: "buildingHit", scaleFromDamage: 0.1 }},
-
-        { id: "child", parameters: { object: "building-disabled-smoke" } }
-    ]
+          }
+        ]
+      }
+    },
+    {
+      id: "playSoundOnTrigger",
+      parameters: {
+        trigger: "overdriveStarted",
+        sound: "overdrive-start",
+      }
+    },
+    {
+      id: "playSoundOnTrigger",
+      parameters: {
+        trigger: "overdriveEnded",
+        sound: "overdrive-end",
+      }
+    },
+    {
+      id: "autoRepair",
+      parameters: {}
+    },
+    {
+      id: "gainXpOnDamage"
+    },
+    {
+      id: "veterancy"
+    },
+    {
+      id: "upgradeSlots",
+      parameters: {
+        initialSlots: 1,
+        additionalSlotTriggers: [
+          "levelGained"
+        ]
+      }
+    },
+    {
+      id: "passiveVeterancyBonus",
+      parameters: {}
+    },
+    {
+      id: "upgradePips"
+    },
+    {
+      id: "damageNumbers"
+    },
+    {
+      id: "spawnObjectOnLevelGain",
+      parameters: {
+        object: "building-gained-level-effect"
+      },
+    },
+    {
+      id: "playSoundOnTrigger",
+      parameters: {
+        trigger: "levelGained",
+        sound: "veterancy",
+      },
+    },
+    {
+      id: "turret",
+      onGhost: true,
+      parameters: {
+        weapon: "kinetics3-sniper-weapon",
+        height: 0.2
+      }
+    },
+    {
+      id: "targetingModes",
+      parameters: {
+        defaultTargetingMode: "highestHealth"
+      }
+    },
+    {
+      id: "sprite",
+      parameters: {
+        sprite: "buildings2.sniper-base",
+        colorMode: "faction",
+        shader: "building-no-normal",
+        drawGroup: "building",
+        heightOffset: 0.1,
+        size: 0.9,
+      }
+    },
+    {
+      id: "spawnObjectOnBuildingPlaced",
+      parameters: {
+        object: "building-placed-effect"
+      }
+    },
+    {
+      id: "spawnObjectOnMaterialized",
+      parameters: {
+        object: "sniper-materialized-effect"
+      }
+    },
+    {
+      id: "spawnObjectOnTakeHit",
+      parameters: {
+        object: "buildingHit",
+        scaleFromDamage: 0.1
+      }
+    },
+    {
+      id: "child",
+      parameters: {
+        object: "building-disabled-smoke"
+      }
+    }
+  ]
 }
