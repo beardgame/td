@@ -5,17 +5,8 @@ using OpenTK.Mathematics;
 
 namespace Bearded.TD.Utilities.Geometry;
 
-readonly struct Sphere
+readonly record struct Sphere(Position3 Center, Unit Radius)
 {
-    public Position3 Center { get; }
-    public Unit Radius { get; }
-
-    public Sphere(Position3 center, Unit radius)
-    {
-        Center = center;
-        Radius = radius;
-    }
-
     public bool TryHit(Ray3 ray, out float rayFactor, out Position3 point, out Difference3 normal)
     {
         // calculation from https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection

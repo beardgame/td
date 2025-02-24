@@ -57,6 +57,14 @@
             }
           },
           {
+            type: "modification",
+            parameters: {
+              attributeType: "rayRadius",
+              mode: "constant",
+              value: 0.5,
+            }
+          },
+          {
             type: "replacement",
             parameters: {
               addComponents: [
@@ -71,6 +79,13 @@
                   parameters: {
                     objectCount: 10,
                     tilesCount: 3,
+                  }
+                },
+                {
+                  id: "elasticCollision",
+                  parameters: {
+                    excludeObjects: true,
+                    excludeWalls: true,
                   }
                 },
                 { id: "child", parameters: { name: "beam-effect", object: "kinetics3-overdrive-core-trail", surviveParent: true } },

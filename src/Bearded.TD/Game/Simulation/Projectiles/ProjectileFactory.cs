@@ -40,7 +40,7 @@ static class ProjectileFactory
         var obj = GameObjectFactory.CreateFromBlueprintWithDefaultRenderer(blueprint, parent, position, direction);
 
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
-        obj.AddComponent(new PointCollider());
+        obj.AddComponent(new PointCollider(new PointColliderParametersTemplate(Unit.Zero).CreateModifiableInstance()));
         obj.AddComponent(new Property<UntypedDamage>(damage));
 
         if (properties.Source is { } source)

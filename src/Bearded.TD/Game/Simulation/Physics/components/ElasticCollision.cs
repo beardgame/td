@@ -1,9 +1,11 @@
+using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
@@ -18,6 +20,10 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
         float Normal { get; }
         [Modifiable(1)]
         float Tangent { get; }
+
+        bool ExcludeWalls { get; }
+        bool ExcludeFloor { get; }
+        bool ExcludeObjects { get; }
     }
 
     public ElasticCollision(IParameters parameters) : base(parameters)
@@ -26,8 +32,12 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
 
     protected override void OnAdded()
     {
-        Events.Subscribe<CollideWithObject>(this);
-        Events.Subscribe<CollideWithLevel>(this);
+        if (Parameters is not { ExcludeFloor: true, ExcludeWalls: true })
+            Events.Subscribe<CollideWithLevel>(this);
+
+        if (Parameters is not { ExcludeObjects: true })
+            Events.Subscribe<CollideWithObject>(this);
+
         ComponentDependencies.Depend<IPhysics>(Owner, Events, p => physics = p);
     }
 
@@ -44,9 +54,14 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
         onHit(@event.Impact.SurfaceNormal);
     }
 
-    public void HandleEvent(CollideWithLevel @event)
+    public void HandleEvent(CollideWithLevel e)
     {
-        onHit(@event.Info.SurfaceNormal);
+        var isFloor = e.Info.SurfaceNormal == new Difference3(0, 0, 1);
+
+        var excludeHit = isFloor ? Parameters.ExcludeFloor : Parameters.ExcludeWalls;
+
+        if (!excludeHit)
+            onHit(e.Info.SurfaceNormal);
     }
 
     private void onHit(Difference3 surfaceNormal)

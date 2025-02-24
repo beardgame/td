@@ -42,9 +42,10 @@ static class RayCastingHelpers
 
         while (rayCaster.MoveNext(out var tile))
         {
+            var factor = rayCaster.CurrentRayFactor;
+
             if (!level.IsValid(tile) || !isPassableCheck(tile))
             {
-                var factor = rayCaster.CurrentRayFactor;
                 yield return new RayCastResult(HitLevel, factor, ray.PointAt(factor), null, rayCaster.LastStep, null, tile);
                 yield break;
             }
@@ -66,6 +67,8 @@ static class RayCastingHelpers
             {
                 yield return hit.ToHitResult(rayCaster.LastStep);
             }
+
+            yield return new RayCastResult(HitNothing, factor, ray.PointAt(factor), null, rayCaster.LastStep, null, tile);
         }
 
         yield return new RayCastResult(HitNothing, 1, ray.PointAtEnd, null, rayCaster.LastStep, null, rayCaster.Current);

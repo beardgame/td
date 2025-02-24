@@ -6,7 +6,8 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.World;
 
 [Component("capsuleCollider")]
-sealed class CapsuleCollider : Component<CapsuleCollider.IParameters>, ICollider, IRadius
+sealed class CapsuleCollider(CapsuleCollider.IParameters parameters)
+    : Component<CapsuleCollider.IParameters>(parameters), ICollider, IRadius
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -18,16 +19,21 @@ sealed class CapsuleCollider : Component<CapsuleCollider.IParameters>, ICollider
     public Unit Radius => Parameters.Radius;
     public bool IsSolid => Parameters.Solid;
 
-    private Capsule capsule => new(Owner.Position, Owner.Position + new Difference3(0.U(), 0.U(), Parameters.Height), Radius);
-
-    public CapsuleCollider(IParameters parameters) : base(parameters)
-    {
-    }
-
     protected override void OnAdded() {}
     public override void Update(TimeSpan elapsedTime) {}
 
-    public bool TryHit(Ray3 ray, out float rayFactor, out Position3 point, out Difference3 normal) =>
-        capsule.TryHit(ray, out rayFactor, out point, out normal);
+    public bool TryHit(Ray3 ray, out float rayFactor, out Position3 point, out Difference3 normal)
+    {
+        var capsule = new Capsule(
+            Owner.Position,
+            Owner.Position + new Difference3(0.U(), 0.U(), Parameters.Height),
+            Radius + ray.Radius
+            );
 
+        var hit = capsule.TryHit(ray, out rayFactor, out point, out normal);
+
+        point -= ray.Radius * normal.NumericValue;
+
+        return hit;
+    }
 }

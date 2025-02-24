@@ -2,21 +2,16 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Utilities.Geometry;
 
-readonly struct Ray3
+readonly record struct Ray3(Position3 Start, Difference3 Direction, Unit Radius)
 {
-    public Position3 Start { get; }
-    public Difference3 Direction { get; }
-
     public Ray XY => new (Start.XY(), Direction.XY());
 
-    public Ray3(Position3 start, Position3 end) : this(start, end - start)
+    public Ray3(Position3 start, Position3 end, Unit? radius) : this(start, end - start, radius ?? Unit.Zero)
     {
     }
 
-    public Ray3(Position3 start, Difference3 direction)
+    public Ray3(Position3 start, Difference3 direction) : this(start, direction, Unit.Zero)
     {
-        Start = start;
-        Direction = direction;
     }
 
     public Position3 PointAtEnd

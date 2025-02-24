@@ -21,4 +21,5 @@ public enum AttributeType : byte
     SplashRange,
     SpreadAngle,
     TurnSpeed,
+    RayRadius,
 }
