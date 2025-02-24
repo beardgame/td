@@ -14,17 +14,13 @@ static class FireEmergencyEMP
     public static IRequest<Player, GameInstance> Request(GameInstance game, GameObject obj) =>
         new Implementation(obj);
 
-    private sealed class Implementation : UnifiedRequestCommand
+    private sealed class Implementation(GameObject obj) : UnifiedRequestCommand
     {
-        private readonly GameObject obj;
-
-        public Implementation(GameObject obj)
-        {
-            this.obj = obj;
-        }
-
         public override bool CheckPreconditions(Player actor)
-            => obj.TryGetSingleComponent<EmergencyEMP>(out var emp) && emp.Available;
+            => obj.TryGetSingleComponent<EmergencyEMP>(out var emp) &&
+                emp.Available &&
+                obj.TryFindFaction(out var faction) &&
+                faction.OwnedBuildingsCanBeManuallyControlledBy(actor.Faction);
 
         public override ISerializableCommand<GameInstance> ToCommand() => this;
 

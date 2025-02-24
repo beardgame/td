@@ -110,6 +110,22 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
             (isFinalWave ? Parameters.AmountForLastWaveInChapter : Resource<CoreEnergy>.Zero);
     }
 
+    public void LiquidateImmediately(double effectiveness)
+    {
+        var deposit = currentWaveDeposit ?? throw new InvalidOperationException("The current deposit is null");
+        var withdrawn = deposit.WithdrawImmediately(effectiveness);
+        if (withdrawn == Resource<CoreEnergy>.Zero) return;
+        if (!Owner.TryGetBehavior<FactionResources>(out var resources))
+        {
+            throw new InvalidOperationException(
+                "Cannot convert core deposit in resources for faction without resources");
+        }
+        resources.ProvideResources(withdrawn);
+
+        State.Satisfies(AvailableCoreInCurrentWave == Resource<CoreEnergy>.Zero);
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(Owner, AvailableCoreInCurrentWave));
+    }
+
     private sealed class CurrentWaveDeposit(Resource<CoreEnergy> initialAmount)
     {
         private Resource<CoreEnergy> alreadyWithdrawn;
@@ -135,7 +151,6 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
             return liquidatedNow;
         }
 
-        // TODO: call this when EMP is triggered, make sure AvailableResourcesChanged event is sent
         public Resource<CoreEnergy> WithdrawImmediately(double effectiveness)
         {
             if (alreadyWithdrawn >= initialAmount)
