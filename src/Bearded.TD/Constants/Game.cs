@@ -130,7 +130,7 @@ static partial class Constants
 
         public static class Technology
         {
-            public static readonly int[] TierCompletionThresholds = { 0, 2, 2, 2 };
+            public static readonly int[] TierCompletionThresholds = [0, 2, 2, 2];
         }
 
         public static class Drones
