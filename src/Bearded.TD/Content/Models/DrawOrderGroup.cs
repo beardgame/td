@@ -16,6 +16,7 @@ enum DrawOrderGroup
     Unit,
     Fluids,
     Particle,
+    BubbleShield,
     IgnoreDepth,
 
     UIBackground,

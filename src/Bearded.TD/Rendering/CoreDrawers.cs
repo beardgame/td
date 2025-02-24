@@ -24,6 +24,7 @@ sealed class CoreDrawers
 
     public PointLightDrawer PointLight { get; }
     public SpotlightDrawer Spotlight { get; }
+    public PointLightDrawer HexSphere { get; }
 
     public CoreDrawers(CoreRenderers renderers, DeferredRenderer deferredRenderer)
     {
@@ -40,5 +41,6 @@ sealed class CoreDrawers
 
         PointLight = new PointLightDrawer(deferredRenderer.PointLights);
         Spotlight = new SpotlightDrawer(deferredRenderer.Spotlights);
+        HexSphere = new PointLightDrawer(deferredRenderer.HexSpheres);
     }
 }

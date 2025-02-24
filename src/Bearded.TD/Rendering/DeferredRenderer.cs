@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Linq;
 using Bearded.Graphics.MeshBuilders;
@@ -37,7 +38,7 @@ sealed class DeferredRenderer
     private static readonly DrawOrderGroup[] projectedFloatingDrawGroup = [LevelProjectedFloatingOverlay];
     private static readonly DrawOrderGroup[] worldDrawGroups = [Building, Unit];
     private static readonly DrawOrderGroup[] worldDetailGroups = [LevelDetail];
-    private static readonly DrawOrderGroup[] postLightGroups = [Fluids, Particle, Unknown];
+    private static readonly DrawOrderGroup[] postLightGroups = [Fluids, Particle, BubbleShield, Unknown];
     private static readonly DrawOrderGroup[] ignoreDepthGroup = [IgnoreDepth];
 
     public sealed record RenderState(Vector2i Resolution, RenderTarget FinalRenderTarget, DeferredContent Content);
@@ -60,6 +61,8 @@ sealed class DeferredRenderer
         => new TextureUniform(name, unit, depthBufferTexture);
 
     public readonly PointLightMesh PointLights = PointLightMesh.Create();
+
+    public readonly PointLightMesh HexSpheres = PointLightMesh.Create();
 
     public ExpandingIndexedTrianglesMeshBuilder<SpotlightVertex> Spotlights { get; } = new();
 
@@ -100,7 +103,10 @@ sealed class DeferredRenderer
 
         depthBufferTexture = textures.Depth.Texture;
 
-        var (pointLightRenderer, spotLightRenderer) = setupLightRenderers(
+        var lightRenderers = setupLightRenderers(
+            textures.Normal, textures.Material, textures.Diffuse);
+
+        var hexSpheres = setupHexSpheres(
             textures.Normal, textures.Material, textures.Diffuse);
 
         var resizedBuffers = Resize(s => s.Resolution,
@@ -156,7 +162,7 @@ sealed class DeferredRenderer
                     .SetCullMode(RenderBack),
                 InOrder(
                     ClearColor(),
-                    Render(pointLightRenderer, spotLightRenderer)
+                    Render(lightRenderers)
                 )),
             WithContext(
                 c => c.SetDebugName("Composite final image")
@@ -180,8 +186,10 @@ sealed class DeferredRenderer
                     WithContext(
                         c => c.SetDebugName("Render fluids and other post-light groups")
                             .SetDepthMode(TestOnly(Less)),
-                        renderDrawGroups(postLightGroups)
-                        ),
+                        InOrder(
+                            renderDrawGroups(postLightGroups),
+                            Render(hexSpheres)
+                        )),
                     WithContext(
                         c => c.SetDebugName("Render depth ignoring groups"),
                         renderDrawGroups(ignoreDepthGroup)
@@ -216,7 +224,7 @@ sealed class DeferredRenderer
         ));
     }
 
-    private (IRenderer pointLightRenderer, IRenderer spotLightRenderer) setupLightRenderers(
+    private IReadOnlyCollection<IRenderer> setupLightRenderers(
         PipelineTexture normalBuffer, PipelineTexture materialBuffer, PipelineTexture diffuse)
     {
         var neededSettings = new[]
@@ -235,7 +243,26 @@ sealed class DeferredRenderer
         var spotLight = BatchedRenderer.From(Spotlights.ToRenderable(), neededSettings);
         shaders.GetShaderProgram("deferred/spotlight").UseOnRenderer(spotLight);
 
-        return (pointLight, spotLight);
+        return [pointLight, spotLight];
+    }
+
+    private IReadOnlyCollection<IRenderer> setupHexSpheres(
+        PipelineTexture normalBuffer, PipelineTexture materialBuffer, PipelineTexture diffuse)
+    {
+        var neededSettings = new[]
+        {
+            settings.ViewMatrix, settings.ProjectionMatrix,
+            settings.FarPlaneBaseCorner, settings.FarPlaneUnitX, settings.FarPlaneUnitY, settings.CameraPosition,
+            new TextureUniform("normalBuffer", TextureUnit.Texture0, normalBuffer.Texture),
+            GetDepthBufferUniform("depthBuffer", TextureUnit.Texture1), gBufferResolution,
+            new TextureUniform("materialBuffer", TextureUnit.Texture2, materialBuffer.Texture),
+            new TextureUniform("diffuseBuffer", TextureUnit.Texture3, diffuse.Texture),
+        };
+
+        var hexSphere = Renderer.From(HexSpheres.ToRenderable(), neededSettings);
+        shaders.GetShaderProgram("deferred/hex-sphere").UseOnRenderer(hexSphere);
+
+        return [hexSphere];
     }
 
     public void RenderLayer(IDeferredRenderLayer deferredLayer, RenderTarget target)
@@ -286,5 +313,6 @@ sealed class DeferredRenderer
     {
         PointLights.Clear();
         Spotlights.Clear();
+        HexSpheres.Clear();
     }
 }

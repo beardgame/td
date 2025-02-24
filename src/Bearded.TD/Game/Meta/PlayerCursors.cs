@@ -170,6 +170,12 @@ sealed class PlayerCursors
             color: Color.White * playerCursorAlpha
         );
 
+        drawers.HexSphere.Draw(
+            game.PlayerInput.CursorPosition.NumericValue.WithZ(0.5f),
+            radius: 1,
+            color: Color.Green
+        );
+
         foreach (var (player, cursor) in cursors)
         {
             if (player == game.Me)
