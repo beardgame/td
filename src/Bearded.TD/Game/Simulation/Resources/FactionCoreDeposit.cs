@@ -7,10 +7,11 @@ using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.UI;
 using Bearded.Utilities;
 using JetBrains.Annotations;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources;
 
-readonly record struct AvailableResourcesChanged<T>(Resource<T> NewAmount) : IGlobalEvent
+readonly record struct AvailableResourcesChanged<T>(Faction Faction, Resource<T> NewAmount) : IGlobalEvent
     where T : IResourceType;
 
 [FactionBehavior("coreDeposit")]
@@ -66,7 +67,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
 
         progress.AddScriptedEvent(1, () => onWaveFinished(deposit));
 
-        Events.Send(new AvailableResourcesChanged<CoreEnergy>(AvailableCoreInCurrentWave));
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(Owner, AvailableCoreInCurrentWave));
     }
 
     private void onWaveFinished(CurrentWaveDeposit deposit)
@@ -80,7 +81,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
         withdraw(deposit, 1);
         currentWaveDeposit = null;
 
-        Events.Send(new AvailableResourcesChanged<CoreEnergy>(AvailableCoreInCurrentWave));
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(Owner, AvailableCoreInCurrentWave));
     }
 
     private void withdraw(CurrentWaveDeposit deposit, double percentage)
@@ -94,7 +95,7 @@ sealed class FactionCoreDeposit : FactionBehavior<FactionCoreDeposit.BehaviorPar
         }
         resources.ProvideResources(withdrawn);
 
-        Events.Send(new AvailableResourcesChanged<CoreEnergy>(AvailableCoreInCurrentWave));
+        Events.Send(new AvailableResourcesChanged<CoreEnergy>(Owner, AvailableCoreInCurrentWave));
     }
 
     private Resource<CoreEnergy> calculateResourceAmount(Wave wave)

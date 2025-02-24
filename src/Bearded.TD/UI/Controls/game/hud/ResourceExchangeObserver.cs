@@ -20,6 +20,7 @@ sealed class ResourceExchangeObserver
         faction.TryGetBehaviorIncludingAncestors(out FactionCoreEnergyExchange? exchange);
 
         var changes = game.Meta.Events.Observe<AvailableResourcesChanged<CoreEnergy>>()
+            .Where(e => e.Faction == faction)
             .Select(e => e.NewAmount)
             .StartWith(coreDeposit?.AvailableCoreInCurrentWave ?? Resource<CoreEnergy>.Zero)
             .CombineLatest(
