@@ -5,6 +5,7 @@
             id: "animatedSprite",
             parameters: {
                 sprite: "default.particle.crater",
+                drawgroup: "leveldetail",
                 drawGroupOrderKey: -20,
                 randomAngle: true,
                 animation : {

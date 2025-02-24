@@ -56,7 +56,7 @@
         {
             id: "playSoundOnTrigger",
             parameters: {
-                trigger: "shotProjectile",
+                trigger: "shotProjectiles",
                 sound: "gunshot-punchy",
             }
         },

@@ -13,7 +13,7 @@ sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListen
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        [Modifiable(1)]
+        [Modifiable(1, Type = AttributeType.ScreenShakeStrength)]
         float Strength { get; }
         [Modifiable(1)]
         TimeSpan Duration { get; }

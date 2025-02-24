@@ -6,7 +6,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("burst")]
-sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectile>, IPreviewListener<PreviewDelayNextShot>
+sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectiles>, IPreviewListener<PreviewDelayNextShot>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -28,7 +28,7 @@ sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectile>, IP
 
     protected override void OnAdded()
     {
-        Events.Subscribe<ShotProjectile>(this);
+        Events.Subscribe<ShotProjectiles>(this);
         Events.Subscribe<PreviewDelayNextShot>(this);
     }
 
@@ -44,11 +44,11 @@ sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectile>, IP
     public override void OnRemoved()
     {
         base.OnRemoved();
-        Events.Unsubscribe<ShotProjectile>(this);
+        Events.Unsubscribe<ShotProjectiles>(this);
         Events.Unsubscribe<PreviewDelayNextShot>(this);
     }
 
-    public void HandleEvent(ShotProjectile @event)
+    public void HandleEvent(ShotProjectiles @event)
     {
         shotsFiredInBurst++;
         lastShotFired = Owner.Game.Time;

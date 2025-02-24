@@ -29,9 +29,33 @@
                     {
                         type: "modification",
                         parameters: {
-                            attributeType: "fireRate",
+                            attributeType: "projectileCount",
+                            mode: "constant",
+                            value: 11,
+                        }
+                    },
+                    {
+                        type: "modification",
+                        parameters: {
+                            attributeType: "spreadAngle",
+                            mode: "constant",
+                            value: 15,
+                        }
+                    },
+                    {
+                        type: "modification",
+                        parameters: {
+                            attributeType: "BulletDropCompensationNoise",
+                            mode: "constant",
+                            value: 0.3,
+                        }
+                    },
+                    {
+                        type: "modification",
+                        parameters: {
+                            attributeType: "ScreenShakeStrength",
                             mode: "multiply",
-                            value: 6,
+                            value: 0.2,
                         }
                     }
                 ]

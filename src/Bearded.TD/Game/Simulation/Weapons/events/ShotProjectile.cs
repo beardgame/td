@@ -13,3 +13,11 @@ readonly record struct ShotProjectile(
         GameObject Projectile,
         UntypedDamage Damage)
     : IComponentEvent;
+
+[Trigger("shotProjectiles")]
+readonly record struct ShotProjectiles(
+    Position3 Position,
+    Direction2 MuzzleDirection,
+    int Count,
+    UntypedDamage Damage)
+    : IComponentEvent;

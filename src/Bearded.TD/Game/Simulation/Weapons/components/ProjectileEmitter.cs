@@ -32,6 +32,9 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
         [Modifiable(1, Type = AttributeType.BulletDropCompensation)]
         float BulletDropCompensation { get; }
 
+        [Modifiable(0, Type = AttributeType.BulletDropCompensationNoise)]
+        float BulletDropCompensationNoise { get; }
+
         [Modifiable(0.0, Type = AttributeType.SpreadAngle)]
         Angle Spread { get; }
 
@@ -40,6 +43,9 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
         [Modifiable(1, Type = AttributeType.ShotIntervalCount)]
         int ShootEvery { get; }
         int ShootEveryOffset { get; }
+
+        [Modifiable(1, Type = AttributeType.ProjectileCount)]
+        int ProjectilesPerShot { get; }
     }
 
     private IWeaponState weapon = null!;
@@ -83,36 +89,44 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
     {
         shotCounter++;
         if (Parameters.ShootEvery <= 1 || shotCounter % Parameters.ShootEvery == 0)
-            emitProjectile(@event.Damage);
+            emitProjectiles(@event.Damage);
     }
 
-    private void emitProjectile(UntypedDamage damage)
+    private void emitProjectiles(UntypedDamage damage)
     {
+        var properties = new OptionalProjectileProperties
+        {
+            Target = targeter?.Target as GameObject,
+            TargetPosition = targeter?.Target,
+            Source = Owner,
+        };
+
         var position = EmitPosition;
 
-        var (direction, muzzleVelocity) = getMuzzleVelocity(position);
+        var verticalSpeedCompensation = targeter?.Target is { } target
+            ? verticalSpeedCompensationToTarget(position, target)
+            : Speed.Zero;
 
-        var projectile = factory.Create(position, direction, muzzleVelocity, damage,
-            new OptionalProjectileProperties
-            {
-                Target = targeter?.Target as GameObject,
-                TargetPosition = targeter?.Target,
-                Source = Owner,
-            });
+        var damagePerProjectile = damage / Parameters.ProjectilesPerShot;
 
-        Owner.Game.Add(projectile);
+        for (var i = 0; i < Parameters.ProjectilesPerShot; i++)
+        {
+            var vZ = verticalSpeedCompensation * (1 + Parameters.BulletDropCompensationNoise * StaticRandom.Float(-1, 1));
+            var (direction, muzzleVelocity) = getMuzzleVelocity(position, vZ);
 
-        Events.Send(new ShotProjectile(position, direction, muzzleVelocity, projectile, damage));
+            var projectile = factory.Create(position, direction, muzzleVelocity, damagePerProjectile, properties);
+            Owner.Game.Add(projectile);
+
+            Events.Send(new ShotProjectile(position, direction, muzzleVelocity, projectile, damagePerProjectile));
+        }
+
+        Events.Send(new ShotProjectiles(position, weapon.Direction, Parameters.ProjectilesPerShot, damage));
     }
 
-    private (Direction2, Velocity3) getMuzzleVelocity(Position3 emitLocation)
+    private (Direction2, Velocity3) getMuzzleVelocity(Position3 emitLocation, Speed velocityZ)
     {
         var direction = weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
         var velocityXY = direction * Parameters.MuzzleSpeed;
-
-        var velocityZ = targeter?.Target is { } target
-            ? verticalSpeedCompensationToTarget(emitLocation, target)
-            : Speed.Zero;
 
         return (direction, velocityXY.WithZ(velocityZ));
     }

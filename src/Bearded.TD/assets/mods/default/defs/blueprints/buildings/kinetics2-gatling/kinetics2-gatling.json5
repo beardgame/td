@@ -33,7 +33,15 @@
                             mode: "multiply",
                             value: 6,
                         }
-                    }
+                    },
+                    {
+                        type: "modification",
+                        parameters: {
+                            attributeType: "spreadAngle",
+                            mode: "multiply",
+                            value: 3,
+                        }
+                    },
                 ]
             }
         },

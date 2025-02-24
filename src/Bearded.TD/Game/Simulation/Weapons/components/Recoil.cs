@@ -7,7 +7,8 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Weapons;
 
 [Component("recoil")]
-sealed class Recoil : Component<Recoil.IParameters>, IListener<ShotProjectile>
+sealed class Recoil(Recoil.IParameters parameters)
+    : Component<Recoil.IParameters>(parameters), IListener<ShotProjectiles>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -16,10 +17,6 @@ sealed class Recoil : Component<Recoil.IParameters>, IListener<ShotProjectile>
 
     private IAngularAccelerator? accelerator;
 
-    public Recoil(IParameters parameters) : base(parameters)
-    {
-    }
-
     protected override void OnAdded()
     {
         ComponentDependencies.Depend<IAngularAccelerator>(Owner, Events, a => accelerator = a);
@@ -27,7 +24,12 @@ sealed class Recoil : Component<Recoil.IParameters>, IListener<ShotProjectile>
         Events.Subscribe(this);
     }
 
-    public void HandleEvent(ShotProjectile e)
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
+    }
+
+    public void HandleEvent(ShotProjectiles e)
     {
         accelerator?.Impact(
             Parameters.Impulse * StaticRandom.Float(0.5f, 1) * StaticRandom.Sign()
