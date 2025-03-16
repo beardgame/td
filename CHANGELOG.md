@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.33
+
+* Gameplay change: after each chapter, half the towers you built will be destroyed
+* Added a COR cost to the EMP: it pays out half your remaining COR payments for this wave and uses the remaining half as cost
+* Added custom overdrive effect for Sniper
+* Improved overdrive for Grenade Launcher and Gatling
+* Changed the Cannon default targeting mode to "closest to base"
+* Remove COR spent sound effect for COR weapon firing
+
 ## v0.32
 
 * Added custom overdrive effect for Cannon
