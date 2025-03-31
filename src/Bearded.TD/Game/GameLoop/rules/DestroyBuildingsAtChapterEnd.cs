@@ -33,7 +33,7 @@ sealed class DestroyBuildingsAtChapterEnd(DestroyBuildingsAtChapterEnd.RuleParam
                 .Where(b => !b.GetComponents<GameOverOnDestroy>().Any()) // We don't want the player to randomly game over!
                 .ToImmutableArray();
             var buildingsToDestroyCount =
-                Math.Clamp((int) (destroyableBuildings.Length * Parameters.Fraction ?? 0.5), 1, destroyableBuildings.Length);
+                Math.Clamp((int) (destroyableBuildings.Length * (Parameters.Fraction ?? 0.5)), 1, destroyableBuildings.Length);
             var buildingsToDestroy = destroyableBuildings.RandomSubset(buildingsToDestroyCount);
             foreach (var building in buildingsToDestroy)
             {
