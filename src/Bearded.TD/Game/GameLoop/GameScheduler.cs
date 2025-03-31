@@ -50,7 +50,7 @@ sealed class GameScheduler(
 
     private void requestChapter()
     {
-        State.Satisfies(chaptersStarted < gameRequirements.WavesPerChapter);
+        State.Satisfies(chaptersStarted < gameRequirements.ChaptersPerGame);
         var chapterNumber = ++chaptersStarted;
         var requirements = new ChapterRequirements(chapterNumber, waveThreats(chapterNumber));
         var script = chapterGenerator.GenerateChapter(requirements, previousChapter);
