@@ -12,7 +12,7 @@ static class WorldMatrices
 
     public static LinearTransformation RotateZ(Angle angle)
     {
-        return new LinearTransformation(Matrix4.CreateRotationZ(angle.Degrees));
+        return new LinearTransformation(Matrix4.CreateRotationZ(angle.Radians));
     }
 
     public static LinearTransformation Scale(float scale)
