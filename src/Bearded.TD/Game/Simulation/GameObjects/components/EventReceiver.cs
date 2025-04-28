@@ -1,4 +1,3 @@
-using Bearded.TD.Game.Simulation.Damage;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
@@ -28,6 +27,3 @@ class EventReceiver<TEvent> : Component, IEventReceiver<TEvent>
         Events.Send(e);
     }
 }
-
-[Component("takeHitEventReceiver")]
-sealed class TakeHitEventReceiver : EventReceiver<TakeHit> {}
