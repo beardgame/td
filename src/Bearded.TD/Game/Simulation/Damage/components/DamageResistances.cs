@@ -9,7 +9,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DamageResistances : Component, IPreviewListener<PreviewTakeDamage>, IListener<DrawComponents>
+sealed class DamageResistances : Component, IListener<ModifyHealthDamage>, IListener<DrawComponents>
 {
     private readonly ImmutableDictionary<DamageType, Resistance> resistances;
 
@@ -20,13 +20,13 @@ sealed class DamageResistances : Component, IPreviewListener<PreviewTakeDamage>,
 
     protected override void OnAdded()
     {
-        Events.Subscribe<PreviewTakeDamage>(this);
+        Events.Subscribe<ModifyHealthDamage>(this);
         Events.Subscribe<DrawComponents>(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe<PreviewTakeDamage>(this);
+        Events.Unsubscribe<ModifyHealthDamage>(this);
         Events.Unsubscribe<DrawComponents>(this);
         base.OnRemoved();
     }
@@ -35,11 +35,12 @@ sealed class DamageResistances : Component, IPreviewListener<PreviewTakeDamage>,
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public void PreviewEvent(ref PreviewTakeDamage @event)
+    public void HandleEvent(ModifyHealthDamage @event)
     {
-        if (resistances.TryGetValue(@event.TypedDamage.Type, out var resistance))
+        var preview = @event.DamagePreview;
+        if (resistances.TryGetValue(preview.Type, out var resistance))
         {
-            @event = @event.ResistedWith(resistance);
+            preview.Resist(resistance);
         }
     }
 

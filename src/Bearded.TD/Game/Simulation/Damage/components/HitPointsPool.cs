@@ -1,4 +1,5 @@
-﻿using Bearded.Graphics;
+﻿using System.Collections.Generic;
+using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Synchronization;
@@ -38,7 +39,7 @@ abstract partial class HitPointsPool<T> : Component<T>,
         statusDisplay.AddHitPointsBar(new HitPointsBar(this, Shell, Color));
     }
 
-    public IntermediateDamageResult ApplyDamage(TypedDamage damage, IDamageSource? source)
+    public IntermediateDamageResult ApplyDamage(TypedDamage damage, Hit hit, IDamageSource? source)
     {
         // No hit points remaining, so shell is depleted.
         if (CurrentHitPoints <= HitPoints.Zero)
@@ -46,26 +47,36 @@ abstract partial class HitPointsPool<T> : Component<T>,
             return IntermediateDamageResult.PassThrough(damage);
         }
 
-        var modifiedDamage = ModifyDamage(damage);
+        var modifiedDamage = ModifyDamage(damage, out var additionalEffects);
+        var result = doDamage(damage, modifiedDamage, source);
+        foreach (var effect in additionalEffects)
+        {
+            effect(result, hit);
+        }
 
+        return result;
+    }
+
+    private IntermediateDamageResult doDamage(
+        TypedDamage originalDamage, TypedDamage modifiedDamage, IDamageSource? source)
+    {
         // No damage done at all, so the shell is 100% effective at blocking it.
         if (modifiedDamage.Amount <= HitPoints.Zero)
         {
-            return IntermediateDamageResult.Blocked(damage);
+            return IntermediateDamageResult.Blocked(originalDamage);
         }
 
         var cappedDamage =
             modifiedDamage.WithAdjustedAmount(SpaceTime1MathF.Min(modifiedDamage.Amount, CurrentHitPoints));
         modifyHitPoints(-cappedDamage.Amount, out var damageDoneDiscrete);
 
-        var result = new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(damage.Type), damageDoneDiscrete);
-
         Events.Send(new TookDamage(source));
 
-        return result;
+        return new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(originalDamage.Type), damageDoneDiscrete);
     }
 
-    protected abstract TypedDamage ModifyDamage(TypedDamage damage);
+    protected abstract TypedDamage ModifyDamage(
+        TypedDamage damage, out IReadOnlyList<AdditionalHitEffect> additionalEffects);
 
     protected void OverrideCurrentHitPoints(HitPoints currentHitPoints)
     {
