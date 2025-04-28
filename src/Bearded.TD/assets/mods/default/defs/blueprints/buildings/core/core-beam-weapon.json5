@@ -1,7 +1,7 @@
 {
     id: "core-beam-weapon",
     components: [
-        { id: "tags", parameters: { tags: [ "beam-emitter", "core", "dynamicFireRate" ] } },
+        { id: "tags", parameters: { tags: [ "weapon", "beam-emitter", "core", "dynamicFireRate" ] } },
         {
             id: "range",
             parameters: {

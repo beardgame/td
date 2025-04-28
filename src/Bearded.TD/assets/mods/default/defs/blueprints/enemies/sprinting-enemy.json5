@@ -48,5 +48,17 @@
         { id: "softMutualUnitCollider" },
         { id: "spawnObjectOnKilled", parameters:  { object: "default.enemyExplosion" } },
         { id: "spawnObjectOnTakeHit", parameters: { object: "default.enemyHit", scaleFromDamage: 0.1 }},
+
+        {
+            id: "sprintOnStraights",
+            parameters: {
+                timeToSprint: 1,
+                minAcceleration: 10,
+                timeToMaxAcceleration: 2,
+                maxAcceleration: 20,
+            }
+        },
+        { id: "disableDragAfterSprint", parameters: { duration: 0.15 } },
+        { id: "bumpBuildingAfterSprint", parameters: { timeAfterSprint: 0.5 } }
     ]
 }

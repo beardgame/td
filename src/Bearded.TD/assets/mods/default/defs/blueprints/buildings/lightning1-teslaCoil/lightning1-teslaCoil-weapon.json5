@@ -1,6 +1,7 @@
 {
     id: "lightning1-teslaCoil-weapon",
     components: [
+        { id: "tags", parameters: { tags: [ "weapon" ] } },
         {
             id: "range",
             parameters: {

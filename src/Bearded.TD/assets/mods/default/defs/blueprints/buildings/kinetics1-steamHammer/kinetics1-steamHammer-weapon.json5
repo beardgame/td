@@ -1,6 +1,7 @@
 {
     id: "kinetics1-steamHammer-weapon",
     components: [
+        { id: "tags", parameters: { tags: [ "weapon", "hitsLevel" ] } },
         {
             id: "range",
             parameters: {
@@ -22,12 +23,6 @@
         {
             id: "hitLevelAtTower",
             parameters: {
-            }
-        },
-        {
-            id: "tags",
-            parameters: {
-                tags: [ "hitsLevel" ]
             }
         },
         {

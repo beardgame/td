@@ -29,13 +29,13 @@ abstract class Component<TParameters> : IComponent
         OnAdded();
     }
 
-    protected abstract void OnAdded();
+    protected virtual void OnAdded() {}
 
     public virtual void Activate() {}
 
     public virtual void OnRemoved() {}
 
-    public abstract void Update(TimeSpan elapsedTime);
+    public virtual void Update(TimeSpan elapsedTime) {}
 
     public virtual void PreviewUpgrade(IUpgradePreview upgradePreview)
     {

@@ -1,7 +1,7 @@
 {
     id: "kinetics0-cannon-weapon",
     components: [
-        { id: "tags", parameters: { tags: [ "gun" ] } },
+        { id: "tags", parameters: { tags: [ "weapon", "gun" ] } },
         {
             id: "range",
             parameters: {

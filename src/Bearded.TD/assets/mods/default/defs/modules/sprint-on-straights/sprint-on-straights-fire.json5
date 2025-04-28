@@ -1,41 +1,43 @@
 ﻿{
-    id: "sprint-on-straights-fire",
-    affinityElement: "fire",
-    socketShape: "sprintOnStraights",
-    effects: [
-        {
-            type: "component",
-            parameters: {
-                id: "sprintOnStraights",
-                parameters: {
-                    timeToSprint: 1,
-                    minAcceleration: 5,
-                    timeToMaxAcceleration: 2,
-                    maxAcceleration: 20
-                }
-            }
-        },
-        {
-            type: "component",
-            parameters: {
-                id: "spawnObjectOnSprintStart",
-                parameters: {
-                    object: "fire-sprinter-trail",
-                    attach: "whileSprinting",
-                    delete: "afterSprintStop",
-                    deletionDelay: 0.5,
-                }
-            }
-        },
-        {
-            type: "component",
-            parameters: {
-                id: "enemyIcon",
-                parameters: {
-                    icon: "enemies.sprinting-enemy",
-                    element: "fire",
-                }
-            }
+  id: "sprint-on-straights-fire",
+  affinityElement: "fire",
+  socketShape: "sprintOnStraights",
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "enemyIcon",
+        parameters: {
+          icon: "enemies.sprinting-enemy",
+          element: "fire",
         }
-    ]
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "spawnObjectOnTrigger",
+        parameters: {
+          trigger: "bumpedBuilding",
+          object: "smallFireExplosion",
+          offsetInDirection: 0.25
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "applyEffectToBumpedBuilding",
+        parameters: {
+          effectDuration: 0.5,
+          effects: [
+            {
+              type: "component",
+              parameters: { id: "changeTemperatureOnActivate", parameters: { temperatureChange: 25 } }
+            },
+          ]
+        }
+      }
+    },
+  ]
 }

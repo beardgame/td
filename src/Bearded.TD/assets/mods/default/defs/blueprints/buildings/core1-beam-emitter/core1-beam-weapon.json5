@@ -1,7 +1,7 @@
 {
     id: "core1-beam-weapon",
     components: [
-        { id: "tags", parameters: { tags: [ "beam-emitter", "core" ] } },
+        { id: "tags", parameters: { tags: [ "weapon", "beam-emitter", "core" ] } },
         {
             id: "range",
             parameters: {

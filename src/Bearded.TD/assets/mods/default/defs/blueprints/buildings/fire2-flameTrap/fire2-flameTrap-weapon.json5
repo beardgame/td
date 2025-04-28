@@ -1,6 +1,7 @@
 {
     id: "fire2-flameTrap-weapon",
     components: [
+        { id: "tags", parameters: { tags: [ "weapon", "flameEmitter" ] } },
         {
             id: "range",
             parameters: {
@@ -43,12 +44,6 @@
         {
             id: "loopSoundWhileShooting",
             parameters: { sound: "flamethrower-loop" },
-        },
-        {
-            id: "tags",
-            parameters: {
-                tags: [ "flameEmitter" ],
-            }
         },
 
         { id: "child", parameters: { object: "fire1-flamethrower-flame-effect" }, keys: [ "fireStreamEffect" ] },
