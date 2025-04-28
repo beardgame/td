@@ -231,9 +231,20 @@ public sealed class DamageTests
         s.CurrentHitPoints.Should().Be(90.HitPoints());
     }
 
+    [Fact]
+    public void ArmorIsPiercedByLightningDamage()
+    {
+        var a = armor(100.HitPoints(), 10.HitPoints(), lightningPiercing: 0.5);
+        testBed.AddComponent(a);
+
+        doDamage(20.HitPoints(), DamageType.Lightning);
+
+        a.CurrentHitPoints.Should().Be(85.HitPoints());
+    }
+
     private void doDamage(HitPoints amount, DamageType type = DamageType.Kinetic)
     {
-        healthEventReceiver.Damage(new TypedDamage(amount, type), null);
+        healthEventReceiver.Damage(new TypedDamage(amount, type), Hit.FromSelf(), null);
     }
 
     private static Health health(HitPoints maxHp)
@@ -241,9 +252,10 @@ public sealed class DamageTests
         return new Health(new HealthParametersTemplate(maxHp, null));
     }
 
-    private static Armor armor(HitPoints maxHp, HitPoints threshold, double blockedEffectiveness = 0)
+    private static Armor armor(
+        HitPoints maxHp, HitPoints threshold, double blockedEffectiveness = 0, double lightningPiercing = 0.5)
     {
-        return new Armor(new ArmorParametersTemplate(maxHp, threshold, blockedEffectiveness));
+        return new Armor(new ArmorParametersTemplate(maxHp, threshold, blockedEffectiveness, lightningPiercing));
     }
 
     private static Shield shield(HitPoints maxHp, HitPoints threshold, double blockedEffectiveness = 0)

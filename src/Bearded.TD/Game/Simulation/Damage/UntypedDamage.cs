@@ -1,5 +1,6 @@
-using Bearded.Utilities.SpaceTime;
+using Bearded.TD.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
@@ -37,6 +38,9 @@ readonly struct UntypedDamage
     public static UntypedDamage operator +(UntypedDamage left, UntypedDamage right) =>
         new(left.Amount + right.Amount);
 
+    public static UntypedDamage operator -(UntypedDamage left, UntypedDamage right) =>
+        new(left.Amount - right.Amount);
+
     public static UntypedDamage operator *(int scalar, UntypedDamage amount) =>
         new(scalar * amount.Amount);
 
@@ -60,4 +64,10 @@ readonly struct UntypedDamage
 
     public static UntypedDamagePerSecond operator /(UntypedDamage amount, TimeSpan duration) =>
         new(((float) (amount.Amount.NumericValue / duration.NumericValue)).HitPoints());
+
+    public static UntypedDamage Min(UntypedDamage left, UntypedDamage right) =>
+        new(SpaceTime1MathF.Min(left.Amount, right.Amount));
+
+    public static UntypedDamage Max(UntypedDamage left, UntypedDamage right) =>
+        new(SpaceTime1MathF.Max(left.Amount, right.Amount));
 }

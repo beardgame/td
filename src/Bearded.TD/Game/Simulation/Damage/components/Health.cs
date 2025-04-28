@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
@@ -65,11 +66,13 @@ sealed class Health :
         RestoreHitPoints(@event.Heal.Heal.Amount);
     }
 
-    protected override TypedDamage ModifyDamage(TypedDamage damage)
+    protected override TypedDamage ModifyDamage(
+        TypedDamage damage, out IReadOnlyList<AdditionalHitEffect> additionalEffects)
     {
-        var e = new PreviewTakeDamage(damage);
-        Events.Preview(ref e);
-        var resistance = e.Resistance ?? Resistance.Zero;
+        var preview = new HealthDamagePreview(damage);
+        Events.Send(new ModifyHealthDamage(preview));
+        additionalEffects = preview.AdditionalEffects;
+        var resistance = preview.DamageResistance ?? Resistance.Zero;
         return resistance.ApplyToDamage(damage);
     }
 

@@ -34,4 +34,7 @@ readonly struct Resistance
 
     public static bool operator >=(Resistance left, Resistance right) =>
         left.NumericValue >= right.NumericValue;
+
+    public static Resistance Max(Resistance left, Resistance right) =>
+        new(Math.Max(left.NumericValue, right.NumericValue));
 }

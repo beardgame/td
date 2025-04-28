@@ -5,7 +5,7 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DebugInvulnerable : Component, IPreviewListener<PreviewTakeDamage>
+sealed class DebugInvulnerable : Component, IListener<ModifyHealthDamage>
 {
     protected override void OnAdded()
     {
@@ -14,11 +14,11 @@ sealed class DebugInvulnerable : Component, IPreviewListener<PreviewTakeDamage>
 
     public override void Update(TimeSpan elapsedTime) {}
 
-    public void PreviewEvent(ref PreviewTakeDamage @event)
+    public void HandleEvent(ModifyHealthDamage @event)
     {
         if (UserSettings.Instance.Debug.InvulnerableBuildings)
         {
-            @event = @event.ResistedWith(Resistance.Full);
+            @event.DamagePreview.Resist(Resistance.Full);
         }
     }
 }
