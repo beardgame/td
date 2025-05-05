@@ -1,32 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities.SpaceTime;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-abstract partial class HitPointsPool<T> : Component<T>,
-    IDamageReceiver,
-    IHitPointsPool,
-    ISyncable
-    where T : IParametersTemplate<T>
+[Component("hitPoints")]
+sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
+    : Component<HitPointsPool.IParameters>(parameters),
+        IDamageReceiver,
+        IHitPointsPool,
+        ISyncable
 {
-    public abstract DamageShell Shell { get; }
-    protected abstract Color Color { get; }
-
-    protected abstract HitPoints TargetMaxHitPoints { get; }
-    public HitPoints MaxHitPoints { get; private set; }
-    public HitPoints CurrentHitPoints { get; private set; }
-
-    protected HitPointsPool(T parameters, HitPoints maxHitPoints) : base(parameters)
+    internal interface IParameters : IParametersTemplate<IParameters>
     {
-        MaxHitPoints = maxHitPoints;
-        CurrentHitPoints = maxHitPoints;
+        [Modifiable(1, Type = AttributeType.Health)]
+        HitPoints MaxHitPoints { get; }
+
+        HitPoints? InitialHitPoints { get; }
+
+        DamageShell Shell { get; }
+
+        Color? Color { get; }
     }
+
+    protected Color Color { get; } = parameters.Color ?? defaultColorForShell(parameters.Shell);
+
+    public HitPoints MaxHitPoints { get; private set; } = parameters.MaxHitPoints;
+    public HitPoints CurrentHitPoints { get; private set; } = parameters.InitialHitPoints ?? parameters.MaxHitPoints;
+    public DamageShell Shell { get; } = parameters.Shell;
 
     public override void Activate()
     {
@@ -47,7 +53,7 @@ abstract partial class HitPointsPool<T> : Component<T>,
             return IntermediateDamageResult.PassThrough(damage);
         }
 
-        var modifiedDamage = ModifyDamage(damage, out var additionalEffects);
+        var modifiedDamage = modifyDamage(damage, out var additionalEffects);
         var result = doDamage(damage, modifiedDamage, source);
         foreach (var effect in additionalEffects)
         {
@@ -75,15 +81,12 @@ abstract partial class HitPointsPool<T> : Component<T>,
         return new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(originalDamage.Type), damageDoneDiscrete);
     }
 
-    protected abstract TypedDamage ModifyDamage(
-        TypedDamage damage, out IReadOnlyList<AdditionalHitEffect> additionalEffects);
-
-    protected void OverrideCurrentHitPoints(HitPoints currentHitPoints)
+    public void OverrideCurrentHitPoints(HitPoints currentHitPoints)
     {
         CurrentHitPoints = currentHitPoints;
     }
 
-    protected void RestoreHitPoints(HitPoints hitPointsChange)
+    public void RestoreHitPoints(HitPoints hitPointsChange)
     {
         modifyHitPoints(hitPointsChange, out _);
     }
@@ -99,24 +102,34 @@ abstract partial class HitPointsPool<T> : Component<T>,
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (TargetMaxHitPoints != MaxHitPoints)
+        if (Parameters.MaxHitPoints != MaxHitPoints)
         {
-            applyNewMaxHealth();
+            applyNewMaxHealth(Parameters.MaxHitPoints);
         }
     }
 
-    private void applyNewMaxHealth()
+    private void applyNewMaxHealth(HitPoints newMax)
     {
-        if (TargetMaxHitPoints > MaxHitPoints)
+        if (newMax > MaxHitPoints)
         {
-            CurrentHitPoints += TargetMaxHitPoints - MaxHitPoints;
-            MaxHitPoints = TargetMaxHitPoints;
+            CurrentHitPoints += newMax - MaxHitPoints;
+            MaxHitPoints = newMax;
         }
         else
         {
-            MaxHitPoints = TargetMaxHitPoints;
+            MaxHitPoints = newMax;
             CurrentHitPoints = SpaceTime1MathF.Min(CurrentHitPoints, MaxHitPoints);
         }
+    }
+
+    private static Color defaultColorForShell(DamageShell shell)
+    {
+        return shell switch {
+            DamageShell.Health => Constants.Game.GameUI.HealthColor,
+            DamageShell.Armor => Constants.Game.GameUI.ArmorColor,
+            DamageShell.Shield => Constants.Game.GameUI.ShieldColor,
+            _ => Color.DeepPink
+        };
     }
 }
 
@@ -124,4 +137,5 @@ interface IHitPointsPool
 {
     HitPoints MaxHitPoints { get; }
     HitPoints CurrentHitPoints { get; }
+    DamageShell Shell { get; }
 }

@@ -1,24 +1,16 @@
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Meta;
-using Bearded.TD.Shared.Events;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DebugInvulnerable : Component, IListener<ModifyHealthDamage>
+sealed class DebugInvulnerable : DamageModifier
 {
-    protected override void OnAdded()
-    {
-        Events.Subscribe(this);
-    }
+    protected override DamageShell AffectedShell => DamageShell.Health;
 
-    public override void Update(TimeSpan elapsedTime) {}
-
-    public void HandleEvent(ModifyHealthDamage @event)
+    public override void ModifyDamage(ref DamagePreview preview)
     {
         if (UserSettings.Instance.Debug.InvulnerableBuildings)
         {
-            @event.DamagePreview.Resist(Resistance.Full);
+            preview.Resist(Resistance.Full);
         }
     }
 }

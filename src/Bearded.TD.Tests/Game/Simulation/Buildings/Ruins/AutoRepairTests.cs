@@ -25,7 +25,8 @@ public sealed class AutoRepairTests
         healthEventReceiver = new HealthEventReceiver();
         componentTestBed.AddComponent(healthEventReceiver);
         componentTestBed.AddComponent(new FactionProvider(FactionTestFactory.CreateFaction()));
-        componentTestBed.AddComponent(new Health(new HealthParametersTemplate(1000.HitPoints(), null)));
+        componentTestBed.AddComponent(
+            new HitPointsPool(new HitPointsPoolParametersTemplate(1000.HitPoints(), null, DamageShell.Health, null)));
     }
 
     [Fact]

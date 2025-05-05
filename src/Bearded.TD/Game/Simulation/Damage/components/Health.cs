@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using Bearded.Graphics;
+using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Shared.TechEffects;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -17,38 +15,21 @@ interface IHealth
 
 [Component("health")]
 sealed class Health :
-    HitPointsPool<Health.IParameters>,
+    Component,
     IHealth,
     IPreviewListener<PreviewHealDamage>,
     IListener<HealDamage>
 {
-    internal interface IParameters : IParametersTemplate<IParameters>
-    {
-        [Modifiable(1, Type = AttributeType.Health)]
-        HitPoints MaxHealth { get; }
+    public HitPoints CurrentHealth => pool?.CurrentHitPoints ?? throw new Exception();
+    public HitPoints MaxHealth => pool?.MaxHitPoints ?? throw new Exception();
 
-        HitPoints? InitialHealth { get; }
-    }
-
-    public HitPoints CurrentHealth => CurrentHitPoints;
-    public HitPoints MaxHealth => MaxHitPoints;
-
-    protected override HitPoints TargetMaxHitPoints => Parameters.MaxHealth;
-    public override DamageShell Shell => DamageShell.Health;
-    protected override Color Color => Constants.Game.GameUI.HealthColor;
-
-    public Health(IParameters parameters) : base(parameters, parameters.MaxHealth)
-    {
-        if (Parameters.InitialHealth is { } initialHealth)
-        {
-            OverrideCurrentHitPoints(initialHealth);
-        }
-    }
+    private HitPointsPool? pool;
 
     protected override void OnAdded()
     {
         Events.Subscribe<PreviewHealDamage>(this);
         Events.Subscribe<HealDamage>(this);
+        ComponentDependencies.Depend<HitPointsPool>(Owner, Events, p => pool = p, p => p.Shell == DamageShell.Health);
     }
 
     public override void OnRemoved()
@@ -63,22 +44,11 @@ sealed class Health :
 
     public void HandleEvent(HealDamage @event)
     {
-        RestoreHitPoints(@event.Heal.Heal.Amount);
-    }
-
-    protected override TypedDamage ModifyDamage(
-        TypedDamage damage, out IReadOnlyList<AdditionalHitEffect> additionalEffects)
-    {
-        var preview = new HealthDamagePreview(damage);
-        Events.Send(new ModifyHealthDamage(preview));
-        additionalEffects = preview.AdditionalEffects;
-        var resistance = preview.DamageResistance ?? Resistance.Zero;
-        return resistance.ApplyToDamage(damage);
+        pool?.RestoreHitPoints(@event.Heal.Heal.Amount);
     }
 
     public override void Update(TimeSpan elapsedTime)
     {
-        base.Update(elapsedTime);
         if (CurrentHealth <= HitPoints.Zero)
         {
             Events.Send(new EnactDeath());

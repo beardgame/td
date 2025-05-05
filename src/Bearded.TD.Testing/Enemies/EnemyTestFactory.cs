@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using static Bearded.TD.Testing.UniqueIds;
 using GameObjectBlueprint = Bearded.TD.Content.Models.GameObjectBlueprint;
@@ -23,18 +24,27 @@ static class EnemyTestFactory
             new GameObjectBlueprint(
                 NextUniqueModAwareId(),
                 socketShapes.Select(socketComponent)
+                    .Append(hitPointsComponent())
                     .Append(healthComponent())
                     .Append(threatComponent(10))
                     .Append(archetypeComponent(archetype))
                     .ToImmutableArray()), 1);
     }
 
+    private static IComponent hitPointsComponent()
+    {
+        return new Content.Serialization.Models.Component<HitPointsPool.IParameters>
+        {
+            Id = "hitPoints",
+            Parameters = new HitPointsPoolParametersTemplate(null, null, DamageShell.Health, null)
+        };
+    }
+
     private static IComponent healthComponent()
     {
-        return new Content.Serialization.Models.Component<Health.IParameters>
+        return new Content.Serialization.Models.Component<VoidParameters>
         {
-            Id = "health",
-            Parameters = new HealthParametersTemplate(null, null)
+            Id = "health"
         };
     }
 
