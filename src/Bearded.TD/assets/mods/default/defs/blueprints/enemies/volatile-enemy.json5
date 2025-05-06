@@ -18,7 +18,7 @@
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 150 } },
+        { id: "hitPoints", parameters: { maxHitPoints: 150, shell: "health" } },
         { id: "threat", parameters:  { threat: 180 } },
         { id: "damageBuildings", parameters: { damage: 12, attackRate: 0.5 } },
 

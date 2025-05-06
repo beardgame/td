@@ -27,10 +27,11 @@
       id: "defaultTileOccupancy"
     },
     {
-      id: "health",
+      id: "hitPoints",
       parameters: {
         initialHealth: 1,
-        maxHealth: 100
+        maxHealth: 100,
+        shell: "health"
       }
     },
     {

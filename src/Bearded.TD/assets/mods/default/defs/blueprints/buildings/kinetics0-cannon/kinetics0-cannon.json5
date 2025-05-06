@@ -12,7 +12,7 @@
         { id: "footprint", parameters: { footprint: "single" } },
         { id: "footprintTransformation" },
         { id: "defaultTileOccupancy" },
-        { id: "health", parameters: { initialHealth: 1, maxHealth: 100 } },
+        { id: "hitPoints", parameters: { initialHitPoints: 1, maxHitPoints: 100, shell: "health" } },
         { id: "allowManualControl" },
         {
             id: "allowManualOverdrive",
