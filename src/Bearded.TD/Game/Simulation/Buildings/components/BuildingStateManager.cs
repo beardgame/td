@@ -23,7 +23,7 @@ sealed class BuildingStateManager : Component,
         IListener<PreventRuin>
 {
     private readonly BuildingState state = new();
-    private IHealth? health;
+    private HitPointsPool? hitPoints;
     private IBreakageReceipt? ruinedBreakage;
     private bool ruinPrevented;
 
@@ -49,7 +49,7 @@ sealed class BuildingStateManager : Component,
         Events.Subscribe<PreventPlayerHealthChanges>(this);
         Events.Subscribe<PreventRuin>(this);
 
-        ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
+        ComponentDependencies.Depend<HitPointsPool>(Owner, Events, h => hitPoints = h);
 
         var ruinState = new FindObjectRuinState(false);
         Events.Preview(ref ruinState);
@@ -117,12 +117,15 @@ sealed class BuildingStateManager : Component,
         Events.Send(new Materialized());
     }
 
+    private double? hitPointPercentage =>
+        hitPoints == null ? null : hitPoints.CurrentHitPoints / hitPoints.MaxHitPoints;
+
     public override void Update(TimeSpan elapsedTime)
     {
         if (state.IsCompleted &&
             ruinedBreakage == null &&
             !ruinPrevented &&
-            (health?.HealthPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
+            (hitPointPercentage ?? 1) < Constants.Game.Building.RuinedPercentage)
         {
             Owner.Sync(RuinBuilding.Command);
         }

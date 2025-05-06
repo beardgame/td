@@ -15,7 +15,7 @@ sealed class IncompleteRepair
 {
     private readonly Faction repairingFaction;
     private readonly ProgressTracker progressTracker;
-    private IHealth? health;
+    private HitPointsPool? hitPoints;
     private IHealthEventReceiver? healthEventReceiver;
 
     public double PercentageComplete { get; private set; }
@@ -30,7 +30,8 @@ sealed class IncompleteRepair
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
+        ComponentDependencies.Depend<HitPointsPool>(
+            Owner, Events, h => hitPoints = h, p => p.Shell == DamageShell.Health);
         ComponentDependencies.Depend<IHealthEventReceiver>(
             Owner, Events, receiver => healthEventReceiver = receiver);
     }
@@ -49,9 +50,9 @@ sealed class IncompleteRepair
 
     public void OnStart()
     {
-        if (health != null && healthEventReceiver != null)
+        if (hitPoints != null && healthEventReceiver != null)
         {
-            hitPointsToHeal = health.MaxHealth - health.CurrentHealth;
+            hitPointsToHeal = hitPoints.MaxHitPoints - hitPoints.CurrentHitPoints;
         }
     }
 
@@ -85,11 +86,11 @@ sealed class IncompleteRepair
         Owner.Game.Meta.Events.Send(new BuildingRepairFinished(Owner));
     }
 
-    private void addHitPoints(HitPoints hitPoints)
+    private void addHitPoints(HitPoints hp)
     {
-        if (hitPoints != HitPoints.Zero)
+        if (hp != HitPoints.Zero)
         {
-            healthEventReceiver!.Heal(new HealInfo(hitPoints));
+            healthEventReceiver!.Heal(new HealInfo(hp));
         }
     }
 

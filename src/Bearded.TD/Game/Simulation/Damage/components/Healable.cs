@@ -6,35 +6,31 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-interface IHealth
-{
-    HitPoints CurrentHealth { get; }
-    HitPoints MaxHealth { get; }
-    double HealthPercentage => CurrentHealth / MaxHealth;
-}
-
-[Component("health")]
-sealed class Health :
+sealed class Healable :
     Component,
-    IHealth,
     IPreviewListener<PreviewHealDamage>,
     IListener<HealDamage>
 {
     public HitPoints CurrentHealth => pool?.CurrentHitPoints ?? throw new Exception();
     public HitPoints MaxHealth => pool?.MaxHitPoints ?? throw new Exception();
 
+    private ComponentDependencies.IDependencyRef? poolDependency;
     private HitPointsPool? pool;
 
     protected override void OnAdded()
     {
         Events.Subscribe<PreviewHealDamage>(this);
         Events.Subscribe<HealDamage>(this);
-        ComponentDependencies.Depend<HitPointsPool>(Owner, Events, p => pool = p, p => p.Shell == DamageShell.Health);
+        poolDependency = ComponentDependencies.Depend<HitPointsPool>(
+            Owner, Events, p => pool = p, p => p.Shell == DamageShell.Health);
     }
 
     public override void OnRemoved()
     {
-        State.IsInvalid("Can never remove health components.");
+        Events.Unsubscribe<PreviewHealDamage>(this);
+        Events.Unsubscribe<HealDamage>(this);
+        poolDependency?.Dispose();
+        poolDependency = null;
     }
 
     public void PreviewEvent(ref PreviewHealDamage @event)
@@ -47,11 +43,5 @@ sealed class Health :
         pool?.RestoreHitPoints(@event.Heal.Heal.Amount);
     }
 
-    public override void Update(TimeSpan elapsedTime)
-    {
-        if (CurrentHealth <= HitPoints.Zero)
-        {
-            Events.Send(new EnactDeath());
-        }
-    }
+    public override void Update(TimeSpan elapsedTime) {}
 }

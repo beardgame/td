@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.Buildings;
 [Component("coreStats")]
 sealed class CoreStats : Component, ICoreStats
 {
-    private IHealth? health;
+    private HitPointsPool? hitPoints;
     private EmergencyEMP? emp;
 
     public GameObject Object => Owner;
@@ -15,15 +15,16 @@ sealed class CoreStats : Component, ICoreStats
     private bool deleted;
     public bool Deleted => deleted || Owner.Deleted;
 
-    public HitPoints CurrentHealth => health?.CurrentHealth ?? HitPoints.Zero;
-    public HitPoints MaxHealth => health?.MaxHealth ?? HitPoints.Zero;
+    public HitPoints CurrentHealth => hitPoints?.CurrentHitPoints ?? HitPoints.Zero;
+    public HitPoints MaxHealth => hitPoints?.MaxHitPoints ?? HitPoints.Zero;
 
     public EMPStatus EMPStatus =>
         emp == null ? EMPStatus.Absent : (emp.Available ? EMPStatus.Ready : EMPStatus.Recharging);
 
     protected override void OnAdded()
     {
-        ComponentDependencies.Depend<IHealth>(Owner, Events, h => health = h);
+        ComponentDependencies.Depend<HitPointsPool>(
+            Owner, Events, h => hitPoints = h, p => p.Shell == DamageShell.Health);
         ComponentDependencies.Depend<EmergencyEMP>(Owner, Events, e => emp = e);
     }
 

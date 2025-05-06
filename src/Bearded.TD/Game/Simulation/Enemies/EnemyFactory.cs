@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Exploration;
@@ -33,12 +34,14 @@ static class EnemyFactory
 
     private static void addGameplayComponents(GameObject obj)
     {
-        if (!obj.TryGetSingleComponent<IHealth>(out var health))
+        var allPools = obj.GetComponents<HitPointsPool>().ToImmutableArray();
+        if (allPools.IsEmpty)
         {
-            throw new InvalidOperationException("Enemies must have health component");
+            throw new InvalidOperationException("Enemies must have hit points component");
         }
+        var totalHealth = allPools.Aggregate(HitPoints.Zero, (hp, pool) => hp + pool.MaxHitPoints);
         var radius =
-            ((MathF.Atan(.005f * (health.MaxHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
+            ((MathF.Atan(.005f * (totalHealth.NumericValue - 200)) + MathConstants.PiOver2) / MathConstants.Pi * 0.6f).U();
         obj.AddComponent(new CapsuleCollider(new CapsuleColliderParametersTemplate(radius, radius * 2, true)));
 
         var statuses = new StatusTracker();
@@ -47,7 +50,9 @@ static class EnemyFactory
         obj.AddComponent(new ElementSystemEntity());
         obj.AddComponent(new EnemyLife());
         obj.AddComponent(new HealthEventReceiver());
+        obj.AddComponent(new DieWhenAllHitPointsDepleted());
         obj.AddComponent(new Killable());
+        obj.AddComponent(new Healable());
         obj.AddComponent(statuses);
         obj.AddComponent(new StatusRenderer(statuses, new InputAwareStatusDisplayCondition()));
         obj.AddComponent(new EventReceiver<TakeHit>());

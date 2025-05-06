@@ -193,7 +193,6 @@ public sealed class TargetingModeTests
         var obj = new GameObject(null, Position3.Zero, Direction2.Zero);
         obj.AddComponent(
             new HitPointsPool(new HitPointsPoolParametersTemplate(HitPoints.Max, hp, DamageShell.Health, null)));
-        obj.AddComponent(new Health());
         return obj;
     }
 }

@@ -1,9 +1,9 @@
 using System;
-using System.Linq;
 using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
+using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
@@ -22,7 +22,7 @@ sealed class IncompleteBuildingComponent : Component, IBuildingConstructionSynce
     {
         ComponentDependencies.Depend<IHealthEventReceiver>(Owner, Events, r => receiver = r);
 
-        var maxHealth = Owner.GetComponents<IHealth>().SingleOrDefault()?.MaxHealth ?? new HitPoints(1);
+        var maxHealth = SpaceTime1MathF.Min(1.HitPoints(), Owner.MaxHitPointsInShell(DamageShell.Health));
         work = new IncompleteBuildingWork(Owner, Events, maxHealth, addHealth);
         Events.Subscribe(work);
     }
