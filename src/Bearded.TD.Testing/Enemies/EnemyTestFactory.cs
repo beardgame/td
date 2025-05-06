@@ -25,7 +25,6 @@ static class EnemyTestFactory
                 NextUniqueModAwareId(),
                 socketShapes.Select(socketComponent)
                     .Append(hitPointsComponent())
-                    .Append(healthComponent())
                     .Append(threatComponent(10))
                     .Append(archetypeComponent(archetype))
                     .ToImmutableArray()), 1);
@@ -37,14 +36,6 @@ static class EnemyTestFactory
         {
             Id = "hitPoints",
             Parameters = new HitPointsPoolParametersTemplate(null, null, DamageShell.Health, null)
-        };
-    }
-
-    private static IComponent healthComponent()
-    {
-        return new Content.Serialization.Models.Component<VoidParameters>
-        {
-            Id = "health"
         };
     }
 
