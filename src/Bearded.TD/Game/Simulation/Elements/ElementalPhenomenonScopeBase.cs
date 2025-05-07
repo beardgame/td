@@ -51,7 +51,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         // null -> effect A
         if (activeEffect is null)
         {
-            BeforeEffectStart(target, out var createStatus);
+            StartScope(target, out var createStatus);
             startEffect(effect, out var createOverrideStatus);
             createStatus = createOverrideStatus ?? createStatus;
             var receipt = createStatus is null ? null : reportStatus(createStatus);
@@ -64,7 +64,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
         // effect A -> effect B
         var statusIcon = activeEffect.StatusIcon;
-        EndActiveEffect(target, effect);
+        EndEffect(target, effect);
         startEffect(effect, out var createNewStatus);
         if (createNewStatus is not null)
         {
@@ -77,7 +77,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     private void startEffect(TEffect effect, out ElementalStatus? newStatus)
     {
         var ctx = new EffectStartContext();
-        StartActiveEffect(target, effect, ctx);
+        StartEffect(target, effect, ctx);
         newStatus = ctx.NewStatus;
     }
 
@@ -94,7 +94,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     {
         if (activeEffect is null) return;
 
-        AfterEffectEnd(target);
+        EndScope(target);
         activeEffect.StatusIcon?.DeleteImmediately();
         activeEffect = null;
     }
@@ -106,11 +106,11 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     }
 
     protected abstract bool TryChooseEffect(out TEffect effect);
-    protected abstract void BeforeEffectStart(GameObject target, out ElementalStatus? status);
-    protected abstract void StartActiveEffect(GameObject target, TEffect effect, EffectStartContext context);
+    protected abstract void StartScope(GameObject target, out ElementalStatus? status);
+    protected abstract void StartEffect(GameObject target, TEffect effect, EffectStartContext context);
     protected abstract void ApplyEffectTick(GameObject target, TEffect effect);
-    protected abstract void EndActiveEffect(GameObject target, TEffect effect);
-    protected abstract void AfterEffectEnd(GameObject target);
+    protected abstract void EndEffect(GameObject target, TEffect effect);
+    protected abstract void EndScope(GameObject target);
 
     private readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
     private sealed record ActiveEffect(TEffect Effect, IStatusReceipt? StatusIcon);

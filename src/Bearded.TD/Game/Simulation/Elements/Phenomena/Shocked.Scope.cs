@@ -39,14 +39,14 @@ static partial class Shocked
                 false);
         }
 
-        protected override void BeforeEffectStart(GameObject target, out ElementalStatus? status)
+        protected override void StartScope(GameObject target, out ElementalStatus? status)
         {
             lightningShocks = new LightningShocks();
             target.AddComponent(lightningShocks);
             status = new ElementalStatus("snail".ToStatusIconSpriteId());
         }
 
-        protected override void StartActiveEffect(GameObject target, Effect effect, EffectStartContext context)
+        protected override void StartEffect(GameObject target, Effect effect, EffectStartContext context)
         {
             var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
             if (!target.CanApplyUpgrade(upgrade)) return;
@@ -55,13 +55,13 @@ static partial class Shocked
 
         protected override void ApplyEffectTick(GameObject target, Effect effect) { }
 
-        protected override void EndActiveEffect(GameObject target, Effect effect)
+        protected override void EndEffect(GameObject target, Effect effect)
         {
             receipt?.Rollback();
             receipt = null;
         }
 
-        protected override void AfterEffectEnd(GameObject target)
+        protected override void EndScope(GameObject target)
         {
             if (lightningShocks == null)
             {

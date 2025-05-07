@@ -42,12 +42,12 @@ static class LowerWeaponRange
             return true;
         }
 
-        protected override void BeforeEffectStart(GameObject target, out ElementalStatus? status)
+        protected override void StartScope(GameObject target, out ElementalStatus? status)
         {
             status = new ElementalStatus("eye-disabled".ToStatusIconSpriteId());
         }
 
-        protected override void StartActiveEffect(GameObject target, Effect effect, EffectStartContext context)
+        protected override void StartEffect(GameObject target, Effect effect, EffectStartContext context)
         {
             var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
             if (!target.CanApplyUpgrade(upgrade)) return;
@@ -56,13 +56,13 @@ static class LowerWeaponRange
 
         protected override void ApplyEffectTick(GameObject target, Effect effect) { }
 
-        protected override void EndActiveEffect(GameObject target, Effect effect)
+        protected override void EndEffect(GameObject target, Effect effect)
         {
             receipt?.Rollback();
             receipt = null;
         }
 
-        protected override void AfterEffectEnd(GameObject target) { }
+        protected override void EndScope(GameObject target) { }
 
         private static IUpgradeEffect createUpgradeEffect(Effect effect)
         {
