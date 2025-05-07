@@ -32,8 +32,8 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
         if (TryChooseEffect(out var effect))
         {
-            ApplyEffectTick(target, effect);
             startEffectIfPreviouslyInactive();
+            ApplyEffectTick(target, effect);
         }
         else
         {
