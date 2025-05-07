@@ -10,7 +10,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 {
     private readonly GameObject target;
     private readonly IStatusTracker? statusDisplay;
-    private readonly List<EffectWithExpiry> activeEffects = new();
+    private readonly List<EffectWithExpiry> activeEffects = [];
     private ActiveEffect? activeEffect;
 
     protected IEnumerable<TEffect> ActiveEffects => activeEffects.Select(e => e.Effect);
@@ -32,7 +32,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
         if (TryChooseEffect(out var effect))
         {
-            startEffectIfPreviouslyInactive();
+            transitionToEffect(effect);
             ApplyEffectTick(target, effect);
         }
         else
@@ -46,21 +46,46 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
         }
     }
 
-    private void startEffectIfPreviouslyInactive()
+    private void transitionToEffect(TEffect effect)
     {
-        if (activeEffect is not null) return;
+        // null -> effect A
+        if (activeEffect is null)
+        {
+            BeforeEffectStart(target, out var createStatus);
+            startEffect(effect, out var createOverrideStatus);
+            createStatus = createOverrideStatus ?? createStatus;
+            var receipt = createStatus is null ? null : reportStatus(createStatus);
+            activeEffect = new ActiveEffect(effect, receipt);
+            return;
+        }
 
-        StartEffect(target);
-        var statusReceipt = reportStatus();
-        activeEffect = new ActiveEffect(statusReceipt);
+        // effect A -> effect A
+        if (activeEffect.Effect.Equals(effect)) return;
+
+        // effect A -> effect B
+        var statusIcon = activeEffect.StatusIcon;
+        EndActiveEffect(target, effect);
+        startEffect(effect, out var createNewStatus);
+        if (createNewStatus is not null)
+        {
+            statusIcon?.DeleteImmediately();
+            statusIcon = reportStatus(createNewStatus);
+        }
+        activeEffect = new ActiveEffect(effect, statusIcon);
     }
 
-    private IStatusReceipt? reportStatus()
+    private void startEffect(TEffect effect, out ElementalStatus? newStatus)
     {
-        var elementalStatus = MakeStatus(target.Game.Meta.Blueprints);
+        var ctx = new EffectStartContext();
+        StartActiveEffect(target, effect, ctx);
+        newStatus = ctx.NewStatus;
+    }
+
+    private IStatusReceipt? reportStatus(ElementalStatus status)
+    {
         var statusReceipt = statusDisplay?.AddStatus(
             new StatusSpec(StatusType.Negative, null),
-            StatusAppearance.IconOnly(elementalStatus.Sprite),
+            StatusAppearance.IconOnly(status.Sprite),
             null);
         return statusReceipt;
     }
@@ -69,7 +94,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     {
         if (activeEffect is null) return;
 
-        EndEffect(target);
+        AfterEffectEnd(target);
         activeEffect.StatusIcon?.DeleteImmediately();
         activeEffect = null;
     }
@@ -81,11 +106,22 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     }
 
     protected abstract bool TryChooseEffect(out TEffect effect);
+    protected abstract void BeforeEffectStart(GameObject target, out ElementalStatus? status);
+    protected abstract void StartActiveEffect(GameObject target, TEffect effect, EffectStartContext context);
     protected abstract void ApplyEffectTick(GameObject target, TEffect effect);
-    protected abstract void StartEffect(GameObject target);
-    protected abstract void EndEffect(GameObject target);
-    protected abstract ElementalStatus MakeStatus(Blueprints blueprints);
+    protected abstract void EndActiveEffect(GameObject target, TEffect effect);
+    protected abstract void AfterEffectEnd(GameObject target);
 
     private readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
-    private sealed record ActiveEffect(IStatusReceipt? StatusIcon);
+    private sealed record ActiveEffect(TEffect Effect, IStatusReceipt? StatusIcon);
+
+    protected class EffectStartContext
+    {
+        public ElementalStatus? NewStatus { get; private set; }
+
+        public void ChangeStatus(ElementalStatus status)
+        {
+            NewStatus = status;
+        }
+    }
 }

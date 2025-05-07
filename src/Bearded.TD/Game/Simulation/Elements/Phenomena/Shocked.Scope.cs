@@ -30,14 +30,6 @@ static partial class Shocked
             return true;
         }
 
-        protected override void ApplyEffectTick(GameObject target, Effect effect)
-        {
-            receipt?.Rollback();
-            var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
-            if (!target.CanApplyUpgrade(upgrade)) return;
-            receipt = target.ApplyUpgrade(upgrade);
-        }
-
         private static IUpgradeEffect createUpgradeEffect(Effect effect)
         {
             return new ModifyParameter(
@@ -47,30 +39,37 @@ static partial class Shocked
                 false);
         }
 
-        protected override void StartEffect(GameObject target)
+        protected override void BeforeEffectStart(GameObject target, out ElementalStatus? status)
         {
             lightningShocks = new LightningShocks();
             target.AddComponent(lightningShocks);
+            status = new ElementalStatus("snail".ToStatusIconSpriteId());
         }
 
-        protected override void EndEffect(GameObject target)
+        protected override void StartActiveEffect(GameObject target, Effect effect, EffectStartContext context)
+        {
+            var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
+            if (!target.CanApplyUpgrade(upgrade)) return;
+            receipt = target.ApplyUpgrade(upgrade);
+        }
+
+        protected override void ApplyEffectTick(GameObject target, Effect effect) { }
+
+        protected override void EndActiveEffect(GameObject target, Effect effect)
+        {
+            receipt?.Rollback();
+            receipt = null;
+        }
+
+        protected override void AfterEffectEnd(GameObject target)
         {
             if (lightningShocks == null)
             {
                 throw new InvalidOperationException("Cannot end effect that was not started.");
             }
 
-            receipt?.Rollback();
-            receipt = null;
-
             target.RemoveComponent(lightningShocks);
             lightningShocks = null;
-        }
-
-        protected override ElementalStatus MakeStatus(Blueprints blueprints)
-        {
-            var sprite = blueprints.LoadStatusIconSprite("snail");
-            return new ElementalStatus("snail".ToStatusIconSpriteId());
         }
     }
 }

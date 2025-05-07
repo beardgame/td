@@ -10,11 +10,9 @@ namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 static partial class OnFire
 {
-    private sealed class Scope : ElementalPhenomenonScopeBase<Effect>
+    private sealed class Scope(GameObject target) : ElementalPhenomenonScopeBase<Effect>(target)
     {
         private FireFlicker? fireFlicker;
-
-        public Scope(GameObject target) : base(target) { }
 
         protected override bool TryChooseEffect(out Effect effect)
         {
@@ -29,6 +27,15 @@ static partial class OnFire
             return true;
         }
 
+        protected override void BeforeEffectStart(GameObject target, out ElementalStatus? status)
+        {
+            fireFlicker = new FireFlicker();
+            target.AddComponent(fireFlicker);
+            status = new ElementalStatus("fire".ToStatusIconSpriteId());
+        }
+
+        protected override void StartActiveEffect(GameObject target, Effect effect, EffectStartContext context) { }
+
         protected override void ApplyEffectTick(GameObject target, Effect effect)
         {
             var damage = effect.DamagePerSecond * TickDuration;
@@ -36,13 +43,9 @@ static partial class OnFire
                 .TryDoDamage(target, damage.Typed(DamageType.Fire), Hit.FromSelf());
         }
 
-        protected override void StartEffect(GameObject target)
-        {
-            fireFlicker = new FireFlicker();
-            target.AddComponent(fireFlicker);
-        }
+        protected override void EndActiveEffect(GameObject target, Effect effect) { }
 
-        protected override void EndEffect(GameObject target)
+        protected override void AfterEffectEnd(GameObject target)
         {
             if (fireFlicker == null)
             {
@@ -50,11 +53,6 @@ static partial class OnFire
             }
             target.RemoveComponent(fireFlicker);
             fireFlicker = null;
-        }
-
-        protected override ElementalStatus MakeStatus(Blueprints blueprints)
-        {
-            return new ElementalStatus("fire".ToStatusIconSpriteId());
         }
     }
 }

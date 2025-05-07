@@ -29,9 +29,7 @@ static partial class Stunned
             return true;
         }
 
-        protected override void ApplyEffectTick(GameObject target, Effect effect) {}
-
-        protected override void StartEffect(GameObject target)
+        protected override void BeforeEffectStart(GameObject target, out ElementalStatus? status)
         {
             if (receipt != null || sparks != null)
             {
@@ -40,15 +38,24 @@ static partial class Stunned
 
             if (!target.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
             {
+                status = null;
                 return;
             }
 
             receipt = breakageHandler.BreakObject();
             sparks = new LightningShocks();
             target.AddComponent(sparks);
+
+            status = new ElementalStatus("unstable-orb".ToStatusIconSpriteId());
         }
 
-        protected override void EndEffect(GameObject target)
+        protected override void StartActiveEffect(GameObject target, Effect effect, EffectStartContext context) { }
+
+        protected override void ApplyEffectTick(GameObject target, Effect effect) {}
+
+        protected override void EndActiveEffect(GameObject target, Effect effect) { }
+
+        protected override void AfterEffectEnd(GameObject target)
         {
             receipt?.Repair();
             receipt = null;
@@ -58,11 +65,6 @@ static partial class Stunned
                 target.RemoveComponent(sparks);
                 sparks = null;
             }
-        }
-
-        protected override ElementalStatus MakeStatus(Blueprints blueprints)
-        {
-            return new ElementalStatus("unstable-orb".ToStatusIconSpriteId());
         }
     }
 }
