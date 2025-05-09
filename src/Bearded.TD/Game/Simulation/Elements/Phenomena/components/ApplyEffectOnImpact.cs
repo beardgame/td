@@ -10,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<TouchObject>
     where TParameters : IParametersTemplate<TParameters>
-    where TEffect : IElementalEffect
+    where TEffect : IElementalEffect<TEffect>
 {
     protected abstract double Probability { get; }
 

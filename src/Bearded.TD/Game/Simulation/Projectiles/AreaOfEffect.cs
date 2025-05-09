@@ -24,7 +24,7 @@ static class AreaOfEffect
 
     public static void ApplyStatusEffect<T>(
         GameState game, T effect, Position3 center, Unit range)
-        where T : IElementalEffect
+        where T : IElementalEffect<T>
     {
         foreach (var (obj, _) in FindObjects(game, center, range))
         {

@@ -21,7 +21,7 @@ interface IAreaEffectParameters
 abstract class ApplyAreaEffectOnImpact<TParameters, TEffect> : Component<TParameters>,
     IListener<CollideWithLevel>, IListener<CollideWithObject>
     where TParameters : IParametersTemplate<TParameters>, IAreaEffectParameters
-    where TEffect : IElementalEffect
+    where TEffect : IElementalEffect<TEffect>
 {
     protected ApplyAreaEffectOnImpact(TParameters parameters) : base(parameters) { }
 

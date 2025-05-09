@@ -1,23 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
-abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.IScope<TEffect> where TEffect : IElementalEffect
+abstract class ElementalPhenomenonScopeBase<TEffect>
+    : ElementalPhenomenonScopeBase, IElementalEffect<TEffect>.IScope
+    where TEffect : struct, IElementalEffect<TEffect>, IEquatable<TEffect>
 {
-    private readonly GameObject target;
     private readonly IStatusTracker? statusDisplay;
     private readonly List<EffectWithExpiry> activeEffects = [];
     private ActiveEffect? activeEffect;
 
-    protected IEnumerable<TEffect> ActiveEffects => activeEffects.Select(e => e.Effect);
+    protected GameObject Target { get; private set; }
 
     protected ElementalPhenomenonScopeBase(GameObject target)
     {
-        this.target = target;
+        Target = target;
         target.TryGetSingleComponent(out statusDisplay);
     }
 
@@ -28,57 +32,48 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
     public void ApplyTick(Instant now)
     {
-        activeEffects.RemoveAll(e => e.Expiry <= now);
+        activeEffects.RemoveAll(now, static (t, e) => e.Expiry <= t);
 
-        if (TryChooseEffect(out var effect))
+        if (TryChooseEffect(CollectionsMarshal.AsSpan(activeEffects)) is { } effect)
         {
             transitionToEffect(effect);
-            ApplyEffectTick(target, effect);
+            ApplyEffectTick(effect);
         }
         else
         {
             endEffectIfPreviouslyActive();
         }
 
-        if (activeEffect?.StatusIcon is not null)
+        if (activeEffect?.StatusIcon is { } icon)
         {
-            updateStatusIconExpiry(activeEffect.StatusIcon);
+            updateStatusIconExpiry(icon);
         }
     }
 
     private void transitionToEffect(TEffect effect)
     {
         // null -> effect A
-        if (activeEffect is null)
+        if (activeEffect is not { } current)
         {
-            StartScope(target, out var createStatus);
-            startEffect(effect, out var createOverrideStatus);
-            createStatus = createOverrideStatus ?? createStatus;
-            var receipt = createStatus is null ? null : reportStatus(createStatus);
+            EffectChangeResult? statusChange = null;
+            StartScope(effect, ref statusChange);
+            var receipt = statusChange?.NewStatus is { } status ? reportStatus(status) : null;
             activeEffect = new ActiveEffect(effect, receipt);
             return;
         }
 
         // effect A -> effect A
-        if (activeEffect.Effect.Equals(effect)) return;
+        if (current.Effect.Equals(effect))
+            return;
 
         // effect A -> effect B
-        var statusIcon = activeEffect.StatusIcon;
-        EndEffect(target, effect);
-        startEffect(effect, out var createNewStatus);
-        if (createNewStatus is not null)
         {
-            statusIcon?.DeleteImmediately();
-            statusIcon = reportStatus(createNewStatus);
+            EffectChangeResult? statusChange = null;
+            ChangeActiveEffect(current.Effect, effect, ref statusChange);
+            current.StatusIcon?.DeleteImmediately();
+            var receipt = statusChange?.NewStatus is { } status ? reportStatus(status) : null;
+            activeEffect = new ActiveEffect(effect, receipt);
         }
-        activeEffect = new ActiveEffect(effect, statusIcon);
-    }
-
-    private void startEffect(TEffect effect, out ElementalStatus? newStatus)
-    {
-        var ctx = new EffectStartContext();
-        StartEffect(target, effect, ctx);
-        newStatus = ctx.NewStatus;
     }
 
     private IStatusReceipt? reportStatus(ElementalStatus status)
@@ -92,36 +87,44 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
     private void endEffectIfPreviouslyActive()
     {
-        if (activeEffect is null) return;
+        if (activeEffect is not { } current) return;
 
-        EndScope(target);
-        activeEffect.StatusIcon?.DeleteImmediately();
+        EndScope(current.Effect);
+        current.StatusIcon?.DeleteImmediately();
         activeEffect = null;
     }
 
     private void updateStatusIconExpiry(IStatusReceipt statusIcon)
     {
-        var latestExpiry = activeEffects.Select(e => e.Expiry).Max();
+        var latestExpiry = activeEffects.Max(static e => e.Expiry);
         statusIcon.SetExpiryTime(latestExpiry);
     }
 
-    protected abstract bool TryChooseEffect(out TEffect effect);
-    protected abstract void StartScope(GameObject target, out ElementalStatus? status);
-    protected abstract void StartEffect(GameObject target, TEffect effect, EffectStartContext context);
-    protected abstract void ApplyEffectTick(GameObject target, TEffect effect);
-    protected abstract void EndEffect(GameObject target, TEffect effect);
-    protected abstract void EndScope(GameObject target);
+    protected abstract TEffect? TryChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects);
+    protected abstract void StartScope(TEffect effect, ref EffectChangeResult? statusChange);
+    protected abstract void ChangeActiveEffect(TEffect previousEffect, TEffect newEffect, ref EffectChangeResult? statusChange);
+    protected abstract void ApplyEffectTick(TEffect effect);
+    protected abstract void EndScope(TEffect effect);
 
-    private readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
-    private sealed record ActiveEffect(TEffect Effect, IStatusReceipt? StatusIcon);
+    protected readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
+    private readonly record struct ActiveEffect(TEffect Effect, IStatusReceipt? StatusIcon);
 
-    protected class EffectStartContext
+}
+
+// Base class for non-generic members
+abstract class ElementalPhenomenonScopeBase
+{
+    public readonly struct EffectChangeResult
     {
-        public ElementalStatus? NewStatus { get; private set; }
+        public ElementalStatus? NewStatus { get; private init; }
 
-        public void ChangeStatus(ElementalStatus status)
-        {
-            NewStatus = status;
-        }
+        public static EffectChangeResult HideStatus => default;
+
+        public static EffectChangeResult ShowStatus(ElementalStatus status) => new() { NewStatus = status };
+
+        public static implicit operator EffectChangeResult(ElementalStatus newStatus) => ShowStatus(newStatus);
     }
+
+    protected static EffectChangeResult HideStatus => EffectChangeResult.HideStatus;
+    protected static EffectChangeResult ShowStatus(ElementalStatus status) => EffectChangeResult.ShowStatus(status);
 }

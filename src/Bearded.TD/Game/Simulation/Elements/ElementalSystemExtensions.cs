@@ -4,7 +4,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 
 static class ElementalSystemExtensions
 {
-    public static bool TryApplyEffect<T>(this GameObject obj, T effect) where T : IElementalEffect
+    public static bool TryApplyEffect<T>(this GameObject obj, T effect) where T : IElementalEffect<T>
     {
         if (!obj.TryGetSingleComponent<IElementSystemEntity>(out var entity))
         {
