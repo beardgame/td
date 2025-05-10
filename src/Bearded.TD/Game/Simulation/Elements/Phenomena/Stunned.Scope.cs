@@ -53,7 +53,7 @@ static partial class Stunned
 
         protected override void ApplyEffectTick(GameObject target, Effect effect) {}
 
-        protected override void EndEffect(GameObject target, Effect effect) { }
+        protected override void EndEffect() { }
 
         protected override void EndScope(GameObject target)
         {

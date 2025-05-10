@@ -56,7 +56,7 @@ static class LowerWeaponRange
 
         protected override void ApplyEffectTick(GameObject target, Effect effect) { }
 
-        protected override void EndEffect(GameObject target, Effect effect)
+        protected override void EndEffect()
         {
             receipt?.Rollback();
             receipt = null;

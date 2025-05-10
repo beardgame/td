@@ -64,7 +64,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
 
         // effect A -> effect B
         var statusIcon = activeEffect.StatusIcon;
-        EndEffect(target, effect);
+        EndEffect();
         startEffect(effect, out var createNewStatus);
         if (createNewStatus is not null)
         {
@@ -109,7 +109,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect> : IElementalPhenomenon.ISco
     protected abstract void StartScope(GameObject target, out ElementalStatus? status);
     protected abstract void StartEffect(GameObject target, TEffect effect, EffectStartContext context);
     protected abstract void ApplyEffectTick(GameObject target, TEffect effect);
-    protected abstract void EndEffect(GameObject target, TEffect effect);
+    protected abstract void EndEffect();
     protected abstract void EndScope(GameObject target);
 
     private readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);

@@ -43,7 +43,7 @@ static partial class OnFire
                 .TryDoDamage(target, damage.Typed(DamageType.Fire), Hit.FromSelf());
         }
 
-        protected override void EndEffect(GameObject target, Effect effect) { }
+        protected override void EndEffect() { }
 
         protected override void EndScope(GameObject target)
         {
