@@ -1,0 +1,27 @@
+﻿{
+  id: "sprint-on-straights-alchemy",
+  affinityElement: "alchemy",
+  socketShape: "sprintOnStraights",
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "enemyIcon",
+        parameters: {
+          icon: "enemies.sprinting-enemy",
+          element: "alchemy",
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "lowerBumpedBuildingRange",
+        parameters: {
+          duration: 2,
+          factor: 0.4,
+        }
+      }
+    },
+  ],
+}

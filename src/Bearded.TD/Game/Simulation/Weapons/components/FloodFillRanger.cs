@@ -20,6 +20,8 @@ sealed class FloodFillRanger : IRanger
         Unit minimumRange,
         Unit maximumRange)
     {
+        maximumRange = Unit.Max(maximumRange, minimumRange + 1.U());
+
         var level = game.Level;
 
         var minSteps = MathExtensions.CeiledToInt(minimumRange.NumericValue);

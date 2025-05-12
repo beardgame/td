@@ -25,6 +25,8 @@ sealed class LineOfSightRanger : IRanger
         Unit minimumRange,
         Unit maximumRange)
     {
+        maximumRange = Unit.Max(maximumRange, minimumRange + 1.U());
+
         var position = weapon.Position.XY();
         var rangeSquared = maximumRange.Squared;
         var minRangeSquared = minimumRange.Squared;
