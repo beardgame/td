@@ -18,10 +18,20 @@ static class LinqExtensions
         TKey key, Func<TValue> getValueToInsert)
         where TKey : notnull
     {
+        return dictionary.GetOrInsert(key, getValueToInsert, static factory => factory());
+    }
+
+    public static TValue GetOrInsert<TKey, TValue, TContext>(
+        this Dictionary<TKey, TValue> dictionary,
+        TKey key,
+        TContext context,
+        Func<TContext, TValue> getValueToInsert)
+        where TKey : notnull
+    {
         if (dictionary.TryGetValue(key, out var value))
             return value;
 
-        value = getValueToInsert();
+        value = getValueToInsert(context);
         dictionary.Add(key, value);
         return value;
     }

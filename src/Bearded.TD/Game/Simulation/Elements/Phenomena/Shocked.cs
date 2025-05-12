@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Upgrades;
@@ -8,9 +8,9 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-static class LowerWeaponRange
+static class Shocked
 {
-    public readonly record struct Effect(double Factor, TimeSpan Duration) : IElementalEffect<Effect>
+    public readonly record struct Effect(double MovementPenalty, TimeSpan Duration) : IElementalEffect<Effect>
     {
         public IElementalEffect<Effect>.IScope NewScope(GameObject target) => new Scope(target);
     }
@@ -18,16 +18,18 @@ static class LowerWeaponRange
     private sealed class Scope(GameObject target) : ElementalPhenomenonScopeBase<Effect>(target)
     {
         private IUpgradeReceipt? receipt;
+        private LightningShocks? lightningShocks;
 
         protected override Effect? ChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
         {
-            return activeEffects.MinByOrDefault(e => e.Effect.Factor)?.Effect;
+            return activeEffects.MaxByOrDefault(static e => e.Effect.MovementPenalty)?.Effect;
         }
 
         protected override void StartScope(ref EffectChangeResult statusChange)
         {
-            statusChange = new ElementalStatus("eye-disabled".ToStatusIconSpriteId());
-
+            lightningShocks = new LightningShocks();
+            Target.AddComponent(lightningShocks);
+            statusChange = new ElementalStatus("snail".ToStatusIconSpriteId());
         }
 
         protected override void StartEffect(Effect effect, ref EffectChangeResult statusChange)
@@ -47,13 +49,20 @@ static class LowerWeaponRange
 
         protected override void EndScope()
         {
+            if (lightningShocks == null)
+            {
+                throw new InvalidOperationException("Cannot end effect that was not started.");
+            }
+
+            Target.RemoveComponent(lightningShocks);
+            lightningShocks = null;
         }
 
         private static ModifyParameter createUpgradeEffect(Effect effect)
         {
             return new ModifyParameter(
-                AttributeType.Range,
-                Modification.MultiplyWith(effect.Factor),
+                AttributeType.MovementSpeed,
+                Modification.MultiplyWith(1 - effect.MovementPenalty),
                 UpgradePrerequisites.Empty,
                 false);
         }
