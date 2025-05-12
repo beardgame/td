@@ -24,10 +24,7 @@ static class DamageModifiers
         void undo()
         {
             dependencyRef.Dispose();
-            if (foundPool != null)
-            {
-                foundPool.RemoveModifier(modifier);
-            }
+            foundPool?.RemoveModifier(modifier);
         }
     }
 
