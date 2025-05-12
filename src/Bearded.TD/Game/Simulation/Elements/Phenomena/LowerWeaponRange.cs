@@ -19,30 +19,34 @@ static class LowerWeaponRange
     {
         private IUpgradeReceipt? receipt;
 
-        protected override Effect? TryChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
+        protected override Effect? ChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
         {
             return activeEffects.MinByOrDefault(e => e.Effect.Factor)?.Effect;
         }
 
-        protected override void StartScope(Effect effect, ref EffectChangeResult? statusChange)
+        protected override void StartScope(ref EffectChangeResult statusChange)
         {
             statusChange = new ElementalStatus("eye-disabled".ToStatusIconSpriteId());
 
+        }
+
+        protected override void StartEffect(Effect effect, ref EffectChangeResult statusChange)
+        {
             var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
             if (!Target.CanApplyUpgrade(upgrade)) return;
             receipt = Target.ApplyUpgrade(upgrade);
         }
 
-        protected override void ChangeActiveEffect(Effect previousEffect, Effect newEffect, ref EffectChangeResult? statusChange)
-        {
-        }
-
         protected override void ApplyEffectTick(Effect effect) { }
 
-        protected override void EndScope(Effect effect)
+        protected override void EndEffect()
         {
             receipt?.Rollback();
             receipt = null;
+        }
+
+        protected override void EndScope()
+        {
         }
 
         private static ModifyParameter createUpgradeEffect(Effect effect)

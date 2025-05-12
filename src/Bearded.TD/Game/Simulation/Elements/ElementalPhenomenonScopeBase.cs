@@ -34,7 +34,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect>
     {
         activeEffects.RemoveAll(now, static (t, e) => e.Expiry <= t);
 
-        if (TryChooseEffect(CollectionsMarshal.AsSpan(activeEffects)) is { } effect)
+        if (ChooseEffect(CollectionsMarshal.AsSpan(activeEffects)) is { } effect)
         {
             transitionToEffect(effect);
             ApplyEffectTick(effect);
@@ -44,7 +44,7 @@ abstract class ElementalPhenomenonScopeBase<TEffect>
             endEffectIfPreviouslyActive();
         }
 
-        if (activeEffect?.StatusIcon is { } icon)
+        if (activeEffect?.StatusReceipt is { } icon)
         {
             updateStatusIconExpiry(icon);
         }
@@ -55,9 +55,14 @@ abstract class ElementalPhenomenonScopeBase<TEffect>
         // null -> effect A
         if (activeEffect is not { } current)
         {
-            EffectChangeResult? statusChange = null;
-            StartScope(effect, ref statusChange);
-            var receipt = statusChange?.NewStatus is { } status ? reportStatus(status) : null;
+            var statusChange = EffectChangeResult.NoChange;
+            StartScope(ref statusChange);
+            StartEffect(effect, ref statusChange);
+
+            var receipt = statusChange.Type == EffectChangeType.ShowStatusIcon
+                ? reportStatus(statusChange.NewStatus!.Value)
+                : null;
+
             activeEffect = new ActiveEffect(effect, receipt);
             return;
         }
@@ -68,10 +73,18 @@ abstract class ElementalPhenomenonScopeBase<TEffect>
 
         // effect A -> effect B
         {
-            EffectChangeResult? statusChange = null;
-            ChangeActiveEffect(current.Effect, effect, ref statusChange);
-            current.StatusIcon?.DeleteImmediately();
-            var receipt = statusChange?.NewStatus is { } status ? reportStatus(status) : null;
+            var statusChange = EffectChangeResult.NoChange;
+            EndEffect();
+            StartEffect(effect, ref statusChange);
+
+            var receipt = current.StatusReceipt;
+
+            if (statusChange.Type == EffectChangeType.ShowStatusIcon)
+            {
+                receipt?.DeleteImmediately();
+                receipt = reportStatus(statusChange.NewStatus!.Value);
+            }
+
             activeEffect = new ActiveEffect(effect, receipt);
         }
     }
@@ -89,8 +102,9 @@ abstract class ElementalPhenomenonScopeBase<TEffect>
     {
         if (activeEffect is not { } current) return;
 
-        EndScope(current.Effect);
-        current.StatusIcon?.DeleteImmediately();
+        EndEffect();
+        EndScope();
+        current.StatusReceipt?.DeleteImmediately();
         activeEffect = null;
     }
 
@@ -100,31 +114,41 @@ abstract class ElementalPhenomenonScopeBase<TEffect>
         statusIcon.SetExpiryTime(latestExpiry);
     }
 
-    protected abstract TEffect? TryChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects);
-    protected abstract void StartScope(TEffect effect, ref EffectChangeResult? statusChange);
-    protected abstract void ChangeActiveEffect(TEffect previousEffect, TEffect newEffect, ref EffectChangeResult? statusChange);
+    protected abstract TEffect? ChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects);
+    protected abstract void StartScope(ref EffectChangeResult statusChange);
+    protected abstract void StartEffect(TEffect effect, ref EffectChangeResult statusChange);
     protected abstract void ApplyEffectTick(TEffect effect);
-    protected abstract void EndScope(TEffect effect);
+    protected abstract void EndEffect();
+    protected abstract void EndScope();
 
     protected readonly record struct EffectWithExpiry(TEffect Effect, Instant Expiry);
-    private readonly record struct ActiveEffect(TEffect Effect, IStatusReceipt? StatusIcon);
+    private readonly record struct ActiveEffect(TEffect Effect, IStatusReceipt? StatusReceipt);
 
 }
 
 // Base class for non-generic members
 abstract class ElementalPhenomenonScopeBase
 {
-    public readonly struct EffectChangeResult
+    protected enum EffectChangeType
     {
+        Retain = 0,
+        ShowStatusIcon = 1,
+    }
+
+    protected readonly struct EffectChangeResult
+    {
+        public EffectChangeType Type { get; private init; }
+
         public ElementalStatus? NewStatus { get; private init; }
 
-        public static EffectChangeResult HideStatus => default;
+        public static EffectChangeResult NoChange => default;
 
-        public static EffectChangeResult ShowStatus(ElementalStatus status) => new() { NewStatus = status };
+        public static EffectChangeResult ShowStatus(ElementalStatus status) => new()
+        {
+            Type = EffectChangeType.ShowStatusIcon,
+            NewStatus = status,
+        };
 
         public static implicit operator EffectChangeResult(ElementalStatus newStatus) => ShowStatus(newStatus);
     }
-
-    protected static EffectChangeResult HideStatus => EffectChangeResult.HideStatus;
-    protected static EffectChangeResult ShowStatus(ElementalStatus status) => EffectChangeResult.ShowStatus(status);
 }

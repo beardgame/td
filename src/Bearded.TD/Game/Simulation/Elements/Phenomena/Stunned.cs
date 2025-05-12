@@ -19,12 +19,12 @@ static class Stunned
         private IBreakageReceipt? receipt;
         private LightningShocks? sparks;
 
-        protected override Effect? TryChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
+        protected override Effect? ChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
         {
             return activeEffects.MaxByOrDefault(static e => e.Effect.Duration)?.Effect;
         }
 
-        protected override void StartScope(Effect effect, ref EffectChangeResult? statusChange)
+        protected override void StartScope(ref EffectChangeResult statusChange)
         {
             if (!Target.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
             {
@@ -38,11 +38,13 @@ static class Stunned
             statusChange = new ElementalStatus("unstable-orb".ToStatusIconSpriteId());
         }
 
-        protected override void ChangeActiveEffect(Effect previousEffect, Effect newEffect, ref EffectChangeResult? statusChange) { }
+        protected override void StartEffect(Effect effect, ref EffectChangeResult statusChange) { }
 
         protected override void ApplyEffectTick(Effect effect) { }
 
-        protected override void EndScope(Effect effect)
+        protected override void EndEffect() { }
+
+        protected override void EndScope()
         {
             receipt?.Repair();
             receipt = null;

@@ -20,32 +20,35 @@ static class Shocked
         private IUpgradeReceipt? receipt;
         private LightningShocks? lightningShocks;
 
-        protected override Effect? TryChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
+        protected override Effect? ChooseEffect(ReadOnlySpan<EffectWithExpiry> activeEffects)
         {
             return activeEffects.MaxByOrDefault(static e => e.Effect.MovementPenalty)?.Effect;
         }
 
-        protected override void StartScope(Effect effect, ref EffectChangeResult? statusChange)
+        protected override void StartScope(ref EffectChangeResult statusChange)
         {
             lightningShocks = new LightningShocks();
             Target.AddComponent(lightningShocks);
             statusChange = new ElementalStatus("snail".ToStatusIconSpriteId());
-
-            tryApplyEffect(effect);
         }
 
-        protected override void ChangeActiveEffect(Effect previousEffect, Effect newEffect, ref EffectChangeResult? statusChange)
+        protected override void StartEffect(Effect effect, ref EffectChangeResult statusChange)
         {
-            tryApplyEffect(newEffect);
+            var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
+            if (!Target.CanApplyUpgrade(upgrade)) return;
+            receipt = Target.ApplyUpgrade(upgrade);
         }
 
         protected override void ApplyEffectTick(Effect effect) { }
 
-        protected override void EndScope(Effect effect)
+        protected override void EndEffect()
         {
             receipt?.Rollback();
             receipt = null;
+        }
 
+        protected override void EndScope()
+        {
             if (lightningShocks == null)
             {
                 throw new InvalidOperationException("Cannot end effect that was not started.");
@@ -53,14 +56,6 @@ static class Shocked
 
             Target.RemoveComponent(lightningShocks);
             lightningShocks = null;
-        }
-
-        private void tryApplyEffect(Effect effect)
-        {
-            receipt?.Rollback();
-            var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
-            if (!Target.CanApplyUpgrade(upgrade)) return;
-            receipt = Target.ApplyUpgrade(upgrade);
         }
 
         private static ModifyParameter createUpgradeEffect(Effect effect)
