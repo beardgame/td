@@ -19,7 +19,6 @@ sealed class Shield(Shield.IParameters parameters) : DamageModifier<Shield.IPara
 
     public override void ModifyDamage(ref DamagePreview preview)
     {
-        preview.ApplyDamageCap(Parameters.DamageThreshold);
-        preview.PierceDamageCap(Parameters.BlockedDamageEffectiveness);
+        preview.ApplyDamageCap(Parameters.DamageThreshold, Parameters.BlockedDamageEffectiveness);
     }
 }

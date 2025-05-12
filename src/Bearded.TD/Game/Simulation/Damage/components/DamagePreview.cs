@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Bearded.TD.Utilities.SpaceTime;
 
@@ -6,16 +5,8 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 struct DamagePreview(TypedDamage damage, List<AdditionalHitEffect> additionalEffects)
 {
-    // Information about initial hit
-    public TypedDamage UnmodifiedDamage { get; } = damage;
-    public DamageType DamageType { get; } = damage.Type;
-    public HitPoints UnmodifiedDamageAmount { get; } = damage.Amount;
-
-    public Resistance DamageResistance { get; private set; } = Resistance.Zero;
-    public HitPoints FlatArmourReduction { get; private set; } = HitPoints.Zero;
-    public double ArmourPiercingEffectiveness { get; private set; } = 1.0;
-    public HitPoints DamageCap { get; private set; } = HitPoints.Max;
-    public double DamageOverCapEffectiveness { get; private set; } = 1.0;
+    public HitPoints DamageAmount { get; private set; } = damage.Amount;
+    public DamageType DamageType { get; private set; } = damage.Type;
 
     public void AddAdditionalEffect(AdditionalHitEffect effect)
     {
@@ -24,26 +15,20 @@ struct DamagePreview(TypedDamage damage, List<AdditionalHitEffect> additionalEff
 
     public void Resist(Resistance resistance)
     {
-        DamageResistance = Resistance.Max(resistance, DamageResistance);
+        DamageAmount = resistance.ApplyToDamage(new UntypedDamage(DamageAmount)).Amount;
     }
 
-    public void ApplyArmour(HitPoints amount)
+    public void ApplyFlatReduction(HitPoints threshold, double blockedEffectiveness)
     {
-        FlatArmourReduction = SpaceTime1MathF.Max(amount, FlatArmourReduction);
+        var underThreshold = SpaceTime1MathF.Min(threshold, DamageAmount);
+        var overThreshold = DamageAmount - underThreshold;
+        DamageAmount = overThreshold + (float) blockedEffectiveness * underThreshold;
     }
 
-    public void PierceArmour(double effectiveness)
+    public void ApplyDamageCap(HitPoints threshold, double effectivenessOverCap)
     {
-        ArmourPiercingEffectiveness = Math.Min(effectiveness, ArmourPiercingEffectiveness);
-    }
-
-    public void ApplyDamageCap(HitPoints amount)
-    {
-        DamageCap = SpaceTime1MathF.Min(amount, DamageCap);
-    }
-
-    public void PierceDamageCap(double effectiveness)
-    {
-        DamageOverCapEffectiveness = Math.Min(effectiveness, DamageOverCapEffectiveness);
+        var underThreshold = SpaceTime1MathF.Min(threshold, DamageAmount);
+        var overThreshold = DamageAmount - underThreshold;
+        DamageAmount = underThreshold + (float) effectivenessOverCap * overThreshold;
     }
 }

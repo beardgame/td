@@ -17,7 +17,7 @@ partial class HitPointsPool
             effect.ModifyDamage(ref preview);
         }
 
-        return DamageCalculations.FromPreview(preview);
+        return new TypedDamage(preview.DamageAmount, preview.DamageType);
     }
 
     public void AddModifier(IDamageModifier modifier)

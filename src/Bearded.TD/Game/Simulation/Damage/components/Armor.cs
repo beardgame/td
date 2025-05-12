@@ -22,10 +22,10 @@ sealed class Armor(Armor.IParameters parameters) : DamageModifier<Armor.IParamet
 
     public override void ModifyDamage(ref DamagePreview preview)
     {
-        preview.ApplyArmour(Parameters.BlockedDamageAmount);
         // Is it nice that this is hardcoded? Maybe not, but it's also inherent armour behaviour ¯\_(ツ)_/¯
-        preview.PierceArmour(preview.DamageType == DamageType.Lightning
+        var underThresholdEffectiveness = preview.DamageType == DamageType.Lightning
             ? Parameters.LightningPiercingFactor
-            : Parameters.BlockedDamageEffectiveness);
+            : Parameters.BlockedDamageEffectiveness;
+        preview.ApplyFlatReduction(Parameters.BlockedDamageAmount, underThresholdEffectiveness);
     }
 }
