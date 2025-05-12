@@ -1,44 +1,32 @@
 using System.Collections.Immutable;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Game.Simulation.Drawing;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Meta;
 using Bearded.TD.Rendering;
 using Bearded.TD.Shared.Events;
-using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DamageResistances : Component, IListener<ModifyHealthDamage>, IListener<DrawComponents>
+sealed class DamageResistances(ImmutableDictionary<DamageType, Resistance> resistances)
+    : DamageModifier, IListener<DrawComponents>
 {
-    private readonly ImmutableDictionary<DamageType, Resistance> resistances;
-
-    public DamageResistances(ImmutableDictionary<DamageType, Resistance> resistances)
-    {
-        this.resistances = resistances;
-    }
+    protected override DamageShell AffectedShell => DamageShell.Health;
 
     protected override void OnAdded()
     {
-        Events.Subscribe<ModifyHealthDamage>(this);
-        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe(this);
+        base.OnAdded();
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe<ModifyHealthDamage>(this);
-        Events.Unsubscribe<DrawComponents>(this);
         base.OnRemoved();
+        Events.Unsubscribe(this);
     }
 
-    public override void Activate() { }
-
-    public override void Update(TimeSpan elapsedTime) { }
-
-    public void HandleEvent(ModifyHealthDamage @event)
+    public override void ModifyDamage(ref DamagePreview preview)
     {
-        var preview = @event.DamagePreview;
-        if (resistances.TryGetValue(preview.Type, out var resistance))
+        if (resistances.TryGetValue(preview.DamageType, out var resistance))
         {
             preview.Resist(resistance);
         }

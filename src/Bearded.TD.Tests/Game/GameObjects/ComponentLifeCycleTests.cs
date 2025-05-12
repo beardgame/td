@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Bearded.TD.Game.Simulation.Buildings;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Drawing.Particles;
 using Bearded.TD.Game.Simulation.Elements;
@@ -55,8 +54,7 @@ public sealed class ComponentLifeCycleTests
 
     // Components that can never be removed from their owner.
     private static readonly ImmutableHashSet<Type> permanentComponents = ImmutableHashSet.Create(
-        typeof(BuildingStateManager),
-        typeof(Health)
+        typeof(BuildingStateManager)
     );
 
     public static IEnumerable<object[]> GetAllComponents()

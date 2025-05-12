@@ -18,7 +18,7 @@
                 heightOffset: 0.1
             }
         },
-        { id: "health", parameters: { maxHealth: 200 } },
+        { id: "hitPoints", parameters: { maxHitPoints: 200, shell: "health" } },
         { id: "threat", parameters:  { threat: 240 } },
 
         { id: "archetype", parameters: { value: "elite" } },

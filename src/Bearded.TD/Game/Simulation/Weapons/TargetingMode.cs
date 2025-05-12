@@ -79,8 +79,7 @@ static class TargetingMode
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
-            return candidates.MaxBy(
-                c => c.GetComponents<IHealth>().FirstOrDefault()?.CurrentHealth.NumericValue, nullsFirst<float?>());
+            return candidates.MaxBy(c => c.CurrentTotalHitPointsOrNull()?.NumericValue, nullsFirst<float?>());
         }
     }
 
@@ -91,8 +90,7 @@ static class TargetingMode
 
         public GameObject? SelectTarget(IEnumerable<GameObject> candidates, TargetingContext context)
         {
-            return candidates.MinBy(
-                c => c.GetComponents<IHealth>().FirstOrDefault()?.CurrentHealth.NumericValue, nullsLast<float?>());
+            return candidates.MinBy(c => c.CurrentTotalHitPointsOrNull()?.NumericValue, nullsLast<float?>());
         }
     }
 

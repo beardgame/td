@@ -14,10 +14,18 @@
         {
             type: "component",
             parameters: {
-                id: "shield",
+                id: "hitPoints",
                 parameters: {
-                    maxHitPoints: 30
+                    maxHitPoints: 30,
+                    shell: "shield"
                 }
+            }
+        },
+        {
+            type: "component",
+            parameters: {
+                id: "shield",
+                parameters: {}
             }
         },
         {

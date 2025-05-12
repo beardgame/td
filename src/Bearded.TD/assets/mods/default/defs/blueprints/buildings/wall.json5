@@ -14,10 +14,11 @@
         { id: "defaultTileOccupancy" },
         { id: "canBeBuiltOn" },
         {
-            id: "health",
+            id: "hitPoints",
             parameters: {
                 initialHealth: 1,
-                maxHealth: 50
+                maxHealth: 50,
+                shell: "health"
             }
         },
         {

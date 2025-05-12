@@ -12,7 +12,7 @@
         { id: "cost", parameters: { resources: 1 } },
         { id: "footprint", parameters: { footprint: "seven" } },
         { id: "footprintTransformation" },
-        { id: "health", parameters: { maxHealth: 1000 } },
+        { id: "hitPoints", parameters: { maxHitPoints: 1000, shell: "health" } },
         { id: "sink" },
         { id: "defaultTileOccupancy" },
         { id: "gameOverOnDestroy" },

@@ -3,20 +3,13 @@ using Bearded.TD.Networking.Serialization;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-abstract partial class HitPointsPool<T>
+partial class HitPointsPool
 {
     public IStateToSync GetCurrentStateToSync() => new HealthSynchronizedState(this);
 
-    private sealed class HealthSynchronizedState : IStateToSync
+    private sealed class HealthSynchronizedState(HitPointsPool source) : IStateToSync
     {
-        private readonly HitPointsPool<T> source;
-        private float currentHealth;
-
-        public HealthSynchronizedState(HitPointsPool<T> source)
-        {
-            this.source = source;
-            currentHealth = source.CurrentHitPoints.NumericValue;
-        }
+        private float currentHealth = source.CurrentHitPoints.NumericValue;
 
         public void Serialize(INetBufferStream stream)
         {
