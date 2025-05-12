@@ -18,17 +18,17 @@ struct DamagePreview(TypedDamage damage, List<AdditionalHitEffect> additionalEff
         DamageAmount = resistance.ApplyToDamage(new UntypedDamage(DamageAmount)).Amount;
     }
 
-    public void ApplyFlatReduction(HitPoints threshold, double blockedEffectiveness)
+    public void ReduceDamageUnderThreshold(HitPoints threshold, double effectivenessUnderThreshold)
     {
         var underThreshold = SpaceTime1MathF.Min(threshold, DamageAmount);
         var overThreshold = DamageAmount - underThreshold;
-        DamageAmount = overThreshold + (float) blockedEffectiveness * underThreshold;
+        DamageAmount = overThreshold + (float) effectivenessUnderThreshold * underThreshold;
     }
 
-    public void ApplyDamageCap(HitPoints threshold, double effectivenessOverCap)
+    public void ReduceDamageOverThreshold(HitPoints threshold, double effectivenessOverThreshold)
     {
         var underThreshold = SpaceTime1MathF.Min(threshold, DamageAmount);
         var overThreshold = DamageAmount - underThreshold;
-        DamageAmount = underThreshold + (float) effectivenessOverCap * overThreshold;
+        DamageAmount = underThreshold + (float) effectivenessOverThreshold * overThreshold;
     }
 }

@@ -4,21 +4,22 @@ using Bearded.TD.Shared.TechEffects;
 namespace Bearded.TD.Game.Simulation.Damage;
 
 [Component("shield")]
-sealed class Shield(Shield.IParameters parameters) : DamageModifier<Shield.IParameters>(parameters)
+sealed class Shield(Shield.IParameters parameters)
+    : DamageModifier<Shield.IParameters>(parameters)
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(15)]
-        HitPoints DamageThreshold { get; }
+        HitPoints Threshold { get; }
 
         [Modifiable(0.1)]
-        double BlockedDamageEffectiveness { get; }
+        double EffectivenessOverThreshold { get; }
     }
 
     protected override DamageShell AffectedShell => DamageShell.Shield;
 
     public override void ModifyDamage(ref DamagePreview preview)
     {
-        preview.ApplyDamageCap(Parameters.DamageThreshold, Parameters.BlockedDamageEffectiveness);
+        preview.ReduceDamageOverThreshold(Parameters.Threshold, Parameters.EffectivenessOverThreshold);
     }
 }

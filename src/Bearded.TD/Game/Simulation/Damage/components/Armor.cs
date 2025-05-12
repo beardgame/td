@@ -26,6 +26,6 @@ sealed class Armor(Armor.IParameters parameters) : DamageModifier<Armor.IParamet
         var underThresholdEffectiveness = preview.DamageType == DamageType.Lightning
             ? Parameters.LightningPiercingFactor
             : Parameters.BlockedDamageEffectiveness;
-        preview.ApplyFlatReduction(Parameters.BlockedDamageAmount, underThresholdEffectiveness);
+        preview.ReduceDamageUnderThreshold(Parameters.BlockedDamageAmount, underThresholdEffectiveness);
     }
 }
