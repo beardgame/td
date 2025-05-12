@@ -12,7 +12,8 @@
                     shell: "shield"
                 }
             }
-        },{
+        },
+        {
             type: "component",
             parameters: {
                 id: "shield",

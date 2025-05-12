@@ -1,7 +1,6 @@
 using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Shared.Events;
-using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
@@ -11,8 +10,8 @@ sealed class Healable :
     IPreviewListener<PreviewHealDamage>,
     IListener<HealDamage>
 {
-    public HitPoints CurrentHealth => pool?.CurrentHitPoints ?? throw new Exception();
-    public HitPoints MaxHealth => pool?.MaxHitPoints ?? throw new Exception();
+    private HitPoints currentHealth => pool?.CurrentHitPoints ?? throw new Exception();
+    private HitPoints maxHealth => pool?.MaxHitPoints ?? throw new Exception();
 
     private ComponentDependencies.IDependencyRef? poolDependency;
     private HitPointsPool? pool;
@@ -35,7 +34,7 @@ sealed class Healable :
 
     public void PreviewEvent(ref PreviewHealDamage @event)
     {
-        @event = @event.CappedAt(MaxHealth - CurrentHealth);
+        @event = @event.CappedAt(maxHealth - currentHealth);
     }
 
     public void HandleEvent(HealDamage @event)
