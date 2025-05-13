@@ -4,7 +4,7 @@ using Bearded.TD.Game.Simulation.Drawing;
 using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Elements.Phenomena;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.Elements;

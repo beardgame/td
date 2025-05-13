@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -94,6 +93,7 @@ namespace Bearded.TD.Generators.TechEffects
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 ";

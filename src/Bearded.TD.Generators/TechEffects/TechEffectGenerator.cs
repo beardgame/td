@@ -53,12 +53,8 @@ namespace Bearded.TD.Generators.TechEffects
                 var attributeConverters = attributeConverterDictionary(
                     compilation, convertsAttributeFields.Select(compilation.ResolveFieldSymbol));
 
-                var templateInterface = compilation
-                        .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.IParametersTemplate`1")?
-                        .ConstructUnboundGenericType() ??
-                    throw new InvalidOperationException("Could not find parameters template interface.");
                 var interfacesToGenerateFor =
-                    findSymbolsImplementingInterface(compilation, allInterfaces, templateInterface);
+                    findSymbolsImplementingInterface(compilation, allInterfaces, context);
 
                 var attributeInterface = compilation
                         .GetTypeByMetadataName("Bearded.TD.Shared.TechEffects.ModifiableAttribute") ??
@@ -114,7 +110,7 @@ namespace Bearded.TD.Generators.TechEffects
         }
 
         private static IEnumerable<INamedTypeSymbol> findSymbolsImplementingInterface(
-            Compilation compilation, IEnumerable<InterfaceDeclarationSyntax> candidates, ISymbol target)
+            Compilation compilation, IEnumerable<InterfaceDeclarationSyntax> candidates, SourceProductionContext ctx)
         {
             foreach (var interfaceSyntax in candidates)
             {
@@ -126,7 +122,9 @@ namespace Bearded.TD.Generators.TechEffects
                     .Where(i => i.IsGenericType)
                     .Select(i => i.ConstructUnboundGenericType());
 
-                if (candidateInterfaces.Any(i => i.Equals(target, SymbolEqualityComparer.Default)))
+                if (candidateInterfaces
+                    .Any(i => i.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ==
+                        "global::Bearded.TD.Game.Simulation.GameObjects.Parameters.IParametersTemplate<>"))
                 {
                     yield return classSymbol;
                 }

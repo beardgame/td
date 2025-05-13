@@ -1,6 +1,6 @@
-﻿using Bearded.TD.Game.Simulation.Modules;
+﻿using Bearded.TD.Game.Simulation.GameObjects.Parameters;
+using Bearded.TD.Game.Simulation.Modules;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Simulation.GameObjects.Child;
 

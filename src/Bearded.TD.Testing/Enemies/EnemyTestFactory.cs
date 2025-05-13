@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
-using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using static Bearded.TD.Testing.UniqueIds;
 using GameObjectBlueprint = Bearded.TD.Content.Models.GameObjectBlueprint;

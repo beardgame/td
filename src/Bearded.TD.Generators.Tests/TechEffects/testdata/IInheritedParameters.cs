@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Shared.TechEffects;
+﻿using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using JetBrains.Annotations;
 
 namespace Bearded.TD.Generators.Tests.TechEffects;

@@ -1,5 +1,5 @@
 ﻿using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Utilities;
 using static Bearded.TD.Game.Simulation.Drawing.Particles.ParticlesSpringBetweenNeighbours;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;

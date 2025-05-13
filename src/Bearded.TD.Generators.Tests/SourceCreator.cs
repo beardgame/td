@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.Proxies;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
@@ -14,7 +15,8 @@ namespace Bearded.TD.Generators.Tests
     {
         private static readonly string dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
 
-        public static readonly ImmutableArray<MetadataReference> References = ImmutableArray.Create<MetadataReference>(
+        public static readonly ImmutableArray<MetadataReference> References =
+        [
             // .NET assemblies are finicky and need to be loaded in a special way.
             MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "mscorlib.dll")),
             MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.dll")),
@@ -26,8 +28,9 @@ namespace Bearded.TD.Generators.Tests
             MetadataReference.CreateFromFile(typeof(UsedImplicitlyAttribute).Assembly.Location),
 
             // Bearded
-            MetadataReference.CreateFromFile(typeof(AutomaticProxyAttribute).Assembly.Location)
-        );
+            MetadataReference.CreateFromFile(typeof(AutomaticProxyAttribute).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(IParametersTemplate).Assembly.Location)
+        ];
 
         public static async Task<SyntaxTree> SyntaxTreeFromRelativeFile(
             string relativePath, [CallerFilePath] string sourceFilePath = "")

@@ -1,6 +1,7 @@
-﻿using Bearded.Utilities;
+﻿using Bearded.TD.Shared.TechEffects;
+using Bearded.Utilities;
 
-namespace Bearded.TD.Shared.TechEffects;
+namespace Bearded.TD.Game.Simulation.GameObjects.Parameters;
 
 public interface IParametersTemplate
 {

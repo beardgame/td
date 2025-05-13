@@ -1,4 +1,4 @@
-﻿using Bearded.TD.Game.Simulation.GameObjects;
+﻿using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.TechEffects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
