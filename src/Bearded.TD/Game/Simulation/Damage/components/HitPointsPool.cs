@@ -1,6 +1,6 @@
-﻿using System;
-using Bearded.Graphics;
+﻿using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Synchronization;
 using Bearded.TD.Shared.TechEffects;

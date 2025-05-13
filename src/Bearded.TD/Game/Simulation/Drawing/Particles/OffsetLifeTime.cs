@@ -1,5 +1,5 @@
 ﻿using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;

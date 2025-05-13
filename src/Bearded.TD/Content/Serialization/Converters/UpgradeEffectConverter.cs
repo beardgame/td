@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Immutable;
 using System.IO;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Shared.TechEffects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using IComponent = Bearded.TD.Content.Serialization.Models.IComponent;

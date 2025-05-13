@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Units;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;

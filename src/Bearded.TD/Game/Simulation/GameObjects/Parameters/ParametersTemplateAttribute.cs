@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Shared.TechEffects;
+namespace Bearded.TD.Game.Simulation.GameObjects.Parameters;
 
 [AttributeUsage(AttributeTargets.Class)]
 [BaseTypeRequired(typeof(IParametersTemplate<>))]

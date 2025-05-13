@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Bearded.TD.Content.Behaviors;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using ISimulationComponent = Bearded.TD.Game.Simulation.GameObjects.IComponent;
 
 namespace Bearded.TD.Content.Serialization.Models;

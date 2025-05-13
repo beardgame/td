@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.Shared.TechEffects;
+namespace Bearded.TD.Game.Simulation.GameObjects.Parameters;
 
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public abstract class ModifiableBase<T> where T : ModifiableBase<T>

@@ -2,9 +2,9 @@
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Rendering.Vertices;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;

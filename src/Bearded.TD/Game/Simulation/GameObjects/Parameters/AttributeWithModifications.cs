@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Shared.TechEffects;
+namespace Bearded.TD.Game.Simulation.GameObjects.Parameters;
 
 public sealed class AttributeWithModifications<T> : IAttributeWithModifications
 {

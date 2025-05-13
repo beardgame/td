@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -87,7 +86,7 @@ using {@namespace};";
         public static string ClassTop(string @namespace, string className, ImmutableArray<string> modifiers) => $@"
 namespace {@namespace}
 {{
-    {string.Join(' ', modifiers)} class {className}
+    {string.Join(" ", modifiers)} class {className}
     {{";
 
         public const string ClassBottom = @"

@@ -2,7 +2,7 @@ using System;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 
-namespace Bearded.TD.Game.Simulation.GameObjects;
+namespace Bearded.TD.Game.Simulation.GameObjects.Parameters;
 
 sealed class ParameterTransaction(IParametersTemplate parameters, AttributeType attribute, Modification modification)
 {

@@ -1,4 +1,5 @@
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;

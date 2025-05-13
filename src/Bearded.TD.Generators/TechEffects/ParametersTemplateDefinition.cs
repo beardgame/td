@@ -29,7 +29,7 @@ namespace Bearded.TD.Generators.TechEffects
             Properties = properties;
 
             baseName = getInterfaceBaseName(interfaceName, containingTypes);
-            FullInterfaceName = string.Join('.', containingTypes.Select(t => t.Name).Append(interfaceName));
+            FullInterfaceName = string.Join(".", containingTypes.Select(t => t.Name).Append(interfaceName));
         }
 
         public override string ToString()
@@ -92,7 +92,7 @@ namespace Bearded.TD.Generators.TechEffects
                         var defaultValue = defaultConstant?.Value;
                         var typeConstant = modifiableAttribute?.NamedArguments
                             .FirstOrDefault(pair => pair.Key == "Type").Value;
-                        var attributeTypeValue = (byte?) typeConstant?.Value ?? default(byte);
+                        var attributeTypeValue = (byte?) typeConstant?.Value ?? 0;
                         var attributeTypeEnum = (AttributeType) attributeTypeValue;
                         var attributeType = $"AttributeType.{attributeTypeEnum}";
 
@@ -160,14 +160,23 @@ namespace Bearded.TD.Generators.TechEffects
         {
             string TypeName { get; }
 
-            string? Instantiation(object? value) => value == null ? null : $"{value}";
-            string ToRaw(string input) => input;
-            string FromRawConverter => "x => x";
+            string? Instantiation(object? value);
+            string ToRaw(string input);
+            string FromRawConverter { get; }
         }
 
-        private sealed class SimpleParameterType : IParameterType
+        private abstract class ParameterTypeBase : IParameterType
         {
-            public string TypeName { get; }
+            public abstract string TypeName { get; }
+
+            public virtual string? Instantiation(object? value) => value == null ? null : $"{value}";
+            public virtual string ToRaw(string input) => input;
+            public virtual string FromRawConverter => "x => x";
+        }
+
+        private sealed class SimpleParameterType : ParameterTypeBase
+        {
+            public override string TypeName { get; }
 
             public SimpleParameterType(string type)
             {
@@ -175,11 +184,11 @@ namespace Bearded.TD.Generators.TechEffects
             }
         }
 
-        private sealed class CastParameterType : IParameterType
+        private sealed class CastParameterType : ParameterTypeBase
         {
-            public string TypeName { get; }
+            public override string TypeName { get; }
 
-            public string FromRawConverter => $"x => ({TypeName}) x";
+            public override string FromRawConverter => $"x => ({TypeName}) x";
 
             public CastParameterType(string type)
             {

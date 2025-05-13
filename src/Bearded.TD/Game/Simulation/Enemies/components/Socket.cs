@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Upgrades;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 

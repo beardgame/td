@@ -1,8 +1,8 @@
 using Bearded.Graphics;
 using Bearded.TD.Game.Simulation.Drawing.Animation;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.Events;
-using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 

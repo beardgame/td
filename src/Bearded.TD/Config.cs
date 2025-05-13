@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
+[assembly:InternalsVisibleTo("Bearded.TD.Generators.Tests")]
 [assembly:InternalsVisibleTo("Bearded.TD.Testing")]
 [assembly:InternalsVisibleTo("Bearded.TD.Tests")]
 [assembly:InternalsVisibleTo("DynamicProxyGenAssembly2")]

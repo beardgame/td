@@ -1,5 +1,5 @@
 using Bearded.TD.Content.Mods;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 

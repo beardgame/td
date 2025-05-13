@@ -1,7 +1,7 @@
 ﻿using Bearded.TD.Game.Generation.Semantic.Features;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.Utilities.SpaceTime;
 using static System.Math;
 

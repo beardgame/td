@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Utilities.Collections;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
