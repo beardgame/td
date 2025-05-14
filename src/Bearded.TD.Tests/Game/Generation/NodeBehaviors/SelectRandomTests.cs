@@ -5,46 +5,45 @@ using FluentAssertions;
 using FsCheck.Xunit;
 using Xunit;
 
-namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors
+namespace Bearded.TD.Tests.Game.Generation.NodeBehaviors;
+
+public sealed class SelectRandomTests
 {
-    public sealed class SelectRandomTests
+    private static INodeBehavior behaviourWithParameters(double percentage)
+        => new SelectRandom(new SelectRandom.BehaviourParameters(percentage));
+
+    [Fact]
+    public void UnselectsEverythingWithPercentageZeroOrLess()
     {
-        private static INodeBehavior behaviourWithParameters(double percentage)
-            => new SelectRandom(new SelectRandom.BehaviourParameters(percentage));
+        var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
 
-        [Fact]
-        public void UnselectsEverythingWithPercentageZeroOrLess()
-        {
-            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
+        behaviourWithParameters(0).Generate(test.Context);
 
-            behaviourWithParameters(0).Generate(test.Context);
+        test.Context.Tiles.Selection.Count.Should().Be(0);
+    }
 
-            test.Context.Tiles.Selection.Count.Should().Be(0);
-        }
+    [Fact]
+    public void SelectsAllWithPercentageOneOrGreater()
+    {
+        var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
+        test.Context.Tiles.Selection.RemoveAll();
 
-        [Fact]
-        public void SelectsAllWithPercentageOneOrGreater()
-        {
-            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(2);
-            test.Context.Tiles.Selection.RemoveAll();
+        behaviourWithParameters(1).Generate(test.Context);
 
-            behaviourWithParameters(1).Generate(test.Context);
+        test.Context.Tiles.Selection.Count.Should().Be(test.Context.Tiles.All.Count);
+    }
 
-            test.Context.Tiles.Selection.Count.Should().Be(test.Context.Tiles.All.Count);
-        }
+    [Property]
+    public void SelectsApproximatelyGivenPercentage(int seed, byte inverseFraction)
+    {
+        var fraction = inverseFraction / (double)byte.MaxValue;
 
-        [Property]
-        public void SelectsApproximatelyGivenPercentage(int seed, byte inverseFraction)
-        {
-            var fraction = inverseFraction / (double)byte.MaxValue;
+        var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(10, seed);
 
-            var test = GenerationTestContext.CreateForHexagonalNodeWithRadius(10, seed);
+        behaviourWithParameters(fraction).Generate(test.Context);
 
-            behaviourWithParameters(fraction).Generate(test.Context);
-
-            var expectedSelectedTiles = MoreMath.RoundToInt(test.Context.Tiles.All.Count * fraction);
-            var selectedTiles = test.Context.Tiles.Selection.Count;
-            selectedTiles.Should().BeInRange(expectedSelectedTiles - 1, expectedSelectedTiles + 1);
-        }
+        var expectedSelectedTiles = MoreMath.RoundToInt(test.Context.Tiles.All.Count * fraction);
+        var selectedTiles = test.Context.Tiles.Selection.Count;
+        selectedTiles.Should().BeInRange(expectedSelectedTiles - 1, expectedSelectedTiles + 1);
     }
 }

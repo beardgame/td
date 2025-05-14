@@ -1,15 +1,14 @@
 ﻿using CommandLine;
 using JetBrains.Annotations;
 
-namespace Bearded.TD.MasterServer
-{
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    sealed class CommandLineOptions
-    {
-        [Option("application_name", Default = "Bearded.TD.Master", HelpText = "The Lidgren.Network application name.")]
-        public string ApplicationName { get; set; } = null!;
+namespace Bearded.TD.MasterServer;
 
-        [Option(Default = 24293, HelpText = "The port on which the master server runs.")]
-        public int Port { get; set; }
-    }
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+sealed class CommandLineOptions
+{
+    [Option("application_name", Default = "Bearded.TD.Master", HelpText = "The Lidgren.Network application name.")]
+    public string ApplicationName { get; set; } = null!;
+
+    [Option(Default = 24293, HelpText = "The port on which the master server runs.")]
+    public int Port { get; set; }
 }

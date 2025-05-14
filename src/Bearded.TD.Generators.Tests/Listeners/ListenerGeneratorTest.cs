@@ -8,26 +8,25 @@ using Xunit;
 using static Bearded.TD.Generators.Tests.SourceCreator;
 using static Bearded.TD.Generators.Tests.StaticConfig;
 
-namespace Bearded.TD.Generators.Tests.Listeners
+namespace Bearded.TD.Generators.Tests.Listeners;
+
+public sealed class ListenerGeneratorTest
 {
-    public sealed class ListenerGeneratorTest
+    [Fact]
+    public async Task GeneratesListenerPartialClass()
     {
-        [Fact]
-        public async Task GeneratesListenerPartialClass()
-        {
-            var syntaxTrees = ImmutableArray.Create(
-                await SyntaxTreeFromRelativeFile("testdata/EventImplementations.cs"),
-                await SyntaxTreeFromRelativeFile("testdata/MyEventListener.cs"),
-                await SyntaxTreeFromRelativeFile("testdata/MyEvents.cs")
-            );
-            var compilation = CSharpCompilation.Create("compilation", syntaxTrees, References);
-            var generator = new ListenerGenerator();
+        var syntaxTrees = ImmutableArray.Create(
+            await SyntaxTreeFromRelativeFile("testdata/EventImplementations.cs"),
+            await SyntaxTreeFromRelativeFile("testdata/MyEventListener.cs"),
+            await SyntaxTreeFromRelativeFile("testdata/MyEvents.cs")
+        );
+        var compilation = CSharpCompilation.Create("compilation", syntaxTrees, References);
+        var generator = new ListenerGenerator();
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
-            driver = driver.RunGenerators(compilation);
+        driver = driver.RunGenerators(compilation);
 
-            await Verifier.Verify(driver, DefaultVerifySettings);
-        }
+        await Verifier.Verify(driver, DefaultVerifySettings);
     }
 }

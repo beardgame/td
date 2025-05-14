@@ -2,23 +2,22 @@ using System.Runtime.CompilerServices;
 using DiffEngine;
 using VerifyTests;
 
-namespace Bearded.TD.Generators.Tests
+namespace Bearded.TD.Generators.Tests;
+
+public static class StaticConfig
 {
-    public static class StaticConfig
+    public static readonly VerifySettings DefaultVerifySettings;
+
+    static StaticConfig()
     {
-        public static readonly VerifySettings DefaultVerifySettings;
+        DefaultVerifySettings = new VerifySettings();
+        DefaultVerifySettings.UseDirectory("goldens");
+    }
 
-        static StaticConfig()
-        {
-            DefaultVerifySettings = new VerifySettings();
-            DefaultVerifySettings.UseDirectory("goldens");
-        }
-
-        [ModuleInitializer]
-        public static void Initialize()
-        {
-            DiffTools.UseOrder(DiffTool.Rider, DiffTool.VisualStudioCode);
-            VerifySourceGenerators.Initialize();
-        }
+    [ModuleInitializer]
+    public static void Initialize()
+    {
+        DiffTools.UseOrder(DiffTool.Rider, DiffTool.VisualStudioCode);
+        VerifySourceGenerators.Initialize();
     }
 }

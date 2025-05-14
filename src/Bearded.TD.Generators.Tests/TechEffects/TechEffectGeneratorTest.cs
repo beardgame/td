@@ -8,50 +8,49 @@ using Xunit;
 using static Bearded.TD.Generators.Tests.SourceCreator;
 using static Bearded.TD.Generators.Tests.StaticConfig;
 
-namespace Bearded.TD.Generators.Tests.TechEffects
+namespace Bearded.TD.Generators.Tests.TechEffects;
+
+public sealed class TechEffectGeneratorTest
 {
-    public sealed class TechEffectGeneratorTest
+    [Fact]
+    public async Task GeneratesProxyForInterface()
     {
-        [Fact]
-        public async Task GeneratesProxyForInterface()
-        {
-            var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/IMyParameters.cs");
-            var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
-            var generator = new TechEffectGenerator();
+        var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/IMyParameters.cs");
+        var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
+        var generator = new TechEffectGenerator();
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
-            driver = driver.RunGenerators(compilation);
+        driver = driver.RunGenerators(compilation);
 
-            await Verifier.Verify(driver, DefaultVerifySettings);
-        }
+        await Verifier.Verify(driver, DefaultVerifySettings);
+    }
 
-        [Fact]
-        public async Task GeneratesTypesForNestedInterface()
-        {
-            var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/ContainingType.cs");
-            var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
-            var generator = new TechEffectGenerator();
+    [Fact]
+    public async Task GeneratesTypesForNestedInterface()
+    {
+        var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/ContainingType.cs");
+        var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
+        var generator = new TechEffectGenerator();
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
-            driver = driver.RunGenerators(compilation);
+        driver = driver.RunGenerators(compilation);
 
-            await Verifier.Verify(driver, DefaultVerifySettings);
-        }
+        await Verifier.Verify(driver, DefaultVerifySettings);
+    }
 
-        [Fact]
-        public async Task GeneratesPropertiesOfInheritedInterfaces()
-        {
-            var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/IInheritedParameters.cs");
-            var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
-            var generator = new TechEffectGenerator();
+    [Fact]
+    public async Task GeneratesPropertiesOfInheritedInterfaces()
+    {
+        var syntaxTree = await SyntaxTreeFromRelativeFile("testdata/IInheritedParameters.cs");
+        var compilation = CSharpCompilation.Create("compilation", ImmutableArray.Create(syntaxTree), References);
+        var generator = new TechEffectGenerator();
 
-            GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
-            driver = driver.RunGenerators(compilation);
+        driver = driver.RunGenerators(compilation);
 
-            await Verifier.Verify(driver, DefaultVerifySettings);
-        }
+        await Verifier.Verify(driver, DefaultVerifySettings);
     }
 }

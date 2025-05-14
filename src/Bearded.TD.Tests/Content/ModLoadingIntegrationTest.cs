@@ -18,91 +18,90 @@ using FluentAssertions;
 using SharpGLTF.Schema2;
 using Xunit;
 
-namespace Bearded.TD.Tests.Content
+namespace Bearded.TD.Tests.Content;
+
+public sealed class ModLoadingIntegrationTest
 {
-    public sealed class ModLoadingIntegrationTest
+    [Fact]
+    public void AllModsLoadSuccessfully()
     {
-        [Fact]
-        public void AllModsLoadSuccessfully()
+        var allMods = new ModLister().GetAll().ToImmutableArray();
+        var sortedMods = new ModSorter().SortByDependency(allMods);
+        var logger = new Logger();
+        var graphicsLoader = new MockGraphicsLoader();
+        var profiler = new ModLoadingProfiler();
+        var context = new ModLoadingContext(logger, graphicsLoader, profiler);
+
+        var loadedMods = new List<Mod>();
+
+        foreach (var modForLoading in sortedMods.Select(modMetadata => new ModForLoading(modMetadata)))
         {
-            var allMods = new ModLister().GetAll().ToImmutableArray();
-            var sortedMods = new ModSorter().SortByDependency(allMods);
-            var logger = new Logger();
-            var graphicsLoader = new MockGraphicsLoader();
-            var profiler = new ModLoadingProfiler();
-            var context = new ModLoadingContext(logger, graphicsLoader, profiler);
-
-            var loadedMods = new List<Mod>();
-
-            foreach (var modForLoading in sortedMods.Select(modMetadata => new ModForLoading(modMetadata)))
+            modForLoading.StartLoading(context, loadedMods.AsReadOnly());
+            waitForModLoaded(modForLoading);
+            if (!modForLoading.DidLoadSuccessfully)
             {
-                modForLoading.StartLoading(context, loadedMods.AsReadOnly());
-                waitForModLoaded(modForLoading);
-                if (!modForLoading.DidLoadSuccessfully)
-                {
-                    modForLoading.Rethrow();
-                }
-                loadedMods.Add(modForLoading.GetLoadedMod());
+                modForLoading.Rethrow();
             }
-
-            context.Errors.Should().BeEmpty("no errors should be thrown by any blueprints");
+            loadedMods.Add(modForLoading.GetLoadedMod());
         }
 
-        private static void waitForModLoaded(ModForLoading modForLoading)
+        context.Errors.Should().BeEmpty("no errors should be thrown by any blueprints");
+    }
+
+    private static void waitForModLoaded(ModForLoading modForLoading)
+    {
+        while (!modForLoading.IsDone)
         {
-            while (!modForLoading.IsDone)
-            {
-                Thread.Sleep(TimeSpan.FromMilliseconds(100));
-            }
+            Thread.Sleep(TimeSpan.FromMilliseconds(100));
         }
+    }
 
-        private sealed class MockGraphicsLoader : IGraphicsLoader
-        {
-            public ISpriteSetImplementation CreateSpriteSet(
-                IEnumerable<Sampler> samplers,
-                IEnumerable<SpriteBitmaps> sprites,
-                SpriteSetConfiguration config) => new MockSpriteSetImplementation();
+    private sealed class MockGraphicsLoader : IGraphicsLoader
+    {
+        public ISpriteSetImplementation CreateSpriteSet(
+            IEnumerable<Sampler> samplers,
+            IEnumerable<SpriteBitmaps> sprites,
+            SpriteSetConfiguration config) => new MockSpriteSetImplementation();
 
-            public IMeshesImplementation CreateMeshes(ModelRoot modelRoot) => new MockMeshes();
+        public IMeshesImplementation CreateMeshes(ModelRoot modelRoot) => new MockMeshes();
 
-            public IRendererShader CreateRendererShader(
-                IList<ModShaderFile> shaders,
-                string shaderProgramName) => new MockRendererShader();
-        }
+        public IRendererShader CreateRendererShader(
+            IList<ModShaderFile> shaders,
+            string shaderProgramName) => new MockRendererShader();
+    }
 
-        private sealed class MockSpriteSetImplementation : ISpriteSetImplementation
-        {
-            public void Dispose() { }
+    private sealed class MockSpriteSetImplementation : ISpriteSetImplementation
+    {
+        public void Dispose() { }
 
-            public SpriteParameters GetSpriteParameters(string name) => default;
+        public SpriteParameters GetSpriteParameters(string name) => default;
 
-            public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
-                SpriteSet spriteSet,
-                IDrawableRenderers drawableRenderers,
-                DrawOrderGroup drawGroup,
-                int drawGroupOrderKey,
-                CreateVertex<TVertex, TVertexData> createVertex,
-                Shader shader)
-                where TVertex : struct, IVertexData => default!;
+        public DrawableSpriteSet<TVertex, TVertexData> MakeConcreteWith<TVertex, TVertexData>(
+            SpriteSet spriteSet,
+            IDrawableRenderers drawableRenderers,
+            DrawOrderGroup drawGroup,
+            int drawGroupOrderKey,
+            CreateVertex<TVertex, TVertexData> createVertex,
+            Shader shader)
+            where TVertex : struct, IVertexData => default!;
 
-            public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
-                IDrawableRenderers drawableRenderers,
-                CreateVertex<TVertex, TVertexData> createVertex,
-                Shader shader,
-                params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
-        }
+        public (DrawableSpriteSet<TVertex, TVertexData>, IRenderer) MakeCustomRendererWith<TVertex, TVertexData>(
+            IDrawableRenderers drawableRenderers,
+            CreateVertex<TVertex, TVertexData> createVertex,
+            Shader shader,
+            params IRenderSetting[] customRenderSettings) where TVertex : struct, IVertexData => default;
+    }
 
-        private sealed class MockMeshes : IMeshesImplementation
-        {
-            public IMesh GetMesh(string key) => default!;
+    private sealed class MockMeshes : IMeshesImplementation
+    {
+        public IMesh GetMesh(string key) => default!;
 
-            public void Dispose() { }
-        }
+        public void Dispose() { }
+    }
 
-        private sealed class MockRendererShader : IRendererShader
-        {
-            public void UseOnRenderer(IRenderer renderer) {}
-            public void RemoveFromRenderer(IRenderer renderer) {}
-        }
+    private sealed class MockRendererShader : IRendererShader
+    {
+        public void UseOnRenderer(IRenderer renderer) {}
+        public void RemoveFromRenderer(IRenderer renderer) {}
     }
 }
