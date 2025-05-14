@@ -71,17 +71,17 @@ sealed partial class UserSettings
 
         foreach (var name in splitSettingName)
         {
-            var member = currentObject.GetType().GetMember(name,
+            var member = currentObject!.GetType().GetMember(name,
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
                 .FirstOrDefault();
 
             switch (member)
             {
                 case FieldInfo field:
-                    currentObject = field.GetValue(currentObject);
+                    currentObject = field.GetValue(currentObject)!;
                     break;
                 case PropertyInfo property:
-                    currentObject = property.GetValue(currentObject);
+                    currentObject = property.GetValue(currentObject)!;
                     break;
                 default:
                     logger.Warning?.Log($"Could not find setting path part '{name}'");

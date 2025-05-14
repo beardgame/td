@@ -16,7 +16,7 @@ sealed class Binding<T> : IReadonlyBinding<T>
     public event GenericEventHandler<T>? ControlUpdated;
     public event GenericEventHandler<T>? SourceUpdated;
 
-    public Binding() : this(default) { }
+    public Binding() : this(default!) { }
 
     public Binding(T initialValue)
     {

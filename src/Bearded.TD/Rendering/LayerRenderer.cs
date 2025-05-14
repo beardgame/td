@@ -28,7 +28,7 @@ sealed class LayerRenderer
         UISpritesTop,
     ];
 
-    public readonly record struct State(IRenderLayer Layer, RenderTarget Target, Vector2i viewport);
+    public readonly record struct State(IRenderLayer Layer, RenderTarget Target, Vector2i Viewport);
 
     private readonly DeferredRenderer deferredRenderer;
     private readonly IPipeline renderLayer;
@@ -47,7 +47,7 @@ sealed class LayerRenderer
                 .SetScissorRegion(s => ScissorRegion.SingleOrFullTarget(s.Layer.RenderOptions.ClipDrawRegion)),
             InOrder(
                 Do(s => settings.SetSettingsFor(s.Layer)),
-                Resize(s => s.viewport, blurIntermediateTexture),
+                Resize(s => s.Viewport, blurIntermediateTexture),
                 WithContext(c => c
                         .SetDebugName("Intermediate blur")
                         .BindRenderTarget(blurIntermediateTarget),

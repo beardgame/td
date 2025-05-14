@@ -59,7 +59,7 @@ static class LinqExtensions
             action(item);
     }
 
-    public static TValue ValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key)
+    public static TValue? ValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key)
         where TKey : notnull
     {
         dict.TryGetValue(key, out var value);
@@ -106,7 +106,7 @@ static class LinqExtensions
                 ? default
                 : collection.ElementAt(random.Next(collection.Count));
         }
-        T returnValue = default;
+        T? returnValue = default;
         var count = 0;
         foreach (var candidate in source)
         {

@@ -1,8 +1,9 @@
 ﻿using CommandLine;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.MasterServer
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     sealed class CommandLineOptions
     {
         [Option("application_name", Default = "Bearded.TD.Master", HelpText = "The Lidgren.Network application name.")]

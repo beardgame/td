@@ -7,6 +7,7 @@ using Bearded.Utilities.Collections;
 namespace Bearded.TD.Utilities.Collections;
 
 sealed class ProportionalEnumerable<T> : IEnumerable<T>
+    where T : notnull
 {
     private readonly IReadOnlyDictionary<T, int> targetCounts;
     private readonly IReadOnlyDictionary<T, int> initialCounts;
@@ -31,7 +32,7 @@ sealed class ProportionalEnumerable<T> : IEnumerable<T>
         private readonly Dictionary<T, int> actualCounts = new();
         private readonly StaticPriorityQueue<ProportionalEnumeratorKey, T> priorityQueue = new();
 
-        public T Current { get; private set; }
+        public T Current { get; private set; } = default!;
 
         object IEnumerator.Current => Current;
 
@@ -59,7 +60,7 @@ sealed class ProportionalEnumerable<T> : IEnumerable<T>
                 priorityQueue.Enqueue(priority, obj);
             }
 
-            Current = default;
+            Current = default!;
         }
 
         public bool MoveNext()

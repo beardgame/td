@@ -60,24 +60,24 @@ static class PlaneIntersectionSolver
     {
         var m = planes.Count;
 
-        var A = Matrix<double>.Build.Dense(m, 3);
+        var a = Matrix<double>.Build.Dense(m, 3);
         var b = Vector<double>.Build.Dense(m);
 
         for (var i = 0; i < m; i++)
         {
             var n = planes[i].N;
             var p = planes[i].P;
-            A.SetRow(i, (double[])[n.X, n.Y, n.Z]);
+            a.SetRow(i, (double[])[n.X, n.Y, n.Z]);
             b[i] = Vector3.Dot(n, p);
         }
 
         Func<Vector<double>, double> objectiveFunction = x =>
         {
-            var diff = A * x - b;
+            var diff = a * x - b;
             return diff.DotProduct(diff);
         };
 
-        Func<Vector<double>, Vector<double>> gradientFunction = x => 2 * A.TransposeThisAndMultiply(A * x - b);
+        Func<Vector<double>, Vector<double>> gradientFunction = x => 2 * a.TransposeThisAndMultiply(a * x - b);
 
         var objective = ObjectiveFunction.Gradient(objectiveFunction, gradientFunction);
 

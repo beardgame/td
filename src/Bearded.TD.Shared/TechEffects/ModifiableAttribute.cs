@@ -1,8 +1,10 @@
 ﻿using System;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.Shared.TechEffects;
 
 [AttributeUsage(AttributeTargets.Property)]
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public sealed class ModifiableAttribute : Attribute
 {
     public AttributeType Type { get; set; } = AttributeType.None;

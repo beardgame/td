@@ -19,9 +19,9 @@ sealed class InterfaceConverter : JsonConverter
     public override bool CanConvert(Type type)
         => type == interfaceType;
 
-    public override object ReadJson(JsonReader reader, Type type, object existingValue, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type type, object? existingValue, JsonSerializer serializer)
         => serializer.Deserialize(reader, actualType)!;
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         => throw new InvalidOperationException();
 }

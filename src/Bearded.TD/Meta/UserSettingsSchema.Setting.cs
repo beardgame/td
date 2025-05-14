@@ -17,13 +17,13 @@ sealed partial class UserSettingsSchema
 
         public string DisplayName { get; }
 
-        public T Value
+        public T? Value
         {
             get
             {
                 var settingsInstance = UserSettings.Instance;
                 var groupInstance = group.GetValue(settingsInstance);
-                return (T)setting.GetValue(groupInstance);
+                return (T?) setting.GetValue(groupInstance);
             }
             set
             {
@@ -55,7 +55,7 @@ sealed partial class UserSettingsSchema
 
         public Option? SelectedOption
         {
-            get => valueToOption.TryGetValue(Value, out var option) ? option : null;
+            get => Value is not null && valueToOption.TryGetValue(Value, out var option) ? option : null;
             set => Value = value?.Value;
         }
 

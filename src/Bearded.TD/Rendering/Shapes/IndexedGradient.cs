@@ -7,7 +7,7 @@ namespace Bearded.TD.Rendering.Shapes;
 readonly struct IndexedGradientStop(ushort remainingCount, GradientStop stop)
 {
     // 2 bytes reserved for things like interpolation mode
-    private readonly uint remainingCount2reserved2 = remainingCount;
+    private readonly uint remainingCount2Reserved2 = remainingCount;
     public readonly float Position = stop.Position;
     public readonly Color Color = stop.Color;
 }

@@ -8,7 +8,7 @@ namespace Bearded.TD.UI.Layers;
 
 abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
 {
-    private IRendererRouter renderRouter = null!;
+    private IRendererRouter? renderRouter;
     private bool skipNextRender;
 
     protected RenderLayerCompositeControl()
@@ -55,7 +55,7 @@ abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
             switch (control)
             {
                 case RenderLayerCompositeControl renderLayer:
-                    getRenderFunction(renderLayer)(renderRouter);
+                    getRenderFunction(renderLayer)(renderRouter!);
                     break;
                 case IControlParent controlParent:
                     callOnAllVisibleDescendantLayers(controlParent, getRenderFunction);
@@ -91,6 +91,6 @@ abstract class RenderLayerCompositeControl : CompositeControl, IRenderLayer
 
     public virtual void Draw()
     {
-        base.Render(renderRouter);
+        base.Render(renderRouter!);
     }
 }

@@ -65,7 +65,7 @@ sealed class BehaviorFactories<TBehaviorTemplate, TBehaviorAttribute, TEmptyCons
         extraProperties = typeof(TBehaviorTemplate).GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.Name != nameof(IBehaviorTemplate.Id) && p.Name != nameof(IBehaviorTemplate.Parameters))
             .Select(p => behaviorInterface.GetProperty(p.Name) is { } p2 && p2.PropertyType == p.PropertyType ? p2 : null)
-            .NotNull()
+            .SelectMany(p => p is null ? [] : p.Yield())
             .ToImmutableArray();
 
         var knownBehaviors = Assembly.GetExecutingAssembly().GetTypes()

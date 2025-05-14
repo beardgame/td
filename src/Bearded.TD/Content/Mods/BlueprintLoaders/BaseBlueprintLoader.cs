@@ -129,14 +129,14 @@ abstract class BaseBlueprintLoader<TBlueprint, TJsonModel, TResolvers>(Blueprint
     {
         var text = file.OpenText();
         var reader = new JsonTextReader(text);
-        return Context.Serializer.Deserialize<TJsonModel>(reader);
+        return Context.Serializer.Deserialize<TJsonModel>(reader) ?? throw new InvalidDataException();
     }
 
     protected virtual TResolvers GetDependencyResolvers(FileInfo file)
     {
         DebugAssert.State.Satisfies(typeof(TResolvers) == typeof(Void), "Override GetDependencyResolver!");
 
-        return default;
+        return default!;
     }
 
     protected void LogException(Exception exception, string customMessage)

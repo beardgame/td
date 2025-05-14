@@ -27,9 +27,11 @@ namespace Bearded.TD.Rendering.Loading;
 
 sealed partial class GraphicsLoader : IGraphicsLoader
 {
-    readonly record struct Bitmaps(string Name, Dictionary<string, Image<Bgra32>> BitmapsBySampler);
-    readonly record struct PositionedBitmaps(Bitmaps Bitmaps, int X, int Y);
-    readonly record struct PackedBitmaps(IReadOnlyList<PositionedBitmaps> PositionedBitmaps, int Width, int Height);
+    private readonly record struct Bitmaps(string Name, Dictionary<string, Image<Bgra32>> BitmapsBySampler);
+
+    private readonly record struct PositionedBitmaps(Bitmaps Bitmaps, int X, int Y);
+
+    private readonly record struct PackedBitmaps(IReadOnlyList<PositionedBitmaps> PositionedBitmaps, int Width, int Height);
 
     // TODO: use mod specific shader managers (tricky bit: hot reload)
     private readonly ShaderManager shaderManager;

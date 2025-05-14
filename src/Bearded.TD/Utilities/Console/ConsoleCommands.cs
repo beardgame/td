@@ -32,8 +32,8 @@ static class ConsoleCommands
     private static readonly Dictionary<string, Command> dictionary = new();
     private static readonly Dictionary<string, PrefixTrie> parameterCompletion = new();
 
-    private static PrefixTrie? prefixes;
-    public static PrefixTrie Prefixes => prefixes!;
+    private static PrefixTrie? prefixTrie;
+    public static PrefixTrie Prefixes => prefixTrie!;
 
     public static bool TryRun(string command, Logger logger, CommandParameters parameters)
     {
@@ -53,21 +53,19 @@ static class ConsoleCommands
 
         lock (parameterCompletion)
         {
-            return parameterCompletion.TryGetValue(c.Attribute.ParameterCompletion, out var prefixTrie)
-                ? prefixTrie
-                : null;
+            return parameterCompletion.GetValueOrDefault(c.Attribute.ParameterCompletion);
         }
     }
 
-    public static void AddParameterCompletion(string parameterId, IEnumerable<string> prefixes)
+    public static void AddParameterCompletion(string parameterId, IEnumerable<string>? prefixes)
     {
         lock(parameterCompletion)
-            parameterCompletion.Add(parameterId, new PrefixTrie(prefixes));
+            parameterCompletion.Add(parameterId, new PrefixTrie(prefixes!));
     }
 
     public static void Initialize()
     {
-        if (prefixes != null)
+        if (prefixTrie != null)
             throw new Exception("Do not initialise more than once!");
 
         initializeCommands();
@@ -93,7 +91,7 @@ static class ConsoleCommands
         dictionary.AddRange(commands.Select(
             c => new KeyValuePair<string, Command>(c.Attribute.Name, new Command(c.Action, c.Attribute))));
 
-        prefixes = new PrefixTrie(commands.Select(c => c.Attribute.Name));
+        prefixTrie = new PrefixTrie(commands.Select(c => c.Attribute.Name));
 
         AddParameterCompletion("allAvailableCommands", commands.Select(c => c.Attribute.Name));
     }
@@ -105,7 +103,7 @@ static class ConsoleCommands
             .Where(m => m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).Any())
             .Select(m => (
                 ((CommandParameterCompletionAttribute)m.GetCustomAttributes(typeof(CommandParameterCompletionAttribute), false).First()).Name,
-                Parameters: (IEnumerable<string>)m.Invoke(null, null)
+                Parameters: (IEnumerable<string>?)m.Invoke(null, null)
             ));
 
         foreach (var (name, parameters) in parameterCompletions)

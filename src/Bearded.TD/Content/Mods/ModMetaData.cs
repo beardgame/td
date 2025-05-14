@@ -18,19 +18,12 @@ sealed class ModMetadata
 
     public ModMetadata(Metadata meta, DirectoryInfo directory)
     {
-        Name = meta.Name;
-        Id = meta.Id;
+        Name = meta.Name ?? throw new ArgumentException("Mod must always have a name", nameof(meta));
+        Id = meta.Id! ?? throw new ArgumentException("Mod must always have an ID", nameof(meta));
         flags = meta.Flags?.Aggregate(ModFlags.None, (f, flag) => f | flag) ?? ModFlags.None;
-        Dependencies = (meta.Dependencies?.Select(d => new ModDependency(d)).ToList() ?? new List<ModDependency>()).AsReadOnly();
+        Dependencies = (meta.Dependencies?.Select(d => new ModDependency(d)).ToList() ?? []).AsReadOnly();
         Directory = directory;
     }
-
-    public bool IsValid =>
-        !string.IsNullOrWhiteSpace(Id) &&
-        !string.IsNullOrWhiteSpace(Name) &&
-        Dependencies.All(d => d.IsValid);
-
-    public ModForLoading PrepareForLoading() => new ModForLoading(this);
 }
 
 [Flags]

@@ -113,7 +113,7 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
         for (var i = 0; i < Parameters.ProjectilesPerShot; i++)
         {
             var vZ = verticalSpeedCompensation * (1 + Parameters.BulletDropCompensationNoise * StaticRandom.Float(-1, 1));
-            var (direction, muzzleVelocity) = getMuzzleVelocity(position, vZ);
+            var (direction, muzzleVelocity) = getMuzzleVelocity(vZ);
 
             var projectile = factory.Create(position, direction, muzzleVelocity, damagePerProjectile, properties);
             Owner.Game.Add(projectile);
@@ -124,7 +124,7 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
         Events.Send(new ShotProjectiles(position, weapon.Direction, Parameters.ProjectilesPerShot, damage));
     }
 
-    private (Direction2, Velocity3) getMuzzleVelocity(Position3 emitLocation, Speed velocityZ)
+    private (Direction2, Velocity3) getMuzzleVelocity(Speed velocityZ)
     {
         var direction = weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
         var velocityXY = direction * Parameters.MuzzleSpeed;

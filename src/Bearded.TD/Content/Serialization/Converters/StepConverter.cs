@@ -12,7 +12,7 @@ sealed class StepConverter : JsonConverterBase<Step>
     private static readonly Dictionary<string, Step> namedDirections =
         Directions.All.Enumerate()
             // ReSharper disable once PossibleNullReferenceException
-            .Select(d => (name: Enum.GetName(typeof(Direction), d).ToLowerInvariant(), step: d.Step()))
+            .Select(d => (name: Enum.GetName(typeof(Direction), d)!.ToLowerInvariant(), step: d.Step()))
             .Append((name: "base", step: new Step()))
             .ToDictionary(d => d.name, d => d.step);
 
@@ -26,7 +26,7 @@ sealed class StepConverter : JsonConverterBase<Step>
 
     private static Step fromString(JsonReader reader)
     {
-        var value = (string)reader.Value;
+        var value = (string?) reader.Value ?? throw new InvalidDataException("Encountered null step");
         var name = value.ToLowerInvariant();
 
         if (namedDirections.TryGetValue(name, out var step))

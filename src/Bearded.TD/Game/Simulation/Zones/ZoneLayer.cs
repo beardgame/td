@@ -19,7 +19,7 @@ sealed class ZoneLayer
 
     public ZoneLayer(int radius)
     {
-        zonesByTile = new Tilemap<Zone>(radius);
+        zonesByTile = new Tilemap<Zone?>(radius);
         zonesForVisibilityByTile = new Tilemap<ImmutableArray<Zone>>(radius, _ => ImmutableArray<Zone>.Empty);
     }
 

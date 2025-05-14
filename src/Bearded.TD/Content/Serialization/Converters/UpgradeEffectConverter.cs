@@ -62,7 +62,8 @@ sealed partial class UpgradeEffectConverter : JsonConverterBase<IUpgradeEffect>
 
                 return new AddTags(tags, prerequisites, isSideEffect);
             case UpgradeEffectType.Replacement:
-                var transaction = serializer.Deserialize<TransactionParameters>(def.CreateReader());
+                var transaction = serializer.Deserialize<TransactionParameters>(def.CreateReader())
+                    ?? throw new InvalidDataException("Invalid transaction parameters");
                 if (string.IsNullOrWhiteSpace(transaction.RemoveKey))
                 {
                     throw new InvalidDataException("Missing key to replace");

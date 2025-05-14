@@ -17,7 +17,7 @@ sealed class TargetingModeConverter : JsonConverterBase<ITargetingMode>
         targetingModesByName = typeof(TargetingMode)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Where(p => p.FieldType.IsAssignableTo(typeof(ITargetingMode)))
-            .ToImmutableDictionary(p => p.Name.ToCamelCase(), p => (ITargetingMode) p.GetValue(null));
+            .ToImmutableDictionary(p => p.Name.ToCamelCase(), p => (ITargetingMode) p.GetValue(null)!);
     }
 
     protected override ITargetingMode ReadJson(JsonReader reader, JsonSerializer serializer)

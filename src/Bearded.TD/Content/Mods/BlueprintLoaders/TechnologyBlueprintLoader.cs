@@ -94,7 +94,7 @@ sealed class TechnologyBlueprintLoader(
     private static IEnumerable<TechnologyBlueprintJson> topologicalSort(IEnumerable<TechnologyBlueprintJson> models)
     {
         var modelsList = models.ToList();
-        var unvisitedModelsByName = modelsList.ToDictionary(model => model.Id);
+        var unvisitedModelsByName = modelsList.ToDictionary(model => model.Id ?? throw new InvalidDataException());
         var sortedModels = new List<TechnologyBlueprintJson>();
 
         while (unvisitedModelsByName.Count > 0)

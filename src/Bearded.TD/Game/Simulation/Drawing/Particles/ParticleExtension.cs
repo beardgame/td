@@ -2,7 +2,7 @@
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 
-internal interface IParticleExtension
+interface IParticleExtension
 {
     void Resize(int newCapacity);
     void Remove(Span<int> indices);

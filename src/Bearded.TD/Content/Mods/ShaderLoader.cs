@@ -31,7 +31,7 @@ sealed class ShaderLoader
             .TryAdd(ShaderType.ComputeShader, jsonModel.ComputeShader)
             .Compile(context);
 
-        return new Shader(ModAwareId.FromNameInMod(jsonModel.Id, meta), shaderProgram);
+        return new Shader(ModAwareId.FromNameInMod(jsonModel.Id!, meta), shaderProgram);
     }
 
     private sealed class ShaderCompiler

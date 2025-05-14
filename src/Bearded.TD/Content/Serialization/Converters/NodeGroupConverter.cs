@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -21,7 +22,7 @@ sealed class NodeGroupConverter : JsonConverterBase<NodeGroup>
 
     protected override NodeGroup ReadJson(JsonReader reader, JsonSerializer serializer)
     {
-        var jsonModel = serializer.Deserialize<JsonModel>(reader);
+        var jsonModel = serializer.Deserialize<JsonModel>(reader) ?? throw new InvalidOperationException();
         return createNodeGroup(jsonModel);
     }
 
@@ -49,7 +50,7 @@ sealed class NodeGroupConverter : JsonConverterBase<NodeGroup>
             return toCompositeNodeGroup(jsonModel.Nodes!, numberRestriction);
         }
 
-        return new NodeGroup.Leaf(nodeResolver.Resolve(jsonModel.Id), numberRestriction);
+        return new NodeGroup.Leaf(nodeResolver.Resolve(jsonModel.Id!), numberRestriction);
     }
 
     private static NodeGroup.NumberRestriction createNumberRestriction(JsonModel jsonModel)

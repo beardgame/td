@@ -9,7 +9,7 @@ using Bearded.TD.Utilities;
 
 namespace Bearded.TD.Content.Components;
 
-sealed class TriggerFactories
+static class TriggerFactories
 {
     private delegate ITrigger TriggerFactory();
 
@@ -25,7 +25,7 @@ sealed class TriggerFactories
         factories = Assembly.GetExecutingAssembly().GetTypes()
             .Select(t => (type: t, attribute: t.GetCustomAttribute<TriggerAttribute>(false)))
             .Where(t => t.attribute != null)
-            .ToImmutableDictionary(t => t.attribute.Id, t => makeTriggerFactory(t.type));
+            .ToImmutableDictionary(t => t.attribute!.Id, t => makeTriggerFactory(t.type));
     }
 
     public static ITrigger CreateForId(string id)

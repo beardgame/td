@@ -17,10 +17,10 @@ abstract class MasterServer
     protected MasterServer(NetPeer peer)
     {
         this.peer = peer;
-        var v4ip = Dns
+        var v4Ip = Dns
             .GetHostAddresses(UserSettings.Instance.Misc.MasterServerAddress, AddressFamily.InterNetwork)
             .FirstOrDefault();
-        masterServerEndPoint = new IPEndPoint(v4ip, Constants.Network.MasterServerPort);
+        masterServerEndPoint = new IPEndPoint(v4Ip!, Constants.Network.MasterServerPort);
     }
 
     protected Proto.MasterServerMessage CreateMessage()

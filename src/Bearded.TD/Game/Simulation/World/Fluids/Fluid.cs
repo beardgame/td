@@ -184,7 +184,7 @@ sealed class Fluid
             .DrawInfo.Height.NumericValue;
     }
 
-    readonly struct Flow
+    private readonly struct Flow
     {
         public float FlowRight { get; }
         public float FlowUpRight { get; }

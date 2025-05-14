@@ -62,7 +62,7 @@ sealed partial class DualContouredHeightmapToLevelRenderer
         new Footprint(ModAwareId.Invalid, [new Step(0, 0), new Step(1, 0), new Step(1, -1)])
     );
 
-    record struct LevelDistance(float Distance, float FloorNess);
+    private record struct LevelDistance(float Distance, float FloorNess);
 
     private float debugDistance1(Position3 worldPosition)
     {
@@ -155,14 +155,14 @@ sealed partial class DualContouredHeightmapToLevelRenderer
     private static float union(float a, float b) => Math.Min(a, b);
     private static float intersect(float a, float b) => Math.Max(a, b);
 
-    float smoothIntersect(float a, float b, float k)
+    private float smoothIntersect(float a, float b, float k)
     {
         var h = (0.5f - 0.5f * (b - a) / k).Clamped(0, 1);
         var x = k * h * (1 - h);
         return Interpolate.Lerp(b, a, h) + x;
     }
 
-    float smoothIntersect(float a, float b)
+    private float smoothIntersect(float a, float b)
     {
         return (a + b + (float)Math.Sqrt(a * a + b * b));
     }

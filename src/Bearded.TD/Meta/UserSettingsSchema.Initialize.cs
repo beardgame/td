@@ -25,7 +25,7 @@ sealed partial class UserSettingsSchema
                 return group.Settings.IsDefaultOrEmpty ? null : group;
 
             })
-            .NotNull()
+            .SelectMany(s => s is null ? [] : s.Yield())
             .ToImmutableArray();
 
         instance = new UserSettingsSchema(settingsGroups);
@@ -43,7 +43,7 @@ sealed partial class UserSettingsSchema
                     ? settingFromField(group, field, attr)
                     : null;
             })
-            .NotNull()
+            .SelectMany(s => s is null ? [] : s.Yield())
             .ToImmutableArray();
 
         return new SettingsGroup(attribute.DisplayName ?? group.Name, settings);

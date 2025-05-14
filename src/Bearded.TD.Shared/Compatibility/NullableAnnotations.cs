@@ -2,6 +2,8 @@
 
 #if NETSTANDARD2_0
 
+using JetBrains.Annotations;
+
 // ReSharper disable CheckNamespace
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -10,6 +12,7 @@
 
 namespace System.Diagnostics.CodeAnalysis;
 
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 sealed class NotNullWhenAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the specified return value condition.</summary>

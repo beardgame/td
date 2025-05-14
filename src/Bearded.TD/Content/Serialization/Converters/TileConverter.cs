@@ -8,7 +8,7 @@ sealed class TileConverter : JsonConverterBase<Tile>
 {
     protected override Tile ReadJson(JsonReader reader, JsonSerializer serializer)
     {
-        var coords = serializer.Deserialize<int[]>(reader);
+        var coords = serializer.Deserialize<int[]>(reader) ?? throw new InvalidDataException("Invalid coordinates");
 
         if (coords.Length != 2)
         {

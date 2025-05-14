@@ -14,7 +14,7 @@ abstract class JsonConverterBase<T> : JsonConverter
         => typeof(T).IsAssignableFrom(objectType) || objectType == nullableType;
 
     public sealed override object? ReadJson(JsonReader reader, Type objectType,
-        object existingValue, JsonSerializer serializer)
+        object? existingValue, JsonSerializer serializer)
     {
         if (reader.TokenType == JsonToken.Null)
         {
@@ -27,17 +27,18 @@ abstract class JsonConverterBase<T> : JsonConverter
         return ReadJson(reader, serializer);
     }
 
-    public sealed override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public sealed override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
+        ArgumentNullException.ThrowIfNull(value);
 
-        if (!(value is T))
+        if (value is not T t)
+        {
             throw new ArgumentException(
                 $"Unexpected value when converting. Expected {typeof(T).FullName}, got {value.GetType().FullName}."
             );
+        }
 
-        WriteJson(writer, (T) value, serializer);
+        WriteJson(writer, t, serializer);
     }
 
     protected abstract T ReadJson(JsonReader reader, JsonSerializer serializer);

@@ -113,7 +113,7 @@ static class ComponentDependencies
         {
             if (dep1Found && dep2Found)
             {
-                consumer(dep1, dep2);
+                consumer(dep1!, dep2!);
             }
         }
     }

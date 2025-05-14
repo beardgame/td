@@ -4,13 +4,8 @@ using JetBrains.Annotations;
 namespace Bearded.TD.Shared.Events;
 
 [AttributeUsage(AttributeTargets.Class)]
-[UsedImplicitly]
-public sealed class EventListenerAttribute : Attribute
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+public sealed class EventListenerAttribute(Type type) : Attribute
 {
-    public Type Type { get; }
-
-    public EventListenerAttribute(Type type)
-    {
-        Type = type;
-    }
+    public Type Type { get; } = type;
 }

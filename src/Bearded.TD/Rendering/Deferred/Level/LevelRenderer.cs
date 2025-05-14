@@ -27,7 +27,7 @@ sealed class LevelRenderer : IRenderer, IListener<TileDrawInfoChanged>, IListene
         visibilityRenderer = new VisibilityRenderer(game, Heightmap, time);
         biomeBuffer = new BiomeBuffer(game.State.Level.Radius);
         biomeMaterials = new BiomeMaterials(game);
-        biomeRenderer = new BiomeRenderer(game, biomeBuffer, biomeMaterials, context);
+        biomeRenderer = new BiomeRenderer(game, biomeBuffer, biomeMaterials);
         heightmapToLevelRenderer = new DualContouredHeightmapToLevelRenderer(
             game, context, Heightmap, biomeBuffer, biomeMaterials, levelShader);
 

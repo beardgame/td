@@ -28,7 +28,7 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
         Color? Color { get; }
     }
 
-    protected Color Color { get; } = parameters.Color ?? defaultColorForShell(parameters.Shell);
+    private Color color { get; } = parameters.Color ?? defaultColorForShell(parameters.Shell);
 
     public HitPoints MaxHitPoints { get; private set; } = parameters.MaxHitPoints;
     public HitPoints CurrentHitPoints { get; private set; } = parameters.InitialHitPoints ?? parameters.MaxHitPoints;
@@ -42,7 +42,7 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
             return;
         }
 
-        statusDisplay.AddHitPointsBar(new HitPointsBar(this, Shell, Color));
+        statusDisplay.AddHitPointsBar(new HitPointsBar(this, Shell, color));
     }
 
     public IntermediateDamageResult ApplyDamage(TypedDamage damage, Hit hit, IDamageSource? source)

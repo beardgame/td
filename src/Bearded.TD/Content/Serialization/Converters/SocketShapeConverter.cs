@@ -8,6 +8,6 @@ sealed class SocketShapeConverter : JsonConverterBase<SocketShape>
     protected override SocketShape ReadJson(JsonReader reader, JsonSerializer serializer)
     {
         var o = reader.Value;
-        return SocketShape.FromLiteral((string) o ?? string.Empty);
+        return SocketShape.FromLiteral((string?) o ?? string.Empty);
     }
 }

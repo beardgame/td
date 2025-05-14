@@ -198,7 +198,7 @@ sealed class GameDebugOverlay : NavigationNode<Void>
         }
     }
 
-    sealed class BoolSetting : Setting<bool>, IBoolSetting
+    private sealed class BoolSetting : Setting<bool>, IBoolSetting
     {
         public BoolSetting(string setting, Logger logger) : base(setting, logger)
         {

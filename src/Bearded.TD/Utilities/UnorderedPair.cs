@@ -39,7 +39,7 @@ struct UnorderedPair<T> : IEquatable<UnorderedPair<T>>, IEnumerable<T>
         yield return Item2;
     }
 
-    public override bool Equals(object obj) => obj is UnorderedPair<T> other && Equals(other);
+    public override bool Equals(object? obj) => obj is UnorderedPair<T> other && Equals(other);
 
     public override int GetHashCode()
     {

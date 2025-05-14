@@ -26,7 +26,7 @@ static class NetworkHelpers
         var ptr = Marshal.AllocHGlobal(size);
         Marshal.Copy(array, 0, ptr, size);
         // ReSharper disable once PossibleNullReferenceException
-        s = (T)Marshal.PtrToStructure(ptr, typeof(T));
+        s = (T)Marshal.PtrToStructure(ptr, typeof(T))!;
         Marshal.FreeHGlobal(ptr);
     }
 

@@ -48,8 +48,8 @@ static class DefineZones
 
     private sealed class Serializer : ICommandSerializer<GameInstance>
     {
-        private Zone?[] zones = Array.Empty<Zone>();
-        private (Id<Zone>, Id<Zone>)[] connections = Array.Empty<(Id<Zone>, Id<Zone>)>();
+        private Zone[] zones = [];
+        private (Id<Zone>, Id<Zone>)[] connections = [];
 
         public Serializer(ImmutableArray<Zone> zones, ImmutableArray<(Zone, Zone)> connections)
         {

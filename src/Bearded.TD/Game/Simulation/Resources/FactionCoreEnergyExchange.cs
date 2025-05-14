@@ -86,5 +86,6 @@ sealed class FactionCoreEnergyExchange : FactionBehavior
     }
 }
 
-internal record struct ExchangePercentageChanged(FactionCoreEnergyExchange Exchange, double Percentage) : IGlobalEvent;
-internal record struct ExchangeRateChanged(FactionCoreEnergyExchange Exchange, ExchangeRate<CoreEnergy, Scrap> Rate) : IGlobalEvent;
+record struct ExchangePercentageChanged(FactionCoreEnergyExchange Exchange, double Percentage) : IGlobalEvent;
+
+record struct ExchangeRateChanged(FactionCoreEnergyExchange Exchange, ExchangeRate<CoreEnergy, Scrap> Rate) : IGlobalEvent;

@@ -54,7 +54,7 @@ sealed partial class UserSettings
                 serializer.Serialize(writer, Instance);
 
                 var fileName = Constants.Paths.UserSettingsFile;
-                var dirName = Path.GetDirectoryName(fileName);
+                var dirName = Path.GetDirectoryName(fileName)!;
 
                 // ReSharper disable AssignNullToNotNullAttribute
                 if (!Directory.Exists(dirName))

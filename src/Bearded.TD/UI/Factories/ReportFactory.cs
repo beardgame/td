@@ -281,7 +281,7 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
         };
     }
 
-    static string formatDamage(UntypedDamage? damage)
+    private static string formatDamage(UntypedDamage? damage)
     {
         var amount = damage?.Amount.NumericValue;
         return amount switch
@@ -296,14 +296,14 @@ sealed class ReportFactory(Animations animations, TooltipFactory tooltips)
         };
     }
 
-    static string formatEfficiency(double? efficiency)
+    private static string formatEfficiency(double? efficiency)
         => efficiency switch
         {
             { } e => $"{e * 100:N0}%",
             _ => "",
         };
 
-    static Color formatEfficiencyColor(double? efficiency)
+    private static Color formatEfficiencyColor(double? efficiency)
         => efficiency switch
         {
             { } e => Colors.DamageEfficiency(e),

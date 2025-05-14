@@ -292,7 +292,7 @@ static class LogicalTilemapFitness
                     continue;
                 }
 
-                var biome = tilemap[tile].Biome;
+                var biome = tilemap[tile].Biome!;
                 fillFrom(tile, biome);
                 result[biome] = result.GetValueOrDefault(biome) + 1;
             }

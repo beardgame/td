@@ -25,7 +25,7 @@ public struct ViewportSize : IEquatable<ViewportSize>
             && ScaledWidth == other.ScaledWidth
             && ScaledHeight == other.ScaledHeight;
 
-    public override bool Equals(object obj) => obj is ViewportSize size && Equals(size);
+    public override bool Equals(object? obj) => obj is ViewportSize size && Equals(size);
 
     public override int GetHashCode()
     {

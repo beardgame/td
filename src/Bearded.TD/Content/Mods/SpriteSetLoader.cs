@@ -117,7 +117,7 @@ sealed class SpriteSetLoader
         if ((jsonModel.TextureSamplers?.Count ?? 0) == 0)
             throw new InvalidDataException("Sprites need to define at least one sampler in 'textureSamplers' array");
 
-        foreach (var sampler in Enumerable.Reverse(jsonModel.TextureSamplers))
+        foreach (var sampler in Enumerable.Reverse(jsonModel.TextureSamplers!))
         {
             if (string.IsNullOrWhiteSpace(sampler.Sampler))
                 throw new InvalidDataException("Texture sampler needs non empty 'sampler' property");

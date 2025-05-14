@@ -91,11 +91,11 @@ sealed partial class DualContouredHeightmapToLevelRenderer : IHeightmapToLevelRe
     private readonly Dictionary<Vector2, Cell> cells = new();
     private HeightmapToLevelRendererHelpers.Grid grid;
 
-    const int gridMinZ = -10;
-    const int gridMaxZ = 2;
+    private const int gridMinZ = -10;
+    private const int gridMaxZ = 2;
     private const int cellRes = 64;
     private const float cellSize = 6;
-    static readonly Vector3i defaultSubdivision = (cellRes, cellRes, cellRes);
+    private static readonly Vector3i defaultSubdivision = (cellRes, cellRes, cellRes);
 
     private readonly List<Cell> cellsToGenerate = [];
     private readonly List<(Cell Cell, Task<TimeSpan> Task)> cellGenerationTasks = [];

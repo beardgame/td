@@ -5,7 +5,7 @@ using static Bearded.TD.Tiles.Direction;
 
 namespace Bearded.TD.Rendering.Deferred.Level;
 
-internal sealed class BiomeRenderer
+sealed class BiomeRenderer
 {
     private readonly BiomeBuffer biomeBuffer;
     private readonly BiomeMaterials biomeMaterials;
@@ -14,7 +14,7 @@ internal sealed class BiomeRenderer
 
     private bool needsRedraw = true;
 
-    public BiomeRenderer(GameInstance game, BiomeBuffer biomeBuffer, BiomeMaterials biomeMaterials, RenderContext context)
+    public BiomeRenderer(GameInstance game, BiomeBuffer biomeBuffer, BiomeMaterials biomeMaterials)
     {
         this.biomeBuffer = biomeBuffer;
         this.biomeMaterials = biomeMaterials;

@@ -13,7 +13,7 @@ namespace Bearded.TD.Game.Generation.Semantic.PhysicalTileLayout;
 
 sealed class SpringSystem
 {
-    readonly struct Spring
+    private readonly struct Spring
     {
         public int Circle1Index { get; }
         public int Circle2Index { get; }

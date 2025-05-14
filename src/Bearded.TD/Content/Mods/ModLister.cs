@@ -30,7 +30,7 @@ sealed class ModLister
         return dir
             .EnumerateDirectories()
             .Select(findModJsonFile)
-            .NotNull()
+            .SelectMany(f => f == null ? [] : f.Yield())
             .Select(load)
             .ToList();
     }
@@ -43,10 +43,11 @@ sealed class ModLister
                 Path.GetFileNameWithoutExtension(f.Name) == "mod");
     }
 
-    private ModMetadata load(FileInfo modFile)
+    private static ModMetadata load(FileInfo modFile)
     {
-        var meta = JsonConvert.DeserializeObject<Metadata>(File.ReadAllText(modFile.FullName));
+        var meta = JsonConvert.DeserializeObject<Metadata>(File.ReadAllText(modFile.FullName))
+            ?? throw new InvalidDataException();
 
-        return new ModMetadata(meta, modFile.Directory);
+        return new ModMetadata(meta, modFile.Directory!);
     }
 }

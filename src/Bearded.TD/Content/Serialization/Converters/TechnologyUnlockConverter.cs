@@ -21,14 +21,14 @@ sealed class TechnologyUnlockConverter : JsonConverter
         this.upgradeResolver = upgradeResolver;
     }
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
+    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) =>
         throw new NotSupportedException();
 
     public override object ReadJson(
-        JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         var jsonModel = serializer.Deserialize<TechnologyBlueprint.TechnologyUnlock>(reader);
-        return jsonModel.ToGameModel(buildingResolver, upgradeResolver);
+        return jsonModel!.ToGameModel(buildingResolver, upgradeResolver);
     }
 
     public override bool CanConvert(Type objectType) => objectType == typeof(ITechnologyUnlock);

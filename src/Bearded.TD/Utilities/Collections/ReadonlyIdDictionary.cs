@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -29,7 +30,7 @@ sealed class ReadonlyIdDictionary<T> : IReadOnlyDictionary<Id<T>, T> where T : I
 
     public bool ContainsKey(Id<T> key) => dictionary.ContainsKey(key);
 
-    public bool TryGetValue(Id<T> key, out T value) => dictionary.TryGetValue(key, out value);
+    public bool TryGetValue(Id<T> key, [MaybeNullWhen(false)] out T value) => dictionary.TryGetValue(key, out value);
 
     public T this[Id<T> key] => dictionary[key];
 

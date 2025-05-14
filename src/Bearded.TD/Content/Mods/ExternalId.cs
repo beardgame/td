@@ -9,7 +9,7 @@ readonly struct ExternalId<T> : IEquatable<ExternalId<T>>
 
     public static ExternalId<T> Invalid = new(null);
 
-    [MemberNotNull(nameof(Value))]
+    [MemberNotNullWhen(true, nameof(Value))]
     public bool IsValid => Value != null;
 
     public string? Value { get; }
