@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics", "libs\awgraphics\Bearded.Graphics\Bearded.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics", "libs\graphics\Bearded.Graphics\Bearded.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Proto", "src\Bearded.TD.Proto\Bearded.TD.Proto.csproj", "{4862BBB1-839D-4831-9985-D3399C8C2DED}"
 EndProject
@@ -25,13 +25,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Testing", "src\B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Analyzers", "src\Bearded.TD.Analyzers\Bearded.TD.Analyzers.csproj", "{F8A43CDC-00AA-402D-AC7F-ED0802F32028}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp", "libs\awgraphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj", "{6410676D-404A-49BE-AB42-16667DCFD504}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp", "libs\graphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj", "{6410676D-404A-49BE-AB42-16667DCFD504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\awgraphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\graphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio", "libs\audio\src\Bearded.Audio\Bearded.Audio.csproj", "{C331356F-583A-4840-B7DC-7B3C52676BEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio.Tests", "libs\audio\src\Bearded.Audio.Tests\Bearded.Audio.Tests.csproj", "{26D22F25-DAAE-40E1-B5A4-D93012A1914F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Utilities", "libs\utilities\Bearded.Utilities\Bearded.Utilities.csproj", "{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Utilities.Tests", "libs\utilities\Bearded.Utilities.Tests\Bearded.Utilities.Tests.csproj", "{52E60475-1E41-4C27-BB19-456A932EE963}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Utilities.Testing", "libs\utilities\Bearded.Utilities.Testing\Bearded.Utilities.Testing.csproj", "{77A607A4-02EF-4710-B117-4D6FC2079D7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Utilities.Testing.Tests", "libs\utilities\Bearded.Utilities.Testing.Tests\Bearded.Utilities.Testing.Tests.csproj", "{C08C680A-3236-46D3-A5A3-C4A05078F913}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,6 +165,38 @@ Global
 		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|x86.ActiveCfg = Release|Any CPU
 		{26D22F25-DAAE-40E1-B5A4-D93012A1914F}.Release|x86.Build.0 = Release|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{C8C0E5B1-87F3-4B3B-93F3-C65C83BEB3DD}.Release|x86.Build.0 = Release|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Debug|x86.Build.0 = Debug|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Release|x86.ActiveCfg = Release|Any CPU
+		{52E60475-1E41-4C27-BB19-456A932EE963}.Release|x86.Build.0 = Release|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Debug|x86.Build.0 = Debug|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Release|x86.ActiveCfg = Release|Any CPU
+		{77A607A4-02EF-4710-B117-4D6FC2079D7F}.Release|x86.Build.0 = Release|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Debug|x86.Build.0 = Debug|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Release|x86.ActiveCfg = Release|Any CPU
+		{C08C680A-3236-46D3-A5A3-C4A05078F913}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
