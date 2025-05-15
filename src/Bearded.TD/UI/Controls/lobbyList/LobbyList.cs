@@ -110,7 +110,7 @@ sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
             new IdManager(),
             renderContext);
 
-        Navigation.Replace<Lobby, LobbyManager>(
+        Navigation!.Replace<Lobby, LobbyManager>(
             new ClientLobbyManager(game, networkInterface), this);
     }
 
@@ -137,7 +137,7 @@ sealed class LobbyList : UpdateableNavigationNode<Void>, INetworkMessageHandler
     public void OnBackToMenuButtonClicked()
     {
         networkInterface.Shutdown();
-        Navigation.Replace<MainMenu, Intent>(Intent.None, this);
+        Navigation!.Replace<MainMenu, Intent>(Intent.None, this);
     }
 
     private static string playerName

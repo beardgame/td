@@ -146,7 +146,7 @@ sealed class LogicalTilemapGenerator
         }
     }
 
-    private static Tilemap<IBiome?> generateInitialBiomes(
+    private static Tilemap<IBiome> generateInitialBiomes(
         Tilemap<Node?> tilemap, IEnumerable<IBiome> biomes, Random random)
     {
         var shuffledBiomes = biomes.Shuffled(random).ToImmutableArray();
@@ -162,7 +162,7 @@ sealed class LogicalTilemapGenerator
             result[tile] = shuffledBiomes[i++];
         }
 
-        return result;
+        return result!;
     }
 
     private static Dictionary<TileEdge, MacroFeature> generateInitialMacroFeatures(

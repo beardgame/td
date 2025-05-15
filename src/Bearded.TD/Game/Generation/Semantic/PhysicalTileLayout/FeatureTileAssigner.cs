@@ -59,7 +59,7 @@ sealed class FeatureTileAssigner
             .SelectMany(f => f.Circles.Select(c => (Circle: c, Feature: f)))
             .ToList();
 
-        var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ??
+        var avoid = (ISet<Tile>?) (tilesToAvoid as HashSet<Tile>) ??
             ImmutableHashSet.CreateRange(tilesToAvoid ?? ImmutableHashSet<Tile>.Empty);
 
         foreach (var tile in Tilemap.EnumerateTilemapWith(tilemapRadius))
@@ -88,7 +88,7 @@ sealed class FeatureTileAssigner
             IEnumerable<Connection> features, IEnumerable<Tile> tilesToAvoid,
             IDictionary<Tile, TiledFeature> nodesByTile)
     {
-        var avoid = (ISet<Tile>)(tilesToAvoid as HashSet<Tile>) ?? ImmutableHashSet.CreateRange(tilesToAvoid);
+        var avoid = (ISet<Tile>?) (tilesToAvoid as HashSet<Tile>) ?? ImmutableHashSet.CreateRange(tilesToAvoid);
 
         var featuresWithTiles = new List<TiledFeature>();
         var boundaryTiles = new List<Tile>();

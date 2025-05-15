@@ -61,7 +61,7 @@ sealed class ChapterGenerator
         }
 
         const int maxAttempts = 5;
-        ElementalTheme candidate = default;
+        ElementalTheme? candidate = null;
         for (var i = 0; i < maxAttempts; i++)
         {
             var primaryElement = elements.RandomElement(random);

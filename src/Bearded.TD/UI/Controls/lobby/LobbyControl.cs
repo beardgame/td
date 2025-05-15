@@ -213,7 +213,7 @@ sealed class LobbyControl : CompositeControl
                     .AddDropdownSelectRow(
                         "Game mode",
                         availableGameModes,
-                        b => b.Id,
+                        b => b.Id!,
                         gameMode)
                     .AddNumberSelectRow("Level size", 10, 100, levelSize)
                     .AddDropdownSelectRow(

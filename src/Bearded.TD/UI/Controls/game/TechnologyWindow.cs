@@ -44,7 +44,7 @@ sealed class TechnologyWindow : IListener<TechnologyTokenAwarded>, IListener<Tec
         this.shortcutCapturer = shortcutCapturer;
         this.windowVisibility = windowVisibility;
 
-        if (!this.game.Me.Faction.TryGetBehaviorIncludingAncestors(out factionTechnology))
+        if (!this.game.Me.Faction.TryGetBehaviorIncludingAncestors(out factionTechnology!))
         {
             throw new InvalidOperationException("Cannot show technology window when player does not have technology.");
         }

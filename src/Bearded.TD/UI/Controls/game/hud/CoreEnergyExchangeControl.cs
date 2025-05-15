@@ -87,9 +87,9 @@ sealed class CoreEnergyExchangeControl : CompositeControl
             ]
         );
 
-        return;
-
         var sliderSecondStop = 0.0;
+
+        return;
 
         void onSliderAnimate(Vector2d p)
         {

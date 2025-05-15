@@ -14,6 +14,6 @@ sealed class UIDebugOverlay : UpdateableNavigationNode<Void>
 
     public void Close(Button.ClickEventArgs t)
     {
-        Navigation.Close(this);
+        Navigation!.Close(this);
     }
 }

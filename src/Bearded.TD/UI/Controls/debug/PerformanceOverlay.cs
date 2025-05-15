@@ -32,7 +32,7 @@ sealed class PerformanceOverlay : UpdateableNavigationNode<Void>
         if (!UserSettings.Instance.Debug.PerformanceOverlay)
         {
             Terminate();
-            Navigation.Close(this);
+            Navigation!.Close(this);
             return;
         }
 

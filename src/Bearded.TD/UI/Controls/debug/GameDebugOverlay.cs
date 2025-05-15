@@ -72,11 +72,10 @@ sealed class GameDebugOverlay : NavigationNode<Void>
 
         items.Add(new Header("SETTINGS"));
 
-        items.AddRange(typeof(UserSettings.DebugSettings).GetFields().Select(
-                field =>
+        items.AddRange(typeof(UserSettings.DebugSettings).GetFields().Select(Item? (field) =>
                 {
                     if (field.Name == nameof(UserSettings.DebugSettings.GameDebugScreen))
-                        return (Item)null;
+                        return null;
 
                     if (field.FieldType == typeof(bool))
                         return new BoolSetting(field.Name, logger);
@@ -179,14 +178,14 @@ sealed class GameDebugOverlay : NavigationNode<Void>
         private readonly string setting;
 
         public string Name => setting;
-        public T Value { get; }
+        public T? Value { get; }
 
         protected Setting(string setting, Logger logger)
         {
             this.setting = setting;
             this.logger = logger;
 
-            Value = (T)
+            Value = (T?)
                 typeof(UserSettings.DebugSettings)
                     .GetField(setting)
                     ?.GetValue(UserSettings.Instance.Debug);

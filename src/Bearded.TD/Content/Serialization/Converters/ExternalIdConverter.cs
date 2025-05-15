@@ -8,6 +8,6 @@ sealed class ExternalIdConverter<T> : JsonConverterBase<ExternalId<T>>
     protected override ExternalId<T> ReadJson(JsonReader reader, JsonSerializer serializer)
     {
         var o = reader.Value;
-        return ExternalId<T>.FromLiteral((string) o);
+        return ExternalId<T>.FromLiteral((string?) o);
     }
 }

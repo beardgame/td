@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Game.Simulation.Weapons;
+using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
@@ -11,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 using static ParticleSpawning;
 
 [Component("particlesSpawnContinuouslyFromParentProjectiles")]
-sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnContinuouslyFromParentProjectiles.IParameters>
+sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnContinuouslyFromParentProjectiles.IParameters>, IListener<ObjectDeleting>
 {
     private readonly record struct Emitter(
         GameObject Object,
@@ -21,6 +22,7 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
         bool ConnectToPrevious);
 
     private readonly List<Emitter> emitters = new();
+    private EventListener<ShotProjectile>? projectileListener;
 
     public interface IParameters : IParametersTemplate<IParameters>, IParticleSpawnParameters
     {
@@ -39,6 +41,7 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
 
     protected override void OnAdded()
     {
+        Events.Subscribe(this);
     }
 
     public override void Activate()
@@ -51,9 +54,20 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
             return;
         }
 
-        var projectileListener = new EventListener<ShotProjectile>(onShotProjectile);
+        projectileListener = new EventListener<ShotProjectile>(onShotProjectile);
         parent.AddComponent(projectileListener);
-        Owner.Deleting += () => parent.RemoveComponent(projectileListener);
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
+        if (projectileListener is null) return;
+        Owner.Parent?.RemoveComponent(projectileListener);
+        projectileListener = null;
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
     }
 
     private void onShotProjectile(ShotProjectile e)

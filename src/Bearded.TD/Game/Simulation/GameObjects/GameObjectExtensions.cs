@@ -22,7 +22,7 @@ static class GameObjectExtensions
     {
         if (obj.TryGetSingleComponent<IProperty<T>>(out var propertyComp))
         {
-            property = propertyComp.Value;
+            property = propertyComp.Value!;
             return true;
         }
 

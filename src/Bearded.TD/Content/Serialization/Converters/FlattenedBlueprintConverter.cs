@@ -1,3 +1,4 @@
+using System.IO;
 using Bearded.TD.Content.Mods;
 using Bearded.TD.Content.Serialization.Models;
 using Bearded.TD.Game.Simulation;
@@ -19,7 +20,7 @@ sealed class FlattenedBlueprintConverter<TInterface, TJsonModel> : JsonConverter
 
     protected override TInterface ReadJson(JsonReader reader, JsonSerializer serializer)
     {
-        var jsonModel = serializer.Deserialize<TJsonModel>(reader);
+        var jsonModel = serializer.Deserialize<TJsonModel>(reader) ?? throw new InvalidDataException();
         return jsonModel.ToGameModel(modMetadata, default);
     }
 }

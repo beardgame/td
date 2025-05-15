@@ -65,7 +65,7 @@ sealed class LogicalTilemap : INodeFitnessContext
                 .Aggregate(Directions.None, (directions, direction) => directions.And(direction)),
             Extensions.Directions
                 .Where(d => this[tile.Edge(d)].Feature != null)
-                .ToImmutableDictionary(d => d, d => this[tile.Edge(d)].Feature));
+                .ToImmutableDictionary(d => d, d => this[tile.Edge(d)].Feature!));
 
     public EdgeFeatures this[TileEdge edge] => edge.GetEdgeFrom<TileNode, EdgeFeatures>(tiles);
 

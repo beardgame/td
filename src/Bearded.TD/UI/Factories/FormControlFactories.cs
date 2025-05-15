@@ -96,11 +96,13 @@ static class FormControlFactories
     }
 
     public static Control DropdownSelect<T>(
-        this UIFactories factories, IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding) =>
+        this UIFactories factories, IEnumerable<T> options, Func<T, string> renderer, Binding<T> valueBinding)
+        where T : notnull =>
         DropdownSelect(factories, Binding.Create(options), renderer, valueBinding);
 
     public static Control DropdownSelect<T>(
         this UIFactories factories, Binding<IEnumerable<T>> options, Func<T, string> renderer, Binding<T> valueBinding)
+        where T : notnull
     {
         // TODO: implement an actual dropdown select
 

@@ -5,6 +5,7 @@ using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Game.Simulation.Weapons.PayCoreEnergyForProjectile;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -12,7 +13,7 @@ namespace Bearded.TD.Game.Simulation.Weapons;
 sealed class PayCoreEnergyForProjectile(IParameters parameters)
     : Component<IParameters>(parameters), IListener<ShotProjectile>
 {
-    private FactionResources resources;
+    private FactionResources? resources;
 
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -32,7 +33,7 @@ sealed class PayCoreEnergyForProjectile(IParameters parameters)
             return;
         }
 
-        faction.TryGetBehaviorIncludingAncestors(out resources!);
+        faction.TryGetBehaviorIncludingAncestors(out resources);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -43,6 +44,7 @@ sealed class PayCoreEnergyForProjectile(IParameters parameters)
     {
         var fromDamage = e.Damage.Amount.NumericValue * Parameters.PerDamagePotential;
 
-        resources.ConsumeResources(fromDamage.CoreEnergy());
+        State.Satisfies(resources is not null);
+        resources?.ConsumeResources(fromDamage.CoreEnergy());
     }
 }

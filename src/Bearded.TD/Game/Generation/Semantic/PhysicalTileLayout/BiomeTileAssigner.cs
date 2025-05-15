@@ -17,7 +17,7 @@ sealed class BiomeTileAssigner
 
     public Tilemap<IBiome> AssignBiomes(IEnumerable<TiledFeature> tiledFeatures)
     {
-        var tilemap = new Tilemap<IBiome>(tilemapRadius);
+        var tilemap = new Tilemap<IBiome?>(tilemapRadius);
         var queue = new Queue<Tile>();
 
         foreach (var feature in tiledFeatures)
@@ -35,7 +35,7 @@ sealed class BiomeTileAssigner
             var borderOutside = feature.Tiles
                 .SelectMany(t => t.PossibleNeighbours())
                 .Where(tilemap.IsValidTile)
-                .Where(t => tilemap[t] == default)
+                .Where(t => tilemap[t] == null)
                 .Distinct();
             foreach (var tile in borderOutside)
             {
@@ -45,7 +45,7 @@ sealed class BiomeTileAssigner
 
         while (queue.TryDequeue(out var tile))
         {
-            if (tilemap[tile] != default)
+            if (tilemap[tile] != null)
             {
                 continue;
             }
@@ -53,17 +53,17 @@ sealed class BiomeTileAssigner
             var neighbors = tile.PossibleNeighbours().Where(tilemap.IsValidTile).ToImmutableArray();
             var mostCommonNeighboringBiome = neighbors
                 .GroupBy(t => tilemap[t])
-                .Where(group => group.Key != default)
-                .MaxBy(group => group.Count())
+                .Where(group => group.Key != null)
+                .MaxBy(group => group.Count())!
                 .Key;
             tilemap[tile] = mostCommonNeighboringBiome;
 
-            foreach (var t in neighbors.Where(t => tilemap[t] == default))
+            foreach (var t in neighbors.Where(t => tilemap[t] == null))
             {
                 queue.Enqueue(t);
             }
         }
 
-        return tilemap;
+        return tilemap!;
     }
 }

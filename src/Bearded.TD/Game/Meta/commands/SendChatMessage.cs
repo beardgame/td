@@ -40,7 +40,7 @@ static class SendChatMessage
     private sealed class Serializer : UnifiedRequestCommandSerializer
     {
         private Id<Player> player;
-        private string message;
+        private string message = null!;
 
         public Serializer(Player player, string message)
         {

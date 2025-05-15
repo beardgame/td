@@ -10,7 +10,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("trail")]
-sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
+sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>, IListener<ObjectDeleting>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -37,12 +37,8 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 
     protected override void OnAdded()
     {
-        if (Parameters.SurviveObjectDeletion)
-        {
-            Owner.Deleting += persistTrail;
-        }
-
-        Events.Subscribe(this);
+        Events.Subscribe<DrawComponents>(this);
+        Events.Subscribe<ObjectDeleting>(this);
     }
 
     public override void Activate()
@@ -54,12 +50,16 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>
 
     public override void OnRemoved()
     {
+        Events.Unsubscribe<DrawComponents>(this);
+        Events.Unsubscribe<ObjectDeleting>(this);
+    }
+
+    public void HandleEvent(ObjectDeleting @event)
+    {
         if (Parameters.SurviveObjectDeletion)
         {
-            Owner.Deleting -= persistTrail;
+            persistTrail();
         }
-
-        Events.Unsubscribe(this);
     }
 
     private void persistTrail()

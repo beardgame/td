@@ -12,7 +12,7 @@ sealed class LobbyListRowControl : CompositeControl
     private const float padding = 4;
     private const float fontSize = 20;
 
-    public GenericEventHandler<Proto.Lobby> Clicked;
+    public GenericEventHandler<Proto.Lobby>? Clicked;
 
     public LobbyListRowControl(Proto.Lobby lobby)
     {

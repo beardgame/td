@@ -88,10 +88,10 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
             }
             return;
 
-            if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, hit))
-            {
-                nextAttack += 1 / Parameters.AttackRate;
-            }
+            // if (DamageExecutor.FromObject(Owner).TryDoDamage(target, damage, hit))
+            // {
+            //     nextAttack += 1 / Parameters.AttackRate;
+            // }
         }
     }
 

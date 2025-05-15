@@ -12,7 +12,7 @@ sealed class Player : IIdable<Player>
 {
     public Id<Player> Id { get; }
     public string Name { get; }
-    public Faction Faction { get; private set; }
+    public Faction Faction { get; private set; } = null!;
     public PlayerConnectionState ConnectionState { get; set; }
     public int LastKnownPing { get; set; } = -1;
 

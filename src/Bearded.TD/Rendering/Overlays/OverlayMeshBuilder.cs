@@ -1,5 +1,4 @@
-﻿using System;
-using Bearded.Graphics.MeshBuilders;
+﻿using Bearded.Graphics.MeshBuilders;
 using Bearded.Graphics.Shapes;
 using Bearded.TD.Rendering.Shapes;
 using Bearded.Utilities;
@@ -46,8 +45,9 @@ sealed class OverlayMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort
             new ShapeVertex(xy3.WithZ(z0), shape, components.Components)
             );
 
-        return; // 3d version below
+        // 3d version below
 
+        /*
         mesh.Add(8, 36, out var vertices, out var indices, out var indexOffset);
 
         vertices[0] = new ShapeVertex(xy.WithZ(z0), shape, components.Components);
@@ -80,5 +80,6 @@ sealed class OverlayMeshBuilder(IIndexedTrianglesMeshBuilder<ShapeVertex, ushort
         {
             indices[i] = (ushort)(indexOffset + localIndices[i]);
         }
+        */
     }
 }
