@@ -20,15 +20,16 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            3.1.x
             6.0.x
             8.0.x
       - name: Install dependencies
         run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
-      - name: Test
-        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx"
+      - name: Test main project
+        run: dotnet test src/Bearded.TD.Tests --no-restore --logger "trx;LogFileName=test-results-td.trx"
+      - name: Test generators
+        run: dotnet test src/Bearded.TD.Generators.Tests --no-restore --logger "trx;LogFileName=test-results-generators.trx"
       - name: Upload Verify test results
         if: failure()
         uses: actions/upload-artifact@v4
@@ -42,4 +43,4 @@ jobs:
         with:
           name: test-results
           path: |
-            **/test-results.trx
+            **/test-results-*.trx
