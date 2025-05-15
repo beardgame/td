@@ -13,6 +13,7 @@ public sealed class DamageModifierTests
     public static IEnumerable<Type> GetAllDamageModifierTypes()
     {
         return AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => !a.FullName?.StartsWith("DynamicProxyGenAssembly2") ?? true)
             .SelectMany(assembly => assembly.GetTypes()
                 .Where(t => t.IsAssignableTo(typeof(IDamageModifier))))
             .Where(type => type is { IsClass: true, IsAbstract: false });
