@@ -2,7 +2,7 @@
 	path = libs/audio
 	url = https://github.com/beardgame/audio.git
 [submodule "libs/awgraphics"]
-	path = libs/awgraphics
+	path = libs/graphics
 	url = https://github.com/beardgame/graphics.git
 [submodule "libs/utilities"]
 	path = libs/utilities

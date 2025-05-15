@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics", "libs\awgraphics\Bearded.Graphics\Bearded.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics", "libs\graphics\Bearded.Graphics\Bearded.Graphics.csproj", "{59BEDA5C-D68A-4011-89BA-C09421D22974}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bearded.TD.Proto", "src\Bearded.TD.Proto\Bearded.TD.Proto.csproj", "{4862BBB1-839D-4831-9985-D3399C8C2DED}"
 EndProject
@@ -25,9 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Testing", "src\B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.TD.Analyzers", "src\Bearded.TD.Analyzers\Bearded.TD.Analyzers.csproj", "{F8A43CDC-00AA-402D-AC7F-ED0802F32028}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp", "libs\awgraphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj", "{6410676D-404A-49BE-AB42-16667DCFD504}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.ImageSharp", "libs\graphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj", "{6410676D-404A-49BE-AB42-16667DCFD504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\awgraphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Graphics.SkiaSharp", "libs\graphics\Bearded.Graphics.SkiaSharp\Bearded.Graphics.SkiaSharp.csproj", "{45392808-92B7-4650-944B-E4CC0DFFEF71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bearded.Audio", "libs\audio\src\Bearded.Audio\Bearded.Audio.csproj", "{C331356F-583A-4840-B7DC-7B3C52676BEA}"
 EndProject

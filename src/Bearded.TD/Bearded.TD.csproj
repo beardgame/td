@@ -45,8 +45,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libs\audio\src\Bearded.Audio\Bearded.Audio.csproj" />
-    <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj" />
-    <ProjectReference Include="..\..\libs\awgraphics\Bearded.Graphics\Bearded.Graphics.csproj" />
+    <ProjectReference Include="..\..\libs\graphics\Bearded.Graphics.ImageSharp\Bearded.Graphics.ImageSharp.csproj" />
+    <ProjectReference Include="..\..\libs\graphics\Bearded.Graphics\Bearded.Graphics.csproj" />
     <ProjectReference Include="..\..\libs\lidgren\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
     <ProjectReference Include="..\..\libs\utilities\Bearded.Utilities\Bearded.Utilities.csproj" />
     <ProjectReference Include="..\Bearded.TD.Proto\Bearded.TD.Proto.csproj" />
