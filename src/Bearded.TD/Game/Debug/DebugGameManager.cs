@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Bearded.TD.Utilities.Console;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Game.Debug;
@@ -19,6 +21,8 @@ sealed class DebugGameManager
         }
 
         Game = game;
+        ConsoleCommands.AddParameterCompletion(
+            "blueprints.gameObjects", game.Blueprints.GameObjects.All.Select(b => b.Id.ToString()));
     }
 
     public void UnregisterGame()
@@ -29,6 +33,7 @@ sealed class DebugGameManager
         }
 
         Game = null;
+        ConsoleCommands.RemoveParameterCompletion("blueprints.gameObjects");
     }
 
     public void RunCommandOrLog(Logger logger, Action<GameInstance> command)

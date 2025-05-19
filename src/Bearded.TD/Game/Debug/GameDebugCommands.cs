@@ -34,6 +34,10 @@ static class GameDebugCommands
     [CommandParameterCompletion("terrain.generators")]
     private static IEnumerable<string> getTerrainGenerators() => Enum.GetNames<LevelGenerationMethod>();
 
+    [CommandParameterCompletion("elements")]
+    private static IEnumerable<string> getElements() =>
+        Enum.GetNames<Element>().Select(e => e.ToLowerInvariant()).ToArray();
+
     [DebugCommand("game.generateterrain", "terrain.generators")]
     private static void generateTerrain(Logger logger, CommandParameters p) => run(logger, gameInstance =>
     {
@@ -235,7 +239,7 @@ static class GameDebugCommands
         return faction;
     }
 
-    [DebugCommand("game.enemy.spawn")]
+    [DebugCommand("game.enemy.spawn", "blueprints.gameObjects", "elements")]
     private static void spawnEnemy(Logger logger, CommandParameters p) => run(logger, gameInstance =>
     {
         if (p.Args.Length != 2)
