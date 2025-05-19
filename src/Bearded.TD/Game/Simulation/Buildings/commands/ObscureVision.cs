@@ -11,7 +11,7 @@ using JetBrains.Annotations;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-static class LowerBuildingRange
+static class ObscureVision
 {
     public static ISerializableCommand<GameInstance> Command(GameObject obj, TimeSpan duration, double factor) =>
         new Implementation(obj, duration, factor);
@@ -21,7 +21,7 @@ static class LowerBuildingRange
     {
         public void Execute()
         {
-            obj.TryApplyEffect(new LowerWeaponRange.Effect(factor, duration));
+            obj.TryApplyEffect(new ObscuredVision.Effect(factor, duration));
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer
