@@ -5,23 +5,12 @@ namespace Bearded.TD.Utilities.Console;
 
 [AttributeUsage(AttributeTargets.Method)]
 [MeansImplicitUse]
-class CommandAttribute : Attribute
+class CommandAttribute(string name, params string[] parameterCompletions) : Attribute
 {
-    public string Name { get; }
-    public string? ParameterCompletion { get; }
-
-    public CommandAttribute(string name, string? parameterCompletion = null)
-    {
-        Name = name;
-        ParameterCompletion = parameterCompletion;
-    }
+    public string Name { get; } = name;
+    public string[] ParameterCompletions { get; } = parameterCompletions;
 }
 
 [AttributeUsage(AttributeTargets.Method)]
-sealed class DebugCommandAttribute : CommandAttribute
-{
-    public DebugCommandAttribute(string name, string? parameterCompletion = null)
-        : base(name, parameterCompletion)
-    {
-    }
-}
+sealed class DebugCommandAttribute(string name, params string[] parameterCompletions)
+    : CommandAttribute(name, parameterCompletions);

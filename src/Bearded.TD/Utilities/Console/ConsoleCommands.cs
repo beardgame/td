@@ -43,24 +43,34 @@ static class ConsoleCommands
         return true;
     }
 
-    public static PrefixTrie? ParameterPrefixesFor(string command)
+    public static PrefixTrie? ParameterPrefixesFor(string command, int parameterIndex)
     {
         if (!dictionary.TryGetValue(command, out var c))
             return null;
 
-        if (c.Attribute.ParameterCompletion == null)
+        if (c.Attribute.ParameterCompletions.Length <= parameterIndex)
             return null;
 
         lock (parameterCompletion)
         {
-            return parameterCompletion.GetValueOrDefault(c.Attribute.ParameterCompletion);
+            return parameterCompletion.GetValueOrDefault(c.Attribute.ParameterCompletions[parameterIndex]);
         }
     }
 
     public static void AddParameterCompletion(string parameterId, IEnumerable<string>? prefixes)
     {
-        lock(parameterCompletion)
+        lock (parameterCompletion)
+        {
             parameterCompletion.Add(parameterId, new PrefixTrie(prefixes!));
+        }
+    }
+
+    public static void RemoveParameterCompletion(string parameterId)
+    {
+        lock (parameterCompletion)
+        {
+            parameterCompletion.Remove(parameterId);
+        }
     }
 
     public static void Initialize()

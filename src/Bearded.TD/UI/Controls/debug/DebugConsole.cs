@@ -229,7 +229,7 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
     {
         var trimmed = incompleteCommand.TrimStart();
 
-        if (incompleteCommand.Contains(" ")) return autoCompleteParameters(incompleteCommand, printAlternatives);
+        if (incompleteCommand.Contains(' ')) return autoCompleteParameters(incompleteCommand, printAlternatives);
 
         var extended = ConsoleCommands.Prefixes.ExtendPrefix(trimmed);
 
@@ -265,13 +265,16 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
     {
         var splitBySpace = incompleteCommand.Split(space, StringSplitOptions.RemoveEmptyEntries);
 
-        if (splitBySpace.Length == 0 || splitBySpace.Length > 2)
+        if (splitBySpace.Length is 0)
         {
             return incompleteCommand;
         }
 
         var command = splitBySpace[0];
-        var parameterPrefixes = ConsoleCommands.ParameterPrefixesFor(command);
+        var parameterIndex = splitBySpace.Length - 1;
+        var isIncompleteParameter = !char.IsWhiteSpace(incompleteCommand[^1]);
+        if (isIncompleteParameter && parameterIndex > 0) parameterIndex--;
+        var parameterPrefixes = ConsoleCommands.ParameterPrefixesFor(command, parameterIndex);
 
         if (parameterPrefixes == null)
         {
@@ -283,7 +286,7 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
             return incompleteCommand;
         }
 
-        var parameter = splitBySpace.Length > 1 ? splitBySpace[1] : "";
+        var parameter = isIncompleteParameter ? splitBySpace[^1] : "";
         var extended = parameterPrefixes.ExtendPrefix(parameter);
 
         if (extended == null)
@@ -296,23 +299,26 @@ sealed class DebugConsole : UpdateableNavigationNode<Void>
             return incompleteCommand;
         }
 
+        var termsToCollapse = isIncompleteParameter ? splitBySpace[..^1] : splitBySpace;
+        var existingTerms = string.Join(' ', termsToCollapse);
+
         if (parameterPrefixes.Contains(extended))
         {
-            return $"{command} {extended} ";
+            return $"{existingTerms} {extended} ";
         }
 
         if (extended != parameter)
         {
-            return $"{command} {extended}";
+            return $"{existingTerms} {extended}";
         }
 
         if (printAlternatives)
         {
             var availableParameters = parameterPrefixes.AllKeys(extended);
-            printInfo($"> {command} {extended}");
+            printInfo($"> {existingTerms} {extended}");
             foreach (var p in availableParameters) printInfo(p);
         }
 
-        return $"{command} {extended}";
+        return $"{existingTerms} {extended}";
     }
 }
