@@ -16,7 +16,7 @@
     {
       type: "component",
       parameters: {
-        id: "lowerBumpedBuildingRange",
+        id: "obscureVisionOfBumpedBuilding",
         parameters: {
           duration: 2,
           factor: 0.4,

@@ -8,9 +8,9 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Modules;
 
-[Component("lowerBumpedBuildingRange")]
-sealed class LowerWeaponRange(LowerWeaponRange.IParameters parameters)
-    : Component<LowerWeaponRange.IParameters>(parameters), IListener<BumpedBuilding>
+[Component("obscureVisionOfBumpedBuilding")]
+sealed class ObscureVisionOfBumpedBuilding(ObscureVisionOfBumpedBuilding.IParameters parameters)
+    : Component<ObscureVisionOfBumpedBuilding.IParameters>(parameters), IListener<BumpedBuilding>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -27,6 +27,6 @@ sealed class LowerWeaponRange(LowerWeaponRange.IParameters parameters)
 
     public void HandleEvent(BumpedBuilding e)
     {
-        Owner.Sync(LowerBuildingRange.Command, e.Building, Parameters.Duration, Parameters.Factor);
+        Owner.Sync(ObscureVision.Command, e.Building, Parameters.Duration, Parameters.Factor);
     }
 }

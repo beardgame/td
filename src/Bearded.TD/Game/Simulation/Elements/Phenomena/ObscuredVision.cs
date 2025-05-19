@@ -9,7 +9,7 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-static class LowerWeaponRange
+static class ObscuredVision
 {
     public readonly record struct Effect(double Factor, TimeSpan Duration) : IElementalEffect<Effect>
     {
