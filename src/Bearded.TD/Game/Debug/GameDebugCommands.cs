@@ -265,6 +265,11 @@ static class GameDebugCommands
             logger.Warning?.Log($"Exception thrown while fetching blueprint: {e.Message}");
             return;
         }
+        if (!blueprint.GetComponents().OfType<Threat>().Any())
+        {
+            logger.Warning?.Log("Blueprint does not have a threat, not considered an enemy, not spawning enemy");
+            return;
+        }
 
         var formGenerator = new EnemyFormGenerator(gameInstance.Blueprints.Modules.All, logger);
         if (!formGenerator.TryGenerateEnemyForm(
