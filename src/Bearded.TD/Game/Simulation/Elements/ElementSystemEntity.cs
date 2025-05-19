@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Utilities.Collections;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
@@ -9,7 +10,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 
 interface IElementSystemEntity
 {
-    void ApplyEffect<T>(T effect) where T : IElementalEffect<T>;
+    bool TryApplyEffect<T>(ElementalEffectAttempt<T> attempt) where T : IElementalEffect<T>;
 }
 
 sealed class ElementSystemEntity : Component, IElementSystemEntity
@@ -39,10 +40,13 @@ sealed class ElementSystemEntity : Component, IElementSystemEntity
         }
     }
 
-    public void ApplyEffect<T>(T effect) where T : IElementalEffect<T>
+    public bool TryApplyEffect<T>(ElementalEffectAttempt<T> attempt) where T : IElementalEffect<T>
     {
-        var scope = effectScopes.GetOrInsert(typeof(T), (effect, Owner), static ctx => ctx.effect.NewScope(ctx.Owner));
+        if (!Random.Shared.NextBool(attempt.Probability)) return false;
 
-        ((IElementalEffect<T>.IScope) scope).Adopt(effect, Owner.Game.Time);
+        var scope = effectScopes.GetOrInsert(
+            typeof(T), (attempt.Effect, Owner), static ctx => ctx.Effect.NewScope(ctx.Owner));
+        ((IElementalEffect<T>.IScope) scope).Adopt(attempt.Effect, Owner.Game.Time);
+        return true;
     }
 }

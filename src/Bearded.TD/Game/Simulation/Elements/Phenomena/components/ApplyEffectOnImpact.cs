@@ -8,13 +8,12 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters>, IListener<TouchObject>
+abstract class ApplyEffectOnImpact<TParameters, TEffect>(TParameters parameters) : Component<TParameters>(parameters),
+    IListener<TouchObject>
     where TParameters : IParametersTemplate<TParameters>
     where TEffect : IElementalEffect<TEffect>
 {
     protected abstract double Probability { get; }
-
-    protected ApplyEffectOnImpact(TParameters parameters) : base(parameters) { }
 
     protected override void OnAdded()
     {
@@ -25,12 +24,10 @@ abstract class ApplyEffectOnImpact<TParameters, TEffect> : Component<TParameters
 
     public void HandleEvent(TouchObject @event)
     {
-        if (!StaticRandom.Bool(Probability)) return;
         if (!Owner.TryGetProperty<UntypedDamage>(out var damage)) return;
-        if (!@event.Object.TryGetSingleComponent<IElementSystemEntity>(out var elementSystemEntity)) return;
 
         var effect = CreateEffect(damage);
-        elementSystemEntity.ApplyEffect(effect);
+        @event.Object.TryApplyEffect(effect, Probability);
     }
 
     protected abstract TEffect CreateEffect(UntypedDamage damage);
