@@ -1,9 +1,30 @@
+using System.Diagnostics.CodeAnalysis;
 using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Game.Simulation.Upgrades;
 
 static partial class UpgradeApplication
 {
+    public static bool TryApplyUpgrade(
+        this GameObject subject, IUpgrade upgrade, [NotNullWhen(true)] out IUpgradeReceipt? receipt)
+    {
+        var upgradePreview = new UpgradePreview(upgrade);
+        subject.PreviewUpgrade(upgradePreview);
+
+        if (!upgradePreview.WouldBeEffective())
+        {
+            receipt = null;
+            return false;
+        }
+
+        var operation = upgradePreview.ToOperation();
+        operation.Commit();
+
+        receipt = operation;
+
+        return true;
+    }
+
     public static bool CanApplyUpgrade(this GameObject subject, IUpgrade upgrade)
     {
         var upgradePreview = new UpgradePreview(upgrade);

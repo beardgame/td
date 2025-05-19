@@ -120,6 +120,7 @@ static partial class Constants
             public static readonly Temperature MaxTemperature = new(100);
             public static readonly Temperature MinNormalTemperature = new(-40);
             public static readonly Temperature MinTemperature = new(-100);
+            public static readonly Temperature FrozenRecoveryTemperature = new(-80);
         }
 
         public static class Physics

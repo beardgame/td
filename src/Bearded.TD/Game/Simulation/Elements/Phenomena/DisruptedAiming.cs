@@ -29,8 +29,10 @@ static class DisruptedAiming
         {
             var upgrade = Upgrade.FromEffects(
                 new AddComponentFromDelegate(createComponent, UpgradePrerequisites.RequireTags("weapon"), false));
-            if (!Target.CanApplyUpgrade(upgrade)) return;
-            receipt = Target.ApplyUpgrade(upgrade);
+
+            if (!Target.TryApplyUpgrade(upgrade, out receipt))
+                return;
+
             statusChange = new ElementalStatus("eye-disabled".ToStatusIconSpriteId());
         }
 

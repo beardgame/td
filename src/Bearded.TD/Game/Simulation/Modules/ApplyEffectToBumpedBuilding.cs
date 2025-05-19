@@ -35,10 +35,8 @@ sealed class ApplyEffectToBumpedBuilding(IParameters parameters)
     {
         var upgrade = Upgrade.FromEffects(Parameters.Effects);
 
-        if (!target.CanApplyUpgrade(upgrade))
+        if (!target.TryApplyUpgrade(upgrade, out var receipt))
             return;
-
-        var receipt = target.ApplyUpgrade(upgrade);
 
         target.Delay(receipt.Rollback, Parameters.EffectDuration, DelayMode.OnTimeOutOrDeleting);
     }

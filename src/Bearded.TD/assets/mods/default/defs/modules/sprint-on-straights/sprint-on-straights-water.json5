@@ -1,6 +1,6 @@
 ﻿{
-  id: "sprint-on-straights-fire",
-  affinityElement: "fire",
+  id: "sprint-on-straights-water",
+  affinityElement: "water",
   socketShape: "sprintOnStraights",
   effects: [
     {
@@ -9,7 +9,7 @@
         id: "enemyIcon",
         parameters: {
           icon: "enemies.sprinting-enemy",
-          element: "fire",
+          element: "water",
         }
       }
     },
@@ -19,7 +19,7 @@
         id: "spawnObjectOnTrigger",
         parameters: {
           trigger: "bumpedBuilding",
-          object: "smallFireExplosion",
+          object: "smallIceExplosion",
           offsetInDirection: 0.25
         }
       }
@@ -29,7 +29,7 @@
       parameters: {
         id: "changeTemperatureOfBumpedBuilding",
         parameters: {
-          temperatureChange: 25
+          temperatureChange: -25
         }
       }
     },

@@ -28,14 +28,12 @@ static class ObscuredVision
         protected override void StartScope(ref EffectChangeResult statusChange)
         {
             statusChange = new ElementalStatus("eye-disabled".ToStatusIconSpriteId());
-
         }
 
         protected override void StartEffect(Effect effect, ref EffectChangeResult statusChange)
         {
             var upgrade = Upgrade.FromEffects(createUpgradeEffect(effect));
-            if (!Target.CanApplyUpgrade(upgrade)) return;
-            receipt = Target.ApplyUpgrade(upgrade);
+            Target.TryApplyUpgrade(upgrade, out receipt);
         }
 
         protected override void ApplyEffectTick(Effect effect) { }

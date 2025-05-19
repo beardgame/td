@@ -1,0 +1,63 @@
+{
+    id: "smallFireExplosion",
+    components: [
+        { id: "particles", parameters: { } },
+        { id: "particlesMoveLinear" },
+        { id: "particlesDrag", parameters: { linear: 6, angular: 2 } },
+
+        { id: "particlesDraw", parameters: {
+            sprite: "default.large-particles.flame3",
+            drawMode: "sprite",
+            shader: "flame",
+            drawGroupOrderKey : 2,
+            reverseOrder: false
+        } },
+
+        { id: "particlesOffsetLifeTime", parameters: {
+            byVelocity: 0.03,
+            constant: -0.4
+        }},
+        { id: "particlesClampVelocity", parameters: {
+            minZ: 0.1,
+            maxZ: 3
+        }},
+        { id: "particlesSortByPredictedZOnce" },
+
+
+        { id: "particlesSpawnOnCreate", parameters:  {
+            count: 20,
+            lifeTime: 0.6,
+            lifeTimeNoise: 0.1,
+
+            offset: [0, 0, 0.01],
+
+            randomVelocity: 1.5,
+            randomVelocityNoise: 0.8,
+
+            orientationNoise: 1,
+            angularVelocity: 90,
+            angularVelocityNoise: 1,
+            randomAngularVelocitySign: true
+        }},
+
+        { id: "particlesKeyFrames", parameters: {
+            scaleToParticleLifeTime: true,
+            animation: {
+                keyFrames: [
+                    { duration: 0.0, size: 0, color: "00ffd385" },
+                    { duration: 0.1, size: 0.15, color: "FFffd385" },
+                    { duration: 0.1, size: 0.32, color: "FFff7c39" },
+                    { duration: 0.1, size: 0.35, color: "66c05629" },
+                    { duration: 0.1, size: 0.5, color: "00753822" },
+                ],
+            }
+        } },
+
+        {
+            id: "deleteAfter",
+            parameters: {
+                timeSpan: 1
+            }
+        }
+    ]
+}

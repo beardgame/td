@@ -1,10 +1,10 @@
-using Bearded.TD.Game.Simulation.Buildings.Ruins;
 using Bearded.TD.Game.Simulation.Footprints;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Utilities.SpaceTime;
 using Bearded.Utilities.SpaceTime;
 using static Bearded.TD.Constants.Game.Elements;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Elements;
 
@@ -12,14 +12,19 @@ namespace Bearded.TD.Game.Simulation.Elements;
 record struct Overheated : IComponentEvent;
 [Trigger("stopOverheated")]
 record struct StopOverheated : IComponentEvent;
+[Trigger("frozen")]
+record struct Frozen : IComponentEvent;
+[Trigger("stopFrozen")]
+record struct StopFrozen : IComponentEvent;
 
 [Component("temperature")]
 sealed partial class TemperatureProperty : Component, IProperty<Temperature>, ITemperatureEventReceiver
 {
     public Temperature Value { get; private set; }
+    private TemperatureState currentState = TemperatureState.Normal;
+
     private TickCycle? tickCycle;
-    private TemperatureStatus? status;
-    private IBreakageReceipt? breakage;
+    private IStatusTracker? statusDisplay;
     private ITilePresenceListener? tilePresenceListener;
     private TemperatureDifference queuedTemperatureChange;
 
@@ -29,10 +34,7 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
     {
         base.Activate();
         tickCycle = new TickCycle(Owner.Game, applyTick);
-        if (Owner.TryGetSingleComponent<IStatusTracker>(out var statusDisplay))
-        {
-            status = new TemperatureStatus(statusDisplay);
-        }
+        Owner.TryGetSingleComponent(out statusDisplay);
         tilePresenceListener = Owner.TrackTilePresenceInLayer(Owner.Game.TemperatureLayer);
     }
 
@@ -47,12 +49,16 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
         base.OnRemoved();
     }
 
+    public void ApplyImmediateTemperatureChange(TemperatureDifference difference)
+    {
+        queuedTemperatureChange += difference;
+    }
+
     private void applyTick(Instant now)
     {
         applyChanges(now);
-        updateBreakage();
+        updateEffects();
         applyDecay();
-        status?.UpdateCurrentTemperature(Value);
     }
 
     private void applyChanges(Instant now)
@@ -81,28 +87,22 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
         }
     }
 
-    private void updateBreakage()
+    private void updateEffects()
     {
-        if (breakage is { } receipt && Value <= MaxNormalTemperature)
+        var newState = 0 switch
         {
-            receipt.Repair();
-            Events.Send(new StopOverheated());
-            status?.EndOverheat();
-            breakage = null;
+            _ when Value < MinNormalTemperature => TemperatureState.Cold,
+            _ when Value > MaxNormalTemperature => TemperatureState.Hot,
+            _ => TemperatureState.Normal,
+        };
+
+        if (currentState != newState)
+        {
+            currentState.Stop(this);
+            currentState = newState;
+            currentState.Start(this);
         }
 
-        if (breakage is null &&
-            Value >= MaxTemperature &&
-            Owner.TryGetSingleComponent<IBreakageHandler>(out var breakageHandler))
-        {
-            breakage = breakageHandler.BreakObject();
-            Events.Send(new Overheated());
-            status?.BeginOverheat();
-        }
-    }
-
-    public void ApplyImmediateTemperatureChange(TemperatureDifference difference)
-    {
-        queuedTemperatureChange += difference;
+        currentState.Update(this);
     }
 }
