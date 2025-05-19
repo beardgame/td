@@ -35,7 +35,7 @@ static class StunAllBuildings
                     && stateProvider.State.IsCompleted
                     && building.TryGetSingleComponent<IElementSystemEntity>(out var entity))
                 {
-                    entity.ApplyEffect(new Stunned.Effect(duration));
+                    entity.TryApplyEffect(new Stunned.Effect(duration).WithProbability(1));
                 }
             }
         }

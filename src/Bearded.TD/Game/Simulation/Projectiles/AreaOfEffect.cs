@@ -23,12 +23,12 @@ static class AreaOfEffect
     }
 
     public static void ApplyStatusEffect<T>(
-        GameState game, T effect, Position3 center, Unit range)
+        GameState game, T effect, Position3 center, Unit range, double probability = 1)
         where T : IElementalEffect<T>
     {
         foreach (var (obj, _) in FindObjects(game, center, range))
         {
-            obj.TryApplyEffect(effect);
+            obj.TryApplyEffect(effect, probability);
         }
     }
 

@@ -29,10 +29,7 @@ static class StunObject
 
         public void Execute()
         {
-            if (obj.TryGetSingleComponent<IElementSystemEntity>(out var entity))
-            {
-                entity.ApplyEffect(new Stunned.Effect(duration));
-            }
+            obj.TryApplyEffect(new Stunned.Effect(duration));
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer => new Serializer(obj, duration);
