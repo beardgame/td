@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Bearded.TD.Content.Mods;
+using Bearded.TD.Game.GameLoop;
 using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Buildings.Veterancy;
 using Bearded.TD.Game.Simulation.Damage;
+using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Exploration;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
+using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Units;
@@ -228,6 +234,52 @@ static class GameDebugCommands
 
         return faction;
     }
+
+    [DebugCommand("game.enemy.spawn")]
+    private static void spawnEnemy(Logger logger, CommandParameters p) => run(logger, gameInstance =>
+    {
+        if (p.Args.Length != 2)
+        {
+            logger.Warning?.Log("Usage: \"game.enemy.spawn <blueprint> <element>\"");
+            return;
+        }
+
+        var capitalizedElement = char.ToUpperInvariant(p.Args[1][0]) + p.Args[1][1..].ToLowerInvariant();
+        if (!Enum.TryParse(capitalizedElement, out Element element))
+        {
+            logger.Warning?.Log($"Invalid element: {capitalizedElement}");
+            return;
+        }
+
+        IGameObjectBlueprint blueprint;
+        try
+        {
+            blueprint = gameInstance.Blueprints.GameObjects[ModAwareId.FromFullySpecified(p.Args[0])];
+        }
+        catch (Exception e)
+        {
+            logger.Warning?.Log($"Exception thrown while fetching blueprint: {e.Message}");
+            return;
+        }
+
+        var formGenerator = new EnemyFormGenerator(gameInstance.Blueprints.Modules.All, logger);
+        if (!formGenerator.TryGenerateEnemyForm(
+                blueprint, new EnemyFormGenerator.Requirements(element), Random.Shared, out var form))
+        {
+            logger.Warning?.Log("Was unable to generate form, not spawning enemy");
+            return;
+        }
+
+        var spawnLocation = gameInstance.State.Enumerate<SpawnLocation>().FirstOrDefault(s => !s.IsAwake);
+        if (spawnLocation is null)
+        {
+            logger.Warning?.Log("Could not find a spawn location for the enemy, not spawning enemy");
+            return;
+        }
+
+        var enemy = EnemyFactory.Create(gameInstance.Ids.GetNext<GameObject>(), form, spawnLocation.SpawnTile);
+        gameInstance.State.Add(enemy);
+    });
 
     private static void run(Logger logger, Action<GameInstance> command) =>
         DebugGameManager.Instance.RunCommandOrLog(logger, command);
