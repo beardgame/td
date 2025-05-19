@@ -42,11 +42,25 @@ sealed class ElementSystemEntity : Component, IElementSystemEntity
 
     public bool TryApplyEffect<T>(ElementalEffectAttempt<T> attempt) where T : IElementalEffect<T>
     {
+        applyModifiers(ref attempt);
+
         if (!Random.Shared.NextBool(attempt.Probability)) return false;
 
-        var scope = effectScopes.GetOrInsert(
-            typeof(T), (attempt.Effect, Owner), static ctx => ctx.Effect.NewScope(ctx.Owner));
-        ((IElementalEffect<T>.IScope) scope).Adopt(attempt.Effect, Owner.Game.Time);
+        applyEffect(attempt.Effect);
         return true;
+    }
+
+    private void applyModifiers<T>(ref ElementalEffectAttempt<T> attempt) where T : IElementalEffect<T>
+    {
+        var preview = new PreviewElementalEffectAttempt<T>(attempt);
+        Events.Preview(ref preview);
+        attempt = preview.Attempt;
+    }
+
+    private void applyEffect<T>(T effect) where T : IElementalEffect<T>
+    {
+        var scope = effectScopes.GetOrInsert(
+            typeof(T), (Effect: effect, Owner), static ctx => ctx.Effect.NewScope(ctx.Owner));
+        ((IElementalEffect<T>.IScope) scope).Adopt(effect, Owner.Game.Time);
     }
 }
