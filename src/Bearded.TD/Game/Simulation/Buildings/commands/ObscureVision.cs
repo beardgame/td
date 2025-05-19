@@ -21,7 +21,7 @@ static class ObscureVision
     {
         public void Execute()
         {
-            obj.TryApplyEffect(new LowerWeaponRange.Effect(factor, duration));
+            obj.TryApplyEffect(new ObscuredVision.Effect(factor, duration));
         }
 
         ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer
