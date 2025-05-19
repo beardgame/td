@@ -7,4 +7,7 @@ readonly record struct UpgradePrerequisites(
 {
     public static readonly UpgradePrerequisites Empty =
         new(ImmutableHashSet<string>.Empty, ImmutableHashSet<string>.Empty);
+
+    public static UpgradePrerequisites RequireTags(params string[] tags) =>
+        new(ImmutableHashSet.Create(tags), ImmutableHashSet<string>.Empty);
 }

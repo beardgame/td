@@ -270,7 +270,7 @@ static class GameDebugCommands
             return;
         }
 
-        var spawnLocation = gameInstance.State.Enumerate<SpawnLocation>().FirstOrDefault(s => !s.IsAwake);
+        var spawnLocation = gameInstance.State.Enumerate<SpawnLocation>().FirstOrDefault(s => s.IsAwake);
         if (spawnLocation is null)
         {
             logger.Warning?.Log("Could not find a spawn location for the enemy, not spawning enemy");

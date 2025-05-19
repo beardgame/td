@@ -7,13 +7,13 @@ using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Modules;
 
-[Component("stunBumpedBuilding")]
-sealed class StunBumpedBuilding(StunBumpedBuilding.IParameters parameters)
-    : Component<StunBumpedBuilding.IParameters>(parameters), IListener<BumpedBuilding>
+[Component("disruptBumpedBuildingAiming")]
+sealed class DisruptBumpedBuildingAiming(DisruptBumpedBuildingAiming.IParameters parameters)
+    : Component<DisruptBumpedBuildingAiming.IParameters>(parameters), IListener<BumpedBuilding>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
-        TimeSpan StunDuration { get; }
+        TimeSpan Duration { get; }
     }
 
     protected override void OnAdded()
@@ -23,6 +23,6 @@ sealed class StunBumpedBuilding(StunBumpedBuilding.IParameters parameters)
 
     public void HandleEvent(BumpedBuilding e)
     {
-        Owner.Sync(StunObject.Command, e.Building, Parameters.StunDuration);
+        Owner.Sync(DisruptBuildingAiming.Command, e.Building, Parameters.Duration);
     }
 }

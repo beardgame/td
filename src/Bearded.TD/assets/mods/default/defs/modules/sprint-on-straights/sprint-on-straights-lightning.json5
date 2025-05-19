@@ -16,25 +16,9 @@
     {
       type: "component",
       parameters: {
-        id: "applyEffectToBumpedBuilding",
+        id: "disruptBumpedBuildingAiming",
         parameters: {
-          effectDuration: 0.8,
-          effects: [
-            {
-              type: "component",
-              prerequisites: {
-                requiredTags: [ "weapon" ],
-              },
-              parameters: {
-                id: "targetRandomTilesInRange",
-                parameters: {
-                  retargetInterval: 0.3,
-                  maxRetargetDistance: 3,
-                  randomDrift: 4,
-                }
-              }
-            },
-          ]
+          duration: 0.8,
         }
       }
     },
