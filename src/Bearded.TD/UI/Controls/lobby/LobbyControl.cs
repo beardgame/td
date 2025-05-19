@@ -11,7 +11,6 @@ using Bearded.TD.UI.Layers;
 using Bearded.TD.Utilities;
 using Bearded.UI.Controls;
 using Bearded.UI.EventArgs;
-using Bearded.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -302,27 +301,29 @@ sealed class LobbyControl : CompositeControl
 
     private sealed class LoadingBlueprintsListRow : CompositeControl
     {
-        private LoadingBlueprintsListRow(string path, Color color, Maybe<TimeSpan> loadingTime)
+        private LoadingBlueprintsListRow(string path, Color color, TimeSpan? loadingTime)
         {
             Add(new Label
             {
                 Text = path,
                 Color = color, FontSize = 14, TextAnchor = new Vector2d(0, .5)
             }.Anchor(a => a.Right(margin: 100)));
-            loadingTime.Select(time =>
+            if (loadingTime is { } time)
+            {
+                Add(
                     new Label
                     {
                         Text = $"{time:s\\.fff}s",
                         Color = color, FontSize = 14, TextAnchor = new Vector2d(1, .5)
-                    }.Anchor(a => a.Right(width: 100)))
-                .Match(Add);
+                    }.Anchor(a => a.Right(width: 100)));
+            }
         }
 
         public static LoadingBlueprintsListRow ForCurrentlyLoading(string path) =>
-            new(path, Color.LightBlue, Maybe.Nothing);
+            new(path, Color.LightBlue, null);
 
         public static LoadingBlueprintsListRow ForLoaded(ModLoadingProfiler.BlueprintLoadingProfile profile) =>
-            new(profile.Path, color(profile), Maybe.Just(profile.LoadingTime));
+            new(profile.Path, color(profile), profile.LoadingTime);
 
         private static Color color(ModLoadingProfiler.BlueprintLoadingProfile profile)
         {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bearded.Utilities;
 
 namespace Bearded.TD.Utilities.Collections;
 
@@ -48,11 +47,6 @@ static class LinqExtensions
         return value;
     }
 
-    public static Maybe<TValue> MaybeValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        where TKey : notnull
-    {
-        return dictionary.TryGetValue(key, out var value) ? Maybe.Just(value) : Maybe.Nothing;
-    }
     public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
     {
         foreach (var item in source)

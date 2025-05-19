@@ -1,32 +1,34 @@
 using System;
-using Bearded.Utilities;
 using Bearded.Utilities.IO;
-using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Game.Debug;
 
 sealed class DebugGameManager
 {
-    public static DebugGameManager Instance = new DebugGameManager();
+    public static DebugGameManager Instance { get; } = new();
 
     private DebugGameManager() { }
 
-    public Maybe<GameInstance> Game { get; private set; }
+    public GameInstance? Game { get; private set; }
 
     public void RegisterGame(GameInstance game)
     {
-        Game.Match(
-            onValue: _ => throw new InvalidOperationException("Cannot register a game if there is already one."),
-            onNothing: () => Game = Just(game)
-        );
+        if (Game is not null)
+        {
+            throw new InvalidOperationException("Cannot register a game if there is already one.");
+        }
+
+        Game = game;
     }
 
     public void UnregisterGame()
     {
-        Game.Match(
-            onValue: _ => Game = Nothing,
-            onNothing: () => throw new InvalidOperationException("Cannot unregister a game if there is none.")
-        );
+        if (Game is null)
+        {
+            throw new InvalidOperationException("Cannot unregister a game if there is nothing.");
+        }
+
+        Game = null;
     }
 
     public void RunCommandOrLog(Logger logger, Action<GameInstance> command)
@@ -39,15 +41,10 @@ sealed class DebugGameManager
 
     public bool TryRunCommand(Action<GameInstance> command)
     {
-        var commandRan = false;
-        Game.Match(
-            onValue: game =>
-            {
-                command(game);
-                commandRan = true;
-            },
-            onNothing: () => commandRan = false
-        );
-        return commandRan;
+        if (Game is { } game)
+        {
+            command(game);
+        }
+        return Game is not null;
     }
 }

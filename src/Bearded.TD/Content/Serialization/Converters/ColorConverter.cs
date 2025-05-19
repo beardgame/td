@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 using Bearded.Graphics;
-using Bearded.Utilities;
 using Newtonsoft.Json;
-using static Bearded.Utilities.Maybe;
 
 namespace Bearded.TD.Content.Serialization.Converters;
 
@@ -41,7 +39,7 @@ sealed class ColorConverter : JsonConverterBase<Color>
 
                 if (reader.TokenType == JsonToken.EndArray)
                 {
-                    return new Color(r, g, b, a.ValueOrDefault(255));
+                    return new Color(r, g, b, a ?? 255);
                 }
 
                 break;
@@ -52,22 +50,18 @@ sealed class ColorConverter : JsonConverterBase<Color>
 
     private static byte readByte(JsonReader reader)
     {
-        return tryReadByte(reader)
-            .Match(
-                b => b,
-                () => throw new InvalidDataException(
-                    $"Expected number value, encountered {reader.TokenType} when parsing Color component (expecting integer).")
-            );
+        return tryReadByte(reader) ?? throw new InvalidDataException(
+            $"Expected number value, encountered {reader.TokenType} when parsing Color component (expecting integer).");
     }
 
-    private static Maybe<byte> tryReadByte(JsonReader reader)
+    private static byte? tryReadByte(JsonReader reader)
     {
         if (reader.TokenType != JsonToken.Integer)
-            return Nothing;
+            return null;
 
         var b = Convert.ToByte(reader.Value);
         reader.Read();
 
-        return Just(b);
+        return b;
     }
 }
