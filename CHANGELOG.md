@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.34
+
+* Updated sprinter enemy to have effect on bumping rather than sprinting
+  * Fire enemies stun the tower
+  * Lightning enemies cause the tower to shoot randomly
+  * Alchemy enemies reduces the tower aim range
+  * Water enemies reduce the temperature of the tower
+* Towers with low temperature now start shooting and turning more slowly, with a fully frozen tower not shooting or turning at all
+* Damage now passes through to the next hit points layer (shield, armour, health) for enemies when the damage is more than the damage left in the current layer
+* Bug fix: ensured Cannon overdrive effect expires correctly after overdrive ends
+* Bug fix: made sure we delete half the buildings after a chapter, rather than just one
+
 ## v0.33
 
 * Gameplay change: after each chapter, half the towers you built will be destroyed
