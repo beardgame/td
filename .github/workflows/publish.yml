@@ -25,8 +25,10 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build -c Release --no-restore
-      - name: Test
-        run: dotnet test -c Release --no-build
+      - name: Test main project
+        run: dotnet test src/Bearded.TD.Tests --no-build -c Release
+      - name: Test generators
+        run: dotnet test src/Bearded.TD.Generators.Tests --no-build -c Release
 
   publish:
     needs: test
