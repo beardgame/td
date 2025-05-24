@@ -3,7 +3,6 @@ name: Increment version
 on: [workflow_dispatch, workflow_call]
 
 jobs:
-
   update_project:
     runs-on: ubuntu-latest
 
@@ -14,7 +13,7 @@ jobs:
 
       - name: Get Branch
         run: |
-          branch=$(git branch -r --contains ${{ github.ref }} --format "%(refname:lstrip=3)")
+          branch=$(git symbolic-ref --short HEAD || echo "develop")
           echo "BRANCH=$branch" >> "$GITHUB_ENV"
 
       - name: Increment version number
