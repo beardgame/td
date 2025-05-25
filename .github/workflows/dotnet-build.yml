@@ -8,12 +8,4 @@ on:
 
 jobs:
   build:
-
-    name: Build & test
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: ./.github/actions/dotnet-run-tests
+    uses: ./.github/workflows/_dotnet-run-tests.yml
