@@ -6,10 +6,10 @@ using Bearded.TD.Networking.Serialization;
 using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using List_Dictionary_MyOwnClass_MyOwnStruct = global::System.Collections.Generic.List<global::System.Collections.Generic.Dictionary<global::Bearded.TD.Generators.Tests.Commands.MyOwnClass, global::Bearded.TD.Generators.Tests.Commands.MyOwnStruct>>;
+using List_MyOwnClass = global::System.Collections.Generic.List<global::Bearded.TD.Generators.Tests.Commands.MyOwnClass>;
 using MyOwnClass = global::Bearded.TD.Generators.Tests.Commands.MyOwnClass;
 using MyOwnStruct = global::Bearded.TD.Generators.Tests.Commands.MyOwnStruct;
-using List_MyOwnClass = global::System.Collections.Generic.List<global::Bearded.TD.Generators.Tests.Commands.MyOwnClass>;
-using List_Dictionary_MyOwnClass_MyOwnStruct = global::System.Collections.Generic.List<global::System.Collections.Generic.Dictionary<global::Bearded.TD.Generators.Tests.Commands.MyOwnClass, global::Bearded.TD.Generators.Tests.Commands.MyOwnStruct>>;
 
 namespace Bearded.TD.Generators.Tests.Commands;
 
