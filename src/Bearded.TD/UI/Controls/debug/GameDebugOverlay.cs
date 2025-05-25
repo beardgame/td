@@ -86,7 +86,7 @@ sealed class GameDebugOverlay : NavigationNode<Void>
 
                     return null;
                 }
-            ).NotNull()
+            ).WhereNotNull()
         );
 
 

@@ -60,7 +60,7 @@ sealed class StunNearbyBuildingsWhileSprinting
         var buildings = Owner.Game.BuildingLayer;
         var building = Level.TilesWithCenterInCircle(Owner.Position.XY(), Parameters.Range)
             .Select(t => { buildings.TryGetMaterializedBuilding(t, out var b); return b; })
-            .NotNull()
+            .WhereNotNull()
             .RandomElementOrDefault(random);
 
         if (building == null)

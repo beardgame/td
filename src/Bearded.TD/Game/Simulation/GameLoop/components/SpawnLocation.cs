@@ -82,10 +82,10 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
         var pathFinder = makePathFinder(buildingTilesToIgnore);
         var paths = enemyTargets
             .Select(target => pathFinder.FindPath(tile, target.Tile))
-            .NotNull()
+            .WhereNotNull()
             .ToImmutableArray();
 
-        if (Enumerable.MinBy(paths, path => path.Cost) is not { } shortestPath)
+        if (paths.MinBy(path => path.Cost) is not { } shortestPath)
         {
             Owner.Game.Meta.Logger.Debug?.Log(
                 "Skipping moving the spawn tile to edge of visible area because no shortest path to target found.");

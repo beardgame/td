@@ -49,8 +49,8 @@ sealed class GameObjectBlueprint : IGameObjectBlueprint
 
     private IReadOnlyCollection<IComponentFactory> createFactories()
     {
-        factories = componentParameters.Select(ComponentFactories.CreateComponentFactory).NotNull()
-            .ToList().AsReadOnly();
+        factories =
+            componentParameters.Select(ComponentFactories.CreateComponentFactory).WhereNotNull().ToList().AsReadOnly();
 
         return factories;
     }

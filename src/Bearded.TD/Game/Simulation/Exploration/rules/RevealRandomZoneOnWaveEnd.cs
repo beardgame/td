@@ -79,7 +79,7 @@ sealed class RevealRandomZoneOnWaveEnd : GameRule
             return gameState.Enumerate<EnemySink.ITarget>()
                 .Select(target => target.Tile)
                 .Select(tile => gameState.ZoneLayer.ZoneForTile(tile))
-                .NotNull()
+                .WhereNotNull()
                 .Distinct()
                 .ToImmutableArray();
         }

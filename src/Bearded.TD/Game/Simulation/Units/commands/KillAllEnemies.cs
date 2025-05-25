@@ -30,7 +30,7 @@ static class KillAllEnemies
             var enemyLives = game.State.GameObjects
                 .Where(obj => obj.GetComponents<EnemyLife>().Any())
                 .Select(obj => obj.GetComponents<IKillable>().SingleOrDefault())
-                .NotNull();
+                .WhereNotNull();
             foreach (var enemy in enemyLives)
             {
                 enemy.Kill(damageSource);
