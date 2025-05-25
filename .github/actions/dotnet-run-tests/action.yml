@@ -1,4 +1,5 @@
 name: Run tests
+description: Sets up dotnet, restores and builds the solution, and runs tests
 
 runs:
   using: composite
@@ -12,13 +13,17 @@ runs:
 
     - name: Install dependencies
       run: dotnet restore
+      shell: bash
     - name: Build
       run: dotnet build -c Release --no-restore
+      shell: bash
 
     - name: Test Bearded.TD
       run: dotnet test src/Bearded.TD.Tests --no-build --logger "trx;LogFileName=test-results-td.trx"
+      shell: bash
     - name: Test Bearded.TD.Generators
       run: dotnet test src/Bearded.TD.Generators.Tests --no-build --logger "trx;LogFileName=test-results-gen.trx"
+      shell: bash
 
     - name: Upload Verify test results
       if: failure()
