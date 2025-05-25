@@ -1,58 +1,16 @@
-﻿using Bearded.TD.Commands;
-using Bearded.TD.Commands.Serialization;
-using Bearded.TD.Game.Simulation.Elements;
+﻿using Bearded.TD.Game.Simulation.Elements;
 using Bearded.TD.Game.Simulation.Elements.Phenomena;
 using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Networking.Serialization;
-using Bearded.TD.Utilities;
-using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
-using JetBrains.Annotations;
+using Bearded.TD.Shared.Commands;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
-static class ObscureVision
+[GenerateCommand]
+static partial class ObscureVision
 {
-    public static ISerializableCommand<GameInstance> Command(GameObject obj, TimeSpan duration, double factor) =>
-        new Implementation(obj, duration, factor);
-
-    private sealed class Implementation(GameObject obj, TimeSpan duration, double factor)
-        : ISerializableCommand<GameInstance>
+    private static void execute(GameObject obj, TimeSpan duration, double factor)
     {
-        public void Execute()
-        {
-            obj.TryApplyEffect(new ObscuredVision.Effect(factor, duration));
-        }
-
-        ICommandSerializer<GameInstance> ISerializableCommand<GameInstance>.Serializer
-            => new Serializer(obj, duration, factor);
-    }
-
-    private sealed class Serializer : ICommandSerializer<GameInstance>
-    {
-        private Id<GameObject> obj;
-        private double duration;
-        private double factor;
-
-        [UsedImplicitly] public Serializer() { }
-
-        public Serializer(GameObject obj, TimeSpan duration, double factor)
-        {
-            this.obj = obj.FindId();
-            this.duration = duration.NumericValue;
-            this.factor = factor;
-        }
-
-        public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
-        {
-            return new Implementation(game.State.Find(obj), duration.S(), factor);
-        }
-
-        public void Serialize(INetBufferStream stream)
-        {
-            stream.Serialize(ref obj);
-            stream.Serialize(ref duration);
-            stream.Serialize(ref factor);
-        }
+        obj.TryApplyEffect(new ObscuredVision.Effect(factor, duration));
     }
 }
