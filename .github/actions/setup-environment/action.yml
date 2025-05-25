@@ -1,0 +1,12 @@
+name: Set up environment
+description: Sets up the dotnet environment in a standardized way
+
+runs:
+  using: composite
+  steps:
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
