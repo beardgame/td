@@ -11,7 +11,7 @@ jobs:
         with:
           submodules: true
       - name: Set up dotnet
-        uses: ./github/actions/setup-environment
+        uses: ./.github/actions/setup-environment
 
       - name: Install dependencies
         run: dotnet restore
