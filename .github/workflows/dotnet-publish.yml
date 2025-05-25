@@ -8,27 +8,7 @@ on:
 jobs:
 
   test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            6.0.x
-            8.0.x
-
-      - name: Install dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build -c Release --no-restore
-      - name: Test main project
-        run: dotnet test src/Bearded.TD.Tests --no-build -c Release
-      - name: Test generators
-        run: dotnet test src/Bearded.TD.Generators.Tests --no-build -c Release
+    uses: ./.github/workflows/_dotnet-run-tests.yml
 
   publish:
     needs: test
@@ -42,12 +22,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            6.0.x
-            8.0.x
+      - name: Set up dotnet
+        uses: ./.github/actions/setup-environment
 
       - name: Install dependencies
         run: dotnet restore -r ${{matrix.runtime}}
