@@ -1,0 +1,36 @@
+name: Run tests
+
+runs:
+  using: composite
+  steps:
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
+
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    - name: Test Bearded.TD
+      run: dotnet test src/Bearded.TD.Tests --no-build --logger "trx;LogFileName=test-results-td.trx"
+    - name: Test Bearded.TD.Generators
+      run: dotnet test src/Bearded.TD.Generators.Tests --no-build --logger "trx;LogFileName=test-results-gen.trx"
+
+    - name: Upload Verify test results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: verify-test-results
+        path: |
+          **/*.received.*
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: |
+          **/test-results-*.trx
