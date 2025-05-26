@@ -18,6 +18,16 @@ sealed class ChangeOnFireDamage(IParameters parameters)
         double Factor { get; }
     }
 
+    public override void Activate()
+    {
+        Events.Subscribe(this);
+    }
+
+    public override void OnRemoved()
+    {
+        Events.Unsubscribe(this);
+    }
+
     public void PreviewEvent(ref PreviewElementalEffectAttempt<OnFire.Effect> e)
     {
         var effect = e.Attempt.Effect with
