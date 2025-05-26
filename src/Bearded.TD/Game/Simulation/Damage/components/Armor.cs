@@ -15,7 +15,7 @@ sealed class Armor(Armor.IParameters parameters) : DamageModifier<Armor.IParamet
         [Modifiable(0.1)]
         double BlockedDamageEffectiveness { get; }
 
-        [Modifiable(0.5)]
+        [Modifiable(0.1)]
         double LightningPiercingFactor { get; }
     }
 
@@ -24,9 +24,11 @@ sealed class Armor(Armor.IParameters parameters) : DamageModifier<Armor.IParamet
     public override void ModifyDamage(ref DamagePreview preview)
     {
         // Is it nice that this is hardcoded? Maybe not, but it's also inherent armour behaviour ¯\_(ツ)_/¯
-        var underThresholdEffectiveness = preview.DamageType == DamageType.Lightning
-            ? Parameters.LightningPiercingFactor
-            : Parameters.BlockedDamageEffectiveness;
-        preview.ReduceDamageUnderThreshold(Parameters.BlockedDamageAmount, underThresholdEffectiveness);
+        if (preview.DamageType == DamageType.Lightning)
+        {
+            preview.PierceDamageToNextShell(Parameters.LightningPiercingFactor);
+        }
+
+        preview.ReduceDamageUnderThreshold(Parameters.BlockedDamageAmount, Parameters.BlockedDamageEffectiveness);
     }
 }

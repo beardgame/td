@@ -8,16 +8,26 @@ partial class HitPointsPool
 {
     private readonly SortedList<Type, IDamageModifier> modifiers = new(ExplicitOrder.Create(DamageModifiers.Order));
 
-    private TypedDamage modifyDamage(TypedDamage damage, out List<AdditionalHitEffect> additionalEffects)
+    private readonly record struct ModifiedDamage(
+        TypedDamage DamageToSelf,
+        TypedDamage DamageToPassThrough,
+        List<AdditionalHitEffect> AdditionalEffects
+    );
+
+    private ModifiedDamage modifyDamage(TypedDamage damage)
     {
-        additionalEffects = [];
+        List<AdditionalHitEffect> additionalEffects = [];
         var preview = new DamagePreview(damage, additionalEffects);
         foreach (var effect in modifiers.Values)
         {
             effect.ModifyDamage(ref preview);
         }
 
-        return new TypedDamage(preview.DamageAmount, preview.DamageType);
+        return new ModifiedDamage(
+            DamageToSelf: new TypedDamage(preview.DamageAmount, preview.DamageType),
+            DamageToPassThrough: new TypedDamage(preview.PiercingDamageAmount, preview.DamageType),
+            additionalEffects
+        );
     }
 
     public void AddModifier(IDamageModifier modifier)

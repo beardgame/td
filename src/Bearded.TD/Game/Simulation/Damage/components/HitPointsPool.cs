@@ -53,14 +53,20 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
             return IntermediateDamageResult.PassThrough(damage);
         }
 
-        var modifiedDamage = modifyDamage(damage, out var additionalEffects);
-        var result = doDamage(damage, modifiedDamage, source);
-        foreach (var effect in additionalEffects)
+        var modifiedDamage = modifyDamage(damage);
+        var result = doDamage(damage, modifiedDamage.DamageToSelf, source);
+        foreach (var effect in modifiedDamage.AdditionalEffects)
         {
             effect(result, hit);
         }
 
-        return result;
+        return result with
+        {
+            DamageOverflow = new TypedDamage(
+                result.DamageOverflow.Amount + modifiedDamage.DamageToPassThrough.Amount,
+                result.DamageOverflow.Type
+            ),
+        };
     }
 
     private IntermediateDamageResult doDamage(
@@ -124,7 +130,8 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
 
     private static Color defaultColorForShell(DamageShell shell)
     {
-        return shell switch {
+        return shell switch
+        {
             DamageShell.Health => Constants.Game.GameUI.HealthColor,
             DamageShell.Armor => Constants.Game.GameUI.ArmorColor,
             DamageShell.Shield => Constants.Game.GameUI.ShieldColor,

@@ -8,6 +8,8 @@ struct DamagePreview(TypedDamage damage, List<AdditionalHitEffect> additionalEff
     public HitPoints DamageAmount { get; private set; } = damage.Amount;
     public DamageType DamageType { get; private set; } = damage.Type;
 
+    public HitPoints PiercingDamageAmount { get; private set; }
+
     public void AddAdditionalEffect(AdditionalHitEffect effect)
     {
         additionalEffects.Add(effect);
@@ -30,5 +32,12 @@ struct DamagePreview(TypedDamage damage, List<AdditionalHitEffect> additionalEff
         var underThreshold = SpaceTime1MathF.Min(threshold, DamageAmount);
         var overThreshold = DamageAmount - underThreshold;
         DamageAmount = underThreshold + (float) effectivenessOverThreshold * overThreshold;
+    }
+
+    public void PierceDamageToNextShell(double piercingFraction)
+    {
+        var piercingDamage = DamageAmount * (float) piercingFraction;
+        PiercingDamageAmount += piercingDamage;
+        DamageAmount -= piercingDamage;
     }
 }

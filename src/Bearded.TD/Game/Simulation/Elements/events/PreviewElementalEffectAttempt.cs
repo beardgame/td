@@ -10,4 +10,7 @@ readonly record struct PreviewElementalEffectAttempt<T>(ElementalEffectAttempt<T
 
     public PreviewElementalEffectAttempt<T> WithEffect(T effect) =>
         new(Attempt with { Effect = effect });
+
+    public PreviewElementalEffectAttempt<T> Cancelled() =>
+        new(Attempt with { Probability = 0.0 });
 }

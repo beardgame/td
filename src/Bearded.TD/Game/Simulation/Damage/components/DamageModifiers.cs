@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Modules;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
@@ -29,6 +30,7 @@ static class DamageModifiers
     }
 
     public static ImmutableArray<Type> Order = [
+        typeof(PierceDamageThroughShell),
         typeof(Armor),
         typeof(Shield),
         typeof(DamageResistances),

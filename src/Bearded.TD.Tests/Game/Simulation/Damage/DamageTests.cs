@@ -191,14 +191,17 @@ public sealed class DamageTests
     [Fact]
     public void ArmorIsPiercedByLightningDamage()
     {
-        var hp = hitPoints(100.HitPoints(), DamageShell.Armor);
-        var a = armor(10.HitPoints(), lightningPiercing: 0.5);
-        testBed.AddComponent(hp);
+        var armorShell = hitPoints(100.HitPoints(), DamageShell.Armor);
+        var healthShell = hitPoints(100.HitPoints(), DamageShell.Health);
+        var a = armor(4.HitPoints(), lightningPiercing: 0.75, blockedEffectiveness: 0);
+        testBed.AddComponent(armorShell);
+        testBed.AddComponent(healthShell);
         testBed.AddComponent(a);
 
         doDamage(20.HitPoints(), DamageType.Lightning);
 
-        hp.CurrentHitPoints.Should().Be(85.HitPoints());
+        armorShell.CurrentHitPoints.Should().Be(99.HitPoints());
+        healthShell.CurrentHitPoints.Should().Be(85.HitPoints());
     }
 
     private void doDamage(HitPoints amount, DamageType type = DamageType.Kinetic)

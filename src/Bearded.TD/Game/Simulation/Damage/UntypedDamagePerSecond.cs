@@ -15,6 +15,9 @@ readonly struct UntypedDamagePerSecond
         Amount = amount;
     }
 
+    public static UntypedDamagePerSecond operator *(UntypedDamagePerSecond dps, float scalar) =>
+        new(dps.Amount * scalar);
+
     public static UntypedDamage operator *(TimeSpan timeSpan, UntypedDamagePerSecond dps) => dps * timeSpan;
 
     public static UntypedDamage operator *(UntypedDamagePerSecond dps, TimeSpan timeSpan) =>
