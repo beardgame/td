@@ -123,7 +123,6 @@ public sealed class AutoRepairTests
     {
         healthEventReceiver.Damage(
             new TypedDamage(1.HitPoints(), DamageType.Kinetic),
-            Hit.FromSelf(new UntypedDamage(1.HitPoints())),
             DivineIntervention.DamageSource);
     }
 }

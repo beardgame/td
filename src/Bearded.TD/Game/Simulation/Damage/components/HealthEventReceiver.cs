@@ -7,7 +7,7 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 sealed class HealthEventReceiver : Component, IHealthEventReceiver
 {
-    public FinalDamageResult Damage(TypedDamage typedDamage, Hit hit, IDamageSource? source)
+    public FinalDamageResult Damage(TypedDamage typedDamage, IDamageSource? source)
     {
         var damageReceivers =
             Owner.GetComponents<IDamageReceiver>().OrderByDescending(r => (int) r.Shell).ToImmutableArray();
@@ -57,6 +57,6 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
 
 interface IHealthEventReceiver
 {
-    FinalDamageResult Damage(TypedDamage typedDamage, Hit hit, IDamageSource? source);
+    FinalDamageResult Damage(TypedDamage typedDamage, IDamageSource? source);
     void Heal(HealInfo healInfo);
 }

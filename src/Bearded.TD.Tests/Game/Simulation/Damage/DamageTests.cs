@@ -206,7 +206,7 @@ public sealed class DamageTests
 
     private void doDamage(HitPoints amount, DamageType type = DamageType.Kinetic)
     {
-        healthEventReceiver.Damage(new TypedDamage(amount, type), Hit.FromSelf(new UntypedDamage(amount)), null);
+        healthEventReceiver.Damage(new TypedDamage(amount, type), null);
     }
 
     private static HitPointsPool hitPoints(HitPoints amount, DamageShell shell, HitPoints? initialHitPoints = null)
