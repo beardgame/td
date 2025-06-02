@@ -206,7 +206,7 @@ public sealed class DamageTests
 
     private void doDamage(HitPoints amount, DamageType type = DamageType.Kinetic)
     {
-        healthEventReceiver.Damage(new TypedDamage(amount, type), Hit.FromSelf(), null);
+        healthEventReceiver.Damage(new TypedDamage(amount, type), Hit.FromSelf(new UntypedDamage(amount)), null);
     }
 
     private static HitPointsPool hitPoints(HitPoints amount, DamageShell shell, HitPoints? initialHitPoints = null)
@@ -226,8 +226,7 @@ public sealed class DamageTests
 
     private static DamageResistances resistance(DamageType damageType, Resistance amount)
     {
-        return new DamageResistances(
-            ImmutableDictionary.CreateRange(
-                new Dictionary<DamageType, Resistance> { { damageType, amount } }));
+        return DamageResistances.From(ImmutableDictionary.CreateRange(
+            new Dictionary<DamageType, Resistance> { { damageType, amount } }));
     }
 }

@@ -7,7 +7,7 @@ using Bearded.Utilities.SpaceTime;
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
 [Component("applyShockedOnImpact")]
-sealed class ApplyShockedOnImpact : ApplyEffectOnImpact<ApplyShockedOnImpact.IParameters, Shocked.Effect>
+sealed class ApplyShockedOnHit : ApplyEffectOnHit<ApplyShockedOnHit.IParameters, Shocked.Effect>
 {
     // Note on defaults:
     //   The defaults are chosen so that a projectile being shot once per second - doing exactly 30 damage - would lead
@@ -28,7 +28,7 @@ sealed class ApplyShockedOnImpact : ApplyEffectOnImpact<ApplyShockedOnImpact.IPa
 
     protected override double Probability => Parameters.Probability;
 
-    public ApplyShockedOnImpact(IParameters parameters) : base(parameters) { }
+    public ApplyShockedOnHit(IParameters parameters) : base(parameters) { }
 
     protected override Shocked.Effect CreateEffect(UntypedDamage damage)
     {

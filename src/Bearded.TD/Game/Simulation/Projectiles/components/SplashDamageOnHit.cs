@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("splashDamageOnHit")]
 sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
-    IListener<CollideWithLevel>, IListener<CollideWithObject>
+    IListener<CollidedWithLevel>, IListener<ObjectHit>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -29,36 +29,36 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
 
     protected override void OnAdded()
     {
-        Events.Subscribe<CollideWithLevel>(this);
-        Events.Subscribe<CollideWithObject>(this);
+        Events.Subscribe<CollidedWithLevel>(this);
+        Events.Subscribe<ObjectHit>(this);
     }
 
     public override void OnRemoved()
     {
-        Events.Unsubscribe<CollideWithLevel>(this);
-        Events.Unsubscribe<CollideWithObject>(this);
+        Events.Unsubscribe<CollidedWithLevel>(this);
+        Events.Unsubscribe<ObjectHit>(this);
     }
 
-    public void HandleEvent(CollideWithLevel @event)
+    public void HandleEvent(CollidedWithLevel @event)
     {
-        onHit(@event.Info.Point);
-    }
-
-    public void HandleEvent(CollideWithObject @event)
-    {
-        onHit(@event.Impact.Point);
-    }
-
-    private void onHit(Position3 center)
-    {
-        if (!Owner.TryGetProperty<UntypedDamage>(out var unadjustedDamage))
+        if (!Owner.TryGetProperty<UntypedDamage>(out var damage))
         {
             DebugAssert.State.IsInvalid();
             return;
         }
 
-        var damage = new UntypedDamage(
-            (unadjustedDamage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
+        onHit(@event.Info.Point, damage);
+    }
+
+    public void HandleEvent(ObjectHit e)
+    {
+        onHit(e.Hit.Impact?.Point ?? Owner.Position, e.Hit.DamagePotential);
+    }
+
+    private void onHit(Position3 center, UntypedDamage damage)
+    {
+        damage = new UntypedDamage(
+            (damage.Amount.NumericValue / Parameters.DamageDivisionFactor).HitPoints());
         var typedDamage = damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
 
         AreaOfEffect.Damage(

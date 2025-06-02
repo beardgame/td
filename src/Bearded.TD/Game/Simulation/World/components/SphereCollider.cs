@@ -1,5 +1,6 @@
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -16,7 +17,7 @@ sealed class SphereCollider(SphereCollider.IParameters parameters)
     }
 
     public Unit Radius => Parameters.Radius;
-    public bool IsSolid => Parameters.Solid;
+    public ColliderType Type => Parameters.Solid ? ColliderType.Solid : ColliderType.Ephemeral;
 
     protected override void OnAdded() {}
     public override void Update(TimeSpan elapsedTime) {}

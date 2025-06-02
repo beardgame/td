@@ -20,7 +20,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
     internal interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(Type = AttributeType.Damage)]
-        HitPoints Damage { get; }
+        UntypedDamage Damage { get; }
 
         [Modifiable(Type = AttributeType.FireRate)]
         Frequency AttackRate { get; }
@@ -73,7 +73,7 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
                 return;
             }
 
-            var damage = new TypedDamage(Parameters.Damage, DamageType.Kinetic);
+            var damage = Parameters.Damage.Typed(DamageType.Kinetic);
             var hit = getHit(neighbor);
 
             // Experiment: Deal more damage and die
@@ -113,6 +113,6 @@ sealed class DamageBuildingsInRange : Component<DamageBuildingsInRange.IParamete
             -direction,
             direction
         );
-        return Hit.FromImpact(impact);
+        return Hit.FromImpact(impact, Parameters.Damage);
     }
 }

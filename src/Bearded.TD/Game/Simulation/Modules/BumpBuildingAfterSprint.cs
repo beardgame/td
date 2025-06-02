@@ -13,7 +13,7 @@ readonly record struct BumpedBuilding(GameObject Building) : IComponentEvent;
 
 [Component("bumpBuildingAfterSprint")]
 sealed class BumpBuildingAfterSprint(IParameters parameters)
-    : Component<IParameters>(parameters), IListener<StoppedSprinting>, IListener<CollideWithLevel>
+    : Component<IParameters>(parameters), IListener<StoppedSprinting>, IListener<CollidedWithLevel>
 {
     private Instant bumpUntil;
 
@@ -25,7 +25,7 @@ sealed class BumpBuildingAfterSprint(IParameters parameters)
     protected override void OnAdded()
     {
         Events.Subscribe<StoppedSprinting>(this);
-        Events.Subscribe<CollideWithLevel>(this);
+        Events.Subscribe<CollidedWithLevel>(this);
     }
 
     public void HandleEvent(StoppedSprinting _)
@@ -33,7 +33,7 @@ sealed class BumpBuildingAfterSprint(IParameters parameters)
         bumpUntil = Owner.Game.Time + Parameters.TimeAfterSprint;
     }
 
-    public void HandleEvent(CollideWithLevel e)
+    public void HandleEvent(CollidedWithLevel e)
     {
         if (bumpUntil < Owner.Game.Time)
             return;

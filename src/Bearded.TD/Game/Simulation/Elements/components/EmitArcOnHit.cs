@@ -3,6 +3,7 @@ using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Navigation;
 using Bearded.TD.Game.Simulation.Physics;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
@@ -14,7 +15,7 @@ namespace Bearded.TD.Game.Simulation.Elements;
 
 [Component("emitArcOnHit")]
 sealed class EmitArcOnHit
-    : ArcEmitterBase<EmitArcOnHit.IParameters>, IListener<CollideWithLevel>, IListener<CollideWithObject>
+    : ArcEmitterBase<EmitArcOnHit.IParameters>, IListener<CollidedWithLevel>, IListener<ObjectHit>
 {
     public interface IParameters : IArcEmissionParameters, IParametersTemplate<IParameters>
     {
@@ -33,12 +34,12 @@ sealed class EmitArcOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Subscribe<CollideWithObject>(this);
+            Events.Subscribe<ObjectHit>(this);
         }
 
         if (Parameters.OnHitLevel)
         {
-            Events.Subscribe<CollideWithLevel>(this);
+            Events.Subscribe<CollidedWithLevel>(this);
         }
     }
 
@@ -46,36 +47,36 @@ sealed class EmitArcOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Unsubscribe<CollideWithObject>(this);
+            Events.Unsubscribe<ObjectHit>(this);
         }
 
         if (Parameters.OnHitLevel)
         {
-            Events.Unsubscribe<CollideWithLevel>(this);
+            Events.Unsubscribe<CollidedWithLevel>(this);
         }
     }
 
-    public void HandleEvent(CollideWithLevel e)
-    {
-        onCollide(e.Info);
-    }
-
-    public void HandleEvent(CollideWithObject e)
-    {
-        onCollide(e.Impact);
-    }
-
-    private void onCollide(Impact impact)
+    public void HandleEvent(CollidedWithLevel e)
     {
         if (!Owner.TryGetProperty<UntypedDamage>(out var damage))
         {
             return;
         }
 
+        onCollide(e.Info.Point, damage);
+    }
+
+    public void HandleEvent(ObjectHit e)
+    {
+        onCollide(e.Hit.Impact?.Point ?? Owner.Position, e.Hit.DamagePotential);
+    }
+
+    private void onCollide(Position3 location, UntypedDamage damage)
+    {
         var range = ranger.GetTilesInRange(
             Owner.Game,
             Owner.Game.PassabilityObserver.GetLayer(Passability.Projectile),
-            Level.GetTile(impact.Point.XY()),
+            Level.GetTile(location.XY()),
             0.U(),
             Parameters.MaxBounceDistance);
         EmitArc(damage, range);

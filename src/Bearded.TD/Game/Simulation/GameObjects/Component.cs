@@ -59,7 +59,7 @@ abstract class Component : IComponent
         OnAdded();
     }
 
-    protected abstract void OnAdded();
+    protected virtual void OnAdded() {}
 
     public virtual void Activate() {}
 

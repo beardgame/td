@@ -1,3 +1,4 @@
+using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 
@@ -5,6 +6,6 @@ namespace Bearded.TD.Game.Simulation.World;
 
 interface ICollider
 {
-    bool IsSolid { get; }
+    ColliderType Type { get; }
     bool TryHit(Ray3 ray, out float rayFactor, out Position3 point, out Difference3 normal);
 }

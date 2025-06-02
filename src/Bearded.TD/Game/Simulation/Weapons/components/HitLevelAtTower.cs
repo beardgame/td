@@ -60,6 +60,6 @@ sealed class HitLevelAtTower(HitLevelAtTower.IParameters parameters)
         var offset = Parameters.Offset;
         point += (offset.X * direction + offset.Y * direction.PerpendicularRight).WithZ(offset.Z);
 
-        Events.Send(new CollideWithLevel(new Impact(point, new Difference3(0, 0, 1), new Difference3(0, 0, -1)), Level.GetTile(point)));
+        Events.Send(new CollidedWithLevel(new Impact(point, new Difference3(0, 0, 1), new Difference3(0, 0, -1)), Level.GetTile(point)));
     }
 }

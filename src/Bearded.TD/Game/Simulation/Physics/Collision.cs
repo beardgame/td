@@ -1,33 +1,77 @@
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
+using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using OpenTK.Mathematics;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
+readonly record struct CollidingWithObject(GameObject GameObject, Impact Impact, bool Collided)
+    : IComponentPreviewEvent;
+
+readonly record struct ObjectEnteredWithoutHit(GameObject GameObject, Impact Impact) : IComponentEvent;
+
+readonly record struct ColliderType(bool CanBeHit)
+{
+    public static ColliderType Solid => new(true);
+    public static ColliderType Ephemeral => new(false);
+}
+
 static class Collision
 {
-    public static void HitObject(
-        ComponentEvents events,
+    public static void TouchObject(
+        GameObject subject, ComponentEvents events,
         Position3 point, Difference3 step, GameObject obj, Difference3 normal,
-        out bool isSolid)
+        out bool abortCollisionChecksForThisFrame)
     {
+        abortCollisionChecksForThisFrame = false;
         var impact = new Impact(point, normal, step.NormalizedSafe());
-        events.Send(new TouchObject(obj, impact));
 
-        isSolid = obj.TryGetSingleComponent<ICollider>(out var collider) && collider.IsSolid;
-
-        if (isSolid)
+        if (!obj.TryGetSingleComponent<ICollider>(out var collider))
         {
-            events.Send(new CollideWithObject(obj, impact));
+            DebugAssert.State.IsInvalid("Touched object should have collider.");
+            return;
+        }
+
+        var colliderType = collider.Type;
+
+        if (!colliderType.CanBeHit)
+        {
+            events.Send(new ObjectEnteredWithoutHit(obj, impact));
+            return;
+        }
+
+        Hits.HitObject(subject, events, obj, impact);
+
+        if (subject.TryGetProperty(out UntypedDamage damagePotential) && damagePotential <= UntypedDamage.Zero)
+        {
+            subject.Delete();
+            abortCollisionChecksForThisFrame = true;
+            return;
+        }
+
+        var collision = new CollidingWithObject(obj, impact, false);
+
+        events.Preview(ref collision);
+
+        if (collision.Collided)
+        {
+            abortCollisionChecksForThisFrame = true;
+            events.Send(new CollidedWithObject(obj, impact));
         }
     }
 
-    public static void HitLevel(
+    public static void TouchLevel(
         ComponentEvents events,
         Position3 point, Difference3 step, Direction? withStep, Tile tile)
     {
-        TileCollider.HitLevel(events, point, step, withStep, tile);
+        var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
+        var info = new Impact(point, normal, step.NormalizedSafe());
+        events.Send(new CollidedWithLevel(info, tile));
     }
 }
+

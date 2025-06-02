@@ -1,16 +1,21 @@
+using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Physics;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Drawing.ShakeScreenOnHit;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
 [Component("shakeScreenOnHit")]
-sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListener<CollideWithObject>, IListener<CollideWithLevel>
+sealed class ShakeScreenOnHit(IParameters parameters)
+    : Component<IParameters>(parameters), IListener<ObjectHit>, IListener<CollidedWithLevel>
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
@@ -23,26 +28,24 @@ sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListen
         bool RandomDirection { get; }
     }
 
-    public ShakeScreenOnHit(IParameters parameters) : base(parameters)
-    {
-    }
-
     protected override void OnAdded()
     {
-        Events.Subscribe<CollideWithLevel>(this);
-        Events.Subscribe<CollideWithObject>(this);
+        Events.Subscribe<CollidedWithLevel>(this);
+        Events.Subscribe<ObjectHit>(this);
     }
 
-    public override void Update(TimeSpan elapsedTime)
+    public override void OnRemoved()
     {
+        Events.Unsubscribe<CollidedWithLevel>(this);
+        Events.Unsubscribe<ObjectHit>(this);
     }
 
-    public void HandleEvent(CollideWithObject @event)
+    public void HandleEvent(ObjectHit _)
     {
         onHit();
     }
 
-    public void HandleEvent(CollideWithLevel @event)
+    public void HandleEvent(CollidedWithLevel _)
     {
         onHit();
     }
@@ -51,7 +54,7 @@ sealed class ShakeScreenOnHit : Component<ShakeScreenOnHit.IParameters>, IListen
     {
         var shake = new ScreenShakeParameters(
             Owner.Position,
-            Parameters.RandomDirection ? Direction2.FromDegrees(StaticRandom.Float(360)) : Owner.Direction,
+            Parameters.RandomDirection ? Direction2.FromDegrees(Random.Shared.NextFloat(360)) : Owner.Direction,
             Parameters.Strength,
             Parameters.Duration,
             Parameters.Frequency);

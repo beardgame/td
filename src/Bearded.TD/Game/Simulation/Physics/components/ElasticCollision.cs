@@ -5,12 +5,13 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
-using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
+using static Bearded.TD.Game.Simulation.Physics.ElasticCollision;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
 [Component("elasticCollision")]
-sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListener<CollideWithObject>, IListener<CollideWithLevel>
+sealed class ElasticCollision(IParameters parameters) : Component<IParameters>(parameters),
+        IPreviewListener<CollidingWithObject>, IListener<CollidedWithObject>, IListener<CollidedWithLevel>
 {
     private IPhysics physics = null!;
 
@@ -26,35 +27,38 @@ sealed class ElasticCollision : Component<ElasticCollision.IParameters>, IListen
         bool ExcludeObjects { get; }
     }
 
-    public ElasticCollision(IParameters parameters) : base(parameters)
-    {
-    }
-
     protected override void OnAdded()
     {
-        if (Parameters is not { ExcludeFloor: true, ExcludeWalls: true })
-            Events.Subscribe<CollideWithLevel>(this);
-
         if (Parameters is not { ExcludeObjects: true })
-            Events.Subscribe<CollideWithObject>(this);
+        {
+            Events.Subscribe(this);
+            Events.Subscribe<CollidedWithObject>(this);
+        }
+
+        if (Parameters is not { ExcludeFloor: true, ExcludeWalls: true })
+            Events.Subscribe<CollidedWithLevel>(this);
 
         ComponentDependencies.Depend<IPhysics>(Owner, Events, p => physics = p);
     }
 
-    public override void Activate()
+    public override void OnRemoved()
     {
+        Events.Unsubscribe(this);
+        Events.Unsubscribe<CollidedWithObject>(this);
+        Events.Unsubscribe<CollidedWithLevel>(this);
     }
 
-    public override void Update(TimeSpan elapsedTime)
+    public void PreviewEvent(ref CollidingWithObject e)
     {
+        e = e with { Collided = true };
     }
 
-    public void HandleEvent(CollideWithObject @event)
+    public void HandleEvent(CollidedWithObject @event)
     {
         onHit(@event.Impact.SurfaceNormal);
     }
 
-    public void HandleEvent(CollideWithLevel e)
+    public void HandleEvent(CollidedWithLevel e)
     {
         var isFloor = e.Info.SurfaceNormal == new Difference3(0, 0, 1);
 

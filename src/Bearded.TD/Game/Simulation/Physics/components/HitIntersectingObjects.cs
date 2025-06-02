@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Game.Simulation.World;
 using Bearded.TD.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
@@ -28,7 +29,7 @@ sealed class HitIntersectingObjects : Component
             {
                 continue;
             }
-            Collision.HitObject(Events, result.Point, dir, obj, -dir, out _);
+            Hits.HitObject(Owner, Events, obj, new Impact(result.Point, -dir, dir));
             objectsHit.Add(obj);
         }
     }

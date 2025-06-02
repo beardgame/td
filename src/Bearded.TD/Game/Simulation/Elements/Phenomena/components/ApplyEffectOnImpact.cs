@@ -1,15 +1,14 @@
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
-using Bearded.TD.Game.Simulation.Physics;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
-using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Elements.Phenomena;
 
-abstract class ApplyEffectOnImpact<TParameters, TEffect>(TParameters parameters) : Component<TParameters>(parameters),
-    IListener<TouchObject>
+abstract class ApplyEffectOnHit<TParameters, TEffect>(TParameters parameters) : Component<TParameters>(parameters),
+    IListener<ObjectHit>
     where TParameters : IParametersTemplate<TParameters>
     where TEffect : IElementalEffect<TEffect>
 {
@@ -22,11 +21,9 @@ abstract class ApplyEffectOnImpact<TParameters, TEffect>(TParameters parameters)
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public void HandleEvent(TouchObject @event)
+    public void HandleEvent(ObjectHit @event)
     {
-        if (!Owner.TryGetProperty<UntypedDamage>(out var damage)) return;
-
-        var effect = CreateEffect(damage);
+        var effect = CreateEffect(@event.Hit.DamagePotential);
         @event.Object.TryApplyEffect(effect, Probability);
     }
 

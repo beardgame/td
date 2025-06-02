@@ -122,6 +122,8 @@ public sealed class AutoRepairTests
     private static void doDamage(IHealthEventReceiver healthEventReceiver)
     {
         healthEventReceiver.Damage(
-            new TypedDamage(1.HitPoints(), DamageType.Kinetic), Hit.FromSelf(), DivineIntervention.DamageSource);
+            new TypedDamage(1.HitPoints(), DamageType.Kinetic),
+            Hit.FromSelf(new UntypedDamage(1.HitPoints())),
+            DivineIntervention.DamageSource);
     }
 }

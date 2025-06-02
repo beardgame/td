@@ -27,7 +27,7 @@ static class EnemyFactory
         addGameplayComponents(obj);
 
         fillSockets(obj, form.Modules);
-        obj.AddComponent(new DamageResistances(form.Resistances));
+        obj.AddComponent(DamageResistances.From(form.Resistances));
 
         return obj;
     }

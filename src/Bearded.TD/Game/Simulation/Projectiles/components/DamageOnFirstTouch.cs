@@ -6,14 +6,29 @@ using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
-using static Bearded.TD.Game.Simulation.Projectiles.DamageOnHit;
+using static Bearded.TD.Game.Simulation.Projectiles.DamageOnObjectHit;
 using static Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
 
+readonly record struct ObjectHit(Hit Hit, GameObject Object) : IComponentEvent;
+
+static class Hits
+{
+    public static void HitObject(GameObject subject, ComponentEvents events, GameObject obj, Impact impact)
+    {
+        var potential = subject.TryGetProperty<UntypedDamage>(out var damage)
+            ? damage : UntypedDamage.Zero;
+
+        var hit = Hit.FromImpact(impact, potential);
+
+        events.Send(new ObjectHit(hit, obj));
+    }
+}
+
 [Component("damageOnHit")]
-sealed class DamageOnHit(IParameters parameters)
-    : Component<IParameters>(parameters), IListener<TouchObject>
+sealed class DamageOnObjectHit(IParameters parameters)
+    : Component<IParameters>(parameters), IListener<ObjectHit>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -38,7 +53,7 @@ sealed class DamageOnHit(IParameters parameters)
         Events.Unsubscribe(this);
     }
 
-    public void HandleEvent(TouchObject e)
+    public void HandleEvent(ObjectHit e)
     {
         if (Parameters.ExcludeBuildings && e.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
             return;
@@ -47,7 +62,9 @@ sealed class DamageOnHit(IParameters parameters)
 
         if (Parameters.DelayPerDistanceFromSource > Zero && Owner.TryGetProperty<Source>(out var source))
         {
-            var distance = (source.Object.Position - e.Impact.Point).Length;
+            var impactPoint = e.Hit.Impact?.Point ?? e.Object.Position;
+
+            var distance = (source.Object.Position - impactPoint).Length;
             delay += Parameters.DelayPerDistanceFromSource * distance.NumericValue;
         }
 
@@ -61,13 +78,13 @@ sealed class DamageOnHit(IParameters parameters)
         }
     }
 
-    private void dealDamage(TouchObject e)
+    private void dealDamage(ObjectHit e)
     {
-        _ = Owner.TryGetProperty<UntypedDamage>(out var damage)
-            && DamageExecutor.FromObject(Owner).TryDoDamage(
-                e.Object,
-                (damage * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
-                Hit.FromImpact(e.Impact));
+        _ = DamageExecutor.FromObject(Owner).TryDoDamage(
+            e.Object,
+            (e.Hit.DamagePotential * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
+            e.Hit
+        );
     }
 
     public override void Update(TimeSpan elapsedTime) { }

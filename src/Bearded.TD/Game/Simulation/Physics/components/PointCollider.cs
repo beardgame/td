@@ -13,7 +13,6 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Physics;
 
-[Component("pointCollider")]
 sealed class PointCollider(PointCollider.IParameters parameters)
     : Component<PointCollider.IParameters>(parameters), IPreviewListener<PreviewMove>
 {
@@ -44,7 +43,7 @@ sealed class PointCollider(PointCollider.IParameters parameters)
             switch (result)
             {
                 case RayCastResultType.HitLevel:
-                    Collision.HitLevel(Events, point, step, lastStep, tile);
+                    Collision.TouchLevel(Events, point, step, lastStep, tile);
                     e = new PreviewMove(start, step * t);
                     return;
 
@@ -53,7 +52,7 @@ sealed class PointCollider(PointCollider.IParameters parameters)
                     var aboveTile = point.Z - tileHeight;
                     if (aboveTile < Unit.Zero)
                     {
-                        Collision.HitLevel(Events, point, step, null, tile);
+                        Collision.TouchLevel(Events, point, step, null, tile);
                         var z = tileHeight - aboveTile;
                         e = new PreviewMove(start, step.XY().WithZ(z));
                         return;
@@ -65,8 +64,9 @@ sealed class PointCollider(PointCollider.IParameters parameters)
                     _ = normal ?? throw new InvalidOperationException();
                     if (objectsHit.Add(obj))
                     {
-                        Collision.HitObject(Events, point, step, obj, normal.Value, out var solid);
-                        if (solid)
+                        Collision.TouchObject(
+                            Owner, Events, point, step, obj, normal.Value, out var abortCollisionChecksForThisFrame);
+                        if (abortCollisionChecksForThisFrame)
                         {
                             e = new PreviewMove(start, step * t);
                             return;

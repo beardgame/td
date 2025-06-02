@@ -41,7 +41,7 @@ static class OnFire
         {
             var damage = effect.DamagePerSecond * TickDuration;
             DamageExecutor.FromDamageSource(effect.DamageSource)
-                .TryDoDamage(Target, damage.Typed(DamageType.Fire), Hit.FromSelf());
+                .TryDoDamage(Target, damage.Typed(DamageType.Fire), Hit.FromSelf(damage));
         }
 
         protected override void EndEffect()

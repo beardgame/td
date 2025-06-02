@@ -12,7 +12,7 @@ namespace Bearded.TD.Game.Simulation.Projectiles;
 
 [Component("projectileExplosionOnHit")]
 sealed class ProjectileExplosionOnHit
-    : Component<ProjectileExplosionOnHit.IParameters>, IListener<CollideWithLevel>, IListener<CollideWithObject>
+    : Component<ProjectileExplosionOnHit.IParameters>, IListener<CollidedWithLevel>, IListener<ObjectHit>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -42,12 +42,12 @@ sealed class ProjectileExplosionOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Subscribe<CollideWithObject>(this);
+            Events.Subscribe<ObjectHit>(this);
         }
 
         if (Parameters.OnHitLevel)
         {
-            Events.Subscribe<CollideWithLevel>(this);
+            Events.Subscribe<CollidedWithLevel>(this);
         }
     }
 
@@ -55,12 +55,12 @@ sealed class ProjectileExplosionOnHit
     {
         if (Parameters.OnHitEnemy)
         {
-            Events.Unsubscribe<CollideWithObject>(this);
+            Events.Unsubscribe<ObjectHit>(this);
         }
 
         if (Parameters.OnHitLevel)
         {
-            Events.Unsubscribe<CollideWithLevel>(this);
+            Events.Unsubscribe<CollidedWithLevel>(this);
         }
     }
 
@@ -68,28 +68,35 @@ sealed class ProjectileExplosionOnHit
     {
     }
 
-    public void HandleEvent(CollideWithLevel e)
+    public void HandleEvent(CollidedWithLevel e)
     {
-        onHit(e.Info);
-    }
-
-    public void HandleEvent(CollideWithObject e)
-    {
-        onHit(e.Impact);
-    }
-
-    private void onHit(Impact hit)
-    {
-        if (!Owner.TryGetProperty<UntypedDamage>(out var parentDamage))
+        if (!Owner.TryGetProperty<UntypedDamage>(out var damage))
         {
             DebugAssert.State.IsInvalid();
             return;
         }
 
+        onHit(e.Info, damage);
+    }
+
+    public void HandleEvent(ObjectHit e)
+    {
+        if (e.Hit.Impact is not { } impact)
+        {
+            DebugAssert.State.IsInvalid();
+            return;
+        }
+
+        onHit(impact, e.Hit.DamagePotential);
+    }
+
+    private void onHit(Impact hit, UntypedDamage damage)
+    {
+
         var projectiles = ProjectileExplosion.CreateProjectilesForExplosion(
             Parameters.Projectile,
             Owner,
-            parentDamage * Parameters.DamageFactor,
+            damage * Parameters.DamageFactor,
             Parameters.MinProjectileNumber,
             Parameters.MaxProjectileNumber,
             Parameters.RandomVelocity);

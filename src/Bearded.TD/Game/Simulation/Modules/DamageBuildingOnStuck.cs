@@ -44,7 +44,7 @@ sealed class DamageBuildingOnStuck : Component<DamageBuildingOnStuck.IParameters
         var damage = Parameters.Damage.Typed(Parameters.DamageType ?? DamageType.Kinetic);
         var incident = (targetBuilding.Position - Owner.Position).NormalizedSafe();
         var impact = new Impact(targetBuilding.Position, -incident, incident);
-        var hit = Hit.FromAreaOfEffect(impact);
+        var hit = Hit.FromAreaOfEffect(impact, Parameters.Damage);
 
         Owner.Sync(DamageGameObject.Command, Owner, targetBuilding, damage, hit);
 

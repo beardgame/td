@@ -73,7 +73,7 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
 
     private void collide(ref PreviewMove move, Difference3 step, in LevelRayCaster rayCaster)
     {
-        HitLevel(Events, move.Start, move.Step, rayCaster.LastStep, rayCaster.Current);
+        Collision.TouchLevel(Events, move.Start, move.Step, rayCaster.LastStep, rayCaster.Current);
         updateMoveOnCollision(ref move, step, rayCaster);
     }
 
@@ -87,13 +87,6 @@ sealed class TileCollider : Component<TileCollider.IParameters>, IPreviewListene
     private Difference3 getRadiusVectorInDirection(Difference3 direction)
     {
         return direction.NumericValue.NormalizedSafe() * radius;
-    }
-
-    public static void HitLevel(ComponentEvents events, Position3 point, Difference3 step, Direction? withStep, Tile tile)
-    {
-        var normal = new Difference3(withStep?.Vector().WithZ() ?? Vector3.UnitZ);
-        var info = new Impact(point, normal, step.NormalizedSafe());
-        events.Send(new CollideWithLevel(info, tile));
     }
 
     public override void Update(TimeSpan elapsedTime)

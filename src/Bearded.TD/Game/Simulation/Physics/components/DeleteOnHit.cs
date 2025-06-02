@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
+using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Tiles;
 using Bearded.Utilities.SpaceTime;
@@ -10,7 +11,7 @@ namespace Bearded.TD.Game.Simulation.Physics;
 
 [Component("deleteOnHit")]
 sealed class DeleteOnHit(IParameters parameters) : Component<IParameters>(parameters),
-    IListener<CollideWithObject>, IListener<CollideWithLevel>
+    IListener<ObjectHit>, IListener<CollidedWithLevel>
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -27,10 +28,10 @@ sealed class DeleteOnHit(IParameters parameters) : Component<IParameters>(parame
     protected override void OnAdded()
     {
         if (!Parameters.ExcludeObjects)
-            Events.Subscribe<CollideWithObject>(this);
+            Events.Subscribe<ObjectHit>(this);
 
         if (!Parameters.ExcludeLevel)
-            Events.Subscribe<CollideWithLevel>(this);
+            Events.Subscribe<CollidedWithLevel>(this);
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -40,13 +41,14 @@ sealed class DeleteOnHit(IParameters parameters) : Component<IParameters>(parame
     public override void OnRemoved()
     {
         if (!Parameters.ExcludeObjects)
-            Events.Unsubscribe<CollideWithObject>(this);
+            Events.Unsubscribe<ObjectHit>(this);
 
         if (!Parameters.ExcludeLevel)
-            Events.Unsubscribe<CollideWithLevel>(this);
+            Events.Unsubscribe<CollidedWithLevel>(this);
     }
 
-    public void HandleEvent(CollideWithObject e)
+
+    public void HandleEvent(ObjectHit e)
     {
         if (Parameters.ObjectCount > 1)
         {
@@ -60,7 +62,7 @@ sealed class DeleteOnHit(IParameters parameters) : Component<IParameters>(parame
         Owner.Delete();
     }
 
-    public void HandleEvent(CollideWithLevel e)
+    public void HandleEvent(CollidedWithLevel e)
     {
         if (Parameters.TilesCount > 1)
         {

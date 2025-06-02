@@ -1,19 +1,13 @@
-using System.Collections.Generic;
 using Bearded.TD.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-struct DamagePreview(TypedDamage damage, List<AdditionalHitEffect> additionalEffects)
+struct DamagePreview(TypedDamage damage)
 {
     public HitPoints DamageAmount { get; private set; } = damage.Amount;
     public DamageType DamageType { get; private set; } = damage.Type;
 
     public HitPoints PiercingDamageAmount { get; private set; }
-
-    public void AddAdditionalEffect(AdditionalHitEffect effect)
-    {
-        additionalEffects.Add(effect);
-    }
 
     public void Resist(Resistance resistance)
     {

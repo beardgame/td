@@ -93,6 +93,7 @@ sealed class Shockwave : Component<Shockwave.IParameters>
     {
         var direction = Owner.Position - obj.Position;
         var impact = new Impact(obj.Position, -direction, direction);
-        Events.Send(new TouchObject(obj, impact));
+
+        Hits.HitObject(Owner, Events, obj, impact);
     }
 }

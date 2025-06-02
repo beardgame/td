@@ -26,7 +26,7 @@ sealed class HitTargetOnActivate : Component
         var dir = sourceToTarget.NormalizedSafe();
         var impact = new Impact(target.Position, -dir, dir);
 
-        Events.Send(new TouchObject(target, impact));
+        Hits.HitObject(Owner, Events, target, impact);
     }
 
     public override void Update(TimeSpan elapsedTime) { }

@@ -45,7 +45,7 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
         statusDisplay.AddHitPointsBar(new HitPointsBar(this, Shell, color));
     }
 
-    public IntermediateDamageResult ApplyDamage(TypedDamage damage, Hit hit, IDamageSource? source)
+    public IntermediateDamageResult ApplyDamage(TypedDamage damage, IDamageSource? source)
     {
         // No hit points remaining, so shell is depleted.
         if (CurrentHitPoints <= HitPoints.Zero)
@@ -55,10 +55,6 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
 
         var modifiedDamage = modifyDamage(damage);
         var result = doDamage(damage, modifiedDamage.DamageToSelf, source);
-        foreach (var effect in modifiedDamage.AdditionalEffects)
-        {
-            effect(result, hit);
-        }
 
         return result with
         {

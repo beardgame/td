@@ -10,14 +10,12 @@ partial class HitPointsPool
 
     private readonly record struct ModifiedDamage(
         TypedDamage DamageToSelf,
-        TypedDamage DamageToPassThrough,
-        List<AdditionalHitEffect> AdditionalEffects
+        TypedDamage DamageToPassThrough
     );
 
     private ModifiedDamage modifyDamage(TypedDamage damage)
     {
-        List<AdditionalHitEffect> additionalEffects = [];
-        var preview = new DamagePreview(damage, additionalEffects);
+        var preview = new DamagePreview(damage);
         foreach (var effect in modifiers.Values)
         {
             effect.ModifyDamage(ref preview);
@@ -25,8 +23,7 @@ partial class HitPointsPool
 
         return new ModifiedDamage(
             DamageToSelf: new TypedDamage(preview.DamageAmount, preview.DamageType),
-            DamageToPassThrough: new TypedDamage(preview.PiercingDamageAmount, preview.DamageType),
-            additionalEffects
+            DamageToPassThrough: new TypedDamage(preview.PiercingDamageAmount, preview.DamageType)
         );
     }
 

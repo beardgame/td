@@ -13,9 +13,9 @@ sealed class DamageResistances(IParameters parameters) : DamageModifier<IParamet
         ImmutableDictionary<DamageType, Resistance>? Resistances { get; }
     }
 
-    public DamageResistances(ImmutableDictionary<DamageType, Resistance> resistances)
-        : this(new DamageResistancesParametersTemplate(resistances))
+    public static DamageResistances From(ImmutableDictionary<DamageType, Resistance> resistances)
     {
+        return new DamageResistances(new DamageResistancesParametersTemplate(resistances));
     }
 
     protected override DamageShell AffectedShell => DamageShell.Health;

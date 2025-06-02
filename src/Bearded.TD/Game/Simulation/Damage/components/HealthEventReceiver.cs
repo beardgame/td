@@ -22,7 +22,7 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
             {
                 break;
             }
-            var intermediateResult = receiver.ApplyDamage(remainingDamage, hit, source);
+            var intermediateResult = receiver.ApplyDamage(remainingDamage, source);
             remainingDamage = intermediateResult.DamageOverflow;
             totalExactDamage = totalExactDamage
                 .WithAdjustedAmount(totalExactDamage.Amount + intermediateResult.ExactDamageDone.Amount);

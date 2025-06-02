@@ -18,7 +18,7 @@ static class AreaOfEffect
     {
         foreach (var (obj, impact) in FindObjects(game, center, range))
         {
-            damageExecutor.TryDoDamage(obj, damage, Hit.FromAreaOfEffect(impact));
+            damageExecutor.TryDoDamage(obj, damage, Hit.FromAreaOfEffect(impact, damage.Untyped()));
         }
     }
 
