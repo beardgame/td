@@ -1,6 +1,6 @@
 ﻿using Bearded.TD.Shared.Events;
 
-namespace Bearded.TD.Generators.Tests.Listeners
+namespace Bearded.TD.Generators.Tests.Events
 {
     namespace EventImplementationsNamespace
     {
