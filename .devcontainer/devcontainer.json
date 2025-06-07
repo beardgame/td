@@ -2,12 +2,11 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
     "name": "C# (.NET)",
-    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
     "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0",
     "features": {
         "ghcr.io/devcontainers/features/dotnet:2": {}
     },
 
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "dotnet restore"
+    "postCreateCommand": "git submodule update --init && dotnet restore"
 }
