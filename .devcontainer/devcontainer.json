@@ -8,5 +8,12 @@
     },
 
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "git submodule update --init && dotnet restore"
+    "postCreateCommand": "git submodule update --init && dotnet restore",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csdevkit"
+            ]
+        }
+    }
 }
