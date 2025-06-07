@@ -35,3 +35,8 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "⬆"
+
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: "weekly"
