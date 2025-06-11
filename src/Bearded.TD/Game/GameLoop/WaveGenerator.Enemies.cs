@@ -16,15 +16,18 @@ sealed partial class WaveGenerator
 {
     private EnemyForm chooseEnemy(FormStructure structure, Random random)
     {
-        var eligibleEnemies = filteredEligibleEnemies(structure);
-        return generateFormWithRetries(
-            eligibleEnemies, new EnemyFormGenerator.Requirements(structure.Element), 5, random);
+        var eligibleEnemies = eligibleEnemiesForStructure(spawnableEnemies, structure);
+        var requirements = new EnemyFormGenerator.Requirements(structure.Element);
+        eligibleEnemies = eligibleEnemiesForRequirements(eligibleEnemies, requirements);
+        var blueprint = selectBlueprint(eligibleEnemies, random);
+        return enemyFormGenerator.Generate(blueprint, requirements, random);
     }
 
-    private ImmutableArray<ISpawnableEnemy> filteredEligibleEnemies(FormStructure structure)
+    private static ImmutableArray<ISpawnableEnemy> eligibleEnemiesForStructure(
+        IEnumerable<ISpawnableEnemy> enemies, FormStructure structure)
     {
         var maxTotalValue = structure.TotalThreat * (1 + WaveValueErrorFactor);
-        var eligibleEnemies = spawnableEnemies.Where(spawnableEnemy =>
+        var eligibleEnemies = enemies.Where(spawnableEnemy =>
         {
             var blueprint = spawnableEnemy.Blueprint;
             var threat = blueprint.GetThreat();
@@ -50,23 +53,19 @@ sealed partial class WaveGenerator
         _ => throw new ArgumentOutOfRangeException(nameof(archetype), archetype, null)
     };
 
-    private EnemyForm generateFormWithRetries(
-        ImmutableArray<ISpawnableEnemy> eligibleEnemies,
-        EnemyFormGenerator.Requirements requirements,
-        int maxRetries,
-        Random random)
+    private ImmutableArray<ISpawnableEnemy> eligibleEnemiesForRequirements(
+        IEnumerable<ISpawnableEnemy> enemies, EnemyFormGenerator.Requirements requirements)
     {
-        for (var i = 0; i < maxRetries; i++)
+        var eligibleEnemies = enemies
+            .Where(spawnableEnemy => enemyFormGenerator.CanGenerate(spawnableEnemy.Blueprint, requirements))
+            .ToImmutableArray();
+        if (eligibleEnemies.Length == 0)
         {
-            var blueprint = selectBlueprint(eligibleEnemies, random);
-            if (enemyFormGenerator.TryGenerateEnemyForm(blueprint, requirements, random, out var generatedForm))
-            {
-                return generatedForm;
-            }
+            throw new InvalidOperationException(
+                "Could not find an enemy which could generate a form that satisfies the requirements.");
         }
 
-        throw new InvalidOperationException(
-            $"Could not generate an enemy form with the provided requirements after {maxRetries} tries.");
+        return eligibleEnemies;
     }
 
     private static IGameObjectBlueprint selectBlueprint(IReadOnlyList<ISpawnableEnemy> enemies, Random random)

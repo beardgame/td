@@ -271,12 +271,13 @@ static class GameDebugCommands
         }
 
         var formGenerator = new EnemyFormGenerator(gameInstance.Blueprints.Modules.All, logger);
-        if (!formGenerator.TryGenerateEnemyForm(
-                blueprint, new EnemyFormGenerator.Requirements(element), Random.Shared, out var form))
+        var requirements = new EnemyFormGenerator.Requirements(element);
+        if (!formGenerator.CanGenerate(blueprint, requirements))
         {
-            logger.Warning?.Log("Was unable to generate form, not spawning enemy");
+            logger.Warning?.Log("Cannot generate form with requirements, not spawning enemy");
             return;
         }
+        var form = formGenerator.Generate(blueprint, requirements, Random.Shared);
 
         var spawnLocation = gameInstance.State.Enumerate<SpawnLocation>().FirstOrDefault(s => s.IsAwake);
         if (spawnLocation is null)
