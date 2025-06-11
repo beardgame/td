@@ -87,7 +87,7 @@ public class EventHandlerGenerator : IIncrementalGenerator
     {
         return methods.GroupBy(m => m.ComponentType)
             .Select(group => new ClassWithHandlers(group.Key, group.First().Namespace, group.ToImmutableArray()))
-            .OrderBy(c => c.Name.ShortName);
+            .OrderBy(c => c.Name.ShortName.Name);
     }
 
     private static void generateSource(
