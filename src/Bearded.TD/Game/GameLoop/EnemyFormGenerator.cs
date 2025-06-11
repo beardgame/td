@@ -29,6 +29,8 @@ sealed partial class EnemyFormGenerator
 
     private PrecalculatedBlueprintSummary findSummary(IGameObjectBlueprint blueprint)
     {
+        // NOTE: We lazily initialize the precalculation currently. We could consider precalculating this, ideally
+        // during game load, but this is not likely to be a major problem for a long time.
         return precalculatedSummaries.GetOrInsert(blueprint, blueprint, summarizeBlueprint);
     }
 
@@ -37,12 +39,12 @@ sealed partial class EnemyFormGenerator
         var instantiatedEnemy = EnemyFactory.CreateTemplate(blueprint);
 
         var sockets = instantiatedEnemy.GetComponents<ISocket>();
-        // assumption: if you have multiple sockets of the same shape, they will all receive the same module
+        // ASSUMPTION: if you have multiple sockets of the same shape, they will all receive the same module
         var shapes = sockets.Select(s => s.Shape).Distinct().ToImmutableArray();
 
         var resistanceContributions = instantiatedEnemy.GetComponents<IResistanceContributions>().SingleOrDefault();
 
-        // assumption: all modules in all sockets must match the affinity element
+        // ASSUMPTION: all modules in all sockets must match the affinity element
         var supportedElements = shapes
             .Select(s => modulesBySocket[s].Select(m => m.AffinityElement))
             .Aggregate(allElements, (left, right) => left.Intersect(right));
