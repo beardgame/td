@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Bearded.TD.Generators.Types;
 using Bearded.TD.Shared.Events;
 using Microsoft.CodeAnalysis;
@@ -10,10 +12,11 @@ using static Bearded.TD.Generators.SourceTemplates;
 namespace Bearded.TD.Generators.Events;
 
 [Generator]
-public partial class EventHandlerGenerator : IIncrementalGenerator
+public class EventHandlerGenerator : IIncrementalGenerator
 {
     private const string eventBaseTypeName =
         "global::Bearded.TD.Game.Simulation.GameObjects.IComponentEvent";
+
     private static readonly ImmutableArray<string> defaultNamespaces =
         ImmutableArray.Create(
             "Bearded.TD.Shared.Events"
@@ -23,12 +26,13 @@ public partial class EventHandlerGenerator : IIncrementalGenerator
     {
         var handlerMethods =
             context.SyntaxProvider.ForAttributeWithMetadataName(
-                typeof(HandlerAttribute).FullName!,
-                predicate: static (node, _) => isValidHandlerMethod(node),
-                transform: static (ctx, _) => handlerMethodFromContext(ctx))
-            .WhereNotNull()
-            // TODO: combine methods from the same class
-            .Select((m, _) => new ClassWithHandlers(m.ComponentType, "", ImmutableArray.Create(m)));
+                    typeof(HandlerAttribute).FullName!,
+                    predicate: static (node, _) => isValidHandlerMethod(node),
+                    transform: static (ctx, _) => handlerMethodFromContext(ctx))
+                .WhereNotNull()
+                .Collect()
+                .SelectMany(static (methods, _) => groupByClass(methods))
+                .WithComparer(new OrderIndependentClassWithHandlersComparer());
 
         context.RegisterSourceOutput(handlerMethods, generateSource);
     }
@@ -59,21 +63,31 @@ public partial class EventHandlerGenerator : IIncrementalGenerator
 
         var methodName = method.Name;
         var eventParameter = method.Parameters[0];
-        if (!eventParameter.Type.AllInterfaces
+        if (eventParameter.Type.AllInterfaces
             .Select(TypeName.From)
-            .Any(name => name.FullName.Name == eventBaseTypeName))
+            .All(name => name.FullName.Name != eventBaseTypeName))
         {
             return null;
         }
+
         var eventType = TypeName.From(eventParameter.Type);
 
         if (semanticModel.GetDeclaredSymbol(context.TargetNode.Parent!) is not ITypeSymbol parentClass)
         {
             return null;
         }
-        var componentType = TypeName.From(parentClass);
 
-        return new HandlerMethod(componentType, methodName, eventType);
+        var componentType = TypeName.From(parentClass);
+        var componentNamespace = Namespace.From(parentClass.ContainingNamespace);
+
+        return new HandlerMethod(componentType, componentNamespace, methodName, eventType);
+    }
+
+    private static IEnumerable<ClassWithHandlers> groupByClass(ImmutableArray<HandlerMethod> methods)
+    {
+        return methods.GroupBy(m => m.ComponentType)
+            .Select(group => new ClassWithHandlers(group.Key, group.First().Namespace, group.ToImmutableArray()))
+            .OrderBy(c => c.Name.ShortName);
     }
 
     private static void generateSource(
@@ -94,9 +108,9 @@ $$"""
 {{Foreach(0, defaultNamespaces, n => $"using {n};")}}
 {{Foreach(0, aliases.Where(a => a.FullName.Name != a.Alias.Name).OrderBy(a => a.Alias.Name), a => a.ToString())}}
 
-namespace {{classWithHandlers.Namespace}};
+{{classWithHandlers.Namespace.AsFileScopedDeclaration()}}
 
-partial class {{classWithHandlers.Name}} : {{listenerList}}
+partial class {{classWithHandlers.Name.ShortName}} : {{listenerList}}
 {
     protected override RegisterHandlers()
     {
@@ -114,7 +128,7 @@ partial class {{classWithHandlers.Name}} : {{listenerList}}
 
         source = CleanWhiteSpace(source);
 
-        context.AddSource($"{classWithHandlers.Name}.Events.g.cs", source);
+        context.AddSource($"{classWithHandlers.Name.ShortName}.Events.g.cs", source);
 
         return;
 
@@ -142,9 +156,28 @@ $$"""
 
     private record struct ClassWithHandlers(
         TypeName Name,
-        string Namespace,
+        Namespace Namespace,
         ImmutableArray<HandlerMethod> Handlers);
 
     private record struct HandlerMethod(
-        TypeName ComponentType, string MethodName, TypeName EventType);
+        TypeName ComponentType,
+        Namespace Namespace,
+        string MethodName,
+        TypeName EventType);
+
+    private sealed class OrderIndependentClassWithHandlersComparer : IEqualityComparer<ClassWithHandlers>
+    {
+        public bool Equals(ClassWithHandlers x, ClassWithHandlers y)
+        {
+            var xHandlers = ImmutableHashSet.CreateRange(x.Handlers);
+            var yHandlers = ImmutableHashSet.CreateRange(y.Handlers);
+
+            return x.Name.Equals(y.Name) && x.Namespace == y.Namespace && xHandlers.SetEquals(yHandlers);
+        }
+
+        public int GetHashCode(ClassWithHandlers obj)
+        {
+            return HashCode.Combine(obj.Name, obj.Namespace, obj.Handlers);
+        }
+    }
 }
