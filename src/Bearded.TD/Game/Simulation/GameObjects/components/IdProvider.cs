@@ -20,9 +20,9 @@ sealed class IdProvider : Component, IIdProvider
         Owner.Game.IdAs(Id, Owner);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
-        base.OnRemoved();
+        base.OnRemovedInternal();
         Owner.Game.DeleteId(Id);
     }
 

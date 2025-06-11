@@ -67,7 +67,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
             angle = StaticRandom.Float(360).Degrees();
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

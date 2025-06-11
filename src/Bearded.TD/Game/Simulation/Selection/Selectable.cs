@@ -48,13 +48,13 @@ sealed class Selectable :
         tilePresenceListener = Owner.GetTilePresence().ObserveChanges(registerTile, unregisterTile);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         tilePresenceListener?.Detach();
         Events.Unsubscribe(this);
         disposer.Dispose();
 
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     public void ResetSelection()

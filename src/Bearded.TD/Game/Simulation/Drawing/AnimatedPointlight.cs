@@ -45,7 +45,7 @@ sealed class AnimatedPointLight : Component<AnimatedPointLight.IParameters>, ILi
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

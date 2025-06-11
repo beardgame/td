@@ -72,10 +72,10 @@ sealed partial class Capacitor : Component<Capacitor.IParameters>, ICapacitor
             Events.Send(new CapacitorFilled());
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         status?.Detach();
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     private void updateMaxCharge(ElectricCharge newMax)

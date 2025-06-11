@@ -31,7 +31,7 @@ sealed class ShockNearbyObjectsOnKilled : Component<ShockNearbyObjectsOnKilled.I
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

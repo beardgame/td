@@ -26,7 +26,7 @@ sealed class InflammableIfShellNotEmpty(IParameters parameters)
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

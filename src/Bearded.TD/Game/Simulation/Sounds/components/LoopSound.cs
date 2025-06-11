@@ -38,9 +38,9 @@ sealed class LoopSound : Component<LoopSound.IParameters>, IListener<ObjectDelet
         stopSound();
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
-        base.OnRemoved();
+        base.OnRemovedInternal();
         stopSound();
         Events.Unsubscribe(this);
     }

@@ -43,7 +43,7 @@ sealed class EmitArcOnHit
         }
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         if (Parameters.OnHitEnemy)
         {

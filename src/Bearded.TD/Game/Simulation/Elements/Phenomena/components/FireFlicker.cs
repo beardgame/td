@@ -18,7 +18,7 @@ sealed class FireFlicker : Component, IListener<DrawComponents>
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

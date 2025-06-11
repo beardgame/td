@@ -81,7 +81,7 @@ sealed class Turret : Component<Turret.IParameters>,
         Owner.Game.Add(Weapon);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe<DrawComponents>(this);
         Events.Unsubscribe<ObjectDeleting>(this);

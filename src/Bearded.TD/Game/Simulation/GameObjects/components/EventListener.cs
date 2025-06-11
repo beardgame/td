@@ -19,7 +19,7 @@ sealed class EventListener<TEvent> : Component, IListener<TEvent>
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

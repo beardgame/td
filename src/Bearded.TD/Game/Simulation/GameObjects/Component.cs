@@ -42,7 +42,12 @@ abstract class Component : IComponent
 
     public virtual void Activate() {}
 
-    public virtual void OnRemoved() {}
+    public void OnRemoved()
+    {
+        OnRemovedInternal();
+    }
+
+    protected virtual void OnRemovedInternal() {}
 
     public virtual void Update(TimeSpan elapsedTime) {}
 

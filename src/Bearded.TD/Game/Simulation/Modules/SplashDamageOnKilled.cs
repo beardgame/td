@@ -29,7 +29,7 @@ sealed class SplashDamageOnKilled : Component<SplashDamageOnKilled.IParameters>,
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

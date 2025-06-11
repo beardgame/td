@@ -43,10 +43,10 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     public void Jam(TimeSpan duration)

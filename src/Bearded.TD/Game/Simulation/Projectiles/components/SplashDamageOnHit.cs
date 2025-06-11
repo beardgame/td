@@ -33,7 +33,7 @@ sealed class SplashDamageOnHit : Component<SplashDamageOnHit.IParameters>,
         Events.Subscribe<ObjectHit>(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe<CollidedWithLevel>(this);
         Events.Unsubscribe<ObjectHit>(this);

@@ -51,7 +51,7 @@ sealed class ProjectileExplosionOnHit
         }
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         if (Parameters.OnHitEnemy)
         {
