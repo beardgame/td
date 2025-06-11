@@ -3,21 +3,21 @@
 using Bearded.TD.Shared.Events;
 using FirstEvent = global::Bearded.TD.Generators.Tests.Events.EventImplementationsNamespace.FirstEvent;
 
-namespace Events;
+namespace Bearded.TD.Generators.Tests.Events;
 
 partial class ListeningComponent : IListener<FirstEvent>
 {
-    protected override RegisterHandlers()
+    protected override void RegisterHandlers()
     {
         Events.Subscribe<FirstEvent>(this);
     }
 
-    protected override UnregisterHandlers()
+    protected override void UnregisterHandlers()
     {
         Events.Unsubscribe<FirstEvent>(this);
     }
 
-        public void HandleEvent(FirstEvent e)
+    public void HandleEvent(FirstEvent e)
     {
         onFirstEvent(e);
     }

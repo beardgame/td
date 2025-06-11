@@ -112,17 +112,17 @@ $$"""
 
 partial class {{classWithHandlers.Name.ShortName}} : {{listenerList}}
 {
-    protected override RegisterHandlers()
+    protected override void RegisterHandlers()
     {
         {{Foreach(2, methods, subscribe)}}
     }
 
-    protected override UnregisterHandlers()
+    protected override void UnregisterHandlers()
     {
         {{Foreach(2, methods, unsubscribe)}}
     }
 
-    {{Foreach(0, methods, handleEvent)}}
+{{Foreach(0, methods, handleEvent)}}
 }
 """;
 

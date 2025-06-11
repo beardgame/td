@@ -8,7 +8,7 @@ record struct Namespace(bool Global, string Name)
     {
         return new Namespace(
             namespaceSymbol.IsGlobalNamespace,
-            namespaceSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat));
+            $"{namespaceSymbol}");
     }
 
     public string AsFileScopedDeclaration() => Global ? "" : $"namespace {Name};";
