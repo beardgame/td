@@ -7,38 +7,17 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-abstract class Component<TParameters> : IComponent
+abstract class Component<TParameters> : Component
     where TParameters : IParametersTemplate<TParameters>
 {
-    public ImmutableArray<string> Keys { get; init; } = ImmutableArray<string>.Empty;
-
     protected TParameters Parameters { get; }
-
-    protected GameObject Owner { get; private set; } = null!;
-
-    protected ComponentEvents Events { get; private set; } = null!;
 
     protected Component(TParameters parameters)
     {
         Parameters = parameters.CreateModifiableInstance();
     }
 
-    public void OnAdded(GameObject owner, ComponentEvents events)
-    {
-        Owner = owner;
-        Events = events;
-        OnAdded();
-    }
-
-    protected virtual void OnAdded() {}
-
-    public virtual void Activate() {}
-
-    public virtual void OnRemoved() {}
-
-    public virtual void Update(TimeSpan elapsedTime) {}
-
-    public virtual void PreviewUpgrade(IUpgradePreview upgradePreview)
+    public override void PreviewUpgrade(IUpgradePreview upgradePreview)
     {
         upgradePreview.RegisterParameters(Owner, Parameters);
     }

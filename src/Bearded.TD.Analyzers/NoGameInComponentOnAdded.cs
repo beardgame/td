@@ -17,8 +17,7 @@ sealed class NoGameInComponentOnAdded : DiagnosticAnalyzer
     private const string bannedPropertyId = "P:Bearded.TD.Game.Simulation.GameObjects.GameObject.Game";
 
     private static readonly ImmutableArray<string> bannedScopeIds = ImmutableArray.Create(
-        "M:Bearded.TD.Game.Simulation.GameObjects.Component.OnAdded",
-        "M:Bearded.TD.Game.Simulation.GameObjects.Component`1.OnAdded");
+        "M:Bearded.TD.Game.Simulation.GameObjects.Component.OnAdded()");
 
     private static DiagnosticDescriptor gameInOnAddedIsBannedRule { get; } = new(
         id: td001Identifier,
@@ -123,7 +122,7 @@ sealed class NoGameInComponentOnAdded : DiagnosticAnalyzer
             return true;
         }
 
-        symbol = default;
+        symbol = null;
         return false;
     }
 }
