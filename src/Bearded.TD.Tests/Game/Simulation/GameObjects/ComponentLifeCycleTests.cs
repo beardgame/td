@@ -18,7 +18,7 @@ using Bearded.TD.Testing.Components;
 using Castle.DynamicProxy;
 using Xunit;
 
-namespace Bearded.TD.Tests.Game.GameObjects;
+namespace Bearded.TD.Tests.Game.Simulation.GameObjects;
 
 public sealed class ComponentLifeCycleTests
 {
