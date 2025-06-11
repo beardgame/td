@@ -1,0 +1,5 @@
+{
+    name: "Mod for testing",
+    id: "mod-for-testing",
+    dependencies: [{id: "default"}]
+}

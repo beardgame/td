@@ -16,7 +16,7 @@ using FluentAssertions;
 using Xunit;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
-namespace Bearded.TD.Tests.Game.GameObjects;
+namespace Bearded.TD.Tests.Game.Simulation.GameObjects;
 
 public sealed class UpgradeTests
 {

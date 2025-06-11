@@ -15,6 +15,11 @@ static class ModuleTestFactory
             NextUniqueModAwareId(prefix: "module"), element, socketShape, ImmutableArray<IUpgradeEffect>.Empty);
     }
 
+    public static ImmutableArray<IModule> CreateModules(SocketShape socketShape, params Element[] elements)
+    {
+        return elements.Select(e => CreateModule(socketShape, e)).ToImmutableArray();
+    }
+
     public static ImmutableArray<IModule> CreateModulesForAllElements(SocketShape socketShape)
     {
         return ElementExtensions.Enumerate().Select(e => CreateModule(socketShape, e)).ToImmutableArray();

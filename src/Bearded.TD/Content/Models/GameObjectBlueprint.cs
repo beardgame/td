@@ -11,15 +11,10 @@ using IComponentModel = Bearded.TD.Content.Serialization.Models.IComponent;
 
 namespace Bearded.TD.Content.Models;
 
-sealed class GameObjectBlueprintProxy : IGameObjectBlueprint
+sealed class GameObjectBlueprintProxy(ModAwareId id) : IGameObjectBlueprint
 {
     private IGameObjectBlueprint? blueprint;
-    public ModAwareId Id { get; }
-
-    public GameObjectBlueprintProxy(ModAwareId id)
-    {
-        Id = id;
-    }
+    public ModAwareId Id { get; } = id;
 
     public void InjectActualBlueprint(IGameObjectBlueprint actualBlueprint)
     {
@@ -32,6 +27,8 @@ sealed class GameObjectBlueprintProxy : IGameObjectBlueprint
     }
 
     IEnumerable<IComponent> IGameObjectBlueprint.GetComponents() => blueprint!.GetComponents();
+
+    public override string ToString() => $"gameObject:{Id}";
 }
 
 sealed class GameObjectBlueprint : IGameObjectBlueprint
@@ -60,4 +57,6 @@ sealed class GameObjectBlueprint : IGameObjectBlueprint
         Id = id;
         componentParameters = components.ToImmutableArray();
     }
+
+    public override string ToString() => $"gameObject:{Id}";
 }

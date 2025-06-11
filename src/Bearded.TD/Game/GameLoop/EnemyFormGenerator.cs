@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Model;
+using Bearded.TD.Utilities.Collections;
 using Bearded.Utilities.IO;
-using Bearded.Utilities.Linq;
 
 namespace Bearded.TD.Game.GameLoop;
 
-sealed class EnemyFormGenerator
+sealed partial class EnemyFormGenerator
 {
+    private static readonly ImmutableHashSet<Element> allElements = Enum.GetValues<Element>().ToImmutableHashSet();
+
     private readonly ILookup<SocketShape, IModule> modulesBySocket;
+    private readonly Dictionary<IGameObjectBlueprint, PrecalculatedBlueprintSummary> precalculatedSummaries = new();
 
     private readonly Logger logger;
 
@@ -24,78 +25,35 @@ sealed class EnemyFormGenerator
         this.logger = logger;
     }
 
-    public bool TryGenerateEnemyForm(
-        IGameObjectBlueprint blueprint,
-        Requirements requirements,
-        Random random,
-        [NotNullWhen(true)] out EnemyForm? form)
+    public readonly record struct Requirements(Element AffinityElement);
+
+    private PrecalculatedBlueprintSummary findSummary(IGameObjectBlueprint blueprint)
+    {
+        // NOTE: We lazily initialize the precalculation currently. We could consider precalculating this, ideally
+        // during game load, but this is not likely to be a major problem for a long time.
+        return precalculatedSummaries.GetOrInsert(blueprint, blueprint, summarizeBlueprint);
+    }
+
+    private PrecalculatedBlueprintSummary summarizeBlueprint(IGameObjectBlueprint blueprint)
     {
         var instantiatedEnemy = EnemyFactory.CreateTemplate(blueprint);
-        var sockets = instantiatedEnemy.GetComponents<ISocket>();
-        // assumption: if you have multiple sockets of the same shape, they will all receive the same module
-        var shapes = sockets.Select(s => s.Shape).Distinct();
 
-        var maybeAssignedModules = assignModulesToShapes(shapes, requirements, random);
-        if (maybeAssignedModules is null)
-        {
-            form = default;
-            return false;
-        }
+        var sockets = instantiatedEnemy.GetComponents<ISocket>();
+        // ASSUMPTION: if you have multiple sockets of the same shape, they will all receive the same module
+        var shapes = sockets.Select(s => s.Shape).Distinct().ToImmutableArray();
 
         var resistanceContributions = instantiatedEnemy.GetComponents<IResistanceContributions>().SingleOrDefault();
-        var resistances = resistanceContributions is null
-            ? ImmutableDictionary<DamageType, Resistance>.Empty
-            : deriveResistances(maybeAssignedModules, resistanceContributions);
-        form = new EnemyForm(blueprint, maybeAssignedModules, resistances);
-        return true;
+
+        // ASSUMPTION: all modules in all sockets must match the affinity element
+        var supportedElements = shapes
+            .Select(s => modulesBySocket[s].Select(m => m.AffinityElement))
+            .Aggregate(allElements, (left, right) => left.Intersect(right));
+
+        return new PrecalculatedBlueprintSummary(shapes, resistanceContributions, supportedElements);
     }
 
-    private ImmutableDictionary<SocketShape, IModule>? assignModulesToShapes(
-        IEnumerable<SocketShape> shapes, Requirements requirements, Random random)
-    {
-        var builder = ImmutableDictionary.CreateBuilder<SocketShape, IModule>();
-        foreach (var s in shapes)
-        {
-            var moduleMaybe = chooseAppropriateModule(modulesBySocket[s], requirements, random);
-            if (moduleMaybe is null)
-            {
-                return null;
-            }
-            builder[s] = moduleMaybe;
-        }
-
-        return builder.ToImmutable();
-    }
-
-    private IModule? chooseAppropriateModule(IEnumerable<IModule> modules, Requirements requirements, Random random)
-    {
-        var appropriateModules =
-            modules.Where(m => m.AffinityElement == requirements.AffinityElement).ToImmutableArray();
-        return appropriateModules.IsEmpty ? null : appropriateModules.RandomElement(random);
-    }
-
-    private ImmutableDictionary<DamageType, Resistance> deriveResistances(
-        ImmutableDictionary<SocketShape, IModule> modules, IResistanceContributions resistanceContributions)
-    {
-        var builder = ImmutableDictionary.CreateBuilder<DamageType, Resistance>();
-
-        foreach (var (socketShape, resistance) in resistanceContributions.Factors)
-        {
-            if (!modules.TryGetValue(socketShape, out var module))
-            {
-                logger.Warning?.Log(
-                    $"Attempted to calculate damage resistance derived from socket {socketShape} but no assigned " +
-                    $"module was found.");
-                continue;
-            }
-
-            var damageType = module.AffinityElement.ToDamageType();
-            var existingResistance = builder.GetValueOrDefault(damageType);
-            builder[damageType] = existingResistance + resistance;
-        }
-
-        return builder.ToImmutable();
-    }
-
-    public readonly record struct Requirements(Element AffinityElement);
+    private record PrecalculatedBlueprintSummary(
+        ImmutableArray<SocketShape> SocketShapes,
+        IResistanceContributions? ResistanceContributions,
+        ImmutableHashSet<Element> SupportedElements);
 }

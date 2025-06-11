@@ -6,12 +6,12 @@ using FsCheck.Xunit;
 
 namespace Bearded.TD.Tests.Game.GameLoop;
 
-public sealed class ChapterGeneratorTests(bool enableTimers)
+public sealed class ChapterGeneratorTests
 {
     private static readonly ImmutableArray<Element> allElements = [..ElementExtensions.Enumerate()];
 
     [Property]
-    public void ChapterGenerationIsDeterministicGivenSeed(int seed, bool isFirstChapter)
+    public void ChapterGenerationIsDeterministicGivenSeed(int seed, bool isFirstChapter, bool enableTimers)
     {
         var gen = new ChapterGenerator(allElements, enableTimers, seed);
         var requirements = new ChapterRequirements(isFirstChapter ? 1 : 2, [100, 150, 200]);
