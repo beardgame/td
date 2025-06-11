@@ -18,7 +18,6 @@ using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Console;
-using Bearded.Utilities;
 using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Game.Debug;
@@ -59,11 +58,11 @@ static class GameDebugCommands
 
         var seed = p.Args.Length == 1
             ? gameInstance.GameSettings.Seed
-            : int.TryParse(p.Args[1], out var s) ? s : StaticRandom.Int();
+            : int.TryParse(p.Args[1], out var s) ? s : Random.Shared.Next();
 
         // TODO: seeds are broken, see GameStateBuilder too
         if (seed == 0)
-            seed = StaticRandom.Int();
+            seed = Random.Shared.Next();
 
         logger.Debug?.Log($"Generating new tilemap with method {method} and seed {seed}.");
 
