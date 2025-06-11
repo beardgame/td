@@ -22,11 +22,11 @@ sealed class TileBlocker : Component, IListener<ObjectDeleting>
             onRemoved: tile => Owner.Game.TileBlockerLayer.RemoveTileBlocker(Owner, tile));
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         detachFromTileBlockerLayer();
         Events.Unsubscribe(this);
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     public void HandleEvent(ObjectDeleting @event)

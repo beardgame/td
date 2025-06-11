@@ -37,9 +37,9 @@ sealed class DroneSpawner : Component<DroneSpawner.IParameters>, IDroneSpawner, 
         activated = true;
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
-        base.OnRemoved();
+        base.OnRemovedInternal();
         if (activated)
         {
             Owner.Game.Meta.Events.Unsubscribe(this);

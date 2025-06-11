@@ -36,10 +36,10 @@ sealed class EnemyIcon : Component<EnemyIcon.IParameters>, IListener<DrawCompone
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     public override void Update(TimeSpan elapsedTime) { }

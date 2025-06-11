@@ -25,7 +25,7 @@ sealed class BuildingGhostDrawing : Component, IListener<DrawComponents>, IListe
         Events.Subscribe<FootprintChanged>(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe<DrawComponents>(this);
         Events.Unsubscribe<FootprintChanged>(this);

@@ -72,9 +72,9 @@ sealed partial class FuelSystem : Component,
         activated = true;
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
-        base.OnRemoved();
+        base.OnRemovedInternal();
 
         Events.Unsubscribe<ComponentAdded>(this);
         Events.Unsubscribe<ComponentRemoved>(this);
@@ -241,9 +241,9 @@ sealed partial class FuelSystem : Component,
             Events.Subscribe(this);
         }
 
-        public override void OnRemoved()
+        protected override void OnRemovedInternal()
         {
-            base.OnRemoved();
+            base.OnRemovedInternal();
             Events.Unsubscribe(this);
         }
 

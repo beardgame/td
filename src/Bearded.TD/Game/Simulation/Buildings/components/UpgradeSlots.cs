@@ -61,7 +61,7 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
         }
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         // TODO: should we undo all upgrades as well?
         foreach (var subscription in triggerSubscriptions)
@@ -69,7 +69,7 @@ sealed class UpgradeSlots : Component<UpgradeSlots.IParameters>, IUpgradeSlots
             subscription.Unsubscribe(Events);
         }
         triggerSubscriptions.Clear();
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     private void unlockSlot()

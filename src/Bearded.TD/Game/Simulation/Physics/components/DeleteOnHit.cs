@@ -38,7 +38,7 @@ sealed class DeleteOnHit(IParameters parameters) : Component<IParameters>(parame
     {
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         if (!Parameters.ExcludeObjects)
             Events.Unsubscribe<ObjectHit>(this);

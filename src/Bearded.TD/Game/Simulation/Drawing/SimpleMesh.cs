@@ -44,7 +44,7 @@ sealed class SimpleMesh(SimpleMesh.IParameters parameters)
             );
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

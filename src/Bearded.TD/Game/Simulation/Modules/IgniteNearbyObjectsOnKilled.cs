@@ -31,7 +31,7 @@ sealed class IgniteNearbyObjectsOnKilled : Component<IgniteNearbyObjectsOnKilled
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

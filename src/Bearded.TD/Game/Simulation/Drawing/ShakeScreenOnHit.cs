@@ -34,7 +34,7 @@ sealed class ShakeScreenOnHit(IParameters parameters)
         Events.Subscribe<ObjectHit>(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe<CollidedWithLevel>(this);
         Events.Unsubscribe<ObjectHit>(this);

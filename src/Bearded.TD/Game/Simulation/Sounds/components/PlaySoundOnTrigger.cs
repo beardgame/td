@@ -30,10 +30,10 @@ sealed class PlaySoundOnTrigger : Component<PlaySoundOnTrigger.IParameters>
         Owner.Game.Meta.SoundScape.PlaySoundAt(Parameters.Sound, Owner.Position);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         subscription?.Unsubscribe(Events);
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     public override void Update(TimeSpan elapsedTime) { }

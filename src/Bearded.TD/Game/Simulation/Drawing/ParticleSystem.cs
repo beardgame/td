@@ -102,7 +102,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
         Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe(this);
     }

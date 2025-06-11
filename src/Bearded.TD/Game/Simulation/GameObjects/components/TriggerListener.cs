@@ -25,7 +25,7 @@ sealed class TriggerListener : Component
         }
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         foreach (var subscription in subscriptions)
         {

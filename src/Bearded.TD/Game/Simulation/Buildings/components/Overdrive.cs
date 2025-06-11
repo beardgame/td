@@ -28,7 +28,7 @@ sealed class Overdrive : Component
 
     public override void Update(TimeSpan elapsedTime) { }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         upgradeReceipt?.Rollback();
     }

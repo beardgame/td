@@ -49,7 +49,7 @@ sealed class MuzzleFlash(MuzzleFlash.IParameters parameters)
         Events.Subscribe<DrawComponents>(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe<DrawComponents>(this);
         Events.Unsubscribe<ShotProjectile>(this);

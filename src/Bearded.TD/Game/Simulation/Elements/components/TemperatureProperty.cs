@@ -43,10 +43,10 @@ sealed partial class TemperatureProperty : Component, IProperty<Temperature>, IT
         tickCycle?.Update();
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         tilePresenceListener?.Detach();
-        base.OnRemoved();
+        base.OnRemovedInternal();
     }
 
     public void ApplyImmediateTemperatureChange(TemperatureDifference difference)

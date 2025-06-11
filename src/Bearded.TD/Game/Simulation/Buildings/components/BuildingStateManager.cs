@@ -59,7 +59,7 @@ sealed class BuildingStateManager : Component,
         }
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         DebugAssert.State.IsInvalid("Building state should never be removed.");
     }

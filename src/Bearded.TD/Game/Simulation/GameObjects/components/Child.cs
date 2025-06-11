@@ -36,9 +36,9 @@ sealed class Child(IParameters parameters) : Component<IParameters>(parameters),
             Events.Subscribe(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
-        base.OnRemoved();
+        base.OnRemovedInternal();
         child?.Delete();
         child = null;
     }

@@ -24,7 +24,7 @@ sealed class InheritFireWeaponEvent : Component
         listener = new Listener(this);
         parent.AddComponent(listener);
 
-        Events.Subscribe(new EventListener<ObjectDeleting>(_ => OnRemoved()));
+        Events.Subscribe(new EventListener<ObjectDeleting>(_ => OnRemovedInternal()));
     }
 
     public override void Update(TimeSpan elapsedTime)
@@ -35,7 +35,7 @@ sealed class InheritFireWeaponEvent : Component
         Owner.Direction = parent.Direction;
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         if (parent != null && listener != null)
         {
@@ -47,7 +47,7 @@ sealed class InheritFireWeaponEvent : Component
     private sealed class Listener(InheritFireWeaponEvent owner) : Component, IListener<FireWeapon>
     {
         protected override void OnAdded() => Events.Subscribe(this);
-        public override void OnRemoved() => Events.Unsubscribe(this);
+        protected override void OnRemovedInternal() => Events.Unsubscribe(this);
 
         public override void Update(TimeSpan elapsedTime) { }
 
