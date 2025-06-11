@@ -28,6 +28,18 @@ sealed class ModForLoading(ModMetadata modMetadata)
         Task.Run(load);
     }
 
+    public async Task Load(ModLoadingContext context, ReadOnlyCollection<Mod> loadedDependencies)
+    {
+        if (isLoading)
+            throw new InvalidOperationException("Cannot load mod more than once.");
+
+        isLoading = true;
+        this.context = context;
+        this.loadedDependencies = loadedDependencies;
+
+        await load();
+    }
+
     private async Task load()
     {
         try
