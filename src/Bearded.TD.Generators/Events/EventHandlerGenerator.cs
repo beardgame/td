@@ -86,7 +86,10 @@ public class EventHandlerGenerator : IIncrementalGenerator
     private static IEnumerable<ClassWithHandlers> groupByClass(ImmutableArray<HandlerMethod> methods)
     {
         return methods.GroupBy(m => m.ComponentType)
-            .Select(group => new ClassWithHandlers(group.Key, group.First().Namespace, group.ToImmutableArray()))
+            .Select(group => new ClassWithHandlers(
+                group.Key,
+                group.First().Namespace,
+                group.OrderBy(m => m.EventType.ShortName.Name).ToImmutableArray()))
             .OrderBy(c => c.Name.ShortName.Name);
     }
 
@@ -150,6 +153,7 @@ $$"""
     {
         {{method.MethodName}}(e);
     }
+
 """;
         }
     }
