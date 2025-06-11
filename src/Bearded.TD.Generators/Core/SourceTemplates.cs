@@ -8,7 +8,7 @@ namespace Bearded.TD.Generators;
 static class SourceTemplates
 {
     public static string Foreach<T>(
-        int indents, IEnumerable<T> values, Func<T, string> template, string separator = "\n")
+        int indents, IEnumerable<T> values, Func<T, string> template, string separator = Strings.NewLine)
     {
         return string.Join($"{separator}{Indent(indents)}", values.Select(template));
     }
@@ -25,6 +25,9 @@ static class SourceTemplates
 
         // remove empty lines after { or ]
         source = Regex.Replace(source, @"([\{\]])(\r?\n){2}", "$1$2");
+
+        // add trailing whitespace
+        source += Strings.NewLine;
 
         return source;
     }
