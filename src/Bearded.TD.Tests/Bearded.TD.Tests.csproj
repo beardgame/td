@@ -6,6 +6,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,13 +17,12 @@
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="FluentAssertions" Version="7.2.0" />
-    <PackageReference Include="FsCheck.Xunit" Version="3.2.0" />
+    <PackageReference Include="FsCheck.Xunit.v3" Version="3.3.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.console" Version="2.9.3">
+    <PackageReference Include="xunit.v3" Version="2.0.3" />
+    <PackageReference Include="xunit.v3.extensibility.core" Version="2.0.3" />
+    <PackageReference Include="xunit.v3.runner.console" Version="2.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -17,7 +17,7 @@ public sealed class ModIntegrationTests : IAsyncLifetime
 
     private Mod testMod = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var allMods = new ModLister().GetAll().ToImmutableArray();
         var sortedMods = new ModSorter().SortByDependency(allMods);
@@ -43,9 +43,9 @@ public sealed class ModIntegrationTests : IAsyncLifetime
         testMod = testModForLoading.GetLoadedMod();
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     [Fact]

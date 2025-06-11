@@ -17,7 +17,6 @@ using Bearded.TD.Game.Simulation.Weapons;
 using Bearded.TD.Testing.Components;
 using Castle.DynamicProxy;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Bearded.TD.Tests.Game.GameObjects;
 
