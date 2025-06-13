@@ -17,7 +17,7 @@ sealed class DieWhenAllHitPointsDepleted : Component, IListener<ComponentAdded>,
         Events.Subscribe<ComponentRemoved>(this);
     }
 
-    public override void OnRemoved()
+    protected override void OnRemovedInternal()
     {
         Events.Unsubscribe<ComponentAdded>(this);
         Events.Unsubscribe<ComponentRemoved>(this);
