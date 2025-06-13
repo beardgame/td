@@ -6,7 +6,6 @@
         <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
         <OutputType>Exe</OutputType>
-        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     </PropertyGroup>
 
     <ItemGroup>
