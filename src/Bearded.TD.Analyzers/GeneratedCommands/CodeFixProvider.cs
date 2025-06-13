@@ -3,6 +3,7 @@ using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bearded.TD.Analyzers.CodeFixes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -66,35 +67,16 @@ public class CodeFixProvider : Microsoft.CodeAnalysis.CodeFixes.CodeFixProvider
     private static async Task<Document> makeStaticPartialAsync(
         Document document, ClassDeclarationSyntax classDeclaration, CancellationToken cancellationToken)
     {
-        var root = await document.GetSyntaxRootAsync(cancellationToken);
+        var newClassDeclaration =
+            classDeclaration.WithAdditionalModifiers(SyntaxKind.StaticKeyword, SyntaxKind.PartialKeyword);
 
-        if (root == null)
-            return document;
-
-        var modifiers = classDeclaration.Modifiers;
-
-        if (!modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword)))
-            modifiers = modifiers.Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-
-        if (!modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)))
-            modifiers = modifiers.Add(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
-
-        var newClassDeclaration = classDeclaration.WithModifiers(modifiers);
-
-        var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
-
-        return document.WithSyntaxRoot(newRoot);
+        return await document.WithReplacedNode(classDeclaration, newClassDeclaration, cancellationToken);
     }
 
 
     private static async Task<Document> addExecuteMethod(
         Document document, ClassDeclarationSyntax classDeclaration, CancellationToken cancellationToken)
     {
-        var root = await document.GetSyntaxRootAsync(cancellationToken);
-
-        if (root == null)
-            return document;
-
         var executeMethod = SyntaxFactory
             .MethodDeclaration(
                 SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
@@ -108,8 +90,6 @@ public class CodeFixProvider : Microsoft.CodeAnalysis.CodeFixes.CodeFixProvider
 
         var newClassDeclaration = classDeclaration.AddMembers(executeMethod);
 
-        var newRoot = root.ReplaceNode(classDeclaration, newClassDeclaration);
-
-        return document.WithSyntaxRoot(newRoot);
+        return await document.WithReplacedNode(classDeclaration, newClassDeclaration, cancellationToken);
     }
 }
