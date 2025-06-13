@@ -26,6 +26,9 @@ static class SourceTemplates
         // remove empty lines after { or ]
         source = Regex.Replace(source, @"([\{\]])(\r?\n){2}", "$1$2");
 
+        // remove empty lines before }
+        source = Regex.Replace(source, @"(\r?\n){2}([\}])", "$1$2");
+
         // add trailing whitespace
         source += Strings.NewLine;
 
