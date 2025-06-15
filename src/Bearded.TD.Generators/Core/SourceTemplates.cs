@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Bearded.TD.Generators.Types;
 
 namespace Bearded.TD.Generators;
 
-static class SourceTemplates
+static partial class SourceTemplates
 {
     public static string Foreach<T>(
         int indents, IEnumerable<T> values, Func<T, string> template, string separator = Strings.NewLine)

@@ -5,7 +5,8 @@ using FirstEvent = global::Bearded.TD.Generators.Tests.Events.EventImplementatio
 
 namespace Bearded.TD.Generators.Tests.Events;
 
-partial class ListeningComponent : IListener<FirstEvent>
+partial class ListeningComponent :
+    IListener<FirstEvent>
 {
     protected override void RegisterHandlers()
     {
