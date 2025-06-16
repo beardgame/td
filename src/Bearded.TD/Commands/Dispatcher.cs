@@ -4,12 +4,6 @@ namespace Bearded.TD.Commands;
 
 interface IDispatcher<TObject>
 {
-    void RunOnlyOnServer(Action action);
-    void RunOnlyOnServer<T>(Action<T> action, T p);
-    void RunOnlyOnServer<T1, T2>(Action<T1, T2> action, T1 p1, T2 p2);
-    void RunOnlyOnServer<T1, T2, T3>(Action<T1, T2, T3> action, T1 p1, T2 p2, T3 p3);
-    void RunOnlyOnServer<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 p1, T2 p2, T3 p3, T4 p4);
-
     void RunOnlyOnServer(Action<ICommandDispatcher<TObject>> action);
     void RunOnlyOnServer<T>(Action<T, ICommandDispatcher<TObject>> action, T p);
     void RunOnlyOnServer<T1, T2>(Action<T1, T2, ICommandDispatcher<TObject>> action, T1 p1, T2 p2);
@@ -26,12 +20,6 @@ interface IDispatcher<TObject>
 
 abstract class BaseClientDispatcher<TObject> : IDispatcher<TObject>
 {
-    public void RunOnlyOnServer(Action action) {}
-    public void RunOnlyOnServer<T>(Action<T> action, T p) {}
-    public void RunOnlyOnServer<T1, T2>(Action<T1, T2> action, T1 p1, T2 p2) {}
-    public void RunOnlyOnServer<T1, T2, T3>(Action<T1, T2, T3> action, T1 p1, T2 p2, T3 p3) { }
-    public void RunOnlyOnServer<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 p1, T2 p2, T3 p3, T4 p4) { }
-
     public void RunOnlyOnServer(Action<ICommandDispatcher<TObject>> action) {}
     public void RunOnlyOnServer<T>(Action<T, ICommandDispatcher<TObject>> action, T p) {}
     public void RunOnlyOnServer<T1, T2>(Action<T1, T2, ICommandDispatcher<TObject>> action, T1 p1, T2 p2) { }
@@ -54,12 +42,6 @@ abstract class BaseServerDispatcher<TObject> : IDispatcher<TObject>
     {
         this.commandDispatcher = commandDispatcher;
     }
-
-    public void RunOnlyOnServer(Action action) => action();
-    public void RunOnlyOnServer<T>(Action<T> action, T p) => action(p);
-    public void RunOnlyOnServer<T1, T2>(Action<T1, T2> action, T1 p1, T2 p2) => action(p1, p2);
-    public void RunOnlyOnServer<T1, T2, T3>(Action<T1, T2, T3> action, T1 p1, T2 p2, T3 p3) => action(p1, p2, p3);
-    public void RunOnlyOnServer<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, T1 p1, T2 p2, T3 p3, T4 p4) => action(p1, p2, p3, p4);
 
     public void RunOnlyOnServer(Action<ICommandDispatcher<TObject>> action)
         => action(commandDispatcher);
