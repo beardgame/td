@@ -7,7 +7,7 @@
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/INITIALIZER_BRACES/@EntryValue">NEXT_LINE</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/INVOCABLE_DECLARATION_BRACES/@EntryValue">NEXT_LINE</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/LINE_FEED_AT_FILE_END/@EntryValue">True</s:Boolean>
-	
+
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/OTHER_BRACES/@EntryValue">NEXT_LINE</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/PLACE_ACCESSORHOLDER_ATTRIBUTE_ON_SAME_LINE_EX/@EntryValue">NEVER</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/TYPE_DECLARATION_BRACES/@EntryValue">NEXT_LINE</s:String>
@@ -40,6 +40,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/UserRules/=f9fce829_002De6f4_002D4cb2_002D80f1_002D5497c44f51df/@EntryIndexedValue">&lt;Policy&gt;&lt;Descriptor Staticness="Static" AccessRightKinds="Private" Description="Static fields (private)"&gt;&lt;ElementKinds&gt;&lt;Kind Name="FIELD" /&gt;&lt;/ElementKinds&gt;&lt;/Descriptor&gt;&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;&lt;/Policy&gt;</s:String>
 	<s:String x:Key="/Default/CustomTools/CustomToolsData/@EntryValue"></s:String>
 	
+
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpAttributeForSingleLineMethodUpgrade/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpKeepExistingMigration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpPlaceEmbeddedOnSameLineMigration/@EntryIndexedValue">True</s:Boolean>
@@ -82,31 +83,15 @@
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0C5572BD1286944EBC1C93C3AAA24FFF/Text/@EntryValue">$HEADER$using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
-using Bearded.Utilities.SpaceTime;
+using Bearded.TD.Game.Simulation.GameObjects.Parameters;
+using static $NAMESPACE$.$CLASS$;
 
 namespace $NAMESPACE$;
 
 [Component("$STRINGID$")]
-sealed class $CLASS$ : Component&lt;$CLASS$.IParameters&gt;
+sealed class $CLASS$(IParameters parameters) : Component&lt;IParameters&gt;(parameters)
 {
-    public interface IParameters : IParametersTemplate&lt;IParameters&gt;
-    {
-    }
-
-    public $CLASS$(IParameters parameters) : base(parameters)
-    {
-    }
-
-    protected override void OnAdded()
-    {
-    }
-
-    public override void Activate()
-    {
-    }
-
-    public override void Update(TimeSpan elapsedTime)
+    internal interface IParameters : IParametersTemplate&lt;IParameters&gt;
     {
     }
 }</s:String>
@@ -133,25 +118,12 @@ sealed class $CLASS$ : Component&lt;$CLASS$.IParameters&gt;
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6F9D4B51EC83D343AFB8609D6CC12E76/Text/@EntryValue">$HEADER$using Bearded.TD.Game.Simulation.GameObjects;
-using Bearded.TD.Shared.TechEffects;
-using Bearded.Utilities.SpaceTime;
 
 namespace $NAMESPACE$;
 
 [Component("$STRINGID$")]
 sealed class $CLASS$ : Component
 {
-    protected override void OnAdded()
-    {
-    }
-
-    public override void Activate()
-    {
-    }
-
-    public override void Update(TimeSpan elapsedTime)
-    {
-    }
 }
 </s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/@KeyIndexDefined">True</s:Boolean>
@@ -169,8 +141,8 @@ sealed class $CLASS$ : Component
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Field/=NAMESPACE/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Field/=NAMESPACE/Expression/@EntryValue">fileDefaultNamespace()</s:String>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Field/=NAMESPACE/Order/@EntryValue">2</s:Int64>
-	
-	
+
+
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Reformat/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=74291916E8D46A4AB5533C9B6D7185E4/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
