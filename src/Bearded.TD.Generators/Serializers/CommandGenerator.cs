@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Bearded.TD.Generators.Types;
@@ -20,7 +21,19 @@ public partial class CommandGenerator : IIncrementalGenerator
                 transform: static (ctx, _) => getConverterContext(ctx)
             )
             .WhereNotNull()
-            .Collect();
+            .Collect()
+            .Select(static (converters, _) => converters.ToDictionary(c => c.DeserializedType, c => c).AsEquatable());
+
+        var serializers = context.SyntaxProvider
+            .ForAttributeWithMetadataName(typeof(SerializerAttribute).FullName!,
+                predicate: static (ctx, _) => isSerializerCandidate(ctx),
+                transform: static (ctx, _) => getSerializerContext(ctx)
+            )
+            .WhereNotNull()
+            .Collect()
+            .Select(static (serializers, _) => serializers.ToDictionary(s => s.SerializedType, s => s).AsEquatable());
+
+        var convertersAndSerializers = serializerConverters.Combine(serializers);
 
         var generatorContexts = context.SyntaxProvider
             .ForAttributeWithMetadataName(
@@ -31,22 +44,90 @@ public partial class CommandGenerator : IIncrementalGenerator
             .WhereNotNull();
 
         var contextsAndConverters = generatorContexts
-            .Combine(serializerConverters)
-            .Select(commandWithUsedConverters);
+            .Combine(convertersAndSerializers)
+            .Select(commandWithUsedConvertersAndSerializers);
 
         context.RegisterSourceOutput(contextsAndConverters, execute);
     }
 
-    private CommandInfoWithConverters commandWithUsedConverters(
-        (CommandInfo, ImmutableArray<SerializerConverterInfo>) info, CancellationToken _)
+    private CommandInfoWithConverters commandWithUsedConvertersAndSerializers(
+        (
+        CommandInfo,
+        (EquatableDictionary<TypeName, SerializerConverterInfo>, EquatableDictionary<TypeName, SerializerInfo>)
+        ) info,
+        CancellationToken _
+    )
     {
-        var (command, converters) = info;
+        var (command, (converters, serializers)) = info;
 
-        var usedConverters = converters
-            .Where(converter => command.Parameters.Any(parameter => parameter.Type == converter.DeserializedType))
-            .ToImmutableArray();
+        var usedConverters = new List<SerializerConverterInfo>();
+        var usedSerializers = new List<SerializerInfo>();
 
-        return new CommandInfoWithConverters(command, usedConverters);
+        foreach (var parameterType in command.Parameters.Select(p => p.Type).Distinct())
+        {
+            var typeInSerializer = parameterType;
+
+            if (converters.TryGetValue(parameterType, out var converter))
+            {
+                usedConverters.Add(converter);
+                typeInSerializer = converter.SerializedType;
+            }
+
+            if (serializers.TryGetValue(typeInSerializer, out var serializer))
+            {
+                usedSerializers.Add(serializer);
+            }
+        }
+
+        return new CommandInfoWithConverters(
+            command, usedConverters.ToImmutableArray(), usedSerializers.ToImmutableArray()
+        );
+    }
+
+    private static bool isSerializerCandidate(SyntaxNode node)
+    {
+        return node is MethodDeclarationSyntax
+            {
+                Modifiers: var mods,
+                AttributeLists.Count: > 0,
+            }
+            && mods.Any(static m => m.IsKind(SyntaxKind.PublicKeyword))
+            && mods.Any(static m => m.IsKind(SyntaxKind.StaticKeyword));
+    }
+
+    private static SerializerInfo? getSerializerContext(GeneratorAttributeSyntaxContext context)
+    {
+        var methodSyntax = (MethodDeclarationSyntax)context.TargetNode;
+
+        var semanticModel = context.SemanticModel;
+
+        var typeSyntax = (TypeDeclarationSyntax)methodSyntax.Parent!;
+        if (semanticModel.GetDeclaredSymbol(typeSyntax) is not { } typeSymbol)
+            return null;
+
+        var parameters = methodSyntax.ParameterList;
+
+        if (parameters.Parameters.Count != 2)
+            return null;
+
+        var firstParameterType = semanticModel.GetTypeInfo(parameters.Parameters[0].Type!).Type;
+        if (firstParameterType?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) != serializerBufferStreamInterfaceName)
+            return null;
+
+        var secondParameter = parameters.Parameters[1];
+        if (!secondParameter.Modifiers.Any(static m => m.IsKind(SyntaxKind.RefKeyword)))
+            return null;
+
+        var secondParameterType = (INamedTypeSymbol)semanticModel.GetTypeInfo(secondParameter.Type!).Type!;
+
+        var methodName = methodSyntax.Identifier.ValueText;
+
+        return new SerializerInfo(
+            SerializerType: TypeName.From(typeSymbol),
+            SerializedType: TypeName.From(secondParameterType),
+            SerializerMemberName: methodName
+        );
+
     }
 
     private static bool isConverterCandidate(SyntaxNode node)

@@ -15,19 +15,21 @@ namespace Bearded.TD.Generators.Tests.Commands
         [Fact]
         public async Task GeneratesCommandPartialClass()
         {
-            var syntaxTrees = ImmutableArray.Create(
+            ImmutableArray<SyntaxTree> syntaxTrees =
+            [
                 await SyntaxTreeFromRelativeFile("testdata/EmptyCommand.cs"),
                 await SyntaxTreeFromRelativeFile("testdata/SimpleCommand.cs"),
                 await SyntaxTreeFromRelativeFile("testdata/ComplexCommand.cs"),
                 await SyntaxTreeFromRelativeFile("testdata/CommandWithConverter.cs"),
-                await SyntaxTreeFromRelativeFile("testdata/CommandWithCollidingTypes.cs")
-            );
+                await SyntaxTreeFromRelativeFile("testdata/CommandWithCollidingTypes.cs"),
+                await SyntaxTreeFromRelativeFile("testdata/CommandWithSerializer.cs"),
+            ];
             var compilation = CSharpCompilation.Create("compilation", syntaxTrees, References);
             var generator = new CommandGenerator();
 
             GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
-            driver = driver.RunGenerators(compilation);
+            driver = driver.RunGenerators(compilation, TestContext.Current.CancellationToken);
 
             await Verifier.Verify(driver, DefaultVerifySettings);
         }

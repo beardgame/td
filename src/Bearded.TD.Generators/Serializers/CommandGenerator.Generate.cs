@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bearded.TD.Generators.Types;
@@ -11,10 +9,12 @@ namespace Bearded.TD.Generators.Serializers;
 
 public partial class CommandGenerator
 {
+    private const string serializerBufferStreamInterfaceName
+        = "global::Bearded.TD.Shared.Commands.ISerializerBufferStream";
     private const string serializerContextTypeName = "global::Bearded.TD.Game.GameInstance";
 
-    private const string serializerContextSerializeMethodName = "Serialize";
-    private const string serializerContextDeserializeMethodName = "Deserialize";
+    private const string converterSerializeMethodName = "Serialize";
+    private const string converterDeserializeMethodName = "Deserialize";
 
     private static readonly ImmutableArray<string> defaultNameSpaces = ImmutableArray.Create<string>(
         "Bearded.TD.Commands",
@@ -27,11 +27,14 @@ public partial class CommandGenerator
 
     private record struct CommandInfoWithConverters(
         CommandInfo Command,
-        EquatableArray<SerializerConverterInfo> Converters
-    );
+        EquatableArray<SerializerConverterInfo> Converters,
+        EquatableArray<SerializerInfo> Serializers);
 
     private record struct SerializerConverterInfo(
         TypeName ConverterType, string ConverterMemberName, TypeName DeserializedType, TypeName SerializedType);
+
+    private record struct SerializerInfo(
+        TypeName SerializerType, string SerializerMemberName, TypeName SerializedType);
 
     private record struct CommandInfo(
         string Namespace,
@@ -45,13 +48,14 @@ public partial class CommandGenerator
         SourceProductionContext context,
         CommandInfoWithConverters info)
     {
-        var (command, converters) = info;
+        var (command, converters, serializers) = info;
 
         var aliases = new TypeAliases();
 
         aliases.AddRange(command.Parameters.Select(p => p.Type));
         aliases.AddRange(converters.Select(c => c.ConverterType));
         aliases.AddRange(converters.Select(c => c.SerializedType));
+        aliases.AddRange(serializers.Select(c => c.SerializerType));
 
         var parametersList = string.Join(", ", command.Parameters.Select(p => p.Name));
         var argumentList = string.Join(", ", command.Parameters.Select(p => $"{aliases[p.Type]} {p.Name}"));
@@ -87,19 +91,19 @@ static partial class {{command.ClassName}}
 
         public Serializer({{argumentList}}) : this()
         {
-            {{foreachParam(3, p => $"this.{p.Name} = {serialize(p)};")}}
+            {{foreachParam(3, p => $"this.{p.Name} = {serializeConvert(p)};")}}
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
         {
             return new Implementation(
-                {{foreachParam(4, deserialize, ",\n")}}
+                {{foreachParam(4, deserializeConvert, ",\n")}}
             );
         }
 
         public void Serialize(INetBufferStream stream)
         {
-            {{foreachParam(3, p => $"stream.Serialize(ref {p.Name});")}}
+            {{foreachParam(3, serialize)}}
         }
     }
 }
@@ -110,6 +114,32 @@ static partial class {{command.ClassName}}
         context.AddSource($"{command.ClassName}_Implementation.g.cs", source);
 
         return;
+
+        string serialize(Parameter p)
+        {
+            var parameterType = p.Type;
+
+            foreach (var converter in converters)
+            {
+                if (converter.DeserializedType.FullName == parameterType.FullName)
+                {
+                    parameterType = converter.SerializedType;
+                    break;
+                }
+            }
+
+            foreach (var serializer in serializers)
+            {
+                if (serializer.SerializedType.FullName == parameterType.FullName)
+                {
+                    return
+                        aliases[serializer.SerializerType] +
+                        $".{serializer.SerializerMemberName}(stream, ref {p.Name});";
+                }
+            }
+
+            return $"stream.Serialize(ref {p.Name});";
+        }
 
         ShortTypeName serializedTypeName(Parameter parameter)
         {
@@ -124,7 +154,7 @@ static partial class {{command.ClassName}}
             return aliases[parameter.Type];
         }
 
-        string serialize(Parameter parameter)
+        string serializeConvert(Parameter parameter)
         {
             foreach (var converter in converters)
             {
@@ -133,14 +163,14 @@ static partial class {{command.ClassName}}
                     return
                         aliases[converter.ConverterType] +
                         $".{converter.ConverterMemberName}" +
-                        $".{serializerContextSerializeMethodName}({parameter.Name})";
+                        $".{converterSerializeMethodName}({parameter.Name})";
                 }
             }
 
             return $"{parameter.Name}";
         }
 
-        string deserialize(Parameter parameter)
+        string deserializeConvert(Parameter parameter)
         {
             foreach (var converter in converters)
             {
@@ -149,7 +179,7 @@ static partial class {{command.ClassName}}
                     return
                         aliases[converter.ConverterType] +
                         $".{converter.ConverterMemberName}" +
-                        $".{serializerContextDeserializeMethodName}({parameter.Name}, game)";
+                        $".{converterDeserializeMethodName}({parameter.Name}, game)";
                 }
             }
 

@@ -9,8 +9,8 @@ using Bearded.Utilities.SpaceTime;
 using CollidingType = global::Bearded.TD.Generators.Tests.Commands.CommandWithCollidingTypes.CollidingType;
 using CollidingType_2 = global::Bearded.TD.Generators.Tests.Commands.CommandWithCollidingTypes.OtherType.CollidingType;
 using CollidingType_3 = global::Bearded.TD.Generators.Tests.Commands.CommandWithCollidingTypes.OtherType2.CollidingType;
-using CollidingTypeSerializerConverters = global::Bearded.TD.Generators.Tests.Commands.CommandWithCollidingTypes.CollidingTypeSerializerConverters;
-using CollidingTypeSerializerConverters_2 = global::Bearded.TD.Generators.Tests.Commands.CollidingTypeSerializerConverters;
+using CollidingTypeSerializerConverters = global::Bearded.TD.Generators.Tests.Commands.CollidingTypeSerializerConverters;
+using CollidingTypeSerializerConverters_2 = global::Bearded.TD.Generators.Tests.Commands.CommandWithCollidingTypes.CollidingTypeSerializerConverters;
 
 namespace Bearded.TD.Generators.Tests.Commands;
 
@@ -39,17 +39,17 @@ static partial class CommandWithCollidingTypes
 
         public Serializer(CollidingType one, CollidingType_2 two, CollidingType_3 three) : this()
         {
-            this.one = CollidingTypeSerializerConverters_2.SerializeCollidingType.Serialize(one);
-            this.two = CollidingTypeSerializerConverters_2.SerializeOtherTypeCollidingType.Serialize(two);
-            this.three = CollidingTypeSerializerConverters.SerializeCollidingType.Serialize(three);
+            this.one = CollidingTypeSerializerConverters.SerializeCollidingType.Serialize(one);
+            this.two = CollidingTypeSerializerConverters.SerializeOtherTypeCollidingType.Serialize(two);
+            this.three = CollidingTypeSerializerConverters_2.SerializeCollidingType.Serialize(three);
         }
 
         public ISerializableCommand<GameInstance> GetCommand(GameInstance game)
         {
             return new Implementation(
-                CollidingTypeSerializerConverters_2.SerializeCollidingType.Deserialize(one, game),
-                CollidingTypeSerializerConverters_2.SerializeOtherTypeCollidingType.Deserialize(two, game),
-                CollidingTypeSerializerConverters.SerializeCollidingType.Deserialize(three, game)
+                CollidingTypeSerializerConverters.SerializeCollidingType.Deserialize(one, game),
+                CollidingTypeSerializerConverters.SerializeOtherTypeCollidingType.Deserialize(two, game),
+                CollidingTypeSerializerConverters_2.SerializeCollidingType.Deserialize(three, game)
             );
         }
 

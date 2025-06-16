@@ -14,11 +14,16 @@ static class SerializerConverters
                 obj => obj.FindId(),
                 (id, game) => game.State.Find(id)
             );
-
-    [SerializerConverter]
-    public static readonly ISerializerConverter<TimeSpan, double, GameInstance> TimeSpan =
-        new SerializerConverter<TimeSpan, double, GameInstance>(
-            t => t.NumericValue,
-            (d, _) => d.S()
-        );
 }
+
+static class Serializers
+{
+    [Serializer]
+    public static void Serialize(ISerializerBufferStream stream, ref TimeSpan value)
+    {
+        var v = value.NumericValue;
+        stream.Serialize(ref v);
+        value = v.S();
+    }
+}
+
