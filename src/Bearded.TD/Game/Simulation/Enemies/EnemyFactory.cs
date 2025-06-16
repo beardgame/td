@@ -11,7 +11,6 @@ using Bearded.TD.Game.Simulation.StatusDisplays;
 using Bearded.TD.Game.Simulation.Synchronization;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.World;
-using Bearded.TD.Tiles;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
 
@@ -19,15 +18,12 @@ namespace Bearded.TD.Game.Simulation.Enemies;
 
 static class EnemyFactory
 {
-    public static GameObject Create(Id<GameObject> id, EnemyForm form, Tile tile)
+    public static GameObject Create(Id<GameObject> id, EnemyForm form, Position3 position)
     {
-        var obj = createOrphanedFromBlueprint(form.Blueprint, tile);
+        var obj = createOrphanedFromForm(form, position);
 
         obj.AddComponent(new IdProvider(id));
         addGameplayComponents(obj);
-
-        fillSockets(obj, form.Modules);
-        obj.AddComponent(DamageResistances.From(form.Resistances));
 
         return obj;
     }
@@ -66,6 +62,34 @@ static class EnemyFactory
         obj.AddComponent(new PhysicalTilePresence());
     }
 
+    public static GameObject CreateTemplate(EnemyForm enemyForm)
+    {
+        var obj = createOrphanedFromForm(enemyForm, Position3.Zero);
+        obj.AddComponent(new ThrowOnActivate()); // safety net to avoid this object from being added to the game
+        return obj;
+    }
+
+    public static GameObject CreateTemplate(IGameObjectBlueprint blueprint)
+    {
+        var obj = createOrphanedFromBlueprint(blueprint, Position3.Zero);
+        obj.AddComponent(new ThrowOnActivate()); // safety net to avoid this object from being added to the game
+        return obj;
+    }
+
+    private static GameObject createOrphanedFromForm(EnemyForm form, Position3 position)
+    {
+        var obj = createOrphanedFromBlueprint(form.Blueprint, position);
+        fillSockets(obj, form.Modules);
+        obj.AddComponent(DamageResistances.From(form.Resistances));
+        return obj;
+    }
+
+    private static GameObject createOrphanedFromBlueprint(IGameObjectBlueprint blueprint, Position3 position)
+    {
+        return GameObjectFactory
+            .CreateFromBlueprintWithDefaultRenderer(blueprint, null, position);
+    }
+
     private static void fillSockets(GameObject obj, ImmutableDictionary<SocketShape, IModule> modules)
     {
         foreach (var socket in obj.GetComponents<ISocket>().ToImmutableArray())
@@ -75,18 +99,5 @@ static class EnemyFactory
                 socket.Fill(module);
             }
         }
-    }
-
-    public static GameObject CreateTemplate(IGameObjectBlueprint blueprint)
-    {
-        var obj = createOrphanedFromBlueprint(blueprint, Tile.Origin);
-        obj.AddComponent(new ThrowOnActivate()); // safety net to avoid this object from being added to the game
-        return obj;
-    }
-
-    private static GameObject createOrphanedFromBlueprint(IGameObjectBlueprint blueprint, Tile tile)
-    {
-        return GameObjectFactory
-            .CreateFromBlueprintWithDefaultRenderer(blueprint, null, Level.GetPosition(tile).WithZ(0));
     }
 }

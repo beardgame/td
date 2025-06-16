@@ -58,7 +58,7 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
 
     public void AddFutureEnemySpawn(EnemyForm form, int amount)
     {
-        var instantiatedEnemy = EnemyFactory.Create(Id<GameObject>.Invalid, form, Tile.Origin);
+        var instantiatedEnemy = EnemyFactory.CreateTemplate(form);
         var icon = instantiatedEnemy.GetComponents<IEnemyIcon>().SingleOrDefault();
         CachedEnemyIcon? cachedSprite = icon?.MakeIconSprite(Owner.Game) is { } sprite && icon.IconColor is var color
             ? new CachedEnemyIcon(sprite, color)

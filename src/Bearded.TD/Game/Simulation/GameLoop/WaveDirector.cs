@@ -7,6 +7,7 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Units;
 using Bearded.TD.Game.Simulation.UpdateLoop;
+using Bearded.TD.Tiles;
 using Bearded.TD.UI;
 using Bearded.Utilities;
 using Bearded.Utilities.Collections;
@@ -191,7 +192,7 @@ sealed class WaveDirector
             {
                 spawnQueue.Dequeue();
                 var unit =
-                    EnemyFactory.Create(spawn.UnitId, spawn.EnemyForm, spawn.SpawnLocation.SpawnTile);
+                    EnemyFactory.Create(spawn.UnitId, spawn.EnemyForm, Level.GetPosition(spawn.SpawnLocation.SpawnTile).WithZ(0));
                 game.Add(unit);
                 spawnedUnits.Add(unit);
                 spawn.SpawnLocation.OnEnemySpawned(spawn.EnemyForm);

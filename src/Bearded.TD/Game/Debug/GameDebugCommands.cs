@@ -16,9 +16,12 @@ using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Game.Simulation.Resources;
 using Bearded.TD.Game.Simulation.Technologies;
 using Bearded.TD.Game.Simulation.Units;
+using Bearded.TD.Tiles;
 using Bearded.TD.Utilities;
 using Bearded.TD.Utilities.Console;
+using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using Bearded.Utilities.SpaceTime;
 
 namespace Bearded.TD.Game.Debug;
 
@@ -286,7 +289,7 @@ static class GameDebugCommands
             return;
         }
 
-        var enemy = EnemyFactory.Create(gameInstance.Ids.GetNext<GameObject>(), form, spawnLocation.SpawnTile);
+        var enemy = EnemyFactory.Create(gameInstance.Ids.GetNext<GameObject>(), form, Level.GetPosition(spawnLocation.SpawnTile).WithZ(0));
         gameInstance.State.Add(enemy);
     });
 
