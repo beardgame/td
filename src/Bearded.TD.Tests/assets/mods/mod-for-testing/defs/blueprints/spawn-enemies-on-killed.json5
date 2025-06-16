@@ -1,0 +1,17 @@
+{
+    id: "spawn-enemies-on-killed",
+    components: [
+        {
+            id: "spawnEnemiesOnKilled",
+            parameters: {
+                count: 3,
+                form: {
+                    blueprint: "default.swarm-enemy",
+                    modules: {
+                        "minionBuff": "default.minion-buff-fire"
+                    }
+                }
+            }
+        }
+    ]
+}
