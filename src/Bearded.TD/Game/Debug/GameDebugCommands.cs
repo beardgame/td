@@ -270,7 +270,7 @@ static class GameDebugCommands
             return;
         }
 
-        var formGenerator = new EnemyFormGenerator(gameInstance.Blueprints.Modules.All, logger);
+        var formGenerator = new EnemyFormGenerator(gameInstance.Blueprints.Modules.All);
         var requirements = new EnemyFormGenerator.Requirements(element);
         if (!formGenerator.CanGenerate(blueprint, requirements))
         {

@@ -25,8 +25,7 @@ sealed class ScheduleGame : GameRule<ScheduleGame.RuleParameters>
                 enemies.CastArray<ISpawnableEnemy>(),
                 context.Blueprints.Modules.All,
                 context.Factions.Find(targetFaction),
-                context.Seed,
-                context.Logger);
+                context.Seed);
             var waveExecutor = new WaveExecutor(context.GameState, context.Ids, commandDispatcher);
             var chapterGenerator = new ChapterGenerator(elements, enableTimers, context.Seed);
             var chapterExecutor = new ChapterExecutor(spawnLocationActivator, waveGenerator, waveExecutor);

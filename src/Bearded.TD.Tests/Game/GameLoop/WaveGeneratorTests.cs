@@ -10,7 +10,6 @@ using Bearded.TD.Testing;
 using Bearded.TD.Testing.Enemies;
 using Bearded.TD.Testing.Factions;
 using Bearded.TD.Tiles;
-using Bearded.Utilities.IO;
 using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
@@ -19,7 +18,6 @@ namespace Bearded.TD.Tests.Game.GameLoop;
 
 public sealed class WaveGeneratorTests
 {
-    private readonly Logger logger = new();
     private readonly Faction faction = FactionTestFactory.CreateFaction();
     private readonly ImmutableArray<SpawnLocation> spawnLocations = Enumerable.Range(0, 5)
         .Select(_ => new SpawnLocation(UniqueIds.NextUniqueId<SpawnLocation>(), Tile.Origin))
@@ -37,7 +35,7 @@ public sealed class WaveGeneratorTests
             .Concat(ModuleTestFactory.CreateModulesForAllElements(socketShape2))
             .Concat(ModuleTestFactory.CreateModulesForAllElements(socketShape3)).ToImmutableArray();
 
-        var gen = new WaveGenerator(enemies, modules, faction, seed, logger);
+        var gen = new WaveGenerator(enemies, modules, faction, seed);
         var elementalTheme = new ElementalTheme(toElement(primaryElement), toElement(accentElement));
         var requirements = new WaveRequirements(
             1,
@@ -63,7 +61,7 @@ public sealed class WaveGeneratorTests
         var modules = ModuleTestFactory.CreateModules(socketShape1, Element.Alchemy, Element.Energy)
             .Concat(ModuleTestFactory.CreateModules(socketShape2, Element.Alchemy));
 
-        var gen = new WaveGenerator(enemies, modules, faction, seed, logger);
+        var gen = new WaveGenerator(enemies, modules, faction, seed);
         var elementalTheme = new ElementalTheme(Element.Energy, Element.Fire);
         var requirements = new WaveRequirements(
             1,
@@ -90,7 +88,7 @@ public sealed class WaveGeneratorTests
         var modules = ModuleTestFactory.CreateModules(socketShape1, Element.Kinetics, Element.Energy)
             .Concat(ModuleTestFactory.CreateModules(socketShape2, Element.Alchemy));
 
-        var gen = new WaveGenerator(enemies, modules, faction, seed, logger);
+        var gen = new WaveGenerator(enemies, modules, faction, seed);
         var elementalTheme = new ElementalTheme(Element.Alchemy, Element.Fire);
         var requirements = new WaveRequirements(
             1,

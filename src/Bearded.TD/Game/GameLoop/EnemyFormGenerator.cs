@@ -6,7 +6,6 @@ using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.Model;
 using Bearded.TD.Utilities.Collections;
-using Bearded.Utilities.IO;
 
 namespace Bearded.TD.Game.GameLoop;
 
@@ -17,12 +16,9 @@ sealed partial class EnemyFormGenerator
     private readonly ILookup<SocketShape, IModule> modulesBySocket;
     private readonly Dictionary<IGameObjectBlueprint, PrecalculatedBlueprintSummary> precalculatedSummaries = new();
 
-    private readonly Logger logger;
-
-    public EnemyFormGenerator(IEnumerable<IModule> modules, Logger logger)
+    public EnemyFormGenerator(IEnumerable<IModule> modules)
     {
         modulesBySocket = modules.ToLookup(m => m.SocketShape);
-        this.logger = logger;
     }
 
     public readonly record struct Requirements(Element AffinityElement);

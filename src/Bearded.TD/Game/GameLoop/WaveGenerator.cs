@@ -5,7 +5,6 @@ using System.Linq;
 using Bearded.TD.Game.Simulation.Enemies;
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
-using Bearded.Utilities.IO;
 using static Bearded.TD.Game.GameLoop.WaveStructure;
 
 namespace Bearded.TD.Game.GameLoop;
@@ -21,13 +20,12 @@ sealed partial class WaveGenerator
         ImmutableArray<ISpawnableEnemy> spawnableEnemies,
         IEnumerable<IModule> modules,
         Faction targetFaction,
-        int seed,
-        Logger logger)
+        int seed)
     {
         this.spawnableEnemies = spawnableEnemies;
         this.targetFaction = targetFaction;
         this.seed = seed;
-        enemyFormGenerator = new EnemyFormGenerator(modules, logger);
+        enemyFormGenerator = new EnemyFormGenerator(modules);
     }
 
     public WaveScript GenerateWave(

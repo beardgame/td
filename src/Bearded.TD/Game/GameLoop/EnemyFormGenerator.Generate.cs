@@ -22,9 +22,8 @@ sealed partial class EnemyFormGenerator
                 "Could not assign modules. Ensure you check CanGenerate before generating an enemy form");
         }
 
-        var resistances = summary.ResistanceContributions is null
-            ? ImmutableDictionary<DamageType, Resistance>.Empty
-            : deriveResistances(maybeAssignedModules, summary.ResistanceContributions);
+        var resistances = DamageResistancesCalculator.DeriveResistancesFromModules(
+            maybeAssignedModules, summary.ResistanceContributions);
         return new EnemyForm(blueprint, maybeAssignedModules, resistances);
     }
 
@@ -52,28 +51,5 @@ sealed partial class EnemyFormGenerator
         var appropriateModules =
             modules.Where(m => m.AffinityElement == requirements.AffinityElement).ToImmutableArray();
         return appropriateModules.IsEmpty ? null : appropriateModules.RandomElement(random);
-    }
-
-    private ImmutableDictionary<DamageType, Resistance> deriveResistances(
-        ImmutableDictionary<SocketShape, IModule> modules, IResistanceContributions resistanceContributions)
-    {
-        var builder = ImmutableDictionary.CreateBuilder<DamageType, Resistance>();
-
-        foreach (var (socketShape, resistance) in resistanceContributions.Factors)
-        {
-            if (!modules.TryGetValue(socketShape, out var module))
-            {
-                logger.Warning?.Log(
-                    $"Attempted to calculate damage resistance derived from socket {socketShape} but no assigned " +
-                    $"module was found.");
-                continue;
-            }
-
-            var damageType = module.AffinityElement.ToDamageType();
-            var existingResistance = builder.GetValueOrDefault(damageType);
-            builder[damageType] = existingResistance + resistance;
-        }
-
-        return builder.ToImmutable();
     }
 }
