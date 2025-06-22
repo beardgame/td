@@ -30,7 +30,8 @@ sealed partial class UserSettings
         {
             using (var reader = File.OpenText(Constants.Paths.UserSettingsFile))
             {
-                Instance = serializer.Deserialize<UserSettings>(new JsonTextReader(reader));
+                Instance = serializer.Deserialize<UserSettings>(new JsonTextReader(reader)) ??
+                    throw new InvalidDataException();
                 SettingsChanged?.Invoke();
             }
             logger.Trace?.Log("Finished loading user settings.");
