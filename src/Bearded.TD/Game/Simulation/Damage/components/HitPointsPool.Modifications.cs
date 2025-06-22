@@ -10,7 +10,8 @@ partial class HitPointsPool
 
     private readonly record struct ModifiedDamage(
         TypedDamage DamageToSelf,
-        TypedDamage DamageToPassThrough
+        TypedDamage DamageToPassThrough,
+        UntypedDamage DamagePotentialConsumed
     );
 
     private ModifiedDamage modifyDamage(TypedDamage damage)
@@ -23,7 +24,8 @@ partial class HitPointsPool
 
         return new ModifiedDamage(
             DamageToSelf: new TypedDamage(preview.DamageAmount, preview.DamageType),
-            DamageToPassThrough: new TypedDamage(preview.PiercingDamageAmount, preview.DamageType)
+            DamageToPassThrough: new TypedDamage(preview.PiercingDamageAmount, preview.DamageType),
+            preview.DamagePotentialConsumed
         );
     }
 

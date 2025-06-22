@@ -6,7 +6,8 @@
             id: "damageOnHit",
             parameters: {}
         },
-        { id: "deleteOnHit", parameters: { } },
+        { id : "elasticCollision", parameters : { normal : 1, tangent : 1 } },
+        { id: "deleteOnHit", parameters: { excludeObjects: true } },
         {
             id: "sprite",
             parameters: {

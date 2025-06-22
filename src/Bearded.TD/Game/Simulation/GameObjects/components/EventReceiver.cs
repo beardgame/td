@@ -24,6 +24,10 @@ class EventReceiver<TEvent> : Component, IEventReceiver<TEvent>
 
     public void InjectEvent(TEvent e)
     {
-        Events.Send(e);
+        // TODO: should events be allowed in deleted objects at all?
+        if (!Owner.Deleted)
+        {
+            Events.Send(e);
+        }
     }
 }

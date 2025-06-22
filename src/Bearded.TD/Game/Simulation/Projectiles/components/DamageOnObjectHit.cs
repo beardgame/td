@@ -2,7 +2,6 @@ using Bearded.TD.Game.Simulation.Buildings;
 using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
-using Bearded.TD.Game.Simulation.Physics;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities.SpaceTime;
@@ -10,21 +9,6 @@ using static Bearded.TD.Game.Simulation.Projectiles.DamageOnObjectHit;
 using static Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Projectiles;
-
-readonly record struct ObjectHit(Hit Hit, GameObject Object) : IComponentEvent;
-
-static class Hits
-{
-    public static void HitObject(GameObject subject, ComponentEvents events, GameObject obj, Impact impact)
-    {
-        var potential = subject.TryGetProperty<UntypedDamage>(out var damage)
-            ? damage : UntypedDamage.Zero;
-
-        var hit = Hit.FromImpact(impact, potential);
-
-        events.Send(new ObjectHit(hit, obj));
-    }
-}
 
 [Component("damageOnHit")]
 sealed class DamageOnObjectHit(IParameters parameters)
@@ -41,6 +25,9 @@ sealed class DamageOnObjectHit(IParameters parameters)
 
         TimeSpan Delay { get; }
         TimeSpan DelayPerDistanceFromSource { get; }
+
+        [Modifiable(defaultValue: 1)]
+        float DamagePotentialConsumptionFraction { get; }
     }
 
     protected override void OnAdded()
@@ -80,11 +67,18 @@ sealed class DamageOnObjectHit(IParameters parameters)
 
     private void dealDamage(ObjectHit e)
     {
-        _ = DamageExecutor.FromObject(Owner).TryDoDamage(
+        var actualDamagePotential = e.Hit.DamagePotential * Parameters.FractionOfBaseDamage;
+
+        var result = DamageExecutor.FromObject(Owner).TryDoDamage(
             e.Object,
-            (e.Hit.DamagePotential * Parameters.FractionOfBaseDamage).Typed(Parameters.DamageType ?? DamageType.Kinetic),
+            actualDamagePotential.Typed(Parameters.DamageType ?? DamageType.Kinetic),
             e.Hit
         );
+
+        var consumedDamageFraction = result.ConsumedDamagePotential / actualDamagePotential;
+        var actualDamageConsumed = e.Hit.DamagePotential * consumedDamageFraction;
+
+        Owner.ReduceDamagePotential(actualDamageConsumed * Parameters.DamagePotentialConsumptionFraction);
     }
 
     public override void Update(TimeSpan elapsedTime) { }

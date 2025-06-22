@@ -15,6 +15,7 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
         var remainingDamage = typedDamage;
         var totalExactDamage = TypedDamage.Zero(typedDamage.Type);
         var totalDiscreteDamage = HitPoints.Zero;
+        var consumedDamagePotential = UntypedDamage.Zero;
 
         foreach (var receiver in damageReceivers)
         {
@@ -27,9 +28,10 @@ sealed class HealthEventReceiver : Component, IHealthEventReceiver
             totalExactDamage = totalExactDamage
                 .WithAdjustedAmount(totalExactDamage.Amount + intermediateResult.ExactDamageDone.Amount);
             totalDiscreteDamage += intermediateResult.DiscreteDamageDone;
+            consumedDamagePotential += intermediateResult.ConsumedDamagePotential;
         }
 
-        return new FinalDamageResult(totalExactDamage, totalDiscreteDamage, typedDamage);
+        return new FinalDamageResult(totalExactDamage, totalDiscreteDamage, typedDamage, consumedDamagePotential);
     }
 
     public void Heal(HealInfo healInfo)

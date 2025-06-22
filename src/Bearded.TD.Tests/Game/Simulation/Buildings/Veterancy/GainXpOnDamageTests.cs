@@ -45,7 +45,7 @@ public sealed class GainXpOnDamageTests
         var typedDamage = new TypedDamage(hitPoints, DamageType.DivineIntervention);
         componentTestBed.SendEvent(
             new CausedDamage(
-                new FinalDamageResult(typedDamage, hitPoints, typedDamage),
+                new FinalDamageResult(typedDamage, hitPoints, typedDamage, typedDamage.Untyped()),
                 null!));
     }
 }

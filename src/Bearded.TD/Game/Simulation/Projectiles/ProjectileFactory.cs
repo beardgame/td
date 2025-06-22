@@ -10,7 +10,7 @@ readonly record struct OptionalProjectileProperties(
     IPositionable? TargetPosition,
     GameObject? Target,
     GameObject? Source
-    );
+);
 
 readonly record struct Source(GameObject Object);
 readonly record struct Target(GameObject Object);
@@ -41,7 +41,7 @@ static class ProjectileFactory
 
         obj.AddComponent(new ParabolicMovement(muzzleVelocity));
         obj.AddComponent(new PointCollider(new PointColliderParametersTemplate(Unit.Zero).CreateModifiableInstance()));
-        obj.AddComponent(new Property<UntypedDamage>(damage));
+        obj.AddComponent(new DamageProperty(damage));
 
         if (properties.Source is { } source)
             obj.AddComponent(Property.From(source.AsSource()));

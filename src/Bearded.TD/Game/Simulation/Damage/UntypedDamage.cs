@@ -1,10 +1,11 @@
+using System;
 using Bearded.TD.Utilities.SpaceTime;
 using static Bearded.TD.Utilities.DebugAssert;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-readonly struct UntypedDamage
+readonly struct UntypedDamage : IEquatable<UntypedDamage>
 {
     public HitPoints Amount { get; }
 
@@ -70,4 +71,14 @@ readonly struct UntypedDamage
 
     public static UntypedDamage Max(UntypedDamage left, UntypedDamage right) =>
         new(SpaceTime1MathF.Max(left.Amount, right.Amount));
+
+    public bool Equals(UntypedDamage other) => Amount.Equals(other.Amount);
+
+    public override bool Equals(object? obj) => obj is UntypedDamage other && Equals(other);
+
+    public override int GetHashCode() => Amount.GetHashCode();
+
+    public static bool operator ==(UntypedDamage left, UntypedDamage right) => left.Equals(right);
+
+    public static bool operator !=(UntypedDamage left, UntypedDamage right) => !left.Equals(right);
 }

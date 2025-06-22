@@ -87,7 +87,7 @@ sealed class GameStatistics
 
         statistics.RegisterDamage(
             damageResult.TotalExactDamage.Untyped(),
-            damageResult.AttemptedDamage.Untyped(),
+            damageResult.ConsumedDamagePotential,
             damageResult.TotalExactDamage.Type);
         observersByTower[obj].ForEach(o => o.Notify());
     }
@@ -126,11 +126,11 @@ sealed class GameStatistics
 
         public AccumulatedDamage? TotalDamage => accumulatedDamageByType.Count == 0 ? null : AccumulatedDamage.Aggregate(accumulatedDamageByType.Values);
 
-        public void RegisterDamage(UntypedDamage damageDone, UntypedDamage damageAttempted, DamageType damageType)
+        public void RegisterDamage(UntypedDamage damageDone, UntypedDamage damagePotential, DamageType damageType)
         {
             var existingDamage =
                 accumulatedDamageByType.GetValueOrDefault(damageType, AccumulatedDamage.Zero);
-            var addedDamage = new AccumulatedDamage(damageDone, damageAttempted);
+            var addedDamage = new AccumulatedDamage(damageDone, damagePotential);
             accumulatedDamageByType[damageType] = AccumulatedDamage.Combine(existingDamage, addedDamage);
         }
 

@@ -4,9 +4,13 @@ namespace Bearded.TD.Game.Simulation.Damage;
 
 struct DamagePreview(TypedDamage damage)
 {
+    // TODO: use UntypedDamage instead
     public HitPoints DamageAmount { get; private set; } = damage.Amount;
     public DamageType DamageType { get; private set; } = damage.Type;
 
+    public UntypedDamage DamagePotentialConsumed { get; private set; } = damage.Untyped();
+
+    // TODO: use UntypedDamage instead
     public HitPoints PiercingDamageAmount { get; private set; }
 
     public void Resist(Resistance resistance)
@@ -33,5 +37,6 @@ struct DamagePreview(TypedDamage damage)
         var piercingDamage = DamageAmount * (float) piercingFraction;
         PiercingDamageAmount += piercingDamage;
         DamageAmount -= piercingDamage;
+        DamagePotentialConsumed -= new UntypedDamage(piercingDamage);
     }
 }

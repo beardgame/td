@@ -7,7 +7,8 @@
             parameters: {
             }
         },
-        { id: "deleteOnHit", keys: [ "remove-on-overdrive" ], parameters: { } },
+        { id : "elasticCollision", keys: [ "remove-on-overdrive" ], parameters : { normal : 1, tangent : 1 } },
+        { id: "deleteOnHit", keys: [ "remove-on-overdrive" ], parameters: { excludeObjects: true } },
         {
             id: "sprite",
             parameters: {

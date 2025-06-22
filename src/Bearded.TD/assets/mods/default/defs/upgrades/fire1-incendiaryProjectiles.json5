@@ -10,7 +10,8 @@
                 id: "damageOnHit",
                 parameters: {
                     damageType: "fire",
-                    fractionOfBaseDamage: 0.3
+                    fractionOfBaseDamage: 0.3,
+                    damagePotentialConsumptionFraction: 0,
                 }
             },
             prerequisites: {

@@ -45,23 +45,17 @@ static class Collision
             return;
         }
 
-        // TODO: damage potential needs to be changed somewhere in or right after this call
-        // - in damage executor?
         Hits.HitObject(subject, events, obj, impact);
 
-        // TODO: then there needs to be an after-hit event
-        // and a DeleteAfterHitIfZeroDamagePotential component (naming) - can probably injected into all projectiles
-
-        if (subject.TryGetProperty(out UntypedDamage damagePotential) && damagePotential <= UntypedDamage.Zero)
+        // We don't compare against 0, in case there's float roundings errors, so that we don't sent off projectiles
+        // that really should have been deleted.
+        if (subject.GetDamagePotential() <= new UntypedDamage(0.01f.HitPoints()))
         {
+            // TODO: is it ok to delete here? or should this be a component?
             subject.Delete();
             abortCollisionChecksForThisFrame = true;
             return;
         }
-
-        // TODO: all bullet projectiles should have ElasticCollision components so they respond to ricochet
-        // check all other components for how they want to handle this
-        // and make fire particles use this new behaviour (i.e. not lose their damage potential above)
 
         var collision = new CollidingWithObject(obj, impact, false);
 

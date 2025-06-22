@@ -54,7 +54,7 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
         }
 
         var modifiedDamage = modifyDamage(damage);
-        var result = doDamage(damage, modifiedDamage.DamageToSelf, source);
+        var result = doDamage(damage, modifiedDamage.DamageToSelf, source, modifiedDamage.DamagePotentialConsumed);
 
         return result with
         {
@@ -66,7 +66,10 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
     }
 
     private IntermediateDamageResult doDamage(
-        TypedDamage originalDamage, TypedDamage modifiedDamage, IDamageSource? source)
+        TypedDamage originalDamage,
+        TypedDamage modifiedDamage,
+        IDamageSource? source,
+        UntypedDamage damagePotentialConsumed)
     {
         // No damage done at all, so the shell is 100% effective at blocking it.
         if (modifiedDamage.Amount <= HitPoints.Zero)
@@ -80,7 +83,8 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
 
         Events.Send(new TookDamage(source));
 
-        return new IntermediateDamageResult(cappedDamage, TypedDamage.Zero(originalDamage.Type), damageDoneDiscrete);
+        return new IntermediateDamageResult(
+            cappedDamage, TypedDamage.Zero(originalDamage.Type), damageDoneDiscrete, damagePotentialConsumed);
     }
 
     public void OverrideCurrentHitPoints(HitPoints currentHitPoints)
