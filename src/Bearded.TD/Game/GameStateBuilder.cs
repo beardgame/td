@@ -26,7 +26,7 @@ sealed class GameStateBuilder
         // at the very least we're not keeping track of it in the gameInstance.GameSettings correctly if it's random
         // at worst we've seen potentially unpredictable behaviour, and who knows really...
         // this whole thing needs reviewing (and probably redoing)
-        var seed = gameSettings.Seed == 0 ? StaticRandom.Int() : gameSettings.Seed;
+        var seed = gameSettings.Seed == 0 ? Random.Shared.Next() : gameSettings.Seed;
 
         yield return InitializeTypes.Command();
         yield return CreateGameState.Command(game, gameSettings);

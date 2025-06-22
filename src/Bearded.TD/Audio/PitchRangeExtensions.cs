@@ -12,7 +12,7 @@ static class PitchRangeExtensions
             return pitchRange.LowerPitch;
         }
 
-        var t = random?.NextFloat() ?? StaticRandom.Float();
+        var t = (random ?? Random.Shared).NextFloat();
         return pitchRange.LowerPitch + t * (pitchRange.UpperPitch - pitchRange.LowerPitch);
     }
 }

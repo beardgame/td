@@ -105,7 +105,7 @@ sealed class GameDebugOverlayControl : OnTopCompositeControl
                             b.FirstChildOfType<Label>()!.FontSize = 16;
                             b.Clicked += _ => setting.Set(i);
 
-                            if (setting.Value.ToString() == o.ToString())
+                            if (setting.Value?.ToString() == o.ToString())
                             {
                                 b.IsEnabled = false;
                                 b.Add(new BackgroundBox(Color.White * 0.5f));

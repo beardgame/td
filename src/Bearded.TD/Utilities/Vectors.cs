@@ -1,3 +1,4 @@
+using System;
 using Bearded.Utilities;
 using OpenTK.Mathematics;
 using static System.MathF;
@@ -8,8 +9,8 @@ static class Vectors
 {
     public static Vector3 GetRandomUnitVector3()
     {
-        var theta = Tau * StaticRandom.Float();
-        var phi = Acos(1 - 2 * StaticRandom.Float());
+        var theta = Tau * Random.Shared.NextFloat();
+        var phi = Acos(1 - 2 * Random.Shared.NextFloat());
         var sinPhi = Sin(phi);
         return new Vector3(
             sinPhi * Cos(theta),
