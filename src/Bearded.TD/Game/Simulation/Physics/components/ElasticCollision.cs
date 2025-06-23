@@ -41,7 +41,7 @@ sealed class ElasticCollision(IParameters parameters) : Component<IParameters>(p
         ComponentDependencies.Depend<IPhysics>(Owner, Events, p => physics = p);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
         Events.Unsubscribe<CollidedWithObject>(this);

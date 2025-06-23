@@ -88,7 +88,7 @@ sealed class AllowManualOverdrive : Component<AllowManualOverdrive.IParameters>,
         }
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         statusReceipt?.DeleteImmediately();
     }

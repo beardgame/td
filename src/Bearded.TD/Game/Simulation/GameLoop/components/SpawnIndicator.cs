@@ -50,10 +50,10 @@ sealed class SpawnIndicator : Component, IListener<DrawComponents>, IFutureEnemy
         nextIndicatorBias = (Bias) (((int) nextIndicatorBias + 1) % Enum.GetValues(typeof(Bias)).Length);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public void AddFutureEnemySpawn(EnemyForm form, int amount)

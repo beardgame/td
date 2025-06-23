@@ -67,7 +67,7 @@ sealed class SpawnOnTrigger : ParticleUpdater<SpawnOnTrigger.IParameters>, IList
         return parent;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         cleanUp();
     }

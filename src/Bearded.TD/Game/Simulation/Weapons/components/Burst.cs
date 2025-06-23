@@ -41,9 +41,9 @@ sealed class Burst : Component<Burst.IParameters>, IListener<ShotProjectiles>, I
         }
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
-        base.OnRemovedInternal();
+        base.OnRemoved();
         Events.Unsubscribe<ShotProjectiles>(this);
         Events.Unsubscribe<PreviewDelayNextShot>(this);
     }

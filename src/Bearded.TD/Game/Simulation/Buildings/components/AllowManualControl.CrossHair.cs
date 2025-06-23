@@ -44,7 +44,7 @@ sealed partial class ManualControl
             Events.Subscribe(this);
         }
 
-        protected override void OnRemovedInternal()
+        protected override void OnRemoved()
         {
             Events.Unsubscribe(this);
         }

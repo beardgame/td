@@ -29,10 +29,10 @@ sealed class RevealSurroundingZones : Component<RevealSurroundingZones.IParamete
         tilePresenceListener = Owner.GetTilePresence().ObserveAdditions(onTileAdded);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         tilePresenceListener?.Detach();
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     private void onTileAdded(Tile t)

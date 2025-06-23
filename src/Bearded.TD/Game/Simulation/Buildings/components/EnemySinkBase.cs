@@ -26,7 +26,7 @@ abstract class EnemySinkBase : Component, IEnemySink, IListener<Materialized>, I
         tilePresence = Owner.GetTilePresence();
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe<Materialized>(this);
         Events.Unsubscribe<ObjectDeleting>(this);

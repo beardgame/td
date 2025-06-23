@@ -32,7 +32,7 @@ abstract class ApplyAreaEffectOnImpact<TParameters, TEffect> : Component<TParame
         Events.Subscribe<ObjectHit>(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe<CollidedWithLevel>(this);
         Events.Unsubscribe<ObjectHit>(this);

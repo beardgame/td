@@ -24,7 +24,7 @@ sealed class Healable :
             Owner, Events, p => pool = p, p => p.Shell == DamageShell.Health);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe<PreviewHealDamage>(this);
         Events.Unsubscribe<HealDamage>(this);

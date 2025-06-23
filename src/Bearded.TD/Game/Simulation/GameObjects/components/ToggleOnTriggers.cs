@@ -75,7 +75,7 @@ sealed class ToggleOnTriggers : Component<ToggleOnTriggers.IParameters>, IListen
         Enabled = true;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         cleanUp();
     }

@@ -48,7 +48,7 @@ sealed class Trail : Component<Trail.IParameters>, IListener<DrawComponents>, IL
         drawer = new TrailDrawer(Owner.Game, Parameters.Sprite);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe<DrawComponents>(this);
         Events.Unsubscribe<ObjectDeleting>(this);

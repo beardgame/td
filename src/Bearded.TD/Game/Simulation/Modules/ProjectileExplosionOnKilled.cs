@@ -34,9 +34,9 @@ sealed class ProjectileExplosionOnKilled : Component<ProjectileExplosionOnKilled
         Events.Subscribe(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
-        base.OnRemovedInternal();
+        base.OnRemoved();
         Events.Unsubscribe(this);
     }
 

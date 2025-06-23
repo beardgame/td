@@ -15,9 +15,9 @@ abstract class DamageModifier : Component, IDamageModifier
         DamageModifiers.ModifyShell(AffectedShell, this, Owner, Events, out modifierRemover);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
-        base.OnRemovedInternal();
+        base.OnRemoved();
         modifierRemover?.Invoke();
         modifierRemover = null;
     }
@@ -39,9 +39,9 @@ abstract class DamageModifier<T>(T parameters)
         DamageModifiers.ModifyShell(AffectedShell, this, Owner, Events, out modifierRemover);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
-        base.OnRemovedInternal();
+        base.OnRemoved();
         modifierRemover?.Invoke();
         modifierRemover = null;
     }

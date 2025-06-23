@@ -66,7 +66,7 @@ sealed partial class TargetEnemiesInRange
         Events.Subscribe(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
     }

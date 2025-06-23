@@ -34,7 +34,7 @@ class DefaultComponentRenderer : Component, IComponentDrawer, IRenderable, IList
         Owner.Game.ListAs<IRenderable>(this);
     }
 
-    protected override void OnRemovedInternal() => Deleted = true;
+    protected override void OnRemoved() => Deleted = true;
     public void HandleEvent(ObjectDeleting @event) => Deleted = true;
 
     public override void Update(TimeSpan elapsedTime)

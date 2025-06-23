@@ -24,7 +24,7 @@ sealed class DeleteOnTrigger(DeleteOnTrigger.IParameters parameters)
         subscription = Parameters.Trigger.Subscribe(Events, onTrigger);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         subscription.Unsubscribe(Events);
     }

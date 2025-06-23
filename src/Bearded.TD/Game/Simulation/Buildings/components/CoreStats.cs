@@ -28,10 +28,10 @@ sealed class CoreStats : Component, ICoreStats
         ComponentDependencies.Depend<EmergencyEMP>(Owner, Events, e => emp = e);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         deleted = true;
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public override void Activate()

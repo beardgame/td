@@ -36,10 +36,10 @@ sealed class PlaySoundOnTrigger(IParameters parameters) : Component<IParameters>
         lastPlayed = Owner.Game.Time;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         subscription?.Unsubscribe(Events);
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public override void Update(TimeSpan elapsedTime) { }

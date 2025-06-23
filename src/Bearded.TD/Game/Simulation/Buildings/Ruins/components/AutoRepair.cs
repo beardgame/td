@@ -44,12 +44,12 @@ sealed class AutoRepair
         Events.Subscribe<TookDamage>(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe<ObjectRuined>(this);
         Events.Unsubscribe<RepairFinished>(this);
         Events.Unsubscribe<TookDamage>(this);
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public override void Update(TimeSpan elapsedTime)

@@ -55,7 +55,7 @@ sealed class SpawnLocation : Component, IIdable<SpawnLocation>, IListener<WaveEn
         buildings = Owner.Game.BuildingLayer;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Owner.Game.Meta.Events.Unsubscribe(this);
         Owner.Game.DeleteId(Id);

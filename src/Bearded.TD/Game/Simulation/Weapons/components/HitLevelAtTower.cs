@@ -28,14 +28,14 @@ sealed class HitLevelAtTower(HitLevelAtTower.IParameters parameters)
         Events.Subscribe(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         if (damageProvider != null)
         {
             Owner.RemoveComponent(damageProvider);
         }
 
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public override void Update(TimeSpan elapsedTime)

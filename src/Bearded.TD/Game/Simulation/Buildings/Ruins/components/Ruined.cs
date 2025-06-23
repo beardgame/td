@@ -37,7 +37,7 @@ sealed class Ruined
         Events.Subscribe(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         disposer.Dispose();
         Events.Send(new ObjectRepaired());
@@ -48,7 +48,7 @@ sealed class Ruined
         {
             Owner.RemoveComponent(incompleteRepair);
         }
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public IIncompleteRepair StartRepair(Faction repairingFaction)

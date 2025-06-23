@@ -31,7 +31,7 @@ abstract class Component : IComponent
 
     protected ComponentEvents Events { get; private set; } = null!;
 
-    public void OnAdded(GameObject owner, ComponentEvents events)
+    void IComponent.OnAdded(GameObject owner, ComponentEvents events)
     {
         Owner = owner;
         Events = events;
@@ -45,25 +45,19 @@ abstract class Component : IComponent
 
     public virtual void Activate() {}
 
-    public void OnRemoved()
+    void IComponent.OnRemoved()
     {
         UnregisterHandlers();
-        OnRemovedInternal();
+        OnRemoved();
     }
 
     protected virtual void UnregisterHandlers() {}
 
-    protected virtual void OnRemovedInternal() {}
+    protected virtual void OnRemoved() {}
 
     public virtual void Update(TimeSpan elapsedTime) {}
 
     public virtual void PreviewUpgrade(IUpgradePreview upgradePreview) {}
-
-    public virtual bool CanApplyUpgradeEffect(IUpgradeEffect effect) => false;
-
-    public virtual void ApplyUpgradeEffect(IUpgradeEffect effect) { }
-
-    public virtual bool RemoveUpgradeEffect(IUpgradeEffect effect) => false;
 }
 
 sealed class VoidParameters : IParametersTemplate<VoidParameters>

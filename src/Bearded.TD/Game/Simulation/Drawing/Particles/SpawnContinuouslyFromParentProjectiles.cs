@@ -67,7 +67,7 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
         projectileListener = null;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
     }

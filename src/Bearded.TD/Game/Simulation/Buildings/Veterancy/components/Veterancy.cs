@@ -78,9 +78,9 @@ sealed class Veterancy : Component, IListener<GainXp>, IListener<WaveEnded>, ISy
         activated = true;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
-        base.OnRemovedInternal();
+        base.OnRemoved();
         Events.Unsubscribe<GainXp>(this);
         if (activated)
         {

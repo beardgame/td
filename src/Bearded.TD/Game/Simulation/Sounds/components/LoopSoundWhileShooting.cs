@@ -27,9 +27,9 @@ sealed class LoopSoundWhileShooting : Component<LoopSoundWhileShooting.IParamete
         ComponentDependencies.DependDynamic<IWeaponTrigger>(Owner, Events, t => trigger = t);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
-        base.OnRemovedInternal();
+        base.OnRemoved();
         Events.Unsubscribe(this);
     }
 

@@ -52,10 +52,10 @@ sealed class ChangeTemperatureInRangeOnTrigger : Component<ChangeTemperatureInRa
         }
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         subscription?.Unsubscribe(Events);
-        base.OnRemovedInternal();
+        base.OnRemoved();
     }
 
     public override void Update(TimeSpan elapsedTime) { }

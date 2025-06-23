@@ -28,7 +28,7 @@ class Spotlight : Component<Spotlight.IParameters>, IListener<DrawComponents>
         Events.Subscribe(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
     }

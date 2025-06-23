@@ -23,7 +23,7 @@ sealed class CurrentTileNotifier : Component , IListener<ObjectDeleting>
         activated = true;
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
         if (activated)

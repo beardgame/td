@@ -33,7 +33,7 @@ class PointLight : Component<PointLight.IPointLightParameters>, IListener<DrawCo
         Events.Subscribe(this);
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         Events.Unsubscribe(this);
     }

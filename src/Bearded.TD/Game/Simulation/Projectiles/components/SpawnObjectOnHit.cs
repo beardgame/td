@@ -38,7 +38,7 @@ sealed class SpawnObjectOnHit
         }
     }
 
-    protected override void OnRemovedInternal()
+    protected override void OnRemoved()
     {
         if (Parameters.OnHitEnemy)
         {
