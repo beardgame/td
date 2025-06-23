@@ -10,7 +10,7 @@ sealed class Armor(Armor.IParameters parameters) : DamageModifier<Armor.IParamet
     public interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(15)]
-        HitPoints BlockedDamageAmount { get; }
+        UntypedDamage BlockedDamageAmount { get; }
 
         [Modifiable(0.1)]
         double BlockedDamageEffectiveness { get; }

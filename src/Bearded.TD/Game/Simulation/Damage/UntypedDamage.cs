@@ -5,9 +5,11 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-readonly struct UntypedDamage : IEquatable<UntypedDamage>
+readonly struct UntypedDamage : IEquatable<UntypedDamage>, IMeasure1F
 {
     public HitPoints Amount { get; }
+
+    float IMeasure1F.NumericValue => Amount.NumericValue;
 
     public static UntypedDamage Zero => new(HitPoints.Zero);
 
