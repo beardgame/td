@@ -1,16 +1,10 @@
 using System;
 using Bearded.Graphics;
+using Bearded.TD.Utilities;
 
 namespace Bearded.TD.UI.Controls;
 
-sealed class DynamicDot : Dot
+sealed class DynamicDot(IReadonlyBinding<Color> color) : Dot
 {
-    private readonly Func<Color> colorProvider;
-
-    public override Color Color => colorProvider();
-
-    public DynamicDot(Func<Color> colorProvider)
-    {
-        this.colorProvider = colorProvider;
-    }
+    public override Color Color => color.Value;
 }

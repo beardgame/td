@@ -9,12 +9,15 @@ using Bearded.TD.Game.Generation;
 using Bearded.TD.Game.Meta;
 using Bearded.TD.Game.Players;
 using Bearded.TD.Meta;
+using Bearded.TD.Utilities;
 using Bearded.UI.Navigation;
 using Bearded.Utilities;
 using Bearded.Utilities.IO;
+using JetBrains.Annotations;
 
 namespace Bearded.TD.UI.Controls;
 
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
 sealed class Lobby : UpdateableNavigationNode<LobbyManager>
 {
     private LobbyManager lobbyManager = null!;
@@ -26,7 +29,9 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     private ImmutableHashSet<ModMetadata> enabledModsCache = ImmutableHashSet<ModMetadata>.Empty;
     public ImmutableArray<ModMetadata> AvailableMods { get; private set; } = ImmutableArray<ModMetadata>.Empty;
 
-    public IList<Player> Players => lobbyManager.Game.Players;
+    private readonly Dictionary<Id<Player>, Binding<PlayerUIState>> playerUiStateLookup = new();
+    private readonly List<IReadonlyBinding<PlayerUIState>> playerUiStates = [];
+    public IList<IReadonlyBinding<PlayerUIState>> Players { get; }
     public ChatLog ChatLog => lobbyManager.Game.ChatLog;
 
     public bool CanChangeGameSettings => lobbyManager.CanChangeGameSettings;
@@ -51,6 +56,11 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     public event VoidEventHandler? GameSettingsChanged;
     public event VoidEventHandler? ChatMessagesUpdated;
 
+    public Lobby()
+    {
+        Players = playerUiStates.AsReadOnly();
+    }
+
     protected override void Initialize(DependencyResolver dependencies, LobbyManager lobbyManager)
     {
         base.Initialize(dependencies, lobbyManager);
@@ -70,9 +80,14 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         AvailableMods = lobbyManager.Game.Content.AvailableMods.OrderBy(m => m.Name).ToImmutableArray();
 
         lobbyManager.Game.GameStatusChanged += onGameStatusChanged;
-        lobbyManager.Game.PlayerAdded += onPlayersChanged;
-        lobbyManager.Game.PlayerRemoved += onPlayersChanged;
+        lobbyManager.Game.PlayerAdded += onPlayerAdded;
+        lobbyManager.Game.PlayerRemoved += onPlayerRemoved;
         lobbyManager.Game.GameSettingsChanged += onGameSettingsChanged;
+
+        foreach (var p in lobbyManager.Game.Players)
+        {
+            onPlayerAdded(p);
+        }
     }
 
     public override void Terminate()
@@ -82,14 +97,15 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         lobbyManager.Game.Content.CleanUpUnused();
 
         lobbyManager.Game.GameStatusChanged -= onGameStatusChanged;
-        lobbyManager.Game.PlayerAdded -= onPlayersChanged;
-        lobbyManager.Game.PlayerRemoved -= onPlayersChanged;
+        lobbyManager.Game.PlayerAdded -= onPlayerAdded;
+        lobbyManager.Game.PlayerRemoved -= onPlayerRemoved;
         lobbyManager.Game.GameSettingsChanged -= onGameSettingsChanged;
     }
 
     public override void Update(UpdateEventArgs args)
     {
         lobbyManager.Update(args);
+        updatePlayers();
         if (lobbyManager.Game.Status == GameStatus.Lobby)
         {
             LoadingUpdated?.Invoke();
@@ -116,6 +132,19 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         {
             lastSeenChatMessage = chatMessages[^1];
             ChatMessagesUpdated?.Invoke();
+        }
+    }
+
+    private void updatePlayers()
+    {
+        foreach (var player in lobbyManager.Game.Players)
+        {
+            var existingState = playerUiStateLookup[player.Id].Value;
+            var currentState = PlayerUIState.FromPlayer(player);
+            if (existingState != currentState)
+            {
+                playerUiStateLookup[player.Id].SetFromSource(currentState);
+            }
         }
     }
 
@@ -190,7 +219,23 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
         Navigation!.Replace<LoadingScreen, LoadingManager>(lobbyManager.GetLoadingManager(), this);
     }
 
-    private void onPlayersChanged(Player player)
+    private void onPlayerAdded(Player player)
+    {
+        var binding = new Binding<PlayerUIState>();
+        binding.SetFromSource(PlayerUIState.FromPlayer(player));
+        playerUiStateLookup.Add(player.Id, binding);
+        playerUiStates.Add(binding);
+        onPlayersChanged();
+    }
+
+    private void onPlayerRemoved(Player player)
+    {
+        playerUiStateLookup.Remove(player.Id);
+        playerUiStates.RemoveAll(b => b.Value.Id == player.Id);
+        onPlayersChanged();
+    }
+
+    private void onPlayersChanged()
     {
         PlayersChanged?.Invoke();
     }
@@ -205,5 +250,12 @@ sealed class Lobby : UpdateableNavigationNode<LobbyManager>
     {
         gameSettings = new GameSettings.Builder(newGameSettings);
         GameSettingsChanged?.Invoke();
+    }
+
+    public readonly record struct PlayerUIState(
+        Id<Player> Id, string Name, PlayerConnectionState State, int LastKnownPing)
+    {
+        public static PlayerUIState FromPlayer(Player player) =>
+            new(player.Id, player.Name, player.ConnectionState, player.LastKnownPing);
     }
 }
