@@ -10,7 +10,7 @@ using static Bearded.TD.Game.Simulation.Damage.DisableShellOnDamage;
 namespace Bearded.TD.Game.Simulation.Damage;
 
 [Component("disableShellOnDamage")]
-sealed class DisableShellOnDamage(IParameters parameters) : Component<IParameters>(parameters), IListener<TookDamage>
+sealed partial class DisableShellOnDamage(IParameters parameters) : Component<IParameters>(parameters)
 {
     internal interface IParameters : IParametersTemplate<IParameters>
     {
@@ -24,17 +24,8 @@ sealed class DisableShellOnDamage(IParameters parameters) : Component<IParameter
         DamageShell Shell { get; }
     }
 
-    protected override void OnAdded()
-    {
-        Events.Subscribe(this);
-    }
-
-    protected override void OnRemovedInternal()
-    {
-        Events.Unsubscribe(this);
-    }
-
-    public void HandleEvent(TookDamage @event)
+    [Handler]
+    private void onTookDamage(TookDamage @event)
     {
         if (@event.Pool.Shell != Parameters.Shell) return;
         if (@event.Result.ExactDamageDone.Type != Parameters.DamageType) return;
