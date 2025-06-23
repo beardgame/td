@@ -1,15 +1,17 @@
 using Bearded.TD.Audio;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.Game.Simulation.Rules;
+using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Sounds.PlayGlobalSoundOnWaveStart;
 
 namespace Bearded.TD.Game.Simulation.Sounds;
 
 [GameRule("playSoundOnWaveStart")]
-sealed class PlayGlobalSoundOnWaveStart : PlayGlobalSoundOn<PlayGlobalSoundOnWaveStart.RuleParameters, WaveStarted>
+sealed class PlayGlobalSoundOnWaveStart(RuleParameters parameters)
+    : PlayGlobalSoundOn<RuleParameters, WaveStarted>(parameters)
 {
     public record struct RuleParameters(ISoundEffect Sound);
 
     protected override ISoundEffect SoundEffect => Parameters.Sound;
-
-    public PlayGlobalSoundOnWaveStart(RuleParameters parameters) : base(parameters) { }
+    protected override TimeSpan Cooldown => TimeSpan.Zero;
 }

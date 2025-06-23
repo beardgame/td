@@ -2,21 +2,22 @@ using Bearded.TD.Audio;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.Utilities.SpaceTime;
+using static Bearded.TD.Game.Simulation.Sounds.PlaySoundOnTrigger;
 
 namespace Bearded.TD.Game.Simulation.Sounds;
 
 [Component("playSoundOnTrigger")]
-sealed class PlaySoundOnTrigger : Component<PlaySoundOnTrigger.IParameters>
+sealed class PlaySoundOnTrigger(IParameters parameters) : Component<IParameters>(parameters)
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
         ITrigger Trigger { get; }
         ISoundEffect Sound { get; }
+        TimeSpan Cooldown { get; }
     }
 
     private ITriggerSubscription? subscription;
-
-    public PlaySoundOnTrigger(IParameters parameters) : base(parameters) { }
+    private Instant lastPlayed;
 
     protected override void OnAdded() { }
 
@@ -27,7 +28,12 @@ sealed class PlaySoundOnTrigger : Component<PlaySoundOnTrigger.IParameters>
 
     private void playSound()
     {
+        if (Owner.Game.Time - lastPlayed < Parameters.Cooldown)
+        {
+            return;
+        }
         Owner.Game.Meta.SoundScape.PlaySoundAt(Parameters.Sound, Owner.Position);
+        lastPlayed = Owner.Game.Time;
     }
 
     protected override void OnRemovedInternal()
