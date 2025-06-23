@@ -1,7 +1,7 @@
 ﻿{
   id: "default-armor-kinetic",
   affinityElement: "kinetics",
-  socketShape: "default-armor",
+  socketShape: "defaultArmor",
   effects: [
     {
       type: "component",

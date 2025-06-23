@@ -1,7 +1,7 @@
 ﻿{
   id: "default-armor-water",
   affinityElement: "water",
-  socketShape: "default-armor",
+  socketShape: "defaultArmor",
   effects: [
     {
       type: "component",

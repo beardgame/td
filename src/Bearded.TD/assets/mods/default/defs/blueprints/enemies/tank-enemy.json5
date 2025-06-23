@@ -24,12 +24,12 @@
         { id: "damageBuildings", parameters: { damage: 6, attackRate: 0.5 } },
 
         { id: "archetype", parameters: { value: "elite" } },
-        { id: "socket", parameters: { shape: "default-armor" } },
+        { id: "socket", parameters: { shape: "defaultArmor" } },
         {
             id: "resistanceContributions",
             parameters: {
                 factors: {
-                    minorDefence: 0.3
+                    defaultArmor: 0.3
                 }
             }
         },
