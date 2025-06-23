@@ -33,7 +33,7 @@ sealed class InflammableIfShellNotEmpty(IParameters parameters)
 
     public void PreviewEvent(ref PreviewElementalEffectAttempt<OnFire.Effect> e)
     {
-        if (pool?.CurrentHitPoints == HitPoints.Zero)
+        if (pool?.CurrentHitPoints > HitPoints.Zero)
             e = e.Cancelled();
     }
 }

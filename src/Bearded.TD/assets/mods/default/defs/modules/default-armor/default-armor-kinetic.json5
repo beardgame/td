@@ -1,0 +1,27 @@
+﻿{
+  id: "default-armor-kinetic",
+  affinityElement: "kinetics",
+  socketShape: "default-armor",
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "armor",
+        parameters: {
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "reflectDamage",
+        parameters: {
+          shell: "armor",
+          damageType: "kinetic",
+          minimumDamageToReflect: 2,
+          factor: 0.5,
+        }
+      }
+    },
+  ]
+}

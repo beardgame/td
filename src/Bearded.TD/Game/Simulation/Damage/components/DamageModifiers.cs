@@ -33,7 +33,8 @@ static class DamageModifiers
         typeof(PierceDamageThroughShell),
         typeof(Armor),
         typeof(Shield),
+        typeof(ReflectRemainingDamage),
         typeof(DamageResistances),
-        typeof(DebugInvulnerable)
+        typeof(DebugInvulnerable),
     ];
 }

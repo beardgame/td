@@ -1,0 +1,25 @@
+﻿{
+  id: "default-armor-water",
+  affinityElement: "water",
+  socketShape: "default-armor",
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "armor",
+        parameters: {
+          lightningPiercingFactor : 0.5,
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "inflammableIfShellNotEmpty",
+        parameters: {
+          shell: "armor",
+        }
+      }
+    },
+  ]
+}
