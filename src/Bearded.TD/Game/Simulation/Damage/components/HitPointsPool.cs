@@ -9,6 +9,17 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
+interface IHitPointsPool
+{
+    bool IsDepleted { get; }
+    bool IsDisabled { get; }
+
+    HitPoints MaxHitPoints { get; }
+    HitPoints CurrentHitPoints { get; }
+    DamageShell Shell { get; }
+    IHitPointsPoolDisabledReceipt Disable();
+}
+
 [Component("hitPoints")]
 sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
     : Component<HitPointsPool.IParameters>(parameters),
@@ -34,6 +45,8 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
     public HitPoints CurrentHitPoints { get; private set; } = parameters.InitialHitPoints ?? parameters.MaxHitPoints;
     public DamageShell Shell { get; } = parameters.Shell;
 
+    public bool IsDepleted => CurrentHitPoints <= HitPoints.Zero;
+
     public override void Activate()
     {
         base.Activate();
@@ -47,28 +60,30 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
 
     public IntermediateDamageResult ApplyDamage(TypedDamage damage, IDamageSource? source)
     {
-        // No hit points remaining, so shell is depleted.
-        if (CurrentHitPoints <= HitPoints.Zero)
+        if (IsDepleted || IsDisabled)
         {
             return IntermediateDamageResult.PassThrough(damage);
         }
 
         var modifiedDamage = modifyDamage(damage);
-        var result = doDamage(damage, modifiedDamage.DamageToSelf, source, modifiedDamage.DamagePotentialConsumed);
+        var result = doDamage(damage, modifiedDamage.DamageToSelf, modifiedDamage.DamagePotentialConsumed);
 
-        return result with
+        result = result with
         {
             DamageOverflow = new TypedDamage(
                 result.DamageOverflow.Amount + modifiedDamage.DamageToPassThrough.Amount,
                 result.DamageOverflow.Type
-            ),
+            )
         };
+
+        Events.Send(new TookDamage(source, this, result));
+
+        return result;
     }
 
     private IntermediateDamageResult doDamage(
         TypedDamage originalDamage,
         TypedDamage modifiedDamage,
-        IDamageSource? source,
         UntypedDamage damagePotentialConsumed)
     {
         // No damage done at all, so the shell is 100% effective at blocking it.
@@ -80,8 +95,6 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
         var cappedDamage =
             modifiedDamage.WithAdjustedAmount(SpaceTime1MathF.Min(modifiedDamage.Amount, CurrentHitPoints));
         modifyHitPoints(-cappedDamage.Amount, out var damageDoneDiscrete);
-
-        Events.Send(new TookDamage(source));
 
         return new IntermediateDamageResult(
             cappedDamage, TypedDamage.Zero(originalDamage.Type), damageDoneDiscrete, damagePotentialConsumed);
@@ -138,11 +151,4 @@ sealed partial class HitPointsPool(HitPointsPool.IParameters parameters)
             _ => Color.DeepPink
         };
     }
-}
-
-interface IHitPointsPool
-{
-    HitPoints MaxHitPoints { get; }
-    HitPoints CurrentHitPoints { get; }
-    DamageShell Shell { get; }
 }
