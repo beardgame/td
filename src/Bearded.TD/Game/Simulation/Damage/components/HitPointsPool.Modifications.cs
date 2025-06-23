@@ -23,8 +23,8 @@ partial class HitPointsPool
         }
 
         return new ModifiedDamage(
-            DamageToSelf: new TypedDamage(preview.DamageAmount, preview.DamageType),
-            DamageToPassThrough: new TypedDamage(preview.PiercingDamageAmount, preview.DamageType),
+            DamageToSelf: preview.DamageAmount.Typed(preview.DamageType),
+            DamageToPassThrough: preview.PiercingDamageAmount.Typed(preview.DamageType),
             preview.DamagePotentialConsumed
         );
     }

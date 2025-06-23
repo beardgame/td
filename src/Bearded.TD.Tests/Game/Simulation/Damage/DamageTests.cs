@@ -90,7 +90,7 @@ public sealed class DamageTests
     public void ShieldReducesDamageAboveThreshold()
     {
         var hp = hitPoints(100.HitPoints(), DamageShell.Shield);
-        var s = shield(20.HitPoints(), 0.1);
+        var s = shield(damage(20), 0.1);
         testBed.AddComponent(hp);
         testBed.AddComponent(s);
 
@@ -104,7 +104,7 @@ public sealed class DamageTests
     public void ShieldReducesNoDamageIfAllBelowThreshold()
     {
         var hp = hitPoints(100.HitPoints(), DamageShell.Shield);
-        var s = shield(20.HitPoints(), 0.1);
+        var s = shield(damage(20), 0.1);
         testBed.AddComponent(hp);
         testBed.AddComponent(s);
 
@@ -117,7 +117,7 @@ public sealed class DamageTests
     public void ArmorReducesDamageBelowThreshold()
     {
         var hp = hitPoints(100.HitPoints(), DamageShell.Armor);
-        var a = armor(20.HitPoints(), 0.1);
+        var a = armor(damage(20), 0.1);
         testBed.AddComponent(hp);
         testBed.AddComponent(a);
 
@@ -131,7 +131,7 @@ public sealed class DamageTests
     public void ArmorReducesAllDamageIfAllBelowThreshold()
     {
         var hp = hitPoints(100.HitPoints(), DamageShell.Armor);
-        var a = armor(20.HitPoints(), 0.1);
+        var a = armor(damage(20), 0.1);
         testBed.AddComponent(hp);
         testBed.AddComponent(a);
 
@@ -193,7 +193,7 @@ public sealed class DamageTests
     {
         var armorShell = hitPoints(100.HitPoints(), DamageShell.Armor);
         var healthShell = hitPoints(100.HitPoints(), DamageShell.Health);
-        var a = armor(4.HitPoints(), lightningPiercing: 0.75, blockedEffectiveness: 0);
+        var a = armor(damage(4), lightningPiercing: 0.75, blockedEffectiveness: 0);
         testBed.AddComponent(armorShell);
         testBed.AddComponent(healthShell);
         testBed.AddComponent(a);
@@ -203,6 +203,8 @@ public sealed class DamageTests
         armorShell.CurrentHitPoints.Should().Be(99.HitPoints());
         healthShell.CurrentHitPoints.Should().Be(85.HitPoints());
     }
+
+    private UntypedDamage damage(float amount) => new (amount.HitPoints());
 
     private void doDamage(HitPoints amount, DamageType type = DamageType.Kinetic)
     {
@@ -214,12 +216,12 @@ public sealed class DamageTests
         return new HitPointsPool(new HitPointsPoolParametersTemplate(amount, initialHitPoints, shell, null));
     }
 
-    private static Armor armor(HitPoints threshold, double blockedEffectiveness = 0, double lightningPiercing = 0.5)
+    private static Armor armor(UntypedDamage threshold, double blockedEffectiveness = 0, double lightningPiercing = 0.5)
     {
         return new Armor(new ArmorParametersTemplate(threshold, blockedEffectiveness, lightningPiercing));
     }
 
-    private static Shield shield(HitPoints threshold, double blockedEffectiveness = 0)
+    private static Shield shield(UntypedDamage threshold, double blockedEffectiveness = 0)
     {
         return new Shield(new ShieldParametersTemplate(threshold, blockedEffectiveness));
     }

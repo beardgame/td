@@ -11,7 +11,7 @@ sealed class Shield(Shield.IParameters parameters)
     public interface IParameters : IParametersTemplate<IParameters>
     {
         [Modifiable(15)]
-        HitPoints Threshold { get; }
+        UntypedDamage Threshold { get; }
 
         [Modifiable(0.1)]
         double EffectivenessOverThreshold { get; }
