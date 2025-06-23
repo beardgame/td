@@ -5,21 +5,13 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.GameObjects;
 
-sealed class ComponentCollection
+sealed class ComponentCollection(GameObject owner, ComponentEvents events)
 {
-    private readonly GameObject owner;
-    private readonly ComponentEvents events;
-    private readonly List<IComponent> components = new();
+    private readonly List<IComponent> components = [];
 
     private bool isActivated;
     private bool deferComponentCollectionMutations;
     private readonly Queue<ComponentCollectionMutation> queuedMutations = new();
-
-    public ComponentCollection(GameObject owner, ComponentEvents events)
-    {
-        this.owner = owner;
-        this.events = events;
-    }
 
     public void Add(IComponent component)
     {
@@ -109,7 +101,7 @@ sealed class ComponentCollection
                 Remove(mutation.Component);
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(mutation));
         }
     }
 }
