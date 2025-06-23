@@ -58,8 +58,6 @@ static class PieChartFactories
     {
         private Func<T, float>? getValue;
         private Func<T, Color>? getColor;
-        private Func<T, string>? getTooltipString;
-        private Func<T, Control>? getTooltipControl;
         private Direction2 origin;
         private Sign sign;
         private Shadow? shadow;
@@ -74,20 +72,6 @@ static class PieChartFactories
         public Builder<T> WithColors(Func<T, Color> color)
         {
             getColor = color;
-            return this;
-        }
-
-        public Builder<T> WithTooltip(Func<T, string> tooltip)
-        {
-            throw new NotImplementedException();
-            getTooltipString = tooltip;
-            return this;
-        }
-
-        public Builder<T> WithTooltip(Func<T, Control> tooltip)
-        {
-            throw new NotImplementedException();
-            getTooltipControl = tooltip;
             return this;
         }
 
