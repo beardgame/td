@@ -1,4 +1,5 @@
-﻿using Bearded.TD.Game.Simulation.Damage;
+﻿using System;
+using Bearded.TD.Game.Simulation.Damage;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Projectiles;
@@ -112,7 +113,7 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
 
         for (var i = 0; i < Parameters.ProjectilesPerShot; i++)
         {
-            var vZ = verticalSpeedCompensation * (1 + Parameters.BulletDropCompensationNoise * StaticRandom.Float(-1, 1));
+            var vZ = verticalSpeedCompensation * (1 + Parameters.BulletDropCompensationNoise * Random.Shared.NextFloat(-1, 1));
             var (direction, muzzleVelocity) = getMuzzleVelocity(vZ);
 
             var projectile = factory.Create(position, direction, muzzleVelocity, damagePerProjectile, properties);
@@ -126,7 +127,7 @@ sealed class ProjectileEmitter(ProjectileEmitter.IParameters parameters)
 
     private (Direction2, Velocity3) getMuzzleVelocity(Speed velocityZ)
     {
-        var direction = weapon.Direction + Parameters.Spread * StaticRandom.Float(-1, 1);
+        var direction = weapon.Direction + Parameters.Spread * Random.Shared.NextFloat(-1, 1);
         var velocityXY = direction * Parameters.MuzzleSpeed;
 
         return (direction, velocityXY.WithZ(velocityZ));

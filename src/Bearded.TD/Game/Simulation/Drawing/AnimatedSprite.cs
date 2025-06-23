@@ -1,3 +1,4 @@
+using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Drawing.Animation;
@@ -64,7 +65,7 @@ class AnimatedSprite : Component<AnimatedSprite.IParameters>, IListener<DrawComp
         startTime = Owner.Game.Time;
 
         if (Parameters.RandomAngle)
-            angle = StaticRandom.Float(360).Degrees();
+            angle = Random.Shared.NextFloat(360).Degrees();
     }
 
     protected override void OnRemovedInternal()

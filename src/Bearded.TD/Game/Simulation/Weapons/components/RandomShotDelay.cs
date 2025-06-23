@@ -1,9 +1,10 @@
-﻿using Bearded.TD.Game.Simulation.GameObjects;
+﻿using System;
+using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -29,7 +30,7 @@ sealed class RandomShotDelay(RandomShotDelay.IParameters parameters)
 
     public void PreviewEvent(ref PreviewDelayNextShot e)
     {
-        var newDelay = e.Delay * StaticRandom.Double(Parameters.MinimumFactor, Parameters.MaximumFactor);
+        var newDelay = e.Delay * Random.Shared.NextDouble(Parameters.MinimumFactor, Parameters.MaximumFactor);
         e = new PreviewDelayNextShot(newDelay);
     }
 }

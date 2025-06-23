@@ -1,9 +1,9 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.TD.Utilities;
-using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
 using OpenTK.Mathematics;
@@ -74,8 +74,8 @@ sealed class SpawnArcConnectingRandomPoints : ParticleUpdater<SpawnArcConnecting
 
     private void spawn()
     {
-        var startIndex = StaticRandom.Int(Parameters.Points.Length);
-        var endIndex = StaticRandom.Int(Parameters.Points.Length - 1);
+        var startIndex = Random.Shared.Next(Parameters.Points.Length);
+        var endIndex = Random.Shared.Next(Parameters.Points.Length - 1);
         if (endIndex == startIndex)
             endIndex = Parameters.Points.Length - 1;
 

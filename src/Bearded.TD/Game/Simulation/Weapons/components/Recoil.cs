@@ -1,8 +1,10 @@
+using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -32,7 +34,7 @@ sealed class Recoil(Recoil.IParameters parameters)
     public void HandleEvent(ShotProjectiles e)
     {
         accelerator?.Impact(
-            Parameters.Impulse * StaticRandom.Float(0.5f, 1) * StaticRandom.Sign()
+            Parameters.Impulse * Random.Shared.NextFloat(0.5f, 1) * Random.Shared.NextSign()
         );
     }
 

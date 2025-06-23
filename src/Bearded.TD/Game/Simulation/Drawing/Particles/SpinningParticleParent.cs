@@ -51,7 +51,7 @@ sealed class SpinningParticleParent : Component<SpinningParticleParent.IParamete
             * ParticleSpawning.Noise(Parameters.AngularVelocityNoise);
 
         if (Parameters.RandomSign)
-            orbitalSpeed *= StaticRandom.Sign();
+            orbitalSpeed *= Random.Shared.NextSign();
     }
 
     public override void Activate()
@@ -94,7 +94,7 @@ sealed class SpinningParticleParent : Component<SpinningParticleParent.IParamete
         var u = Vector3.Cross(axis, nonParallelVector).Normalized();
         var v = Vector3.Cross(axis, u).Normalized();
 
-        var angle = StaticRandom.Float(MathF.Tau);
+        var angle = Random.Shared.NextFloat(MathF.Tau);
 
         currentOffset = Parameters.Radius * (u * MathF.Cos(angle) + v * MathF.Sin(angle));
 

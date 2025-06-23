@@ -1,4 +1,5 @@
-﻿using Bearded.Graphics;
+﻿using System;
+using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
@@ -88,7 +89,7 @@ sealed class DrawConnected : ParticleUpdater<DrawConnected.IParameters>, IListen
         else
         {
             previousPoint = particles[0].Position;
-            u = StaticRandom.Float();
+            u = Random.Shared.NextFloat();
         }
 
         uvs[index] = u;

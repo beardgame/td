@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Physics;
@@ -7,6 +8,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
 using static ParticleSpawning;
@@ -75,7 +77,7 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
         var now = Owner.Game.Time;
         var nextSpawn = now + Parameters.StartDelay;
         if (Parameters.RandomStartInterval)
-            nextSpawn += Parameters.Interval * StaticRandom.Float();
+            nextSpawn += Parameters.Interval * Random.Shared.NextFloat();
 
         e.Projectile.TryGetSingleComponent<IMoving>(out var velocity);
 
@@ -129,7 +131,7 @@ sealed class SpawnContinuouslyFromParentProjectiles : ParticleUpdater<SpawnConti
 
             foreach (ref var particle in particles)
             {
-                particle.Position += toPreviousEmitter * StaticRandom.Float();
+                particle.Position += toPreviousEmitter * Random.Shared.NextFloat();
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
@@ -11,6 +12,7 @@ using Bearded.TD.Utilities;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -64,7 +66,7 @@ sealed class MuzzleFlash(MuzzleFlash.IParameters parameters)
         currentFlashes.Add(new Flash(
             e.Position + (e.MuzzleDirection * Parameters.Offset).WithZ(),
             e.MuzzleDirection,
-            Parameters.Size * StaticRandom.Float(0.75f, 1f),
+            Parameters.Size * Random.Shared.NextFloat(0.75f, 1f),
             Owner.Game.Time + Parameters.MinDuration
         ));
     }

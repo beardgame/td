@@ -1,3 +1,4 @@
+using System;
 using Bearded.Graphics;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Simulation.Factions;
@@ -9,6 +10,7 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
@@ -56,7 +58,7 @@ class Sprite : Component<Sprite.IParameters>, IListener<DrawComponents>
 
         if (Parameters.RandomRotationStep is { } step)
         {
-            var angle = StaticRandom.Float(360);
+            var angle = Random.Shared.NextFloat(360);
             var remainder = angle % step.Degrees;
             rotationOffset = Angle.FromDegrees(angle - remainder);
         }

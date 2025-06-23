@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Weapons;
@@ -6,6 +7,7 @@ using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing;
 
@@ -40,7 +42,7 @@ sealed class ShakeScreenOnFireWeapon : Component<ShakeScreenOnFireWeapon.IParame
     {
         var shake = new ScreenShakeParameters(
             Owner.Position,
-            Parameters.RandomDirection ? Direction2.FromDegrees(StaticRandom.Float(360)) : Owner.Direction,
+            Parameters.RandomDirection ? Direction2.FromDegrees(Random.Shared.NextFloat(360)) : Owner.Direction,
             Parameters.Strength,
             Parameters.Duration,
             Parameters.Frequency);

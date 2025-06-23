@@ -1,3 +1,4 @@
+using System;
 using Bearded.TD.Commands;
 using Bearded.TD.Content.Models;
 using Bearded.TD.Game.Commands;
@@ -9,6 +10,7 @@ using Bearded.TD.Shared.Events;
 using Bearded.TD.Shared.TechEffects;
 using Bearded.Utilities;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -90,7 +92,7 @@ sealed class WeaponJamming : Component<WeaponJamming.IParameters>, IPreviewListe
         var shouldJam =
             !manualOverrideObserver.ManualOverrideOngoing &&
             activeJam is null &&
-            StaticRandom.Bool(Parameters.ProbabilityPerShot);
+            Random.Shared.NextBool(Parameters.ProbabilityPerShot);
         if (!shouldJam) return;
         dispatcher.Dispatch(JamWeapon.Command(Owner, Parameters.Duration));
     }

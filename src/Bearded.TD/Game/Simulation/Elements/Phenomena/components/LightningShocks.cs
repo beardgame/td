@@ -26,9 +26,9 @@ sealed class LightningShocks : Component, IListener<DrawComponents>
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
+        if (Random.Shared.NextBool(elapsedTime.NumericValue * 10))
         {
-            shocksRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
+            shocksRenderStrengthGoal = Random.Shared.NextFloat(0.5f, 1);
         }
 
         shocksRenderStrength +=

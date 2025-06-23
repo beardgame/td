@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Shared.TechEffects;
@@ -8,6 +9,7 @@ using Bearded.Utilities;
 using Bearded.Utilities.Geometry;
 using Bearded.Utilities.Linq;
 using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Weapons;
 
@@ -107,7 +109,7 @@ sealed class TargetRandomTilesInRange(TargetRandomTilesInRange.IParameters param
 
         Position = Level.GetPosition(tile).WithZ(0.25f);
 
-        drift = (Parameters.RandomDrift * Direction2.FromDegrees(StaticRandom.Float(0, 360))).WithZ();
+        drift = (Parameters.RandomDrift * Direction2.FromDegrees(Random.Shared.NextFloat(0, 360))).WithZ();
     }
 
 }

@@ -68,7 +68,7 @@ static class ParticleSpawning
 
             var angularVelocity = parameters.AngularVelocity * noise(parameters.AngularVelocityNoise);
             if (parameters.RandomAngularVelocitySign)
-                angularVelocity *= StaticRandom.Sign();
+                angularVelocity *= Random.Shared.NextSign();
 
             var timeOfDeath = parameters.LifeTime is { } lifeTime
                 ? now + lifeTime * noise(parameters.LifeTimeNoise)
@@ -93,5 +93,5 @@ static class ParticleSpawning
     public static float Noise(float amount) => noise(amount);
 
     private static float noise(float amount)
-        => amount == 0 ? 1 : 1 + StaticRandom.Float(-amount, amount);
+        => amount == 0 ? 1 : 1 + Random.Shared.NextFloat(-amount, amount);
 }

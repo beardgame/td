@@ -150,7 +150,7 @@ sealed class ParticleSystem : Component<ParticleSystem.IParameters>, IListener<D
 
     private float randomFloat(float min, float max)
     {
-        return Parameters.DontRandomize ? 1 : StaticRandom.Float(min, max);
+        return Parameters.DontRandomize ? 1 : Random.Shared.NextFloat(min, max);
     }
 
 

@@ -25,9 +25,9 @@ sealed class FireFlicker : Component, IListener<DrawComponents>
 
     public override void Update(TimeSpan elapsedTime)
     {
-        if (StaticRandom.Bool(elapsedTime.NumericValue * 10))
+        if (Random.Shared.NextBool(elapsedTime.NumericValue * 10))
         {
-            fireRenderStrengthGoal = StaticRandom.Float(0.5f, 1);
+            fireRenderStrengthGoal = Random.Shared.NextFloat(0.5f, 1);
         }
 
         fireRenderStrength +=

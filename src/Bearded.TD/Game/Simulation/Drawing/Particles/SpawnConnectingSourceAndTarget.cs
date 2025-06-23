@@ -47,7 +47,7 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
 
         var passability = Owner.Game.PassabilityObserver.GetLayer(Passability.Projectile);
 
-        var pathfinder = Pathfinder.WithTileCosts(t => passability[t].IsPassable ? StaticRandom.Double(1, 3) : 20, 1);
+        var pathfinder = Pathfinder.WithTileCosts(t => passability[t].IsPassable ? Random.Shared.NextDouble(1, 3) : 20, 1);
 
         var result = pathfinder.FindPath(sourceTile, targetTile);
 

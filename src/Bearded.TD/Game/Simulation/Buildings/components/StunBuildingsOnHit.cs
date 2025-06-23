@@ -1,10 +1,11 @@
-﻿using Bearded.TD.Game.Commands;
+﻿using System;
+using Bearded.TD.Game.Commands;
 using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
 using Bearded.TD.Game.Simulation.Projectiles;
 using Bearded.TD.Shared.Events;
 using Bearded.Utilities;
-using Bearded.Utilities.SpaceTime;
+using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Buildings;
 
@@ -39,7 +40,7 @@ sealed class StunBuildingsOnHit : Component<StunBuildingsOnHit.IParameters>, ILi
         if (!e.Object.TryGetSingleComponent<IBuildingStateProvider>(out _))
             return;
 
-        var f = StaticRandom.Float();
+        var f = Random.Shared.NextFloat();
         var duration = Parameters.MinDuration + f * (Parameters.MaxDuration - Parameters.MinDuration);
 
         Owner.Sync(StunObject.Command, e.Object, duration);
