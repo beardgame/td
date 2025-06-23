@@ -10,15 +10,17 @@ sealed class DamageResistances(IParameters parameters) : DamageModifier<IParamet
 {
     public interface IParameters : IParametersTemplate<IParameters>
     {
+        DamageShell? Shell { get; }
         ImmutableDictionary<DamageType, Resistance>? Resistances { get; }
     }
 
-    public static DamageResistances From(ImmutableDictionary<DamageType, Resistance> resistances)
+    public static DamageResistances From(
+        ImmutableDictionary<DamageType, Resistance> resistances, DamageShell shell = DamageShell.Health)
     {
-        return new DamageResistances(new DamageResistancesParametersTemplate(resistances));
+        return new DamageResistances(new DamageResistancesParametersTemplate(shell, resistances));
     }
 
-    protected override DamageShell AffectedShell => DamageShell.Health;
+    protected override DamageShell AffectedShell => Parameters.Shell ?? DamageShell.Health;
 
     public override void ModifyDamage(ref DamagePreview preview)
     {

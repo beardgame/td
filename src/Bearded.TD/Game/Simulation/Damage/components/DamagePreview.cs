@@ -37,4 +37,11 @@ struct DamagePreview(TypedDamage damage)
         DamageAmount -= piercingDamage;
         DamagePotentialConsumed -= piercingDamage;
     }
+
+    public void ReflectDamage(double reflectionFraction)
+    {
+        var reflectedDamage = DamageAmount * (float) reflectionFraction;
+        DamageAmount -= reflectedDamage;
+        DamagePotentialConsumed -= reflectedDamage;
+    }
 }

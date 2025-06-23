@@ -1,0 +1,36 @@
+﻿{
+  id: "default-armor-alchemy",
+  affinityElement: "alchemy",
+  socketShape: "default-armor",
+  effects: [
+    {
+      type: "component",
+      parameters: {
+        id: "armor",
+        parameters: {
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "changeOnFireDamage",
+        parameters: {
+          factor: 2,
+        }
+      }
+    },
+    {
+      type: "component",
+      parameters: {
+        id: "damageResistances",
+        parameters: {
+          shell: "armor",
+          resistances: {
+            kinetic: 0.5,
+          }
+        }
+      }
+    },
+  ]
+}
