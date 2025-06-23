@@ -35,8 +35,11 @@ abstract class Component : IComponent
     {
         Owner = owner;
         Events = events;
+        RegisterHandlers();
         OnAdded();
     }
+
+    protected virtual void RegisterHandlers() {}
 
     protected virtual void OnAdded() {}
 
@@ -44,8 +47,11 @@ abstract class Component : IComponent
 
     public void OnRemoved()
     {
+        UnregisterHandlers();
         OnRemovedInternal();
     }
+
+    protected virtual void UnregisterHandlers() {}
 
     protected virtual void OnRemovedInternal() {}
 

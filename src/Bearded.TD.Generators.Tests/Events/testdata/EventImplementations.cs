@@ -1,11 +1,11 @@
-﻿using Bearded.TD.Shared.Events;
+﻿using Bearded.TD.Game.Simulation.GameObjects;
 
 namespace Bearded.TD.Generators.Tests.Events
 {
     namespace EventImplementationsNamespace
     {
-        public readonly struct FirstEvent : IEvent {}
-        public readonly struct SecondEvent : IEvent {}
-        public readonly struct PreviewEvent : IPreviewEvent {}
+        public readonly struct FirstEvent : IComponentEvent;
+        public readonly struct SecondEvent : IComponentEvent;
+        public readonly struct PreviewEvent : IComponentPreviewEvent;
     }
 }

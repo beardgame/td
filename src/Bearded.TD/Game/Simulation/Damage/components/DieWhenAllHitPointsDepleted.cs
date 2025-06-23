@@ -6,34 +6,28 @@ using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Damage;
 
-sealed class DieWhenAllHitPointsDepleted : Component, IListener<ComponentAdded>, IListener<ComponentRemoved>
+sealed partial class DieWhenAllHitPointsDepleted : Component
 {
     private readonly List<HitPointsPool> hitPointsPools = [];
 
     protected override void OnAdded()
     {
         hitPointsPools.AddRange(Owner.GetComponents<HitPointsPool>());
-        Events.Subscribe<ComponentAdded>(this);
-        Events.Subscribe<ComponentRemoved>(this);
     }
 
-    protected override void OnRemovedInternal()
+    [Handler]
+    private void onComponentAdded(ComponentAdded e)
     {
-        Events.Unsubscribe<ComponentAdded>(this);
-        Events.Unsubscribe<ComponentRemoved>(this);
-    }
-
-    public void HandleEvent(ComponentAdded @event)
-    {
-        if (@event.Component is HitPointsPool pool)
+        if (e.Component is HitPointsPool pool)
         {
             hitPointsPools.Add(pool);
         }
     }
 
-    public void HandleEvent(ComponentRemoved @event)
+    [Handler]
+    private void onComponentRemoved(ComponentRemoved e)
     {
-        if (@event.Component is HitPointsPool pool)
+        if (e.Component is HitPointsPool pool)
         {
             hitPointsPools.Remove(pool);
         }
@@ -46,5 +40,4 @@ sealed class DieWhenAllHitPointsDepleted : Component, IListener<ComponentAdded>,
             Events.Send(new EnactDeath());
         }
     }
-
 }
