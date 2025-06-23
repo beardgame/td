@@ -33,7 +33,7 @@ static class DisruptedAiming
             if (!Target.TryApplyUpgrade(upgrade, out receipt))
                 return;
 
-            statusChange = new ElementalStatus("eye-disabled".ToStatusIconSpriteId());
+            statusChange = new ElementalStatus("static".ToStatusIconSpriteId());
         }
 
         private static TargetRandomTilesInRange createComponent() => new(
