@@ -120,7 +120,7 @@ sealed class SpawnConnectingSourceAndTarget : ParticleUpdater<SpawnConnectingSou
 
             var lifeTimeOffset = Parameters.LifetimeOffsetPerUnit * (distanceTraveled / 1.U());
             particle.CreationTime += lifeTimeOffset;
-            particle.TimeOfDeath += lifeTimeOffset;
+            particle.TimeOfDeath = (particle.TimeOfDeath ?? Instant.Zero) + lifeTimeOffset;
         }
 
         transaction.Commit();

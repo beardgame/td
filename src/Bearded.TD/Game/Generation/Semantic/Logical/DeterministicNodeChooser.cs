@@ -86,7 +86,7 @@ sealed class DeterministicNodeChooser
 
             IEnumerable<NodeAllocationQuotient> nodesToChooseFrom =
                 ignoreMaximums ? allFlexibleNodes : eligibleFlexibleNodes;
-            var nodeToIncrease = nodesToChooseFrom.MaxBy(n => n.Quotient);
+            var nodeToIncrease = nodesToChooseFrom.MaxBy(n => n.Quotient)!;
             nodeToIncrease.Count++;
 
             if (!ignoreMaximums && !nodeToIncrease.CanIncrease)

@@ -1,5 +1,6 @@
 ﻿using Bearded.TD.Game.Simulation.GameObjects;
 using Bearded.TD.Game.Simulation.GameObjects.Parameters;
+using Bearded.Utilities.SpaceTime;
 using TimeSpan = Bearded.Utilities.SpaceTime.TimeSpan;
 
 namespace Bearded.TD.Game.Simulation.Drawing.Particles;
@@ -37,7 +38,7 @@ sealed class OffsetLifeTime : ParticleUpdater<OffsetLifeTime.IParameters>
             var offsetTime = new TimeSpan(offset) + Parameters.Constant;
 
             particle.CreationTime += offsetTime;
-            particle.TimeOfDeath += offsetTime;
+            particle.TimeOfDeath = (particle.TimeOfDeath ?? Instant.Zero) + offsetTime;
         }
     }
 }

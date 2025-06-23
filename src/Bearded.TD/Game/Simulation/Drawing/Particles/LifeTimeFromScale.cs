@@ -37,8 +37,7 @@ sealed class LifeTimeFromScale : ParticleUpdater<LifeTimeFromScale.IParameters>
 
         foreach (ref var particle in Particles.MutableParticles.Slice(index, count))
         {
-            particle.TimeOfDeath ??= now;
-            particle.TimeOfDeath += timeOffset * Noise(Parameters.Noise);
+            particle.TimeOfDeath = (particle.TimeOfDeath ?? now) + timeOffset * Noise(Parameters.Noise);
         }
     }
 }

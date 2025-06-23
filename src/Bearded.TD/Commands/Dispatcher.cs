@@ -10,12 +10,12 @@ interface IDispatcher<TObject>
     void RunOnlyOnServer<T1, T2, T3>(Action<T1, T2, T3, ICommandDispatcher<TObject>> action, T1 p1, T2 p2, T3 p3);
     void RunOnlyOnServer<T1, T2, T3, T4>(Action<T1, T2, T3, T4, ICommandDispatcher<TObject>> action, T1 p1, T2 p2, T3 p3, T4 p4);
 
-    void RunOnlyOnServer(Func<ISerializableCommand<TObject>> func);
-    void RunOnlyOnServer<T>(Func<T, ISerializableCommand<TObject>> func, T p);
-    void RunOnlyOnServer<T1, T2>(Func<T1, T2, ISerializableCommand<TObject>> func, T1 p1, T2 p2);
-    void RunOnlyOnServer<T1, T2, T3>(Func<T1, T2, T3, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3);
-    void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4);
-    void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5);
+    void RunOnlyOnServer(Func<ISerializableCommand<TObject>?> func);
+    void RunOnlyOnServer<T>(Func<T, ISerializableCommand<TObject>?> func, T p);
+    void RunOnlyOnServer<T1, T2>(Func<T1, T2, ISerializableCommand<TObject>?> func, T1 p1, T2 p2);
+    void RunOnlyOnServer<T1, T2, T3>(Func<T1, T2, T3, ISerializableCommand<TObject>?> func, T1 p1, T2 p2, T3 p3);
+    void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>?> func, T1 p1, T2 p2, T3 p3, T4 p4);
+    void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>?> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5);
 }
 
 abstract class BaseClientDispatcher<TObject> : IDispatcher<TObject>
@@ -26,23 +26,16 @@ abstract class BaseClientDispatcher<TObject> : IDispatcher<TObject>
     public void RunOnlyOnServer<T1, T2, T3>(Action<T1, T2, T3, ICommandDispatcher<TObject>> action, T1 p1, T2 p2, T3 p3) { }
     public void RunOnlyOnServer<T1, T2, T3, T4>(Action<T1, T2, T3, T4, ICommandDispatcher<TObject>> action, T1 p1, T2 p2, T3 p3, T4 p4) {}
 
-    public void RunOnlyOnServer(Func<ISerializableCommand<TObject>> func) {}
-    public void RunOnlyOnServer<T>(Func<T, ISerializableCommand<TObject>> func, T p) {}
-    public void RunOnlyOnServer<T1, T2>(Func<T1, T2, ISerializableCommand<TObject>> func, T1 p1, T2 p2) {}
-    public void RunOnlyOnServer<T1, T2, T3>(Func<T1, T2, T3, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3) { }
-    public void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4) { }
-    public void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5) { }
+    public void RunOnlyOnServer(Func<ISerializableCommand<TObject>?> func) {}
+    public void RunOnlyOnServer<T>(Func<T, ISerializableCommand<TObject>?> func, T p) {}
+    public void RunOnlyOnServer<T1, T2>(Func<T1, T2, ISerializableCommand<TObject>?> func, T1 p1, T2 p2) {}
+    public void RunOnlyOnServer<T1, T2, T3>(Func<T1, T2, T3, ISerializableCommand<TObject>?> func, T1 p1, T2 p2, T3 p3) { }
+    public void RunOnlyOnServer<T1, T2, T3, T4>(Func<T1, T2, T3, T4, ISerializableCommand<TObject>?> func, T1 p1, T2 p2, T3 p3, T4 p4) { }
+    public void RunOnlyOnServer<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, ISerializableCommand<TObject>?> func, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5) { }
 }
 
-abstract class BaseServerDispatcher<TObject> : IDispatcher<TObject>
+abstract class BaseServerDispatcher<TObject>(ICommandDispatcher<TObject> commandDispatcher) : IDispatcher<TObject>
 {
-    private readonly ICommandDispatcher<TObject> commandDispatcher;
-
-    protected BaseServerDispatcher(ICommandDispatcher<TObject> commandDispatcher)
-    {
-        this.commandDispatcher = commandDispatcher;
-    }
-
     public void RunOnlyOnServer(Action<ICommandDispatcher<TObject>> action)
         => action(commandDispatcher);
     public void RunOnlyOnServer<T>(Action<T, ICommandDispatcher<TObject>> action, T p)

@@ -2,6 +2,7 @@
 using Bearded.TD.Game.Simulation.Factions;
 using Bearded.TD.Game.Simulation.GameLoop;
 using Bearded.TD.UI;
+using static Bearded.TD.Utilities.DebugAssert;
 
 namespace Bearded.TD.Game.Simulation.Resources;
 
@@ -31,7 +32,8 @@ sealed class FactionCoreEnergyMarketRateSimulator
     protected override void Execute()
     {
         supply = Parameters.InitialMarketSupply;
-        Owner.TryGetBehaviorIncludingAncestors(out exchange);
+        var exchangeFound = Owner.TryGetBehaviorIncludingAncestors(out exchange!);
+        State.Satisfies(exchangeFound);
 
         Events.Observe<ResourcesExchanged<CoreEnergy, Scrap>>().Subscribe(e => supply += e.From);
         Events.Observe<WaveStarted>().Subscribe(_ => updateRate());
